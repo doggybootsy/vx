@@ -1,7 +1,8 @@
 # Addons
-themes
 plugins
 storage
+!/renderer/src/addons/plugins
+themes
 # dist
 dist
 vx.asar
