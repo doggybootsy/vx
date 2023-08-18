@@ -1,0 +1,11 @@
+# Addons
+themes
+plugins
+storage
+# dist
+dist
+vx.asar
+# node stuff
+node_modules
+# test
+.test
