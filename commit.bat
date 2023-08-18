@@ -5,9 +5,6 @@ IF NOT "%~1" == "" (set commitName="%~1")
 IF "%~2" == "" (set branch="main")
 IF NOT "%~2" == "" (set branch="%~2")
 
-echo %commitName%
-echo %branch%
-
 git add .
 git commit -m %commitName%
 git branch -m %branch%
