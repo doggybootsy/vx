@@ -11,4 +11,4 @@ echo %branch%
 git add .
 git commit -m %commitName%
 git branch -m %branch%
-git puch -u origin %branch%
+git push -u origin %branch%
