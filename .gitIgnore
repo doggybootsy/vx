@@ -1,7 +1,8 @@
 # Addons
 plugins
-storage
 !/renderer/src/addons/plugins
+storage
+!/renderer/src/storage
 themes
 # dist
 dist
