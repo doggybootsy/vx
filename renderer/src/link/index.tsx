@@ -12,15 +12,15 @@ const vxURLRegex = new RegExp(`^vx://(${Object.values(locations).flat(1).join("|
 const vxPluginsURLRegex = new RegExp(`^vx://(${locations.plugins.join("|")})/(\\w+).vx.js/?`);;
 
 function getFullLocation(location: string) {
-  if (location === "h" || location === "home") return "home";
-  if (location === "p" || location === "plugins") return "plugins";
-  if (location === "t" || location === "themes") return "themes";
-  if (location === "s" || location === "settings") return "settings";
+  for (const key in locations) {
+    const element = locations[key] as string[];
+    if (element.includes(location)) return key;
+  }
 };
 
 webpack.getLazy<{
-  defaultRules: VX.Dict<any>,
-  reactParserFor(rules: VX.Dict<any>): Function,
+  defaultRules: VX.Dict,
+  reactParserFor(rules: VX.Dict): Function,
   parse: Function
 }>((m) => m.parse && m.defaultRules).then((markdownParser) => {
   markdownParser.defaultRules["vx-url"] = {

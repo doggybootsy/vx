@@ -9,7 +9,7 @@ const PLUGIN_DIRECTORY = native.path.join(native.dirname, "..", "plugins");
 
 class PluginManager extends Store {
   #plugins = new Map<string, Plugin>();
-
+  
   initialize() {
     if (!native.exists(PLUGIN_DIRECTORY)) native.mkdir(PLUGIN_DIRECTORY);
 

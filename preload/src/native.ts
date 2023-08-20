@@ -13,13 +13,13 @@ const native: VX.Native = {
   openPath: (path: string) => electron.shell.openPath(path),
   isDir: (path: string) => native.exists(path) && statSync(path).isDirectory(),
   openExternal: (url: string) => electron.shell.openExternal(url, { }),
-  watch(dir: string, callback: (filename: string, action: "deleted" | "change") => void): () => void {
+  watch(dir: string, callback: (filename: string, action: VX.WatchAction) => void): () => void {
     const cached = new Map<string, NodeJS.Timeout>();
     const watcher = watch(dir, "utf-8", (event, filename) => {      
       clearTimeout(cached.get(filename!));
 
       cached.set(filename!, setTimeout(() => {
-        let action: "change" | "deleted" = "change";
+        let action: VX.WatchAction = "change";
         if (!existsSync(join(dir, filename!))) action = "deleted";
 
         callback(filename!, action);

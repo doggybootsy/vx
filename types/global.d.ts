@@ -1,6 +1,8 @@
 declare namespace VX {
   type PathLike = string;
 
+  type WatchAction = "deleted" | "change";
+
   interface Native {
     path: typeof import("node:path"),
     readDir(dir: PathLike): string[],
@@ -9,7 +11,7 @@ declare namespace VX {
     writeFile(file: PathLike, data: string): void,
     exists(path: PathLike): boolean,
     delete(path: PathLike): Promise<void>,
-    watch(dir: PathLike, callback: (filename: PathLike, action: "deleted" | "change") => void): () => void,
+    watch(dir: PathLike, callback: (filename: PathLike, action: WatchAction) => void): () => void,
     openPath(path: PathLike): void,
     isDir(path: PathLike): boolean,
     stats(path: PathLike): import("node:fs").Stats,
@@ -19,15 +21,18 @@ declare namespace VX {
     quit(restart?: boolean): void
   };
   
+  type Environments = "main" | "preload" | "renderer";
+
   interface Environment {
     PRODUCTION: boolean,
     VERSION: string,
-    ENVIROMENT: "main" | "preload" | "renderer"
+    ENVIROMENT: Environments
   };
 
   interface Dict<T = any> {
     [key: string]: T
   };
+
   interface FunctionWrap<T = any> {
     (): T
   };

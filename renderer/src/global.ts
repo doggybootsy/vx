@@ -19,7 +19,6 @@ import { Logger } from "renderer/logger";
 import { fetch } from "renderer/request";
 import { CHANGE_SYMBOL } from "renderer/store";
 
-
 const VX = {
   client: {
     platform: native.platform,
