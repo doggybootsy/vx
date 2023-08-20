@@ -21,6 +21,12 @@ function CurrentUser() {
 function Home() {
   const React = webpack.common.React!;
   
+  const { background, color } = React.useMemo(() => {
+    const hex = Math.floor(Math.random() * 0xFFFFFF);
+
+    return { background: `#${hex.toString(16).padStart(6, "0")}`, color: `#${(0xFFFFFF - hex).toString(16).padStart(6, "0")}` };
+  }, [ ]);
+
   return (
     <DashboardPage
       header={[
@@ -35,7 +41,8 @@ function Home() {
       <div className="vx-dashboard-home">
         <div style={{
           padding: 16,
-          background: "rgb(75 12 159)"
+          background: background,
+          color: color
         }}>
           INDEV
         </div>
