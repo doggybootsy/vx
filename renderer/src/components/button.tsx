@@ -1,5 +1,4 @@
 import { ErrorBoundary } from "renderer/components";
-import { cache } from "renderer/util";
 import webpack from "renderer/webpack";
 
 interface ButtonSizes {

@@ -16,7 +16,30 @@ export const HeaderBar = cache(() => {
 
   return webpack.getModule<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(filter)!;
 });
-export const SearchBar = cache(() => webpack.getModule<React.FunctionComponent<any>>(m => m.Sizes?.SMALL && m.defaultProps.isLoading === false)!);
+
+interface SearchBarProps {
+  query: string,
+  placeholder: string,
+  className: string,
+  disabled: boolean,
+  autoFocus: boolean,
+  size: string,
+  onQueryChange(query: string): void,
+  onClear(): void,
+  onRemoveTag(index: number): void,
+  onKeyDown: React.KeyboardEventHandler<HTMLInputElement>,
+  tags: string[]
+};
+
+interface SearchBar extends React.FunctionComponent<SearchBarProps> {
+  Sizes: { SMALL: string }
+};
+
+export const SearchBar = cache(() => {
+  return webpack.getModule<SearchBar>(m => m.defaultProps && m.defaultProps.size === m.Sizes?.SMALL && "query" in m.defaultProps, { searchExports: true })!;
+
+  webpack.getModule<SearchBar>(m => m.Sizes?.SMALL && m.defaultProps.isLoading === false)!;
+});
 
 function StatusIcon() {
   const React = webpack.common.React!;

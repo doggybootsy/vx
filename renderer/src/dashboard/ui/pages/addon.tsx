@@ -8,9 +8,19 @@ import native from "renderer/native";
 import themeManager, { Theme } from "renderer/addons/themes";
 import storage from "renderer/storage";
 
-function includesQuery(query: string, item?: string) {
+function includesQuery(query: string, tags: string[], item?: string) {
   if (!item) return false;
-  return item.toLocaleLowerCase().includes(query.toLocaleLowerCase());
+  if (!query && !tags.length) return true;
+
+  const newTags = tags.concat();
+  if (query) newTags.push(query);
+
+  for (const search of newTags) {
+    if (!item.toLocaleLowerCase().includes(search.toLocaleLowerCase())) continue;
+    return true;
+  }
+
+  return false;
 };
 
 function Addons({ icon, title, manager, path }: {
@@ -20,19 +30,21 @@ function Addons({ icon, title, manager, path }: {
   path: "plugins" | "themes"
 }) {
   const React = webpack.common.React!;
+
   const [ query, setQuery ] = React.useState("");
+  const [ tags, setTags ] = React.useState<string[]>([ ]);
   const addonSortingMethod = storage.use<"normal" | "reverse">("addon-sort-method", "normal");
 
   const addons = useStateFromStores([ manager ], () => manager.getAll() as Array<Theme | Plugin>);
-  const filteredAddons = React.useMemo(() => {
+  const filteredAddons = React.useMemo(() => {    
     return addons.filter((plugin) => {
-      if (includesQuery(query, plugin.id)) return true;
-      if (includesQuery(query, plugin.meta.name)) return true;
-      if (includesQuery(query, plugin.meta.author)) return true;
+      if (includesQuery(query, tags, plugin.id)) return true;
+      if (includesQuery(query, tags, plugin.meta.name)) return true;
+      if (includesQuery(query, tags, plugin.meta.author)) return true;
       return false;
     });
-  }, [ query, addons ]);
-
+  }, [ query, tags, addons ]);
+  
   const sorted = React.useMemo(() => {
     const multiplier = addonSortingMethod === "reverse" ? -1 : 1;
 
@@ -42,7 +54,7 @@ function Addons({ icon, title, manager, path }: {
   const sortIcon = React.useMemo(() => {
     if (addonSortingMethod === "reverse") return Icons.SortReverse;
     return Icons.Sort;
-  }, [ addonSortingMethod ])
+  }, [ addonSortingMethod ]);
 
   return (
     <DashboardPage
@@ -71,11 +83,30 @@ function Addons({ icon, title, manager, path }: {
         />,
         <SearchBar.getter
           query={query}
+          placeholder="Filter Addons"
           className="vx-dashboard-searchbar"
+          tags={tags}
+          onRemoveTag={(index) => {
+            const newTags = tags.concat();
+
+            newTags.splice(index, 1);
+
+            setTags(newTags);
+          }}
+          onKeyDown={(event) => {
+            if (!(event.key.toLocaleLowerCase() === "tab")) return;
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!query) return;
+
+            setTags(tags.concat(query));
+            setQuery("");
+          }}
           disabled={false}
           autoFocus={true}
-          size={(SearchBar.getter as any).Sizes.SMALL}
-          onChange={(val: string) => setQuery(val)}
+          size={SearchBar.getter.Sizes.SMALL}
+          onQueryChange={(val: string) => setQuery(val)}
           onClear={() => {
             if (!query) return;
             setQuery("");
