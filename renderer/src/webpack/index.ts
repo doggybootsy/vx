@@ -29,6 +29,6 @@ const webpack = {
   common: commonModules
 };
 
-whenReady(() => webpack.isReady = true);
+whenReady(() => { webpack.isReady = true });
 
 export default webpack;

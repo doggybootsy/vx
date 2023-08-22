@@ -7,19 +7,25 @@ import CustomCSS, { getCustomCSS } from "renderer/ui/customCSS";
 import webpack from "renderer/webpack";
 import { openWindow } from "renderer/window";
 import { OptionType } from "renderer/commands/types";
+import { cache } from "renderer/util";
 
 const strToFeild = (item: string) => ({ name: item, value: item });
 
-let uploadActions: {
-  instantBatchUpload: Function
-};
+const uploadActions = cache(() => webpack.getModule<{
+  instantBatchUpload(channelId: string, files: File[], isThumbnail: boolean): void,
+  instantBatchUpload(options: {
+    channelId: string,
+    files: File[],
+    draftType: number,
+    isThumbnail: boolean,
+    isClip: boolean
+  }): void
+}>(m => m.upload && m.instantBatchUpload)!);
 
 function instantBatchUpload(channelId: string, files: File[]) {
-  if (!uploadActions) uploadActions = webpack.getModule<typeof uploadActions>(m => m.upload && m.instantBatchUpload)!;
-
   // Theres 2 'instantBatchUpload' one that uses 3 args and one that uses 1
-  if (uploadActions.instantBatchUpload.length === 3) uploadActions.instantBatchUpload(channelId, files, false);
-  else uploadActions.instantBatchUpload({
+  if (uploadActions().instantBatchUpload.length === 3) uploadActions().instantBatchUpload(channelId, files, false);
+  else uploadActions().instantBatchUpload({
     channelId,
     files: files,
     draftType: 0,

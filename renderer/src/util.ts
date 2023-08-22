@@ -188,6 +188,10 @@ export interface CacheReturnType<T> {
    */
   getter: T;
   /**
+   * @description Minified version of {@link CacheReturnType.getter} 
+   */
+  g: T;
+  /**
    * @description Clears the value of the cache target. 
    * Returns true if the cache had a value and false if it didn't
    * @example
@@ -202,6 +206,9 @@ export interface CacheReturnType<T> {
    * cached() // 1
    */
   clear(): boolean;
+  /**
+   * @description Internal
+   */
   [cacheSymbol]: { current: T | null, hasValue: boolean };
 };
 
@@ -229,7 +236,10 @@ export function cache<T>(factory: () => T): CacheReturnType<T> {
   Object.defineProperty(cacheFactory, "getter", {
     get: () => cacheFactory()
   });
-
+  Object.defineProperty(cacheFactory, "g", {
+    get: () => cacheFactory()
+  });
+  
   return cacheFactory as CacheReturnType<T>;
 };
 

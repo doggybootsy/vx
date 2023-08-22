@@ -20,10 +20,16 @@ function Settings() {
         ADDON: Grid layout
       </div>
       <div>
+        NOTIFS: Enable
+      </div>
+      <div>
         NOTIFS: Right Click Close All
       </div>
       <div>
-        CUSTOM CSS: Custom CSS
+        CUSTOM CSS: Enable
+      </div>
+      <div>
+        DIR: Custom DIR
       </div>
     </DashboardPage>
   )

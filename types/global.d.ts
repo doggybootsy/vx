@@ -26,7 +26,8 @@ declare namespace VX {
   interface Environment {
     PRODUCTION: boolean,
     VERSION: string,
-    ENVIROMENT: Environments
+    ENVIROMENT: Environments,
+    GITHUB: string
   };
 
   interface Dict<T = any> {

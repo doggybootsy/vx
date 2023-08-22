@@ -25,6 +25,10 @@ function Link({ location, pluginId }: { location: string, pluginId?: string }) {
     <span
       className="vx-url"
       onClick={() => {        
+        if (location === "github") {
+          window.open(VXEnvironment.GITHUB);
+          return;
+        }
         const url = pluginId ? `/vx/plugins/${pluginId}.vx.js` : `/vx${location === "home" ? "" : `/${location}`}`;
   
         webpack.common.navigation!.transitionTo(url);
@@ -42,6 +46,9 @@ function Link({ location, pluginId }: { location: string, pluginId?: string }) {
         )}
         {location === "settings" && (
           <Icons.Gear className="vx-url-icon" />
+        )}
+        {location === "github" && (
+          <Icons.Github className="vx-url-icon" />
         )}
       </span>
       <span>

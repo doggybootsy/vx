@@ -45,7 +45,7 @@ export function shouldSkipModule(module: module) {
 export function wrapFilter(filter: moduleFilter): moduleFilter {
   let hasErrored = false;
   return (exported, module, id) => {
-    try { return filter.apply(undefined, [ exported, module, id ]); }
+    try { return filter.call(undefined, exported, module, id); }
     catch (error) {
       if (hasErrored) return;
       hasErrored = true;

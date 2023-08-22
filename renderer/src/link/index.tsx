@@ -6,6 +6,7 @@ const locations = {
   plugins: [ "plugins", "p" ],
   themes: [ "themes", "t" ],
   settings: [ "settings", "s" ],
+  github: [ "github", "g" ]
 };
 
 const vxURLRegex = new RegExp(`^vx://(${Object.values(locations).flat(1).join("|")})/?`);;

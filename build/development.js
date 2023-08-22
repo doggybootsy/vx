@@ -27,7 +27,8 @@ async function build(section, otherOptions) {
       VXEnvironment: JSON.stringify({
         PRODUCTION: false,
         VERSION: pkg.version,
-        ENVIROMENT: section
+        ENVIROMENT: section,
+        GITHUB: "https://github.com/doggybootsy/vx"
       })
     }),
     plugins: [
