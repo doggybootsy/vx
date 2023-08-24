@@ -44,7 +44,7 @@ async function build(section, otherOptions) {
           }));
 
           build.onLoad({ filter: /.*/, namespace: "node-console" }, () => ({
-            contents: "module.exports = Object.assign({ [Symbol.toStringTag]: \"Console\" }, console);"
+            contents: "module.exports = Object.freeze(Object.assign({ [Symbol.toStringTag]: \"Console\" }, console));"
           }))
         }
       }

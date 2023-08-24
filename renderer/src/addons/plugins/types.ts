@@ -1,12 +1,20 @@
-export interface PluginExports {
-  Settings?: () => React.ReactNode;
-  start?: () => void;
-  stop?: () => void;
+export interface DisplayInfo {
+  name?: string,
+  description?: string,
+  author?: string
 };
 
-export interface DefaultPluginExports {
+export interface PluginExports {
+  // IDK if this is staying I want themes to have it too
+  getDisplayInfo?(locale: string): DisplayInfo,
+  Settings?(): React.ReactNode;
+  start?(): void;
+  stop?(): void;
+};
+
+export interface DefaultPluginExports extends PluginExports {
   __esModule: true,
-  default: PluginExports
+  default?: PluginExports
 }
 
 export interface PluginModule {

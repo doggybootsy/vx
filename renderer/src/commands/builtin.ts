@@ -100,7 +100,7 @@ function addAddonCommand(type: "plugins" | "themes", addonManager: typeof themeM
     id: `internal/${type}`,
     execute([ $addon, action ], { channel }) {
       const addon = addonManager.get($addon.value)!;
-
+      
       switch (action.value) {
         case "enable":
           addon.enable();

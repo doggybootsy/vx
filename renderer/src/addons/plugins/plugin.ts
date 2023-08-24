@@ -26,6 +26,8 @@ export class Plugin extends Store {
   #enabled: boolean = false;
   #initializedTimeStamp = Date.now().toString(32);
 
+  get type() { return "plugin" as const; };
+
   get meta() {
     if (!Object.isFrozen(this.#meta)) Object.freeze(this.#meta); 
     return this.#meta;
@@ -50,13 +52,13 @@ export class Plugin extends Store {
     const meta = readMeta(data);
     this.#meta = meta;
 
-    const that = this;
+    const self = this;
     const module: PluginModule = {
       loaded: false,
       meta,
       exports: {},
       id: file,
-      get enabled() { return that.enabled; }
+      get enabled() { return self.enabled; }
     };
 
     this.#module = module;
@@ -72,10 +74,9 @@ export class Plugin extends Store {
       this.#didError = true;
       console.error(`Error loading plugin '${file}'`, error);
     };
-
     
     if ("__esModule" in module.exports && module.exports.__esModule && module.exports.default) this.#exports = module.exports.default;
-    else this.#exports = module.exports as PluginExports;
+    else this.#exports = module.exports;
 
     if (!this.#didError && enabled) this.enable();
   };

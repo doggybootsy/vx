@@ -27,6 +27,8 @@ export class Theme extends Store {
   #id: string;
   #initializedTimeStamp = Date.now().toString(32);
 
+  get type() { return "theme" as const; };
+
   get meta() {
     if (!Object.isFrozen(this.#meta)) Object.freeze(this.#meta); 
     return this.#meta;

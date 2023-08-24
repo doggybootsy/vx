@@ -26,5 +26,3 @@ webpack.whenReady(() => {
 });
 
 logger.log(VXEnvironment.VERSION, "Loading...");
-
-
