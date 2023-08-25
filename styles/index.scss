@@ -29,6 +29,25 @@
   box-shadow: none !important;
 }
 
+.vx-welcome {
+  max-width: 455px;
+
+  &-image {
+    border-radius: 5px;
+  }
+  &-wrapper {
+    position: relative;
+  }
+  &-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    filter: drop-shadow(4px 1px 8px black);
+  }
+}
+
 // .vx-url {
 //   color: var(--text-link);
 //   text-decoration: var(--link-decoration);

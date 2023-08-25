@@ -14,8 +14,8 @@ git push -u origin %branch%
 
 for /f %%i in ('git rev-parse origin/%branch%') do (SET "hash=%%i")
 
-echo ---------------------------------------------------------------------------------
-echo BRANCH: %branch%
-echo COMMIT NAME: %commitName%
-echo COMMIT DESCRIPTION: %description%
-echo https://github.com/doggybootsy/vx/commit/%hash%
+ECHO ---------------------------------------------------------------------------------
+ECHO BRANCH: %branch%
+ECHO COMMIT NAME: %commitName%
+ECHO COMMIT DESCRIPTION: %description%
+ECHO https://github.com/doggybootsy/vx/commit/%hash%

@@ -15,7 +15,7 @@ interface AlertModalProps {
   onConfirmSecondary(): void,
   cancelText?: string,
   onCancel(): void,
-  transitionState: 0 | 1 | 2 | 3 | 4 | undefined,
+  transitionState: 0 | 1 | 2 | 3 | 4 | null,
   onClose(): void
 };
 

@@ -9,8 +9,6 @@ import { openWindow } from "renderer/window";
 import { OptionType } from "renderer/commands/types";
 import { cache } from "renderer/util";
 
-const strToFeild = (item: string) => ({ name: item, value: item });
-
 const uploadActions = cache(() => webpack.getModule<{
   instantBatchUpload(channelId: string, files: File[], isThumbnail: boolean): void,
   instantBatchUpload(options: {
@@ -45,8 +43,8 @@ addCommand({
   options: [{
     type: OptionType.STRING,
     choices: [
-      strToFeild("open"),
-      strToFeild("send")
+      "open",
+      "send"
     ],
     name: "Action",
     required: true
@@ -89,10 +87,10 @@ function addAddonCommand(type: "plugins" | "themes", addonManager: typeof themeM
     }, {
       type: OptionType.STRING,
       choices: [
-        strToFeild("enable"),
-        strToFeild("disable"),
-        strToFeild("toggle"),
-        strToFeild("send")
+        "enable",
+        "disable",
+        "toggle",
+        "send"
       ],
       name: "action",
       required: true
@@ -142,5 +140,20 @@ addCommand({
   execute([ restart ]) {
     const shouldRestart = restart ? restart.value : false;
     native.quit(shouldRestart);
+  }
+});
+
+addCommand({
+  name: "Debug",
+  id: "internal/debug",
+  execute([], { channel }) {
+    instantBatchUpload(channel.id, [
+      new File([
+        `${VXEnvironment.VERSION}\n`,
+        `${VXEnvironment.PRODUCTION}\n`,
+        `${pluginManager.getAll().length} '${pluginManager.getAll().map(m => m.id).join("', '")}'\n`,
+        `${themeManager.getAll().length} '${themeManager.getAll().map(m => m.id).join("', '")}'`
+      ], "vx-debug.txt")
+    ]);
   }
 });

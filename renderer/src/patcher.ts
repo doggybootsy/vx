@@ -1,7 +1,5 @@
 type anyFN = (...args: any[]) => any;
 
-type KeysMatching<T, V> = {[K in keyof T]-?: T[K] extends V ? K : never}[keyof T];
-
 type beforePatch<fn extends anyFN> = (that: ThisParameterType<fn>, args: Parameters<fn>) => void;
 type insteadPatch<fn extends anyFN> = (that: ThisParameterType<fn>, args: Parameters<fn>, original: fn) => void;
 type afterPatch<fn extends anyFN> = (that: ThisParameterType<fn>, args: Parameters<fn>, result: ReturnType<fn>) => void;
@@ -87,7 +85,7 @@ export function unpatchAll(id: string) {
   for (const undo of patches.get(id)!) undo();
 };
 
-export function after<module extends any, key extends KeysMatching<module, anyFN>>(id: string, module: module, key: key, callback: afterPatch<module[key]>) {
+export function after<module extends any, key extends keyof module>(id: string, module: module, key: key, callback: afterPatch<module[key]>) {
   if (id.startsWith("VX/")) id = "VX";
 
   const hooked = hook(module, key);
@@ -107,7 +105,7 @@ export function after<module extends any, key extends KeysMatching<module, anyFN
   return undo;
 };
 // Instead the only caring about the callback?
-export function instead<module extends any, key extends KeysMatching<module, anyFN>>(id: string, module: module, key: key, callback: insteadPatch<module[key]>) {
+export function instead<module extends any, key extends keyof module>(id: string, module: module, key: key, callback: insteadPatch<module[key]>) {
   if (id.startsWith("VX/")) id = "VX";
 
   const hooked = hook(module, key);
@@ -126,7 +124,7 @@ export function instead<module extends any, key extends KeysMatching<module, any
   
   return undo;
 };
-export function before<module extends any, key extends KeysMatching<module, anyFN>>(id: string, module: module, key: key, callback: beforePatch<module[key]>) {
+export function before<module extends any, key extends keyof module>(id: string, module: module, key: key, callback: beforePatch<module[key]>) {
   if (id.startsWith("VX/")) id = "VX";
 
   const hooked = hook(module, key);
@@ -149,13 +147,13 @@ export function before<module extends any, key extends KeysMatching<module, anyF
 export function create(id: string) {
   return {
     id: id,
-    after<module extends any, key extends KeysMatching<module, anyFN>>(module: module, key: key, callback: afterPatch<module[key]>) {
+    after<module extends any, key extends keyof module>(module: module, key: key, callback: afterPatch<module[key]>) {
       return after(id, module, key, callback);
     },
-    instead<module extends any, key extends KeysMatching<module, anyFN>>(module: module, key: key, callback: insteadPatch<module[key]>) {
+    instead<module extends any, key extends keyof module>(module: module, key: key, callback: insteadPatch<module[key]>) {
       return instead(id, module, key, callback);
     },
-    before<module extends any, key extends KeysMatching<module, anyFN>>(module: module, key: key, callback: beforePatch<module[key]>) {
+    before<module extends any, key extends keyof module>(module: module, key: key, callback: beforePatch<module[key]>) {
       return before(id, module, key, callback);
     },
     unpatchAll() {

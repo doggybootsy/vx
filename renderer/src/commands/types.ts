@@ -22,7 +22,7 @@ export type option = {
   minLength?: number,
   maxValue?: number,
   minValue?: number,
-  choices?: choice[]
+  choices?: Array<choice | string>
 };
 export type command = {
   description?: string,

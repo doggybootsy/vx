@@ -1,9 +1,10 @@
 import webpack from "renderer/webpack";
 
 export type ModalComponent = (props: {
-  transitionState?: 0 | 1 | 2 | 3 | 4,
+  transitionState: 0 | 1 | 2 | 3 | 4 | null,
   onClose: () => void
 }) => React.ReactNode;
+
 export type ModalOptions = {
   modalKey?: string,
   instant?: boolean,

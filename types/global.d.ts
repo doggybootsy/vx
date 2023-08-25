@@ -37,14 +37,22 @@ declare namespace VX {
   interface FunctionWrap<T = any> {
     (): T
   };
+
+  type Enum<K = string, N = number> = Record<K, N> & Record<N, K>;
+  type ConstEnum<K = string> = { [key in K]: Lowercase<key> };
+  type EnumKeys<E = Enum | ConstEnum> = E extends Enum ? E[number] : E[string];
+
+  type NullAble<T> = T | void;
+
+  type WrappedNative = FunctionWrap<Native>;
 };
 
 interface Window {
   VX: any,
-  VXNative: VX.FunctionWrap<VX.Native>
+  VXNative: VX.WrappedNative
 };
 
 declare const __non_webpack_require__: NodeJS.Require | undefined;
 
 declare const VXEnvironment: VX.Environment;
-declare const VXNative: VX.FunctionWrap<VX.Native>;
+declare const VXNative: VX.WrappedNative;
