@@ -6,7 +6,10 @@ import console from "console";
 import "preload/native";
 
 if (/^\/vx/.test(location.pathname)) {
-  const url = new URL("/channels/@me", location.origin);
+  const url = new URL(location.href);
+  
+  url.pathname = "/app";
+
   url.searchParams.append("vx-url", location.pathname);
   // Bad practice ik but it works
   setInterval(() => {
