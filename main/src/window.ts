@@ -1,4 +1,4 @@
-import electron, { BrowserWindowConstructorOptions } from "electron";
+import electron, { BrowserWindowConstructorOptions, app } from "electron";
 import path from "node:path";
 
 export class BrowserWindow extends electron.BrowserWindow {
@@ -15,6 +15,11 @@ export class BrowserWindow extends electron.BrowserWindow {
     super(opts);
 
     this.VX = { preload: originalPreload };
+
+    // crashPrompt(this, opts);
+    this.webContents.on("render-process-gone", () => {
+      
+    });
   };
   
   VX?: { preload: string };

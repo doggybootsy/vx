@@ -5,6 +5,17 @@ import console from "console";
 
 import "preload/native";
 
+console.log(/^\/vx/.test(location.pathname));
+
+if (/^\/vx/.test(location.pathname)) {
+  const url = new URL("/channels/@me", location.origin);
+  url.searchParams.append("vx-url", location.pathname);
+  // Bad practice ik but it works
+  setInterval(() => {
+    location.replace(url);
+  }, 10);
+};
+
 try {
   const code = fs.readFileSync(path.join(__dirname, "renderer.js"), "utf-8");
 
