@@ -1,5 +1,5 @@
 @echo off
-for /F "tokens=2" %%i in ('date /t') do SET date=%%i
+for /F "tokens=2" %%i in ('date /t') DO SET date=%%i
 IF "%~1" == "" (SET commitName="%date%:%time%")
 IF NOT "%~1" == "" (SET commitName="%~1")
 IF "%~2" == "" (SET description="No Description Provided")
@@ -12,11 +12,11 @@ git commit -m %commitName% -m %description%
 git branch -m %branch%
 git push -u origin %branch%
 
-for /f %%i in ('git rev-parse origin/%branch%') do (SET "hash=%%i")
-for /f %%i in ('git config --get remote.origin.url') do (SET "URL=%%i")
+for /f %%i in ('git rev-parse origin/%branch%') DO (SET "hash=%%i")
+for /f %%i in ('git config --get remote.origin.url') DO (SET "URL=%%i")
 
 ECHO ---------------------------------------------------------------------------------
 ECHO BRANCH: %branch%
 ECHO COMMIT NAME: %commitName%
 ECHO COMMIT DESCRIPTION: %description%
-ECHO %URL:~0,-4%/%hash%
+ECHO %URL:~0,-4%/commit/%hash%
