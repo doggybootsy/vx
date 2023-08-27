@@ -13,9 +13,10 @@ git branch -m %branch%
 git push -u origin %branch%
 
 for /f %%i in ('git rev-parse origin/%branch%') do (SET "hash=%%i")
+for /f %%i in ('git config --get remote.origin.url') do (SET "URL=%%i")
 
 ECHO ---------------------------------------------------------------------------------
 ECHO BRANCH: %branch%
 ECHO COMMIT NAME: %commitName%
 ECHO COMMIT DESCRIPTION: %description%
-ECHO https://github.com/doggybootsy/vx/commit/%hash%
+ECHO %URL:~0,-4%/%hash%
