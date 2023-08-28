@@ -4,6 +4,15 @@
   "description": "a client mod for discord",
   "main": "build.js",
   "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "node ./build.js",
+    "compile:main": "npx webpack-cli --config main/webpack.config.js",
+    "compile:renderer": "npx webpack-cli --config renderer/webpack.config.js",
+    "compile:top": "npx webpack-cli --config top/webpack.config.js"
+  },
+  "author": "doggybootsy",
+  "license": "MIT",
   "dependencies": {
     "@types/ace": "^0.0.48",
     "@types/electron": "^1.6.10",
@@ -16,15 +25,6 @@
     "esbuild": "^0.18.10",
     "node-sass": "^9.0.0"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "node ./build.js",
-    "compile:main": "npx webpack-cli --config main/webpack.config.js",
-    "compile:renderer": "npx webpack-cli --config renderer/webpack.config.js",
-    "compile:top": "npx webpack-cli --config top/webpack.config.js"
-  },
-  "author": "doggybootsy",
-  "license": "MIT",
   "devDependencies": {
     "babel-loader": "^9.1.3",
     "ts-loader": "^9.4.4",
