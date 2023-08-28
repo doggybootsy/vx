@@ -76,7 +76,6 @@ function DashboardPage(props: DashboardPageProps) {
         <main className="vx-dashboard-main">
           {props.children}
         </main>
-        <Navigation.getter />
       </div>
     </div>
   )

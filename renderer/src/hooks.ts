@@ -22,7 +22,7 @@ export function useStateFromStores<T>(stores: (Store | ModuleStore)[], factory: 
         else (store as ModuleStore).removeReactChangeListener(listener);
       };
     };
-  }, [ ]);
+  }, [ stores ]);
 
   return state;
 };

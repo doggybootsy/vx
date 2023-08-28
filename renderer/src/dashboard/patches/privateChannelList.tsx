@@ -2,6 +2,9 @@ import webpack, { filters } from "renderer/webpack";
 import * as patcher from "renderer/patcher";
 import { findInReactTree } from "renderer/util";
 import { Icons } from "renderer/components";
+import Navigation from "renderer/dashboard/ui/navigation"
+import { closeMenu, components, openMenu } from "renderer/menus";
+import Menu from "renderer/dashboard/ui/menu";
 
 const filter = filters.byStrings(".showDMHeader,", ".getMutablePrivateChannels");
 const NavigatorButtonFilter = filters.byStrings("linkButtonIcon", ".linkButton,");
@@ -11,10 +14,13 @@ const NavigatorButtonFilter = filters.byStrings("linkButtonIcon", ".linkButton,"
   const NavigatorButton = webpack.getModule<React.FunctionComponent<any>>((m) => m.prototype && NavigatorButtonFilter(m.prototype.render), { searchExports: true })!;
 
   patcher.after("VX/dashboard", ...privateChannelList, (that, args, res) => {
+    const React = webpack.common.React!;
+    
+    if (/^\/vx/.test(location.pathname)) return <Navigation.getter />;
+
     const props = findInReactTree(res, (item) => Array.isArray(item?.children));
     if (!props) return;
-    const React = webpack.common.React!;
-
+    
     const children = (props as { children: React.ReactNode[] }).children;
 
     const selected = location.pathname.startsWith("/vx");
@@ -33,6 +39,13 @@ const NavigatorButtonFilter = filters.byStrings("linkButtonIcon", ".linkButton,"
         route="/vx"
         text="VX"
         key="vx-navigation-button"
+        onContextMenu={(event) => {
+          openMenu(event, (props) => (
+            <components.Menu {...props} onClose={closeMenu}>
+              {Menu()}
+            </components.Menu>
+          ));
+        }}
         icon={Icons.Logo}
       />
     );
