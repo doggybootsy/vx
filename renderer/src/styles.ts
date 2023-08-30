@@ -1,20 +1,15 @@
 import { themesElement } from "renderer/addons/themes";
 import native from "renderer/native";
 import { customCSSElement } from "renderer/ui/customCSS";
-import { whenDocumentReady } from "renderer/util";
+import { head } from "renderer/dom";
 
-const headElement = document.createElement("vx-head");
 const pluginElement = document.createElement("vx-plugins");
 
 const style = document.createElement("style");
 style.setAttribute("data-vx-style", "");
 style.innerHTML = native.readFile(native.path.join(native.dirname, "styles.css"));
 
-headElement.append(style, pluginElement, themesElement, customCSSElement);
-
-whenDocumentReady(() => {
-  document.head.appendChild(headElement);
-});
+head.append(style, pluginElement, themesElement, customCSSElement);
 
 export function addStyle(id: string, css: string) {
   const style = document.createElement("style");

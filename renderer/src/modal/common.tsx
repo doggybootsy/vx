@@ -1,5 +1,4 @@
-import { ErrorBoundary } from "renderer/components";
-import MarkDownParser from "renderer/ui/markdown";
+import { ErrorBoundary, Markdown } from "renderer/components";
 import webpack from "renderer/webpack";
 
 export function transformContent(content: React.ReactNode) {
@@ -8,7 +7,7 @@ export function transformContent(content: React.ReactNode) {
   return React.Children.map(content, (child) => (
     <div className="vx-modals-content-line">
       {typeof child === "string" ? (
-        <MarkDownParser text={child} />
+        <Markdown text={child} />
       ) : (
         <ErrorBoundary>
           {child}

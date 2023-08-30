@@ -1,6 +1,16 @@
 declare namespace VX {
   type PathLike = string;
 
+  namespace modules {
+    interface SimpleMarkdown {
+      parse(text: string): React.ReactNode,
+      parseToAST(text: string): unknown,
+      defaultRules: VX.Dict,
+      astParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parseToAST"],
+      reactParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parse"]
+    };
+  }
+
   type WatchAction = "deleted" | "change";
 
   interface Native {
@@ -39,7 +49,7 @@ declare namespace VX {
   };
 
   type Enum<K = string, N = number> = Record<K, N> & Record<N, K>;
-  type ConstEnum<K = string> = { [key in K]: Lowercase<key> };
+  type ConstEnum<K = string> = { [key in Uppercase<K>]: Lowercase<key> };
   type EnumKeys<E = Enum | ConstEnum> = E extends Enum ? E[number] : E[string];
 
   type NullAble<T> = T | void;
@@ -50,6 +60,18 @@ declare namespace VX {
 interface Window {
   VX: any,
   VXNative: VX.WrappedNative
+};
+
+interface PolyFilled {
+  polyfilled: boolean;
+};
+
+interface MathClamp extends PolyFilled {
+  (number: number, min: number, max: number): number;
+};
+
+interface Math {
+  clamp: MathClamp
 };
 
 declare const __non_webpack_require__: NodeJS.Require | undefined;

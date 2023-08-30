@@ -4,7 +4,7 @@ import { findInReactTree } from "renderer/util";
 import { Icons } from "renderer/components";
 import Navigation from "renderer/dashboard/ui/navigation"
 import { closeMenu, components, openMenu } from "renderer/menus";
-import Menu from "renderer/dashboard/ui/menu";
+import useMenu from "renderer/dashboard/ui/menu";
 
 const filter = filters.byStrings(".showDMHeader,", ".getMutablePrivateChannels");
 const NavigatorButtonFilter = filters.byStrings("linkButtonIcon", ".linkButton,");
@@ -42,7 +42,7 @@ const NavigatorButtonFilter = filters.byStrings("linkButtonIcon", ".linkButton,"
         onContextMenu={(event) => {
           openMenu(event, (props) => (
             <components.Menu {...props} onClose={closeMenu}>
-              {Menu()}
+              {useMenu()}
             </components.Menu>
           ));
         }}

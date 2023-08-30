@@ -3,6 +3,8 @@ import native from "renderer/native";
 import { getItem, setItem } from "renderer/storage";
 import Store from "renderer/store";
 import { readMeta } from "renderer/addons/common";
+import { openNotification } from "renderer/notifications";
+import webpack from "renderer/webpack";
 
 // Allow cross compat with bd themes
 const FILE_REGEX = /\.(vx|theme)\.css$/;
@@ -112,9 +114,25 @@ class ThemeManager extends Store {
 
         this.#themes.delete(filename);
         this.emit();
+
+        if (webpack.isReady) {
+          openNotification({
+            id: `vx-themes/deleted/${filename}/${Date.now()}`,
+            title: `${theme && theme.meta.name ? theme.meta.name : filename} deleted`
+          });
+        };
       };
       if (action === "change") {
         this.reload(filename);
+
+        if (webpack.isReady) {
+          const newTheme = this.get(filename);
+          
+          openNotification({
+            id: `vx-themes/reloaded/${filename}/${Date.now()}`,
+            title: `${newTheme && newTheme.meta.name ? newTheme.meta.name : filename} loaded`
+          });
+        }
       };
     });
 

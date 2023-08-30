@@ -1,3 +1,5 @@
+import "polyfills";
+
 import globalObject from "renderer/global";
 import pluginManager from "renderer/addons/plugins";
 import themeManager from "renderer/addons/themes";

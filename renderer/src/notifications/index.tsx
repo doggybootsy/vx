@@ -1,7 +1,7 @@
 import webpack from "renderer/webpack";
 import { allowedTypes, notificationStore } from "renderer/notifications/store";
-import MarkDownParser from "renderer/ui/markdown";
 import { Notification } from "renderer/notifications/types";
+import { Markdown } from "renderer/components";
 
 export * from "./types";
 
@@ -36,7 +36,7 @@ export function openNotification(opts: Notification) {
     opts.description = Array.from(opts.description, (item) => (
       <div className="vx-notification-line">
         {typeof item === "string" ? (
-          <MarkDownParser text={item} />
+          <Markdown text={item} />
         ) : item}
       </div>
     ));

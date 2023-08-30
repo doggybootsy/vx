@@ -1,26 +1,23 @@
 type anyFN = (...args: any[]) => any;
 
-export function debounce<f extends anyFN>(handler: f, timeout?: number | undefined): (...args: Parameters<f>) => Promise<ReturnType<f>> {
-  let timer: number;
-  let resolve: void | ((returnValue: ReturnType<f>) => void);
-  return function(this: any) {
+export function debounce<F extends anyFN>(handler: F, timeout?: number | undefined): (...args: Parameters<F>) => Promise<ReturnType<F>> {
+  let timer: number | NodeJS.Timeout;
+
+  const resolvers = new Set<(value: ReturnType<F>) => void>();
+  
+  return function(this: ThisParameterType<F>, ...args: Parameters<F>) {
     clearTimeout(timer);
 
     timer = setTimeout(() => {
-      const returnValue = handler.apply(this, Array.from(arguments));
-      if (typeof resolve === "function") resolve(returnValue);
-      resolve = undefined;
-    }, timeout) as unknown as number;
+      const value = handler.apply(this, args);
 
-    return new Promise((r) => {
-      const pre = resolve;
+      for (const resolve of resolvers) resolve(value);
+    }, timeout);
 
-      resolve = (returnValue) => {
-        if (typeof pre === "function") pre(returnValue);
-        r(returnValue);
-      };
-    })
-  } as unknown as f;
+    return new Promise<ReturnType<F>>((resolve) => {
+      resolvers.add(resolve);
+    });
+  };
 };
 
 import type { Fiber } from "react-reconciler";

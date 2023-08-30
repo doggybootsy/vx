@@ -1,3 +1,5 @@
+import "polyfills";
+
 import electron from "electron";
 
 import "main/requests";

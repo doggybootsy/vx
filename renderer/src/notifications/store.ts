@@ -8,7 +8,7 @@ export const allowedTypes = new Set([
   "info"
 ]);
 
-export const notificationStore = new class extends Store {
+export const notificationStore = new class NotificationStore extends Store {
   clear() {
     this.#state.clear();
     this.emit();

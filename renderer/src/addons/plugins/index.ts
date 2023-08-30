@@ -1,6 +1,8 @@
 import native from "renderer/native";
 import Store from "renderer/store";
 import { Plugin } from "renderer/addons/plugins/plugin";
+import webpack from "renderer/webpack";
+import { openNotification } from "renderer/notifications";
 
 export { Plugin };
 
@@ -22,15 +24,31 @@ class PluginManager extends Store {
     native.watch(PLUGIN_DIRECTORY, (filename, action) => {
       if (!FILE_REGEX.test(filename)) return;
 
+      const plugin = this.#plugins.get(filename);
       if (action === "deleted") {
-        const plugin = this.#plugins.get(filename);
         if (plugin) plugin.disable();
         
         this.#plugins.delete(filename);
         this.emit();
+
+        if (webpack.isReady) {
+          openNotification({
+            id: `vx-plugins/deleted/${filename}/${Date.now()}`,
+            title: `${plugin && plugin.meta.name ? plugin.meta.name : filename} deleted`
+          });
+        };
       };
       if (action === "change") {
         this.reload(filename);
+
+        if (webpack.isReady) {
+          const newPlugin = this.get(filename);
+          
+          openNotification({
+            id: `vx-plugins/reloaded/${filename}/${Date.now()}`,
+            title: `${newPlugin && newPlugin.meta.name ? newPlugin.meta.name : filename} loaded`
+          });
+        };
       };
     });
 

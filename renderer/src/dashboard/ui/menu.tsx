@@ -6,7 +6,7 @@ import { useStateFromStores } from "renderer/hooks";
 import CustomCSS from "renderer/ui/customCSS";
 import { openWindow } from "renderer/window";
 
-function Menu() {
+function useMenu() {
   const React = webpack.common.React!;
   
   const plugins = useStateFromStores([ pluginManager ], () => pluginManager.getAll());
@@ -84,4 +84,4 @@ function Menu() {
   )
 };
 
-export default Menu;
+export default useMenu;

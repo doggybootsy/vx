@@ -19,11 +19,7 @@ function getFullLocation(location: string) {
   }
 };
 
-webpack.getLazy<{
-  defaultRules: VX.Dict,
-  reactParserFor(rules: VX.Dict): Function,
-  parse: Function
-}>((m) => m.parse && m.defaultRules).then((markdownParser) => {
+webpack.getLazy<VX.modules.SimpleMarkdown>((m) => m.parse && m.defaultRules).then((markdownParser) => {
   markdownParser.defaultRules["vx-url"] = {
     order: markdownParser.defaultRules.url.order,
     match(text: string) {
@@ -60,4 +56,5 @@ webpack.getLazy<{
   };
 
   markdownParser.parse = markdownParser.reactParserFor(markdownParser.defaultRules);
+  markdownParser.parseToAST = markdownParser.astParserFor(markdownParser.defaultRules);
 });

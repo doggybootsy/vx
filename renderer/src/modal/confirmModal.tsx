@@ -1,6 +1,5 @@
 import VXError from "renderer/error";
-import { Button, ErrorBoundary } from "renderer/components";
-import MarkDownParser from "renderer/ui/markdown";
+import { Button, ErrorBoundary, Markdown } from "renderer/components";
 import webpack from "renderer/webpack";
 import { openModal } from "renderer/modal/actions";
 
@@ -28,7 +27,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
     newContent.push(
       <div className="vx-modals-content-line">
         {typeof item === "string" ? (
-          <MarkDownParser text={item} />
+          <Markdown text={item} />
         ) : (
           <ErrorBoundary>
             {item}

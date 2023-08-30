@@ -12,7 +12,6 @@ import VXError from "renderer/error";
 import * as modals from "renderer/modal";
 import * as commands from "renderer/commands";
 import * as util from "renderer/util";
-import MarkDownParser from "./ui/markdown";
 import { useStateFromStores } from "renderer/hooks";
 import * as components from "renderer/components";
 import { Logger } from "renderer/logger";
@@ -124,7 +123,6 @@ const VX = {
   VXError: VXError,
   util: util,
   components: {
-    MarkDownParser,
     useStateFromStores,
     ...components
   },
