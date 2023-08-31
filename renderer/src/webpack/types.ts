@@ -1,22 +1,22 @@
 export interface WebpackRequire {
-  (id: number | string): any,
-  c: Record<number | string, module>,
-  m: Record<number | string, chunkModule>,
+  (id: PropertyKey): any,
+  c: Record<PropertyKey, module>,
+  m: Record<PropertyKey, chunkModule>,
   d(obj1: any, obj2: any): void
 }
 
 export type module = {
   exports: any,
-  id: number | string
+  id: PropertyKey
 };
 export type chunkModule = (module: module, exports: any, require: WebpackRequire) => void;
 export type chunkObj = [
-  (Symbol | string | number)[],
-  Record<string | number, chunkModule>,
+  PropertyKey[],
+  Record<PropertyKey, chunkModule>,
   (require: WebpackRequire) => any
 ];
 
-export type moduleFilter = (exported: any, module: module, id: number | string) => boolean | any;
+export type moduleFilter = (exported: any, module: module, id: PropertyKey) => boolean | any;
 export type filterOptions = {
   searchExports?: boolean,
   searchDefault?: boolean
@@ -83,7 +83,7 @@ export interface Store {
   
   __getLocalVars?(): any;
 
-  [key: string | number | symbol]: any;
+  [key: PropertyKey]: any;
 };
 
 export type CSSClasses<classNames extends string = string> = Record<classNames, string>;

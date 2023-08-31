@@ -3,8 +3,8 @@ declare namespace VX {
 
   namespace modules {
     interface SimpleMarkdown {
-      parse(text: string): React.ReactNode,
-      parseToAST(text: string): unknown,
+      parse(text: string, idk?: unknown, state?: VX.Dict): React.ReactElement[],
+      parseToAST(text: string, idk?: unknown, state?: VX.Dict): unknown,
       defaultRules: VX.Dict,
       astParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parseToAST"],
       reactParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parse"]

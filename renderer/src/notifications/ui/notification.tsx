@@ -11,7 +11,14 @@ function Notification({ notification }: { notification: Notification }) {
       className={`vx-notification${notification.type ? ` vx-notification-type-${notification.type}` : ""}`}
       data-vx-notification-id={notification.id} 
     >
-      <div className="vx-notification-header">
+      <div 
+        className="vx-notification-header"
+        onMouseDown={(event) => {
+          if (event.button !== 1) return;
+
+          notificationStore.delete(notification.id);
+        }}
+      >
         <div className="vx-notification-info">
           {notification.icon && (
             <div className="vx-notification-icon">

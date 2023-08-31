@@ -22,7 +22,11 @@ function getFullLocation(location: string) {
 webpack.getLazy<VX.modules.SimpleMarkdown>((m) => m.parse && m.defaultRules).then((markdownParser) => {
   markdownParser.defaultRules["vx-url"] = {
     order: markdownParser.defaultRules.url.order,
-    match(text: string) {
+    match(text: string, state: VX.Dict) {
+      // If links aren't allowed in chat then dont match
+      // But we don't wanna just a truthy / falsey check so we use in
+      if (("allowLinks" in state && typeof state.allowLinks === "boolean") ? state.allowLinks : false) return null;
+
       return vxPluginsURLRegex.exec(text) || vxURLRegex.exec(text);
     },
     parse(capture: RegExpExecArray) {      
