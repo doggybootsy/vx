@@ -29,6 +29,8 @@ export function openNotification(opts: Notification) {
   if (!opts.id) throw new TypeError("Argument 'options' requires a 'id' field!");
   if (!opts.title) throw new TypeError("Argument 'options' requires a 'title' field!");
 
+  opts.duration ??= 3000;
+
   if (opts.type && !allowedTypes.has(opts.type)) throw new TypeError(`Argument 'options' requires a 'type' that is either of ${Array.from(allowedTypes).join(", ")}`);
 
   if (opts.description) {

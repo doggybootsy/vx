@@ -25,18 +25,24 @@ electron.app.whenReady().then(() => {
     const url = new URL(requestedURL);
 
     if (responseHeaders) {
-      deleteHeader(responseHeaders, "content-security-policy");
+      deleteHeader(responseHeaders, "Content-Security-Policy");
 
       const vxCors = url.searchParams.get("vx-cors");
+      
       if (vxCors === "true") {
-        deleteHeader(responseHeaders, "content-security-policy");
+        deleteHeader(responseHeaders, "Access-Control-Allow-Origin");
         responseHeaders["Access-Control-Allow-Origin"] = [ "*" ];
       };
 
       if (resourceType === "stylesheet") {
-        deleteHeader(responseHeaders, "content-type");
+        deleteHeader(responseHeaders, "Content-Type");
         responseHeaders["Content-Type"] = [ "text/css" ];
       };
+      // Idk seems unsafe
+      // if (resourceType === "script") {
+      //   deleteHeader(responseHeaders, "Content-Type");
+      //   responseHeaders["Content-Type"] = [ "text/javascript" ];
+      // };
     };
 
     callback({ 

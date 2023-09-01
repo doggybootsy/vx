@@ -17,6 +17,7 @@ import * as components from "renderer/components";
 import { Logger } from "renderer/logger";
 import { fetch } from "renderer/request";
 import { CHANGE_SYMBOL } from "renderer/store";
+import * as markdown from "renderer/markdown";
 
 const VX = {
   client: {
@@ -119,6 +120,11 @@ const VX = {
     close(id: string) {
       windowOpener.closeWindow(id);
     }
+  },
+  markdown: {
+    parse: markdown.parse,
+    register: markdown.register,
+    unregister: markdown.unregister
   },
   VXError: VXError,
   util: util,

@@ -8,13 +8,11 @@ import Notifications from "renderer/notifications/ui";
   const { app } = webpack.getModule<{ app: string }>(m => m.app && m.layers)!;
 
   patcher.after("VX/Notifications", components.Shakeable.prototype, "render", (that, args, res: any) => {    
-    if (!res.ref.current) return res;
-    if (!res.ref.current.classList.contains(app)) return res;
+    if (typeof res.props.className !== "string") return res;
+    if (!res.props.className.includes(app)) return res;
 
-    res.props.children.push(
-      <Notifications />
-    );
+    res.props.children.push(<Notifications />);
 
     return res;
-  });
+  });  
 })();

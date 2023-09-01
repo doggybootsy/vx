@@ -3,6 +3,7 @@ import Store from "renderer/store";
 import { Plugin } from "renderer/addons/plugins/plugin";
 import webpack from "renderer/webpack";
 import { openNotification } from "renderer/notifications";
+import { Icons } from "renderer/components";
 
 export { Plugin };
 
@@ -34,6 +35,7 @@ class PluginManager extends Store {
         if (webpack.isReady) {
           openNotification({
             id: `vx-plugins/deleted/${filename}/${Date.now()}`,
+            icon: Icons.Code,
             title: `${plugin && plugin.meta.name ? plugin.meta.name : filename} deleted`
           });
         };
@@ -46,6 +48,7 @@ class PluginManager extends Store {
           
           openNotification({
             id: `vx-plugins/reloaded/${filename}/${Date.now()}`,
+            icon: Icons.Code,
             title: `${newPlugin && newPlugin.meta.name ? newPlugin.meta.name : filename} loaded`
           });
         };

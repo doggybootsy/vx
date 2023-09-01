@@ -87,4 +87,19 @@
     margin: 6px;
     color: var(--text-normal);
   }
+  &-slider {
+    height: 4px;
+    box-sizing: border-box;
+    background-color: var(--brand-experiment);
+    border-radius: 4px;
+
+    &-wrapper {
+      height: 4px;
+      margin: 6px;
+      margin-top: 0;
+      background-color: var(--background-accent);
+      overflow: hidden;
+      border-radius: 4px;
+    }
+  }
 }

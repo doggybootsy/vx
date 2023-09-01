@@ -1,11 +1,12 @@
 import filters from "renderer/webpack/filters";
 import { getLazy } from "renderer/webpack/lazy";
-import { Dispatcher, MessageActions, NavigationUtil, commonModules, i18n, react, reactDOM } from "renderer/webpack/types";
+import { Dispatcher, MessageActions, NavigationUtil, commonModules, i18n, react, reactDOM, reactSpring } from "renderer/webpack/types";
 import { PluginModule } from "renderer/addons/plugins/types";
 
 const modules: commonModules = {
   React: null,
   ReactDOM: null,
+  ReactSpring: null,
   dispatcher: null,
   components: null,
   i18n: null,
@@ -42,6 +43,7 @@ getLazy<i18n>((module) => module.Messages && Array.isArray(module._events.locale
 getLazy<MessageActions>((module) => module.sendMessage && module.sendBotMessage).then((messageActions) => modules.messageActions = messageActions);
 
 getLazy<reactDOM>((module) => module.render && module.createPortal).then((ReactDOM) => modules.ReactDOM = ReactDOM);
+getLazy<reactSpring>((module) => module.useSpring && module.config && module.to && module.a).then((ReactSpring) => modules.ReactSpring = ReactSpring);
 
 const navigationFilters = {
   transitionTo: filters.byStrings("\"transitionTo - Transitioning to \""),

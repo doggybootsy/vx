@@ -3,13 +3,64 @@ import webpack from "renderer/webpack";
 import { notificationStore } from "renderer/notifications/store";
 import { Notification } from "renderer/notifications/types";
 
+interface SpringRef {
+  resume(): void,
+  pause(): void
+};
+
+function Slider({ duration, springRef, close }: { duration: number, springRef: VX.Ref<SpringRef | void>, close: () => void }) {
+  const React = webpack.common.React!;
+  const ReactSpring = webpack.common.ReactSpring!;
+
+  const props = ReactSpring.useSpring({
+    to: { width: "100%" },
+    from: { width: "0%" },
+    onRest() { close(); },
+    config: {
+      duration: duration!,
+      ...ReactSpring.config.default
+    }
+  });
+
+  React.useLayoutEffect(() => {
+    springRef.current = {
+      resume() { props.width.resume(); },
+      pause() { props.width.pause(); }
+    };
+  }, [ ]);
+
+  return (
+    <div className="vx-notification-slider-wrapper">
+      <ReactSpring.animated.div 
+        style={{ width: props.width }} 
+        className="vx-notification-slider" 
+      />
+    </div>
+  )
+};
+
+function shouldDisplaySlider(notification: Notification) {
+  return !isNaN(notification.duration!) && isFinite(notification.duration!);
+};
+
 function Notification({ notification }: { notification: Notification }) {
   const React = webpack.common.React!;
+  const springRef = React.useRef<SpringRef>();
 
+  const displaySlider = shouldDisplaySlider(notification);
+  
   return (
     <div 
       className={`vx-notification${notification.type ? ` vx-notification-type-${notification.type}` : ""}`}
-      data-vx-notification-id={notification.id} 
+      data-vx-notification-id={notification.id}
+      onMouseOver={() => {
+        if (!springRef.current) return;
+        springRef.current.pause();
+      }}
+      onMouseLeave={() => {
+        if (!springRef.current) return;
+        springRef.current.resume();
+      }}
     >
       <div 
         className="vx-notification-header"
@@ -48,6 +99,13 @@ function Notification({ notification }: { notification: Notification }) {
         <div className="vx-notification-footer">
           {notification.footer}
         </div>
+      )}
+      {displaySlider && (
+        <Slider 
+          duration={notification.duration!} 
+          springRef={springRef} 
+          close={() => notificationStore.delete(notification.id)}
+        />
       )}
     </div>
   )

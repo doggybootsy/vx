@@ -1,14 +1,8 @@
-import { cache } from "renderer/util";
 import webpack from "renderer/webpack";
-
-const simpleMarkdown = cache(() => webpack.getModule<VX.modules.SimpleMarkdown>((m) => m.parse && m.defaultRules)!);
-
-export function parse(text: string, askPluginsToNotMatch: boolean = false): React.ReactElement[] {
-  return simpleMarkdown().parse(text, {}, { vxShouldSkip: askPluginsToNotMatch });
-};
+import { parse } from "renderer/markdown";
 
 export function useMarkdown(text: string, askPluginsToNotMatch: boolean = false): React.ReactElement[] {
-  return webpack.common.React!.useMemo(() => parse(text, askPluginsToNotMatch), [ text ]);
+  return webpack.common.React!.useMemo(() => parse(text, { vxShouldSkip: askPluginsToNotMatch })!, [ text ]);
 };
 
 function Markdown({ text, askPluginsToNotMatch = false }: { text: string, askPluginsToNotMatch?: boolean }): React.ReactElement {

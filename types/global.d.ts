@@ -48,6 +48,10 @@ declare namespace VX {
     (): T
   };
 
+  interface Ref<T = any> {
+    current: T
+  };
+
   type Enum<K = string, N = number> = Record<K, N> & Record<N, K>;
   type ConstEnum<K = string> = { [key in Uppercase<K>]: Lowercase<key> };
   type EnumKeys<E = Enum | ConstEnum> = E extends Enum ? E[number] : E[string];
@@ -72,6 +76,10 @@ interface MathClamp extends PolyFilled {
 
 interface Math {
   clamp: MathClamp
+};
+
+interface NodeListOf extends Iterable<Element> {
+  
 };
 
 declare const __non_webpack_require__: NodeJS.Require | undefined;

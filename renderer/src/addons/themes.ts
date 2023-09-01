@@ -5,6 +5,7 @@ import Store from "renderer/store";
 import { readMeta } from "renderer/addons/common";
 import { openNotification } from "renderer/notifications";
 import webpack from "renderer/webpack";
+import { Icons } from "renderer/components";
 
 // Allow cross compat with bd themes
 const FILE_REGEX = /\.(vx|theme)\.css$/;
@@ -118,6 +119,7 @@ class ThemeManager extends Store {
         if (webpack.isReady) {
           openNotification({
             id: `vx-themes/deleted/${filename}/${Date.now()}`,
+            icon: Icons.Palette,
             title: `${theme && theme.meta.name ? theme.meta.name : filename} deleted`
           });
         };
@@ -130,6 +132,7 @@ class ThemeManager extends Store {
           
           openNotification({
             id: `vx-themes/reloaded/${filename}/${Date.now()}`,
+            icon: Icons.Palette,
             title: `${newTheme && newTheme.meta.name ? newTheme.meta.name : filename} loaded`
           });
         }

@@ -260,3 +260,9 @@ export function whenDocumentReady<T = void>(then?: () => T): Promise<T> {
     });
   }).then(then);
 };
+
+export function escapeHTML(str: string): string {
+  const template = document.createElement("p");
+  template.appendChild(document.createTextNode(str));
+  return template.innerHTML;
+};

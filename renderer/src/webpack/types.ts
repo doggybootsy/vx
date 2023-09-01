@@ -24,10 +24,12 @@ export type filterOptions = {
 
 export type react = typeof import("react");
 export type reactDOM = typeof import("react-dom/client");
+export type reactSpring = typeof import("@react-spring/web");
 
 export interface commonModules {
   React: react | null,
   ReactDOM: reactDOM | null,
+  ReactSpring: reactSpring | null,
   dispatcher: Dispatcher | null,
   components: Record<string, any> | null
   i18n: i18n | null,
