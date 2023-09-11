@@ -97,7 +97,7 @@ export function waitForNode(query: string, options: waitForNodeOptions = {}): Pr
   return new Promise<Element>((resolve, reject) => {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        for (const addedNode of (mutation.addedNodes as unknown as Element[])) {
+        for (const addedNode of mutation.addedNodes) {
           if (!(addedNode instanceof Element)) continue;
 
           if (addedNode.matches(query)) {

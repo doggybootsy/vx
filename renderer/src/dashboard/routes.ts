@@ -5,7 +5,8 @@ export const routes = [
   "/vx/plugins",
   "/vx/plugins/:id",
   "/vx/themes",
-  "/vx/settings"
+  "/vx/settings",
+  "/vx/store"
 ];
 
 export function createPluginRoute(plugin: Plugin): string

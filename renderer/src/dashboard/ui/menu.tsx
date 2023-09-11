@@ -5,6 +5,8 @@ import themeManager from "renderer/addons/themes";
 import { useStateFromStores } from "renderer/hooks";
 import CustomCSS from "renderer/ui/customCSS";
 import { openWindow } from "renderer/window";
+import native from "renderer/native";
+import storage from "renderer/storage";
 
 function useMenu() {
   const React = webpack.common.React!;
@@ -44,11 +46,20 @@ function useMenu() {
         {pluginDetails.map((plugin) => (
           <components.MenuCheckboxItem 
             id={`vx/plugins/${plugin.id}`}
+            key={`vx/plugins/${plugin.id}`}
             label={plugin.name}
             action={plugin.toggle}
             checked={plugin.enabled}
           />
         ))}
+        {pluginDetails.length && <components.MenuSeparator />}
+        <components.MenuItem
+          id="vx/plugins/open"
+          label="Open Folder"
+          action={() => {
+            native.openPath(native.path.join(native.dirname, "..", "plugins"))
+          }}
+        />
       </components.MenuItem>
       <components.MenuItem 
         id="vx/themes"
@@ -59,13 +70,29 @@ function useMenu() {
       >
         {themeDetails.map((theme) => (
           <components.MenuCheckboxItem 
-            id={`vx/plugins/${theme.id}`}
+            id={`vx/themes/${theme.id}`}
+            key={`vx/themes/${theme.id}`}
             label={theme.name}
             action={theme.toggle}
             checked={theme.enabled}
           />
         ))}
+        {themeDetails.length && <components.MenuSeparator />}
+        <components.MenuItem
+          id="vx/themes/open"
+          label="Open Folder"
+          action={() => {
+            native.openPath(native.path.join(native.dirname, "..", "themes"))
+          }}
+        />
       </components.MenuItem>
+      <components.MenuItem 
+        id="vx/store"
+        label="Store"
+        action={() => {
+          webpack.common.navigation!.transitionTo("/vx/store");
+        }}
+      />
       <components.MenuItem 
         id="vx/settings"
         label="Settings"

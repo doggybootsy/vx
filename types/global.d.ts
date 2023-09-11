@@ -17,7 +17,12 @@ declare namespace VX {
     path: typeof import("node:path"),
     readDir(dir: PathLike): string[],
     mkdir(dir: PathLike): void,
-    readFile(file: PathLike): string,
+
+    readFile(file: string): string,
+    readFile(file: string, encoding?: void): string,
+    readFile(file: string, encoding: BufferEncoding): string,
+    readFile(file: string, buffer: true): Uint8Array
+
     writeFile(file: PathLike, data: string): void,
     exists(path: PathLike): boolean,
     delete(path: PathLike): Promise<void>,
@@ -78,9 +83,8 @@ interface Math {
   clamp: MathClamp
 };
 
-interface NodeListOf extends Iterable<Element> {
-  
-};
+interface NodeListOf extends Iterable<Node> { };
+interface NodeList extends Iterable<Node> { };
 
 declare const __non_webpack_require__: NodeJS.Require | undefined;
 

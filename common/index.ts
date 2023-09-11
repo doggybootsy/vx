@@ -5,4 +5,4 @@ export type AddonMeta = {
   author?: string;
   authorid?: string;
   source?: string;
-} & Record<string, string>;
+} & Record<Lowercase<string>, string>;

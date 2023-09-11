@@ -4,13 +4,13 @@ import { Theme } from "renderer/addons/themes";
 import { useStateFromStores } from "renderer/hooks";
 import { cache } from "renderer/util";
 import { Button, Tooltip } from "renderer/components";
-import { createPluginRoute } from "../../routes";
+import { createPluginRoute } from "renderer/dashboard/routes";
 import { openMenu } from "renderer/menus";
-import AddonMenu from "./menu";
+import AddonMenu from "renderer/dashboard/ui/addons/menu";
 import { Icons } from "renderer/components";
 import native from "renderer/native";
 import { AddonIcon } from "renderer/dashboard/ui/addons/icon";
-import { openDeleteAddonModal } from "./delete";
+import { openDeleteAddonModal } from "renderer/dashboard/ui/addons/delete";
 import { Markdown } from "renderer/components";
 
 const Switch = cache(() => webpack.common.components!.Switch as React.FunctionComponent<{

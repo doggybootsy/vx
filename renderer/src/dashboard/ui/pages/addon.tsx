@@ -7,6 +7,7 @@ import { Icons } from "renderer/components";
 import native from "renderer/native";
 import themeManager, { Theme } from "renderer/addons/themes";
 import storage from "renderer/storage";
+import { className } from "renderer/util";
 
 function includesQuery(query: string, tags: string[], item?: string) {
   if (!item) return false;
@@ -30,6 +31,8 @@ function Addons({ icon, title, manager, path }: {
   path: "plugins" | "themes"
 }) {
   const React = webpack.common.React!;
+  
+  const addonsGridLayout = storage.use("addons-grid-layout", true);
 
   const [ query, setQuery ] = React.useState("");
   const [ tags, setTags ] = React.useState<string[]>([ ]);
@@ -115,7 +118,7 @@ function Addons({ icon, title, manager, path }: {
       ]}
     >
       <div className="vx-addons-list-wrapper vx-dashboard-scroller">
-        <div className="vx-addons-list">
+        <div className={className([ "vx-addons-list", addonsGridLayout && "vx-addons-list-grid" ])}>
           {sorted.map((addon) => (
             <AddonCard 
               addon={addon}

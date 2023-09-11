@@ -7,7 +7,7 @@ const locations = {
   plugins: [ "plugins", "p" ],
   themes: [ "themes", "t" ],
   settings: [ "settings", "s" ],
-  github: [ "github", "g" ]
+  github: [ "github", "git", "g" ]
 };
 
 const vxURLRegex = new RegExp(`^vx://(${Object.values(locations).flat(1).join("|")})/?`);;
@@ -25,7 +25,7 @@ markdown.register("vx-url", {
   match(text, state) {
     // If links aren't allowed in chat then dont match
     // But we don't wanna just a truthy / falsey, so we use in
-    if (("allowLinks" in state && typeof state.allowLinks === "boolean") ? state.allowLinks : false) return null;
+    if (("allowLinks" in state && typeof state.allowLinks === "boolean") ? !state.allowLinks : false) return null;    
 
     return vxPluginsURLRegex.exec(text) || vxURLRegex.exec(text);
   },

@@ -29,8 +29,9 @@ export class Theme extends Store {
   #css: string;
   #id: string;
   #initializedTimeStamp = Date.now().toString(32);
+  #vars = <string[]>[ ];
 
-  get type() { return "theme" as const; };
+  get type() { return <const>"theme"; };
 
   get meta() {
     if (!Object.isFrozen(this.#meta)) Object.freeze(this.#meta); 
@@ -47,7 +48,7 @@ export class Theme extends Store {
 
     this.#id = file;
 
-    const enabledThemes = getItem("vx", "enabled-themes", [ ] as string[]);
+    const enabledThemes = getItem("vx", "enabled-themes", <string[]>[ ]);
 
     const enabled = enabledThemes.includes(file);
     this.#enabled = false;
@@ -55,7 +56,7 @@ export class Theme extends Store {
     const data = native.readFile(native.path.join(THEMES_DIRECTORY, file));
     this.#css = data;
 
-    const meta = readMeta(data);
+    const meta = readMeta(data, this.#vars);
     this.#meta = meta;
 
     if (enabled) this.enable();

@@ -39,6 +39,9 @@ const filters = {
       };
       return true;
     }
+  },
+  not(filter: moduleFilter): moduleFilter {
+    return (exports, module, id) => !filter(exports, module, id);
   }
 };
 

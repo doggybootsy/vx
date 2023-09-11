@@ -10,7 +10,14 @@ function convertJSDocUrls(data: string) {
   });
 };
 
-export function readMeta(contents: string) {
+// Remove the white space and *
+function trim(text: string) {
+  const trimmed = text.replace(/\s+\*$/, "");
+  if (trimmed === text) return text;
+  return trim(trimmed);
+};
+
+export function readMeta(contents: string, vars: string[] = []) {
   const match = commentRegex.exec(contents);
   if (!match) return { };
 
@@ -19,9 +26,17 @@ export function readMeta(contents: string) {
 
   let tagMatch: RegExpExecArray | null = null;
 
-  while ((tagMatch = tagRegex.exec(commentText)) !== null) {
-    const tagName = tagMatch[1];
-    const tagDescription = tagMatch[2].replace(/\*$/, "").trim();
+  while (tagMatch = tagRegex.exec(commentText)) {
+    const tagName = tagMatch.at(1)!.toLowerCase();
+    const tagDescription = trim(tagMatch.at(2)!);
+
+    if (tagName === "var" || tagName === "advanced") {
+      vars.push(tagDescription);
+      continue;
+    };
+
+    if (tagName in meta) continue;
+
     meta[tagName] = convertJSDocUrls(tagDescription);
   };
 

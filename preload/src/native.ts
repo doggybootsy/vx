@@ -5,7 +5,10 @@ import path, { join } from "node:path";
 const native: VX.Native = {
   path,
   readDir: (dir: string) => readdirSync(dir, "utf-8"),
-  readFile: (file: string) => readFileSync(file, "utf-8"),
+  readFile: ((file: string, buffer: BufferEncoding | true = "utf-8") => {
+    if (buffer === true) return readFileSync(file);
+    return readFileSync(file, buffer);
+  }) as VX.Native["readFile"],
   writeFile: (file: string, data: string) => writeFileSync(file, data, "utf-8"),
   mkdir: (dir: string) => mkdirSync(dir),
   exists: (path: string) => existsSync(path),
@@ -48,31 +51,5 @@ electron.contextBridge.exposeInMainWorld("VXNative", () => {
   hasGottenNative = true;
   return native;
 });
+
 window.VXNative = () => native;
-
-// Concept to keep protos and such
-// function remakeOBJ(descriptorsArray) {
-//   const obj = {};
-//   let last = obj;
-
-//   Object.defineProperties(obj, descriptorsArray.shift());
-
-//   function a(descriptors) {
-//     if (!descriptors) return;
-
-//     const proto = Object.defineProperties({ }, descriptors)
-
-//     Object.setPrototypeOf(
-//       last,
-//       proto
-//     );
-
-//     last = proto;
-
-//     a(descriptorsArray.shift());
-//   };
-
-//   a(descriptorsArray.shift());
-
-//   return obj;
-// };

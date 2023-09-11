@@ -2,6 +2,7 @@ import webpack from "renderer/webpack";
 
 import { notificationStore } from "renderer/notifications/store";
 import { Notification } from "renderer/notifications/types";
+import storage from "renderer/storage";
 
 interface SpringRef {
   resume(): void,
@@ -17,7 +18,7 @@ function Slider({ duration, springRef, close }: { duration: number, springRef: V
     from: { width: "0%" },
     onRest() { close(); },
     config: {
-      duration: duration!,
+      duration: duration,
       ...ReactSpring.config.default
     }
   });
@@ -48,7 +49,16 @@ function Notification({ notification }: { notification: Notification }) {
   const springRef = React.useRef<SpringRef>();
 
   const displaySlider = shouldDisplaySlider(notification);
+
+  const rightClickCloseAll = storage.use("addons-right-click-close-all", true);
+
+  const onContextMenu = React.useCallback(() => {
+    if (!rightClickCloseAll) return;
+
+    notificationStore.clear();
+  }, [ rightClickCloseAll ])
   
+
   return (
     <div 
       className={`vx-notification${notification.type ? ` vx-notification-type-${notification.type}` : ""}`}
@@ -83,7 +93,7 @@ function Notification({ notification }: { notification: Notification }) {
         <div 
           className="vx-notification-close"
           onClick={() => notificationStore.delete(notification.id)}
-          onContextMenu={() => notificationStore.clear()}
+          onContextMenu={onContextMenu}
         >
           <svg width={18} height={18} viewBox="0 0 24 24">
             <path fill="currentColor" d="M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z" />

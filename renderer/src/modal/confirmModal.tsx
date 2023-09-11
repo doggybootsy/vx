@@ -2,6 +2,7 @@ import VXError from "renderer/error";
 import { Button, ErrorBoundary, Markdown } from "renderer/components";
 import webpack from "renderer/webpack";
 import { openModal } from "renderer/modal/actions";
+import { transformContent } from "./common";
 
 export type ConfirmModalOptions = {
   confirmText?: string,
@@ -20,22 +21,6 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
   if (!components) throw new VXError(VXError.codes.NO_COMPONENTS);
   const i18n = webpack.common.i18n;
   if (!i18n) throw new VXError(VXError.codes.NO_I18N);
-
-  if (!Array.isArray(content)) content = [ content ];
-  const newContent: React.ReactNode[] = [ ];
-  for (const item of content) {
-    newContent.push(
-      <div className="vx-modals-content-line">
-        {typeof item === "string" ? (
-          <Markdown text={item} />
-        ) : (
-          <ErrorBoundary>
-            {item}
-          </ErrorBoundary>
-        )}
-      </div>
-    );
-  };
 
   function dummy() { };
   const {
@@ -72,7 +57,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
       transitionState={props.transitionState}
       onClose={() => {}}
     >
-      {newContent}
+      {transformContent(content)}
     </components.ConfirmModal>
   ), {
     onCloseCallback() {

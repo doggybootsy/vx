@@ -8,7 +8,7 @@ import { PluginModule, PluginExports } from "renderer/addons/plugins/types";
 const PLUGIN_DIRECTORY = native.path.join(native.dirname, "..", "plugins");
 
 function saveEnabledState(addonId: string, enabled: boolean) {
-  let enabledPlugins = new Set<string>(getItem("vx", "enabled-plugins", [ ] as string[]));
+  let enabledPlugins = new Set<string>(getItem("vx", "enabled-plugins", [ ]));
 
   if (enabled) enabledPlugins.add(addonId);
   else enabledPlugins.delete(addonId);
@@ -26,7 +26,7 @@ export class Plugin extends Store {
   #enabled: boolean = false;
   #initializedTimeStamp = Date.now().toString(32);
 
-  get type() { return "plugin" as const; };
+  get type() { return <const>"plugin"; };
 
   get meta() {
     if (!Object.isFrozen(this.#meta)) Object.freeze(this.#meta); 

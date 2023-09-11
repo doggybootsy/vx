@@ -86,7 +86,6 @@
   &-navigation {
     min-width: 240px;
     max-width: 240px;
-    background: var(--bg-overlay-3, var(--background-secondary));
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -213,9 +212,17 @@
   gap: #{$gap};
   padding: #{$gap};
 
-  grid-auto-flow: row;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  $grid: &-grid;
+
+  &-grid {
+    grid-auto-flow: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+  &:not(&-grid) {
+    display: flex;
+    flex-direction: column;
+  }
 
   &-wrapper {
     height: 100%;

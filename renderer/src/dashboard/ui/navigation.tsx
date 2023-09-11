@@ -47,6 +47,14 @@ function Navigatation() {
         </li>
         <li className="vx-dashboard-navigation-button">
           <NavigatorButton.getter
+            selected={location.pathname === "/vx/store"}
+            route="/vx/store"
+            text="Store"
+            icon={Icons.Store}
+          />
+        </li>
+        <li className="vx-dashboard-navigation-button">
+          <NavigatorButton.getter
             selected={location.pathname === "/vx/settings"}
             route="/vx/settings"
             text="Settings"
