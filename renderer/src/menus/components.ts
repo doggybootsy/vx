@@ -18,6 +18,7 @@ interface MenuItemRenderProps {
 };
 
 type MenuItemLabelAndRenderProps = { label: string } | { render(props: MenuItemRenderProps): React.ReactNode };
+// Extends Dict because MenuItem has to many props
 interface BaseMenuItemProps extends VX.Dict {
   id: string,
   disabled?: boolean,
