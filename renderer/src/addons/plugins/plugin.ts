@@ -1,6 +1,6 @@
 import { AddonMeta } from "common";
 import native from "renderer/native";
-import { getItem, setItem } from "renderer/storage";
+import storage from "renderer/storage";
 import Store from "renderer/store";
 import { readMeta } from "renderer/addons/common";
 import { PluginModule, PluginExports } from "renderer/addons/plugins/types";
@@ -8,12 +8,12 @@ import { PluginModule, PluginExports } from "renderer/addons/plugins/types";
 const PLUGIN_DIRECTORY = native.path.join(native.dirname, "..", "plugins");
 
 function saveEnabledState(addonId: string, enabled: boolean) {
-  let enabledPlugins = new Set<string>(getItem("vx", "enabled-plugins", [ ]));
+  let enabledPlugins = new Set<string>(storage.get("enabled-plugins", <string[]>[ ]));
 
   if (enabled) enabledPlugins.add(addonId);
   else enabledPlugins.delete(addonId);
 
-  setItem("vx", "enabled-plugins", Array.from(enabledPlugins));
+  storage.set("enabled-plugins", Array.from(enabledPlugins));
 };
 
 export class Plugin extends Store {
@@ -42,7 +42,7 @@ export class Plugin extends Store {
   constructor(file: string) {
     super();
 
-    const enabledPlugins = getItem("vx", "enabled-plugins", [ ] as string[]);
+    const enabledPlugins = storage.get("enabled-plugins", <string[]>[ ]);
 
     const enabled = enabledPlugins.includes(file);
 

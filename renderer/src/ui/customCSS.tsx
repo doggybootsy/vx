@@ -4,7 +4,7 @@
  * I also want to switch to monaco
  */
 
-import { getItem, setItem } from "renderer/storage";
+import storage from "renderer/storage";
 import { debounce, whenDocumentReady } from "renderer/util";
 import webpack from "renderer/webpack";
 
@@ -26,7 +26,7 @@ function ensureAceCSS() {
 
 whenDocumentReady(ensureAceCSS);
 
-export const getCustomCSS = () => getItem("vx", "customCSS", "/* Custom CSS */\n");
+export const getCustomCSS = () => storage.get("customCSS", "/* Custom CSS */\n");
 
 export const customCSSElement = document.createElement("style");
 customCSSElement.setAttribute("data-vx-custom-css", "");
@@ -57,7 +57,7 @@ function CustomCSS({ window }: { window: Window }) {
     styles.push(style);
     window.document.head.appendChild(style);
 
-    const aceStyles = Array.from(document.querySelectorAll("style")).filter(e => e.innerHTML.includes("sourceURL=ace/"));
+    const aceStyles = Array.from<HTMLStyleElement>(document.querySelectorAll("style")).filter(e => e.innerHTML.includes("sourceURL=ace/"));
     for (const styleNode of aceStyles) {
       const style = document.createElement("style");
       style.innerHTML = styleNode.innerHTML;
@@ -88,7 +88,7 @@ function CustomCSS({ window }: { window: Window }) {
       const value = editor.getValue();
 
       customCSSElement.innerHTML = `${value}\n/*# sourceURL=vx://VX/custom-css.css */`;
-      setItem("vx", "customCSS", value);
+      storage.set("customCSS", value);
     }, 500);
 
     editor.on("change", () => onChange());

@@ -13,6 +13,14 @@ declare namespace VX {
 
   type WatchAction = "deleted" | "change";
 
+  interface NativeStorage {
+    getAll(id: string): Record<string, any>,
+    deleteItem(id: string, key: string): void,
+    setItem(id: string, key: string, value: any): void,
+    getItem<T = any>(id: string, key: string, defaultValue: T): T,
+    hasItem(id: string, key: string): boolean
+  };
+
   interface Native {
     path: typeof import("node:path"),
     readDir(dir: PathLike): string[],
@@ -33,7 +41,8 @@ declare namespace VX {
     openExternal(url: string): void,
     dirname: string,
     platform: NodeJS.Platform,
-    quit(restart?: boolean): void
+    quit(restart?: boolean): void,
+    storage: NativeStorage
   };
   
   type Environments = "main" | "preload" | "renderer";

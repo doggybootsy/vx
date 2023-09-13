@@ -1,6 +1,6 @@
 import { AddonMeta } from "common";
 import native from "renderer/native";
-import { getItem, setItem } from "renderer/storage";
+import storage from "renderer/storage";
 import Store from "renderer/store";
 import { readMeta } from "renderer/addons/common";
 import { openNotification } from "renderer/notifications";
@@ -14,12 +14,12 @@ const THEMES_DIRECTORY = native.path.join(native.dirname, "..", "themes");
 export const themesElement = document.createElement("vx-themes");
 
 function saveEnabledState(addonId: string, enabled: boolean) {
-  let enabledPlugins = new Set<string>(getItem("vx", "enabled-themes", [ ] as string[]));
+  let enabledPlugins = new Set<string>(storage.get("enabled-themes", <string[]>[ ]));
 
   if (enabled) enabledPlugins.add(addonId);
   else enabledPlugins.delete(addonId);
 
-  setItem("vx", "enabled-themes", Array.from(enabledPlugins));
+  storage.set("enabled-themes", Array.from(enabledPlugins));
 };
 
 export class Theme extends Store {
@@ -48,7 +48,7 @@ export class Theme extends Store {
 
     this.#id = file;
 
-    const enabledThemes = getItem("vx", "enabled-themes", <string[]>[ ]);
+    const enabledThemes = storage.get("enabled-themes", <string[]>[ ]);
 
     const enabled = enabledThemes.includes(file);
     this.#enabled = false;

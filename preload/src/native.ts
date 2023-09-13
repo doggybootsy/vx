@@ -36,7 +36,26 @@ const native: VX.Native = {
   },
   dirname: __dirname,
   platform: process.platform,
-  quit: (restart = false) => electron.ipcRenderer.send("@vx/quit", restart)
+  quit: (restart = false) => electron.ipcRenderer.send("@vx/quit", restart),
+  storage: {
+    getAll(id: string): Record<string, any> {
+      return JSON.parse(electron.ipcRenderer.sendSync("@vx/storage/get-all", id));
+    },
+    deleteItem(id: string, key: string) {
+      electron.ipcRenderer.send("@vx/storage/delete-item", id, key);
+    },
+    setItem(id: string, key: string, value: any) {
+      electron.ipcRenderer.send("@vx/storage/set-item", id, key, JSON.stringify(value));
+    },
+    getItem(id: string, key: string, defaultValue: any) {
+      if (!native.storage.hasItem(id, key)) return defaultValue;
+
+      return JSON.parse(electron.ipcRenderer.sendSync("@vx/storage/get-item", id, key));
+    },
+    hasItem(id: string, key: string) {
+      return electron.ipcRenderer.sendSync("@vx/storage/has-item", id, key);
+    }
+  }
 };
 
 let hasGottenNative = false;

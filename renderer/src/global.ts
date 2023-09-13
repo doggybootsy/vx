@@ -54,7 +54,7 @@ const VX = {
     set: storage.setItem,
     delete: storage.deleteItem,
     create: storage.create,
-    getAll: storage.getData
+    getAll: storage.getAll
   },
   styles: {
     add: styles.addStyle,
