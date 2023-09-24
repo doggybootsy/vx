@@ -9,7 +9,7 @@ interface SpringRef {
   pause(): void
 };
 
-function Slider({ duration, springRef, close }: { duration: number, springRef: VX.Ref<SpringRef | void>, close: () => void }) {
+function Slider({ duration, springRef, close }: { duration: number, springRef: VX.NullableRef<SpringRef>, close: () => void }) {
   const React = webpack.common.React!;
   const ReactSpring = webpack.common.ReactSpring!;
 

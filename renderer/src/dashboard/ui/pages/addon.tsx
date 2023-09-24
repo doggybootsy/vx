@@ -28,7 +28,7 @@ function Addons({ icon, title, manager, path }: {
   icon: (props: Icons.IconProps) => React.JSX.Element,
   title: string,
   manager: typeof pluginManager | typeof themeManager,
-  path: "plugins" | "themes"
+  path: VX.AddonType
 }) {
   const React = webpack.common.React!;
   

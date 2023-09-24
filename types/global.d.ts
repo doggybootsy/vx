@@ -9,17 +9,30 @@ declare namespace VX {
       astParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parseToAST"],
       reactParserFor(rules: VX.Dict): VX.modules.SimpleMarkdown["parse"]
     };
-  }
+  };
 
   type WatchAction = "deleted" | "change";
+  
+  interface NativeAddonValue {
+    filename: string, 
+    contents: string
+  };
+
+  type AddonType = "plugins" | "themes";
 
   interface NativeStorage {
     getAll(id: string): Record<string, any>,
     deleteItem(id: string, key: string): void,
     setItem(id: string, key: string, value: any): void,
     getItem<T = any>(id: string, key: string, defaultValue: T): T,
-    hasItem(id: string, key: string): boolean
+    hasItem(id: string, key: string): boolean,
+    clearCache(id?: string): void
   };
+  interface NativeAddon {
+    getAll(): NativeAddonValue[],
+    addChangeListener(callback: (filename: string, contents?: string) => void): void,
+    open(): void
+  }
 
   interface Native {
     path: typeof import("node:path"),
@@ -42,7 +55,9 @@ declare namespace VX {
     dirname: string,
     platform: NodeJS.Platform,
     quit(restart?: boolean): void,
-    storage: NativeStorage
+    storage: NativeStorage,
+    themes: NativeAddon,
+    plugins: NativeAddon
   };
   
   type Environments = "main" | "preload" | "renderer";
@@ -65,14 +80,17 @@ declare namespace VX {
   interface Ref<T = any> {
     current: T
   };
+  type NullableRef<T = any> = Ref<NullAble<T>>;
 
   type Enum<K = string, N = number> = Record<K, N> & Record<N, K>;
   type ConstEnum<K = string> = { [key in Uppercase<K>]: Lowercase<key> };
   type EnumKeys<E = Enum | ConstEnum> = E extends Enum ? E[number] : E[string];
 
-  type NullAble<T> = T | void;
+  type NullAble<T> = T | void | null;
 
   type WrappedNative = FunctionWrap<Native>;
+
+  type VX = VX;
 };
 
 interface Window {
@@ -92,8 +110,8 @@ interface Math {
   clamp: MathClamp
 };
 
-interface NodeListOf extends Iterable<Node> { };
-interface NodeList extends Iterable<Node> { };
+interface NodeListOf<TNode extends Node> extends Iterable<TNode> { };
+interface NodeList<TNode extends Node> extends Iterable<TNode> { };
 
 declare const __non_webpack_require__: NodeJS.Require | undefined;
 

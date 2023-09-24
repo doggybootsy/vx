@@ -71,7 +71,7 @@ addCommand({
   }
 })
 
-function addAddonCommand(type: "plugins" | "themes", addonManager: typeof themeManager | typeof pluginManager) {
+function addAddonCommand(type: VX.AddonType, addonManager: typeof themeManager | typeof pluginManager) {
   addCommand({
     name: type === "plugins" ? "Plugins" : "Themes",
     options: [{

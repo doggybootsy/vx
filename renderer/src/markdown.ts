@@ -4,7 +4,7 @@ interface MarkdownNode extends VX.Dict {
   type: string
 };
 interface MarkdownState extends VX.Dict {
-  allowLinks: boolean,
+  allowLinks?: boolean,
   inline: any,
   prevCapture: RegExpExecArray | null
 };
@@ -19,8 +19,8 @@ interface MarkdownRule {
   requiredFirstCharacters?: string[]
 };
 
-const simpleMarkdownRef: VX.Ref<VX.modules.SimpleMarkdown | null> = { current: null };
-const originalRulesRef: VX.Ref<VX.Dict<MarkdownRule> | null> = { current: null };
+const simpleMarkdownRef: VX.NullableRef<VX.modules.SimpleMarkdown> = { current: null };
+const originalRulesRef: VX.NullableRef<VX.Dict<MarkdownRule>> = { current: null };
 
 const queue = new Map<string, MarkdownRule>();
 

@@ -1,4 +1,4 @@
-import console from "console";
+import console from "window:console";
 
 export class Logger {
   static console = console;

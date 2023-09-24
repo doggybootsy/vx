@@ -60,7 +60,7 @@ interface MenuControlItemProps {
   id: string,
   label?: string,
   disabled?: boolean,
-  control(props: MenuControlProps, ref: VX.Ref<MenuControlRef | null>): React.ReactElement
+  control(props: MenuControlProps, ref: VX.NullableRef<MenuControlRef>): React.ReactElement
 };
 
 interface MenuSliderControlProps extends MenuControlProps {
@@ -69,14 +69,14 @@ interface MenuSliderControlProps extends MenuControlProps {
   minValue?: number
   onChange(value: number): void,
   renderValue?(value: number): React.ReactNode,
-  ref: VX.Ref<MenuControlRef | null>
+  ref: VX.NullableRef<MenuControlRef>
 };
 interface MenuSearchControlProps extends MenuControlProps {
   query: string,
   onChange(value: string): void,
   loading?: boolean,
   placeholder?: string
-  ref: VX.Ref<MenuControlRef | null>
+  ref: VX.NullableRef<MenuControlRef>
 }
 
 interface MenuGroupProps {

@@ -57,7 +57,7 @@ function CustomCSS({ window }: { window: Window }) {
     styles.push(style);
     window.document.head.appendChild(style);
 
-    const aceStyles = Array.from<HTMLStyleElement>(document.querySelectorAll("style")).filter(e => e.innerHTML.includes("sourceURL=ace/"));
+    const aceStyles = Array.from(document.querySelectorAll("style")).filter(e => e.innerHTML.includes("sourceURL=ace/"));
     for (const styleNode of aceStyles) {
       const style = document.createElement("style");
       style.innerHTML = styleNode.innerHTML;

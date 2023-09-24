@@ -1,24 +1,4 @@
-type anyFN = (...args: any[]) => any;
-
-export function debounce<F extends anyFN>(handler: F, timeout?: number | undefined): (...args: Parameters<F>) => Promise<ReturnType<F>> {
-  let timer: number | NodeJS.Timeout;
-
-  const resolvers = new Set<(value: ReturnType<F>) => void>();
-  
-  return function(this: ThisParameterType<F>, ...args: Parameters<F>) {
-    clearTimeout(timer);
-
-    timer = setTimeout(() => {
-      const value = handler.apply(this, args);
-
-      for (const resolve of resolvers) resolve(value);
-    }, timeout);
-
-    return new Promise<ReturnType<F>>((resolve) => {
-      resolvers.add(resolve);
-    });
-  };
-};
+export { debounce } from "common";
 
 import type { Fiber } from "react-reconciler";
 

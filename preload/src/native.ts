@@ -1,3 +1,4 @@
+import { IPC } from "common";
 import electron from "electron";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, watch, writeFileSync } from "node:fs";
 import path, { join } from "node:path";
@@ -36,24 +37,69 @@ const native: VX.Native = {
   },
   dirname: __dirname,
   platform: process.platform,
-  quit: (restart = false) => electron.ipcRenderer.send("@vx/quit", restart),
+  quit: (restart = false) => electron.ipcRenderer.send(IPC.QUIT, restart),
   storage: {
     getAll(id: string): Record<string, any> {
-      return JSON.parse(electron.ipcRenderer.sendSync("@vx/storage/get-all", id));
+      return JSON.parse(electron.ipcRenderer.sendSync(IPC.STORAGE.GET_ALL, id));
     },
     deleteItem(id: string, key: string) {
-      electron.ipcRenderer.send("@vx/storage/delete-item", id, key);
+      electron.ipcRenderer.send(IPC.STORAGE.DELETE_ITEM, id, key);
     },
     setItem(id: string, key: string, value: any) {
-      electron.ipcRenderer.send("@vx/storage/set-item", id, key, JSON.stringify(value));
+      electron.ipcRenderer.send(IPC.STORAGE.SET_ITEM, id, key, JSON.stringify(value));
     },
     getItem(id: string, key: string, defaultValue: any) {
       if (!native.storage.hasItem(id, key)) return defaultValue;
 
-      return JSON.parse(electron.ipcRenderer.sendSync("@vx/storage/get-item", id, key));
+      return JSON.parse(electron.ipcRenderer.sendSync(IPC.STORAGE.GET_ITEM, id, key));
     },
     hasItem(id: string, key: string) {
-      return electron.ipcRenderer.sendSync("@vx/storage/has-item", id, key);
+      return electron.ipcRenderer.sendSync(IPC.STORAGE.HAS_ITEM, id, key);
+    },
+    clearCache(id?: string) {
+      electron.ipcRenderer.send(IPC.STORAGE.CLEAR_CACHE, id);
+    }
+  },
+  plugins: {
+    getAll() {
+      const plugins = JSON.parse(electron.ipcRenderer.sendSync(IPC.PLUGINS.GET_ALL));
+
+      const returnValue = <VX.NativeAddonValue[]>[];
+
+      for (const filename in plugins) {
+        const contents = plugins[filename];
+
+        returnValue.push({ filename, contents });
+      };
+
+      return returnValue;
+    },
+    addChangeListener(callback) {
+      electron.ipcRenderer.on(IPC.PLUGINS.WATCHER, (event, filename: string, contents?: string) => callback(filename, contents));
+    },
+    open() {
+      electron.ipcRenderer.send(IPC.PLUGINS.OPEN);
+    }
+  },
+  themes: {
+    getAll() {
+      const plugins = JSON.parse(electron.ipcRenderer.sendSync(IPC.THEMES.GET_ALL));
+
+      const returnValue = <VX.NativeAddonValue[]>[];
+
+      for (const filename in plugins) {
+        const contents = plugins[filename];
+
+        returnValue.push({ filename, contents });
+      };
+
+      return returnValue;
+    },
+    addChangeListener(callback) {
+      electron.ipcRenderer.on(IPC.THEMES.WATCHER, (event, filename: string, contents?: string) => callback(filename, contents));
+    },
+    open() {
+      electron.ipcRenderer.send(IPC.THEMES.OPEN);
     }
   }
 };

@@ -1,5 +1,4 @@
-declare module "console" {
-  const exported: Console;
-  export = Console;
-  export default Console;
+declare module "window:console" {
+  import console = require("node:console");
+  export = console;
 }

@@ -1,6 +1,6 @@
 import native from "renderer/native";
 import { fireListeners, useItem } from "renderer/storage/react";
-import console from "console";
+import console from "window:console";
 
 export const getAll = (id: string) => native.storage.getAll(id);
 export const getItem = <T>(id: string, key: string, defaultValue: T) => native.storage.getItem(id, key, defaultValue);

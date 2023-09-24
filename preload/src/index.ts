@@ -3,7 +3,9 @@ import "polyfills";
 import electron from "electron";
 import fs from "node:fs";
 import path from "node:path";
-import console from "console";
+import console from "window:console";
+
+import { IPC } from "common";
 
 import "preload/native";
 
@@ -43,7 +45,7 @@ try {
 
 import "preload/discordNative";
 
-const preload = electron.ipcRenderer.sendSync("@vx/preload");
+const preload = electron.ipcRenderer.sendSync(IPC.PRELOAD);
 if (preload) {
   try {
     let originalRequire = require;

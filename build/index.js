@@ -39,16 +39,16 @@ async function build(section, otherOptions) {
     plugins: [
       ...(otherOptions.plugins ?? []),
       {
-        name: "node-console",
+        name: "console-module",
         setup(build) {
           build.onResolve({
-            filter: /^console$/
+            filter: /^window:console$/
           }, () => ({
-            path: "console",
-            namespace: "node-console"
+            path: "window:console",
+            namespace: "console-module"
           }));
 
-          build.onLoad({ filter: /.*/, namespace: "node-console" }, () => ({
+          build.onLoad({ filter: /.*/, namespace: "console-module" }, () => ({
             contents: "module.exports = Object.freeze(Object.assign({ [Symbol.toStringTag]: \"Console\" }, console));"
           }))
         }
