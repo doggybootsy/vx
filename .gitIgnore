@@ -1,13 +1,3 @@
-# Addons
-plugins
-!/renderer/src/addons/plugins
-storage
-!/renderer/src/storage
-themes
-# dist
-dist
-vx.asar
-# node stuff
 node_modules
-# test
-.test
+dist
+app

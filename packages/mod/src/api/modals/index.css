@@ -1,0 +1,34 @@
+.vx-modal-line {
+  color: var(--text-normal);
+  margin-bottom: 6px;
+}
+.vx-modal-line [class*="codeContainer-"] {
+  position: relative;
+}
+.vx-modal-line [class*="codeActions-"] {
+  position: absolute;
+  display: none;
+  right: 4px;
+  top: 8px;
+}
+.vx-modal-line [class*="codeContainer-"]:hover [class*="codeActions-"] {
+  display: block;
+}
+.vx-modal-line code {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  text-indent: 0;
+  white-space: pre-wrap;
+  scrollbar-width: thin;
+  scrollbar-color: var(--background-tertiary) var(--background-secondary);
+  background: var(--background-secondary);
+  border: 1px solid var(--background-tertiary);
+}
+.vx-modal-line .inline {
+  background: var(--background-secondary);
+}
+
+.vx-image-modal {
+  background: transparent !important;
+  box-shadow: none !important;
+}

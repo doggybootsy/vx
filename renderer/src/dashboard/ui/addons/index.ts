@@ -1,1 +1,0 @@
-export { default as AddonCard } from "renderer/dashboard/ui/addons/card";

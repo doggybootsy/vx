@@ -1,0 +1,14 @@
+{
+  "name": "vx-desktop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "electron"
+  ],
+  "author": "vx dev team",
+  "license": "ISC"
+}

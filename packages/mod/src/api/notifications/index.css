@@ -1,0 +1,116 @@
+#vx-notifications {
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	z-index: 101;
+	max-height: clamp(400px, 70vh, 800px);
+	overflow: hidden scroll;
+	pointer-events: none;
+}
+
+#vx-notifications:empty {
+	display: none;
+}
+
+#vx-notifications::-webkit-scrollbar {
+	display: none;
+}
+
+.vx-notification {
+	background-color: var(--background-tertiary);
+	overflow: hidden;
+	border-radius: 6px;
+	min-width: 200px;
+	pointer-events: all;
+}
+
+.vx-notification:not(:last-child) {
+	margin-bottom: 8px;
+}
+
+.vx-notification-type-info .vx-notification-info > :first-child {
+	color: var(--info-help-foreground);
+}
+
+.vx-notification-type-success .vx-notification-info > :first-child,
+  .vx-notification-type-positive .vx-notification-info > :first-child {
+	color: var(--text-positive);
+}
+
+.vx-notification-type-warn .vx-notification-info > :first-child,
+  .vx-notification-type-warning .vx-notification-info > :first-child {
+	color: var(--info-warning-foreground);
+}
+
+.vx-notification-type-danger .vx-notification-info > :first-child,
+  .vx-notification-type-error .vx-notification-info > :first-child {
+	color: var(--status-danger);
+}
+
+.vx-notification-header {
+	padding: 6px;
+	font-size: 18px;
+	color: var(--header-primary);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.vx-notification-info {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+.vx-notification-icon {
+	display: flex;
+}
+
+.vx-notification-close {
+	display: flex;
+	cursor: pointer;
+	color: var(--interactive-normal);
+}
+
+.vx-notification-close:hover {
+	color: var(--interactive-hover);
+}
+
+.vx-notification-close:hover:active {
+	color: var(--interactive-hover);
+}
+
+.vx-notification-description {
+	padding: 6px;
+	margin: 6px;
+	margin-top: 0;
+	background: var(--background-primary);
+	border-radius: 4px;
+	color: var(--text-normal);
+	user-select: text;
+}
+
+.vx-notification-line {
+	white-space: pre;
+}
+
+.vx-notification-footer {
+	margin: 6px;
+	color: var(--text-normal);
+}
+
+.vx-notification-slider {
+	height: 4px;
+	box-sizing: border-box;
+	background-color: var(--brand-experiment);
+	border-radius: 4px;
+}
+
+.vx-notification-slider-wrapper {
+	height: 4px;
+	margin: 6px;
+	margin-top: 0;
+	background-color: var(--background-accent);
+	overflow: hidden;
+	border-radius: 4px;
+}

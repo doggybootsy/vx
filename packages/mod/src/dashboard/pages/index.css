@@ -1,0 +1,84 @@
+.vx-addon-card {
+  background: var(--background-tertiary);
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vx-addon-top {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+}
+.vx-addon-icon-wrapper {
+  display: flex;
+  padding: 8px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  color: var(--text-primary);
+}
+.vx-addon-authors {
+  display: flex;
+}
+.vx-addon-authors > svg:not(:first-of-type) {
+  margin-left: -3px;
+}
+.vx-addon-author {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background-size: cover;
+  cursor: pointer;
+}
+.vx-addon-divider {
+  height: 1px;
+  background: var(--background-secondary);
+}
+.vx-addon-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vx-addon-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vx-addon-description {
+  color: var(--text-normal);
+  user-select: text;
+}
+.vx-addon-name {
+  color: var(--text-primary);
+  font-size: larger;
+  font-weight: 450;
+}
+.vx-addon-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  align-items: center;
+  flex: 1 1 auto;
+}
+
+.vx-addons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vx-addons-warning {
+  background-color: var(--background-mentioned);
+  border: var(--info-warning-foreground) 1px solid;
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 3px;
+  color: var(--text-normal);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vx-addons-icon {
+  color: var(--text-warning);
+}
