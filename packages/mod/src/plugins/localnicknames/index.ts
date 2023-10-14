@@ -33,5 +33,14 @@ export default definePlugin({
       }
     });
   },
-  dataStore
+  addNickName(id: string, nickname: string) {
+    localNickNames[id] = nickname;
+
+    dataStore.set("nicknames", structuredClone(localNickNames));
+  },
+  removeNickName(id: string) {
+    delete localNickNames[id];
+    
+    dataStore.set("nicknames", structuredClone(localNickNames));
+  }
 });
