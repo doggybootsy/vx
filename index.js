@@ -2,6 +2,7 @@ const esbuild = require("esbuild");
 const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");
 const path = require("path");
+const asar = require("asar")
 
 function argvIncludesMatch(regex) {
   for (const arg of process.argv) {
@@ -158,5 +159,9 @@ const RequireAllPluginsPlugin = {
     // copyFileSync(path.join(DIST, "main.js"), path.join(extension, "index.js"));
     // copyFileSync(path.join(DIST, "preload.js"), path.join(extension, "preload.js"));
     // copyFileSync(path.join(DIST, "build.js"), path.join(extension, "build.js"));
+  };
+  if (argvIncludesArg("a(sar)?")) {
+    await asar.createPackage("./app", "app.asar");
+    console.log("Made asar");
   };
 })();
