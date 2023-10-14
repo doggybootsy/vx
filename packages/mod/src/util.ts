@@ -1,8 +1,6 @@
 import { getProxyByKeys } from "./webpack";
 import { React } from "./webpack/common";
 
-export const proxySymbol = Symbol.for("vx.proxy.cache");
-
 export function proxyCache<T extends object>(factory: () => T): T {
   const handlers: ProxyHandler<T> = {};
 
@@ -14,7 +12,7 @@ export function proxyCache<T extends object>(factory: () => T): T {
 
     if (key === "get") {
       handlers.get = (target, prop, r) => {
-        if (prop === proxySymbol) return cacheFactory;
+        if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
         return Reflect.get(cacheFactory(), prop, r);
       };
       continue;
@@ -28,7 +26,7 @@ export function proxyCache<T extends object>(factory: () => T): T {
   }
 
   const proxy = new Proxy(Object.assign(function() {}, {
-    [proxySymbol]: cacheFactory
+    [Symbol.for("vx.proxy.cache")]: cacheFactory
   }) as T, handlers);
 
   return proxy;

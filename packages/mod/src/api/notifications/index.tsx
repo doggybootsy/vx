@@ -3,7 +3,6 @@ import { Notifications } from "./notification";
 import { notificationStore } from "./store";
 
 import "./index.css";
-import { _handleRoutes } from "../../dashboard";
 
 export interface Notification {
   id: string,

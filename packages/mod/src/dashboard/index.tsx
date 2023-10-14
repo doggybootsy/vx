@@ -80,8 +80,8 @@ export function createSection(section: SectionType) {
   });
 };
 
-function Dashboard() {
-  const [ section, setSection ] = React.useState("home");
+function Dashboard(props: { section: string }) {
+  const [ section, setSection ] = React.useState(() => props.section);
 
   const sections = React.useMemo(() => [
     {
@@ -98,6 +98,13 @@ function Dashboard() {
       section: "themes", 
       label: "Themes",
       element: () => <Themes />
+    },
+    { 
+      section: "custom-css", 
+      label: "Custom CSS",
+      onClick() {
+        openAlertModal("Custom CSS", [ "Not added yet" ]);
+      }
     },
     { section: "DIVIDER" },
     {
@@ -128,14 +135,15 @@ function Dashboard() {
   )
 };
 
-function openDashboard() {
+function openDashboard(section: string = "home") {
   LayerManager.pushLayer(() => (
-    <Dashboard />
+    <Dashboard section={section} />
   ));
 };
 
 plainTextPatches.push(
   {
+    identifier: "VX(private-channels-list)",
     match: ".showDMHeader",
     replacements: [
       {
