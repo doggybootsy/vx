@@ -1,6 +1,5 @@
 import { internalDataStore } from "../api/storage";
 import { Developer } from "../constants";
-import { InternalStore } from "../util";
 import { PlainTextPatch, plainTextPatches } from "../webpack/patches";
 
 export interface PluginType {
@@ -9,6 +8,7 @@ export interface PluginType {
   authors: Developer[],
   patches?: PlainTextPatch[],
   start?(): void,
+  // Does nothing for now, but at some point it should
   stop?(): void
 };
 

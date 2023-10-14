@@ -53,7 +53,7 @@ interface SectionType {
   element: (props: { notice: NoticeStore }) => React.ReactNode
 };
 export function createSection(section: SectionType) {  
-  let noticeStore: NoticeStore;
+  let noticeStore: NoticeStore;  
 
   queueMicrotask(() => {
     // Esbuilds esm sucks and im not gonna keep using require for where it lacks

@@ -112,12 +112,10 @@ export function useUser(userId: string): User | null {
   React.useLayoutEffect(() => {
     if (!user) return;
 
-    fetchUser(userId).then(() => {
+    fetchUser(userId).then((user) => {
       if (signal.aborted) return;
 
-      setUser(
-        UserStore.getUser(userId)
-      );
+      setUser(user);
     });
 
     return () => abort();
@@ -125,3 +123,11 @@ export function useUser(userId: string): User | null {
   
   return user;
 };
+
+export const WindowUtil = getMangledProxy<{
+  open: (opts: { href: string }) => void,
+  isTrusted: (url: string, idk: unknown) => boolean
+}>(".Messages.MALFORMED_LINK_BODY", {
+  open: byStrings(".apply"),
+  isTrusted: byStrings(".getChannelId()")
+});

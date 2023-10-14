@@ -187,7 +187,7 @@ export function getComponentType<P>(component: string | React.ComponentType<P> |
 };
 
 export function escapeRegex(text: string, flags?: string): RegExp {
-  text = text.replace(/[\.\[\]\(\)\\]/g, "\\$&");
+  text = text.replace(/[\.\[\]\(\)\\\$\^\|\?\*]/g, "\\$&");
   return new RegExp(text, flags);
 };
 

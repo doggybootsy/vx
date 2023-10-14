@@ -2,10 +2,10 @@ import { NoticeStoreType, Panel, createSection } from "..";
 import { openUserModal } from "../../api/modals";
 import { Button, Icons, Mask, Tooltip } from "../../components";
 import { Switch } from "../../components/switch";
-import { Developer } from "../../constants";
+import { Developer, Developers } from "../../constants";
 import { Plugin, plugins } from "../../plugins";
 import { getRandomDefaultAvatar } from "../../util";
-import { React, useUser } from "../../webpack/common";
+import { React, WindowUtil, useUser } from "../../webpack/common";
 
 function createListenerHook() {
   const listeners = new Set<() => void>();
@@ -30,11 +30,19 @@ const onResetHook = createListenerHook();
 const onSaveHook = createListenerHook();
 
 function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
-  const user = useUser(dev.discord);
+  const isVencord = dev === Developers.vencord;
+
+  const user = isVencord ? null : useUser(dev.discord);
 
   const randomDefaultAvatar = React.useMemo(() => getRandomDefaultAvatar(), [ ]);
 
-  const backgroundImage = React.useMemo(() => `url(${JSON.stringify(user ? user.getAvatarURL(undefined, 120, true) : randomDefaultAvatar)})`, [ user ]);
+  const backgroundImage = React.useMemo(() => {
+    const wrapURL = (url: string) => `url(${JSON.stringify(url)})`;
+
+    if (isVencord) return wrapURL("https://avatars.githubusercontent.com/u/113042587?s=200&v=4");
+    if (user) return wrapURL(user.getAvatarURL(undefined, 120, true));
+    return wrapURL(randomDefaultAvatar);
+  }, [ user ]);
 
   return (
     <Mask
@@ -47,6 +55,12 @@ function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
           <div 
             {...props}
             onClick={() => {
+              if (isVencord) {
+                WindowUtil.open({
+                  href: "https://github.com/Vendicated/Vencord"
+                });
+                return;
+              };
               openUserModal(dev.discord);
             }}
             className="vx-addon-author"

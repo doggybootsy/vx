@@ -9,7 +9,7 @@ const PermissionsBits = getProxy<Record<string, bigint>>((m) => [ "ADMINISTRATOR
 export default definePlugin({
   name: "RemoveNoRoles",
   description: "Removes the 'NO ROLES' section from user popouts",
-  authors: [ Developers.doggybootsy, Developers.doggybootsy ],
+  authors: [ Developers.doggybootsy ],
   patches: [
     {
       match: ".Messages.BOT_PROFILE_REMOVE_PRIVATE_CHANNEL_INTEGRATION",

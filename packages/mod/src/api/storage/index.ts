@@ -8,9 +8,16 @@ function setItem(name: string, structure: any) {
   localStorage.setItem(`VX(${name})`, JSON.stringify(structure, null, "\t"));
 };
 
-export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
-  constructor(public readonly name: string, public readonly version = 1) {
+interface DataStoreOptions<T extends Record<string, any>> {
+  version?: number,
+  upgrader?(version: number, oldData: any): Partial<T> | void
+};
+
+export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {  
+  constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
     super();
+
+    const { version = 1, upgrader } = opts;
 
     const data = localStorage.getItem(`VX(${name})`);
 
@@ -21,7 +28,9 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
       try {
         const parsed = JSON.parse(data);
         if (parsed.version !== version) {
-          setItem(name, { data: {}, version });
+          const data = typeof upgrader === "function" ? upgrader(parsed.version, parsed.data) ?? {} : {};
+
+          setItem(name, { data: data, version });
         }
         else if (!("version" in parsed || "data" in parsed)) {
           setItem(name, { data: {}, version });
@@ -37,17 +46,25 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 
     const self = this;
     this.proxy = new Proxy(this.#raw, {
-      set(t, p: string, newValue) {
+      set(t, p, newValue) {
+        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+
         self.set(p, newValue);
         return true;
       },
-      deleteProperty(t, p: string) {
+      deleteProperty(t, p) {
+        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+
         self.delete(p);
         return true;
       },
+      defineProperty(target, property: string, attributes) {
+        throw new TypeError("Can not define a property on 'DataStore.proxy'");
+      }
     });
 
-    this[Symbol.toStringTag] = `VX(${name})\n`;
+    this[Symbol.toStringTag] = `VX(${name}) - v${version}\n`;
+    this.version = version;
   };
 
   _queueUpdate() {
@@ -58,7 +75,9 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 
     this.emit();
   };
-  [Symbol.toStringTag]: string = "VX(undefined)\n";
+  [Symbol.toStringTag]: string = "VX(undefined) - vNaN\n";
+  
+  version: number;
 
   #raw: Partial<T>;
   proxy: Partial<T>;
@@ -96,9 +115,11 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
 
   merge(data: Partial<T>): void {
-    for (const key in data) {
-      if (Object.prototype.hasOwnProperty.call(data, key)) {
-        const element = data[key];
+    const clone = structuredClone(data);
+
+    for (const key in clone) {
+      if (clone.hasOwnProperty(key)) {
+        const element = clone[key];
 
         this.#raw[key] = element;
       };
@@ -107,11 +128,8 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     this._queueUpdate();
   };
 
-  use<key extends keyof T>(key: key): T[key] | void
-  use(key: void): Partial<T>
-  use<key extends keyof T>(key?: key): Partial<T> | T[key] | void {
-    if (typeof key === "undefined") return useStateFromStores([ this ], () => this.getAll());
-    return useStateFromStores([ this ], () => this.get(key!));
+  use<key extends keyof T>(key: key): T[key] {
+    return useStateFromStores([ this ], () => this.get(key)!);
   };
 
   ensure<key extends keyof T>(key: key, value: T[key]) {
@@ -128,12 +146,21 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
       __type: "vx.storage.datastore"
     };
   };
+  toString() {
+    const tag = this[Symbol.toStringTag];
+
+    return tag.slice(0, tag.length - 1);
+  };
 
   *[Symbol.iterator](): IterableIterator<[ keyof T, T[keyof T] ]> {
     yield* this.entries();
   };
 };
 
-export const internalDataStore = new DataStore<{
+interface InternalData {
   "enabled-plugins": string[]
-}>("Internal", 1);
+};
+
+export const internalDataStore = new DataStore<InternalData>("Internal", {
+  version: 1
+});

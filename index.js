@@ -1,5 +1,5 @@
 const esbuild = require("esbuild");
-const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync } = require("fs");
+const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");
 const path = require("path");
 
@@ -51,7 +51,9 @@ const RequireAllPluginsPlugin = {
     build.onLoad({
       filter: /.*/, namespace: "require-all-plugins-plugin"
     }, async (args) => {
-      const pluginDirs = await readdir("./packages/mod/src/plugins", { encoding: "binary" });
+      const pluginDirs = (await readdir("./packages/mod/src/plugins", {
+        encoding: "binary"
+      })).filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory());
 
       return {
         resolveDir: "./packages/mod/src",
