@@ -36,11 +36,6 @@
   height: 1px;
   background: var(--background-secondary);
 }
-.vx-addon-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .vx-addon-details {
   display: flex;
   flex-direction: column;
@@ -63,11 +58,6 @@
   flex: 1 1 auto;
 }
 
-.vx-addons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 .vx-addons-warning {
   background-color: var(--background-mentioned);
   border: var(--info-warning-foreground) 1px solid;
@@ -81,4 +71,7 @@
 }
 .vx-addons-icon {
   color: var(--text-warning);
+}
+.vx-collapsable-section {
+  margin-top: 8px;
 }

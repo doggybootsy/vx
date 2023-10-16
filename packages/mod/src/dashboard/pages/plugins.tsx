@@ -1,6 +1,6 @@
 import { NoticeStoreType, Panel, createSection } from "..";
 import { openUserModal } from "../../api/modals";
-import { Button, Icons, Mask, Tooltip } from "../../components";
+import { Button, Flex, Icons, Mask, Tooltip, FlexChild } from "../../components";
 import { Switch } from "../../components/switch";
 import { Developer, Developers } from "../../constants";
 import { Plugin, plugins } from "../../plugins";
@@ -30,16 +30,13 @@ const onResetHook = createListenerHook();
 const onSaveHook = createListenerHook();
 
 function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
-  const isVencord = dev === Developers.vencord;
-
-  const user = isVencord ? null : useUser(dev.discord);
+  const user = useUser(dev.discord);
 
   const randomDefaultAvatar = React.useMemo(() => getRandomDefaultAvatar(), [ ]);
 
   const backgroundImage = React.useMemo(() => {
     const wrapURL = (url: string) => `url(${JSON.stringify(url)})`;
 
-    if (isVencord) return wrapURL("https://avatars.githubusercontent.com/u/113042587?s=200&v=4");
     if (user) return wrapURL(user.getAvatarURL(undefined, 120, true));
     return wrapURL(randomDefaultAvatar);
   }, [ user ]);
@@ -55,12 +52,6 @@ function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
           <div 
             {...props}
             onClick={() => {
-              if (isVencord) {
-                WindowUtil.open({
-                  href: "https://github.com/Vendicated/Vencord"
-                });
-                return;
-              };
               openUserModal(dev.discord);
             }}
             className="vx-addon-author"
@@ -173,15 +164,13 @@ export const pluginsSection = createSection({
             You need to reload to enable plugins!
           </span>
         </div>
-        <div className="vx-addons">
+        <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
           {pluginKeys.map((key) => (
-            <PluginCard 
-              key={`vx-p-${key}`} 
-              plugin={plugins[key]}
-              onPluginToggle={onPluginToggle}
-            />
+            <FlexChild key={`vx-p-${key}`} >
+              <PluginCard plugin={plugins[key]} onPluginToggle={onPluginToggle} />
+            </FlexChild>
           ))}
-        </div>
+        </Flex>
       </Panel>
     );
   }

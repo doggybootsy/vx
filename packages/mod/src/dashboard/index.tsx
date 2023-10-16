@@ -7,6 +7,7 @@ import "./index.css";
 import { InternalStore } from "../util";
 import { plainTextPatches } from "../webpack/patches";
 import { Icons } from "../components";
+import { openWindow } from "../customCSS";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -103,7 +104,7 @@ function Dashboard(props: { section: string }) {
       section: "custom-css", 
       label: "Custom CSS",
       onClick() {
-        openAlertModal("Custom CSS", [ "Not added yet" ]);
+        openWindow();
       }
     },
     { section: "DIVIDER" },

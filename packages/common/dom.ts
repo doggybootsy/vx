@@ -1,12 +1,12 @@
 interface waitForNodeOptions {
-  target?: Node,
+  target?: Element | Document,
   signal?: AbortSignal
 };
 
 export function waitForNode(query: string, options: waitForNodeOptions = {}): Promise<Element> {
   const { target = document, signal } = options;
 
-  const exists = document.querySelector(query);
+  const exists = target.querySelector(query);
   if (exists) return Promise.resolve(exists);
 
   return new Promise<Element>((resolve, reject) => {

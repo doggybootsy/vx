@@ -25,6 +25,7 @@ import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
 import { _addNavigatorButton } from "./dashboard";
+import { openWindow } from "./customCSS";
 
 // @ts-expect-error
 window.VX = {
@@ -57,7 +58,8 @@ window.VX = {
   storage,
   modals,
   _self: { 
-    _addNavigatorButton
+    _addNavigatorButton,
+    openWindow
   }
 };
 

@@ -2,6 +2,7 @@ import { getProxyByStrings } from "../../webpack";
 import { dirtyDispatch } from "../../webpack/common";
 
 export * from "./patch";
+export { default as MenuComponents } from "./components";
 
 export interface MenuRenderProps {
   className: "context-menu",
@@ -27,4 +28,4 @@ export function openMenu(event: MouseEvent | React.MouseEvent, menu: (props: Men
   openMenuModule(event, menu, config);
 
   return () => closeMenu();
-}
+};

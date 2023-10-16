@@ -14,10 +14,10 @@ const native = {
   },
   app: {
     quit() {
-      electron.ipcRenderer.emit("@vx/quit");
+      electron.ipcRenderer.send("@vx/quit");
     },
     restart() {
-      electron.ipcRenderer.emit("@vx/restart");
+      electron.ipcRenderer.send("@vx/restart");
     }
   },
   clipboard: {

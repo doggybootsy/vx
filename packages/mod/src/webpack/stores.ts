@@ -6,6 +6,10 @@ import { getByKeys } from "./filters";
 interface PermissionStore extends FluxStore {
   canManageUser(permission: bigint, user: User, guild: Guild): boolean
 };
+interface PopoutWindowStore extends FluxStore {
+  getWindow(id: string): Window | void,
+  unmountWindow(id: string): void
+};
 
 interface KnownStores {
   UserStore: UserStore,
@@ -16,7 +20,8 @@ interface KnownStores {
   RelationshipStore: RelationshipStore,
   SelectedGuildStore: SelectedGuildStore,
   GuildStore: GuildStore,
-  PermissionStore: PermissionStore
+  PermissionStore: PermissionStore,
+  PopoutWindowStore: PopoutWindowStore
 };
 
 export type GenericStore = FluxStore & Record<string, any>;

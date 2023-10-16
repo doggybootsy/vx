@@ -3,9 +3,7 @@ type anyFN = (this: any, ...args: any[]) => any;
 type ParametersWithThis<T extends anyFN> = T extends (this: any, ...args: infer P) => any ? P : never;
 
 export interface Debouncer<F extends anyFN> {
-  (this: ThisParameterType<F>, ...args: ParametersWithThis<F>): Promise<ReturnType<F>>;
-  clear(): void,
-  isAwaiting(): boolean
+  (this: ThisParameterType<F>, ...args: ParametersWithThis<F>): void;
 };
 
 export function debounce<F extends anyFN>(handler: F, timeout?: number | undefined): Debouncer<F> {
@@ -14,26 +12,11 @@ export function debounce<F extends anyFN>(handler: F, timeout?: number | undefin
   const resolvers = new Set<(value: ReturnType<F>) => void>();
 
   function debouncer(this: ThisParameterType<F>, ...args: ParametersWithThis<F>) {
-    debouncer.clear();
+    clearTimeout(timer!);
 
     timer = setTimeout(() => {
-      const value = handler.apply(this, args);
-
-      for (const resolve of resolvers) resolve(value);
+      handler.apply(this, args);
     }, timeout);
-
-    return new Promise<ReturnType<F>>((resolve) => {
-      resolvers.add(resolve);
-    });
-  };
-
-  debouncer.clear = () => {
-    if (timer !== null) return;
-    clearTimeout(timer!);
-    timer = null;
-  };
-  debouncer.isAwaiting = () => {
-    return timer !== null; 
   };
   
   return debouncer;

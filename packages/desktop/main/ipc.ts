@@ -8,10 +8,10 @@ electron.ipcMain.on("@vx/preload", (event) => {
   event.returnValue = BrowserWindow.__getPreloadFromWindow(window);
 });
 
-electron.ipcMain.handle("@vx/quit", () => {
+electron.ipcMain.on("@vx/quit", () => {
   electron.app.quit();
 });
-electron.ipcMain.handle("@vx/restart", () => {
+electron.ipcMain.on("@vx/restart", () => {
   electron.app.quit();
   electron.app.relaunch();
 });
