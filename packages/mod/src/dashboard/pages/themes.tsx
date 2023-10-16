@@ -1,5 +1,5 @@
 import { Panel } from "..";
-import { openUserModal } from "../../api/modals";
+import { openConfirmModal, openUserModal } from "../../api/modals";
 import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../components";
 import { themes } from "../../native";
 import { Theme, themeStore } from "../../themes";
@@ -45,10 +45,8 @@ function AuthorIcon({ theme }: { theme: Theme }) {
   );
 };
 
-function ThemeCard({ theme }: { theme: Theme }) {
+function ThemeCard({ theme, updateThemes }: { theme: Theme, updateThemes: () => void }) {
   const [ isEnabled, setEnabled ] = React.useState(() => theme.isEnabled());
-
-  theme.meta.authorid
   
   return (
     <div className="vx-addon-card">
@@ -76,6 +74,21 @@ function ThemeCard({ theme }: { theme: Theme }) {
               color={Button.Colors.RED}
               size={Button.Sizes.ICON}
               {...props}
+              onClick={() => {
+                props.onClick();
+
+                openConfirmModal("Are you sure?", [
+                  `Are you sure you wan't to delete \`${theme.meta.name}\` (\`${theme.id}\`)`,
+                  "Deleted themes should end up in the recycle bin"
+                ], {
+                  confirmText: "Delete",
+                  danger: true,
+                  onConfirm() {
+                    theme.delete();
+                    updateThemes();
+                  }
+                });
+              }}
             >
               <Icons.Trash />
             </Button>
@@ -95,7 +108,7 @@ function ThemeCard({ theme }: { theme: Theme }) {
 };
 
 export function Themes() {
-  const themeKeys = Object.keys(themeStore.themes);
+  const [ themeKeys, setThemeKeys ] = React.useState(() => Object.keys(themeStore.themes));
 
   return (
     <Panel 
@@ -119,10 +132,25 @@ export function Themes() {
         </>
       }
     >
+      <div className="vx-addons-warning">
+        <Icons.Warn 
+          width={20} 
+          height={20} 
+          className="vx-addons-icon" 
+        />
+        <span>
+          You need to reload to see themes that you add
+        </span>
+      </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
         {themeKeys.map((key) => (
           <FlexChild key={`vx-t-${key}`} >
-            <ThemeCard theme={themeStore.themes[key]} />
+            <ThemeCard 
+              theme={themeStore.themes[key]} 
+              updateThemes={() => {
+                setThemeKeys(Object.keys(themeStore.themes))
+              }} 
+            />
           </FlexChild>
         ))}
       </Flex>
