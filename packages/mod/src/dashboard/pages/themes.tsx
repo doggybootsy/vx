@@ -4,7 +4,7 @@ import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../com
 import { themes } from "../../native";
 import { Theme, themeStore } from "../../themes";
 import { className, getRandomDefaultAvatar } from "../../util";
-import { React, WindowUtil, useUser } from "../../webpack/common";
+import { React, WindowUtil, openUserContextMenu, useUser } from "../../webpack/common";
 
 function AuthorIcon({ theme }: { theme: Theme }) {
   const user = theme.meta.authorid ? useUser(theme.meta.authorid) : null;  
@@ -32,6 +32,12 @@ function AuthorIcon({ theme }: { theme: Theme }) {
               if (!theme.meta.authorid) return;
 
               openUserModal(theme.meta.authorid);
+            }}
+            onContextMenu={(event) => {
+              props.onContextMenu();
+
+              if (!user) return;
+              openUserContextMenu(event, user);
             }}
             className={className([
               "vx-addon-author",

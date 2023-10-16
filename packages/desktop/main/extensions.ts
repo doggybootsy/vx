@@ -17,7 +17,10 @@ export function loadExtensions() {
 
     const stats = statSync(extensionPath);
 
-    if (!stats.isDirectory()) continue;
+    if (!stats.isDirectory()) {
+      console.warn(`[VX~Extensions]: File '${id}' is not a directory and will not be loaded`);
+      continue;
+    };
 
     electron.session.defaultSession.loadExtension(
       extensionPath,

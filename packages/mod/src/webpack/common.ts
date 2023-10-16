@@ -6,13 +6,16 @@ import { InternalStore, useSignal } from "../util";
 import { getMangledProxy, getProxy } from "./util";
 import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
-import { User } from "discord-types/general";
+import { Channel, User } from "discord-types/general";
 
 export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "hydrateRoot" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
 export const UserStore = getProxyStore("UserStore");
+export const ChannelStore = getProxyStore("ChannelStore");
+export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
+export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 
 type useStateFromStores = <T>(stores: Array<FluxStore | InternalStore>, effect: () => T) => T;
 export const useStateFromStores = getProxyByStrings<useStateFromStores>([ "useStateFromStores" ]);
@@ -134,3 +137,14 @@ export const WindowUtil = getMangledProxy<{
   open: byStrings(".apply"),
   isTrusted: byStrings(".getChannelId()")
 });
+
+const openUserContextMenuModule = getProxyByStrings<(event: React.MouseEvent, user: User, channel: Channel) => void>([ ".isGroupDM()?", ".isDM()?", "targetIsUser:", ",Promise.all(" ], { searchExports: true });
+export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
+  const dummyChannel = {
+    isGroupDM() { return false; },
+    isDM() { return false; },
+    guild_id: null
+  } as unknown as Channel;
+  
+  openUserContextMenuModule(event, user, dummyChannel);
+};

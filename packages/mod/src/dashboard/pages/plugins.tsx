@@ -4,7 +4,7 @@ import { Flex, Icons, Mask, Tooltip, FlexChild, Switch } from "../../components"
 import { Developer } from "../../constants";
 import { Plugin, plugins } from "../../plugins";
 import { getRandomDefaultAvatar } from "../../util";
-import { React, useUser } from "../../webpack/common";
+import { React, openUserContextMenu, useUser } from "../../webpack/common";
 
 function createListenerHook() {
   const listeners = new Set<() => void>();
@@ -52,6 +52,12 @@ function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
             {...props}
             onClick={() => {
               openUserModal(dev.discord);
+            }}
+            onContextMenu={(event) => {
+              props.onContextMenu();
+
+              if (!user) return;
+              openUserContextMenu(event, user);
             }}
             className="vx-addon-author"
             style={{ backgroundImage }} 
