@@ -1,9 +1,9 @@
 import { Panel } from "..";
 import { internalDataStore } from "../../api/storage";
-import { Button, Collapsable, Flex, FlexChild } from "../../components";
+import { Button, Collapsable, Flex, FlexChild, Markdown } from "../../components";
 import { FormSwitch } from "../../components/switch";
-import { app } from "../../native";
-import { React } from "../../webpack/common";
+import { app, extensions } from "../../native";
+import { React, WindowUtil } from "../../webpack/common";
 
 export function Home() {
   const [ minimap, setMinimap ] = React.useState(() => internalDataStore.get("custom-css-minimap") ?? true);
@@ -44,6 +44,30 @@ export function Home() {
         >
           Autosave
         </FormSwitch>
+      </Collapsable>
+      <Collapsable className="vx-collapsable-section" header="Extensions">
+        <div className="vx-ext-message">
+          You can load any manifest v2 extensions by adding any unzipped extension to the extensions directory, then restarting discord. 
+        </div>
+        <div className="vx-ext-message">
+          To install React Developer Tools you need to go to the special RDT download page, by clicking the button below.{"\n"}
+          This button takes you to a download page that downloads a special version of RDT thats downgraded to manifest v2.{"\n"}
+          After you download this version of RDT you need to unzip it then place it in the extension directory
+        </div>
+        <Flex gap={6}>
+          <Button
+            onClick={() => {
+              extensions.open();
+            }}
+          >Open Extensions Directory</Button>
+          <Button
+            onClick={() => {
+              WindowUtil.open({
+                href: "https://web.archive.org/web/20221207185248/https://polypane.app/fmkadmapgofadopljbjfkapdkoienihi.zip"
+              });
+            }}
+          >RDT Download</Button>
+        </Flex>
       </Collapsable>
     </Panel>
   )

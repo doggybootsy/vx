@@ -110,9 +110,12 @@ export function useUser(userId: string): User | null {
   const [ signal, abort ] = useSignal();
 
   React.useLayoutEffect(() => {
-    if (!user) return;
+    if (user) return;
 
-    fetchUser(userId).then((user) => {
+    const fetched = fetchUser(userId); 
+    
+
+    fetched.then((user) => {      
       if (signal.aborted) return;
 
       setUser(user);

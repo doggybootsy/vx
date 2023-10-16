@@ -18,7 +18,9 @@ export class Plugin {
     
     this.originalEnabledState = this.isEnabled();
   };
-  
+
+  type = <const>"plugin";
+
   name: string;
   public readonly originalEnabledState: boolean;
 

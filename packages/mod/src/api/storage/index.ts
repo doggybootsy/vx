@@ -175,6 +175,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 
 interface InternalData {
   "enabled-plugins": string[],
+  "enabled-themes": string[],
   "custom-css": string,
   "custom-css-minimap": boolean,
   "custom-css-autosave": boolean

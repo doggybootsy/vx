@@ -19,7 +19,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     opts.webPreferences.preload = path.join(__dirname, "preload.js");
 
     super(opts);
-
+    
     this[preloadSymbol] = originalPreload;
   };
   

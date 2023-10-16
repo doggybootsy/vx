@@ -27,6 +27,8 @@ import masks from "./masks.html";
 import { _addNavigatorButton } from "./dashboard";
 import { openWindow } from "./customCSS";
 
+import { themeStore } from "./themes";
+
 // @ts-expect-error
 window.VX = {
   plugins,
@@ -59,7 +61,8 @@ window.VX = {
   modals,
   _self: { 
     _addNavigatorButton,
-    openWindow
+    openWindow,
+    themeStore
   }
 };
 

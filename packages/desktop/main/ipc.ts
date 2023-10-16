@@ -8,10 +8,14 @@ electron.ipcMain.on("@vx/preload", (event) => {
   event.returnValue = BrowserWindow.__getPreloadFromWindow(window);
 });
 
-electron.ipcMain.on("@vx/quit", () => {
+electron.ipcMain.handle("@vx/quit", () => {
   electron.app.quit();
 });
-electron.ipcMain.on("@vx/restart", () => {
+electron.ipcMain.handle("@vx/restart", () => {
   electron.app.quit();
   electron.app.relaunch();
+});
+
+electron.ipcMain.on("@vx/get-path", (event, path: "home" | "appData" | "userData" | "sessionData" | "temp" | "exe" | "module" | "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos" | "recent" | "logs" | "crashDumps") => {
+  event.returnValue = electron.app.getPath(path);
 });

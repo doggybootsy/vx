@@ -7,3 +7,4 @@ export * as Icons from "./icons";
 export { default as ErrorBoundary } from "./boundary";
 export * from "./flex";
 export * from "./collapsable";
+export * from "./switch";

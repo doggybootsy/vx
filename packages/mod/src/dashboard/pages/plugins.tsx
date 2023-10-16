@@ -1,11 +1,10 @@
-import { NoticeStoreType, Panel, createSection } from "..";
+import { Panel, createSection } from "..";
 import { openUserModal } from "../../api/modals";
-import { Button, Flex, Icons, Mask, Tooltip, FlexChild } from "../../components";
-import { Switch } from "../../components/switch";
-import { Developer, Developers } from "../../constants";
+import { Flex, Icons, Mask, Tooltip, FlexChild, Switch } from "../../components";
+import { Developer } from "../../constants";
 import { Plugin, plugins } from "../../plugins";
 import { getRandomDefaultAvatar } from "../../util";
-import { React, WindowUtil, useUser } from "../../webpack/common";
+import { React, useUser } from "../../webpack/common";
 
 function createListenerHook() {
   const listeners = new Set<() => void>();
@@ -120,7 +119,7 @@ function PluginCard({ plugin, onPluginToggle }: { plugin: Plugin, onPluginToggle
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export const pluginsSection = createSection({
