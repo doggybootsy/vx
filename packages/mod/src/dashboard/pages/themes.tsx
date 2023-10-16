@@ -4,7 +4,7 @@ import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../com
 import { themes } from "../../native";
 import { Theme, themeStore } from "../../themes";
 import { className, getRandomDefaultAvatar } from "../../util";
-import { React, useUser } from "../../webpack/common";
+import { React, WindowUtil, useUser } from "../../webpack/common";
 
 function AuthorIcon({ theme }: { theme: Theme }) {
   const user = theme.meta.authorid ? useUser(theme.meta.authorid) : null;  
@@ -95,6 +95,25 @@ function ThemeCard({ theme, updateThemes }: { theme: Theme, updateThemes: () => 
           )}
         </Tooltip>
         <div className="vx-addon-actions">
+          {theme.meta.source && (
+            <Tooltip text="Source">
+              {(props) => (
+                <div
+                  {...props}
+                  className="vx-addon-action"
+                  onClick={() => {
+                    props.onClick();
+
+                    WindowUtil.open({
+                      href: theme.meta.source!
+                    })
+                  }}
+                >
+                  <Icons.Github />
+                </div>
+              )}
+            </Tooltip>
+          )}
           <Switch 
             checked={isEnabled}
             onChange={() => {

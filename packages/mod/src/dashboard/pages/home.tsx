@@ -47,7 +47,7 @@ export function Home() {
       </Collapsable>
       <Collapsable className="vx-collapsable-section" header="Extensions">
         <div className="vx-ext-message">
-          You can load any manifest v2 extensions by adding any unzipped extension to the extensions directory, then restarting discord. 
+          You can load any manifest v2 extensions (Electron itself doesn't support manifest v3) by adding any unzipped extension to the extensions directory, then restarting discord. 
         </div>
         <div className="vx-ext-message">
           To install React Developer Tools you need to go to the special RDT download page, by clicking the button below.{"\n"}

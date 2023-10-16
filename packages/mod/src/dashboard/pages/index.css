@@ -84,3 +84,14 @@
 .vx-addon-footer {
   display: flex;
 }
+.vx-addon-action {
+  display: flex;
+  cursor: pointer;
+	color: var(--interactive-normal);
+}
+.vx-addon-action:hover {
+	color: var(--interactive-hover);
+}
+.vx-addon-action:hover:active {
+	color: var(--interactive-active);
+}
