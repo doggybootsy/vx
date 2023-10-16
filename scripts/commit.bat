@@ -27,4 +27,4 @@ ECHO ---------------------------------------------------------------------------
 ECHO BRANCH: %branch%
 ECHO COMMIT NAME: %commitName%
 ECHO COMMIT DESCRIPTION: %description%
-ECHO %CORRECT_URL:~0,-4%/commit/%hash%
+ECHO %CORRECT_URL%/commit/%hash%
