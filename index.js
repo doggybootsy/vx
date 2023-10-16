@@ -38,6 +38,30 @@ const HTMLPlugin = {
     });
   }
 };
+
+/** @type {esbuild.Plugin} */
+const SelfPlugin = {
+  name: "self-plugin",
+  setup(build) {
+    const env = {
+      IS_DEV: true,
+      VERSION: "1.0.0"
+    };
+
+    build.onResolve({
+      filter: /^self$/
+    }, () => ({
+      path: "self",
+      namespace: "self-plugin"
+    }));
+
+    build.onLoad({
+      filter: /.*/, namespace: "self-plugin"
+    }, () => ({
+      contents: `export const env = ${JSON.stringify(env)};\nexport const browser = typeof chrome === "object" ? chrome : browser;`
+    }));
+  }
+};
 /** @type {esbuild.Plugin} */
 const RequireAllPluginsPlugin = {
   name: "require-all-plugins-plugin",
@@ -69,7 +93,7 @@ const RequireAllPluginsPlugin = {
     console.log("Building");
   
     if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });
-  
+
     await esbuild.build({
       entryPoints: [ "packages/mod/src/index.ts" ],
       outfile: "dist/build.js",
@@ -81,7 +105,8 @@ const RequireAllPluginsPlugin = {
       jsxFragment: "window.VX.React.Fragment",
       plugins: [
         HTMLPlugin,
-        RequireAllPluginsPlugin
+        RequireAllPluginsPlugin,
+        SelfPlugin
       ]
     });
     
@@ -91,7 +116,10 @@ const RequireAllPluginsPlugin = {
       bundle: true,
       platform: "node",
       external: [ "electron" ],
-      tsconfig: path.join(__dirname, "tsconfig.json")
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      plugins: [
+        SelfPlugin
+      ]
     });
     
     await esbuild.build({
@@ -100,7 +128,10 @@ const RequireAllPluginsPlugin = {
       bundle: true,
       platform: "node",
       external: [ "electron" ],
-      tsconfig: path.join(__dirname, "tsconfig.json")
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      plugins: [
+        SelfPlugin
+      ]
     });
     
     await esbuild.build({
@@ -108,7 +139,10 @@ const RequireAllPluginsPlugin = {
       outfile: "dist/extension.js",
       bundle: true,
       platform: "browser",
-      tsconfig: path.join(__dirname, "tsconfig.json")
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      plugins: [
+        SelfPlugin
+      ]
     });
   };
   if (argvIncludesArg("d(esktop)?")) {

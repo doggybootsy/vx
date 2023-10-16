@@ -1,8 +1,3 @@
-declare module "extension" {
-  const BROWSER_SOURCE_URL: string;
-  const browser: { runtime: { getURL(path: string): string } };
-}
-
 declare module Webpack {
   interface Require {
     (id: PropertyKey): any;
@@ -60,3 +55,18 @@ declare module "*.html" {
   export default type;
 };
 declare module "@plugins" {};
+
+declare module "self" {
+  interface Enviroment {
+    IS_DEV: boolean,
+    VERSION: string
+  };
+  interface Browser {
+    runtime: { 
+      getURL(path: string): string 
+    }
+  };
+
+  export const env: Enviroment;
+  export const browser: Browser;
+};

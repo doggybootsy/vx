@@ -22,7 +22,7 @@
   padding: 8px 10px;
   user-select: text;
 }
-.vx-section-version {
+.vx-section-info > div {
   color: var(--text-muted);
   display: inline-block;
   width: 100%;
@@ -30,4 +30,7 @@
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
+}
+.vx-section-devmode {
+  color: var(--text-danger);
 }

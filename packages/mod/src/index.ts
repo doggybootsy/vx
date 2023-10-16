@@ -70,3 +70,4 @@ waitForNode("body").then((body) => {
   const svg = masks.querySelector("svg")!.cloneNode(true);
   body.append(svg);
 });
+

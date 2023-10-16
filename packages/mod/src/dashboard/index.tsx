@@ -4,10 +4,11 @@ import { LayerManager, React } from "../webpack/common";
 import { Home, Themes, pluginsSection } from "./pages";
 
 import "./index.css";
-import { InternalStore } from "../util";
+import { InternalStore, className } from "../util";
 import { plainTextPatches } from "../webpack/patches";
 import { Icons } from "../components";
 import { openWindow } from "../customCSS";
+import { env } from "self";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -120,7 +121,13 @@ function Dashboard(props: { section: string }) {
       section: "CUSTOM", 
       element: () => (
         <div className="vx-section-info">
-          <div className="vx-section-version">VX 1.0.0</div>
+          <div className="vx-section-version">
+            VX
+            {" "}
+            <span
+              className={className([ env.IS_DEV && "vx-section-devmode" ])}
+            >{env.VERSION}</span>
+          </div>
         </div>
       )
     }

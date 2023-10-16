@@ -1,5 +1,5 @@
 import { waitForNode } from "common/dom";
-import { browser } from "extension";
+import { browser } from "self";
 
 waitForNode("head").then(() => {
   const script = document.createElement("script");

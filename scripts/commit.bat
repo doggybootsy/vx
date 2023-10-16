@@ -7,7 +7,7 @@ IF "%~1" == "" (SET commitName="%date%:%time%")
 IF NOT "%~1" == "" (SET commitName="%~1")
 IF "%~2" == "" (SET description="No Description Provided")
 IF NOT "%~2" == "" (SET description="%~2")
-IF "%~3" == "" (SET branch="main")
+IF "%~3" == "" (for /f %%i in ('git rev-parse --abbrev-ref HEAD') DO (SET "branch=%%i"))
 IF NOT "%~3" == "" (SET branch="%~3")
 
 @REM GIT
