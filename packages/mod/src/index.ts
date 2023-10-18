@@ -16,6 +16,7 @@ import * as storage from "./api/storage";
 
 import * as webpack from "./webpack";
 import * as common from "./webpack/common";
+import * as popoutWindows from "./api/window";
 
 import { plugins } from "./plugins";
 
@@ -59,6 +60,7 @@ window.VX = {
   components,
   storage,
   modals,
+  windows: popoutWindows,
   _self: { 
     _addNavigatorButton,
     openWindow,
@@ -70,4 +72,3 @@ waitForNode("body").then((body) => {
   const svg = masks.querySelector("svg")!.cloneNode(true);
   body.append(svg);
 });
-

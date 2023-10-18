@@ -17,7 +17,7 @@ export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
 export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 
-type useStateFromStores = <T>(stores: Array<FluxStore | InternalStore>, effect: () => T) => T;
+type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
 export const useStateFromStores = getProxyByStrings<useStateFromStores>([ "useStateFromStores" ]);
 
 export const FluxDispatcher = getProxyByKeys<FluxDispatcherType>([ "subscribe", "dispatch" ]);

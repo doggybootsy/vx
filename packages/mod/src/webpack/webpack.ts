@@ -27,6 +27,23 @@ webpackAppChunk.push([
 
 export const listeners = new Set<(module: Webpack.Module) => void>();
 
+const getPrefix = /^(.*?)\(/;
+// Functions like ones from objects ({ a() {} }) will throw so we replace 'a' with 'function'
+function toStringFunction(fn: Function) {
+  const stringed = fn.toString();
+  const match = stringed.match(getPrefix);
+
+  if (!match) return stringed;
+
+  if (match[1].includes("=>") && !/^['"]/.test(match[1])) {
+    return stringed;
+  };
+
+  if (!match[1]) return stringed;
+
+  return stringed.replace(match[1], "function");
+};
+
 type PushFunction = (chunk: Webpack.ModuleWithoutEffect | Webpack.ModuleWithEffect) => any;
 function createPush<T extends boolean>(getter: T, push: PushFunction): T extends true ? () => PushFunction : PushFunction {
   function handlePush(this: any, chunk: Webpack.ModuleWithoutEffect | Webpack.ModuleWithEffect) {
@@ -36,7 +53,7 @@ function createPush<T extends boolean>(getter: T, push: PushFunction): T extends
       if (Object.prototype.hasOwnProperty.call(modules, id)) {
         const originalModule = modules[id];
 
-        let stringedModule = modules[id].toString().replace(/[\n]/g, "");
+        let stringedModule = toStringFunction(originalModule).replace(/[\n]/g, "");
         const identifiers = new Set<string>();
 
         for (const patch of plainTextPatches) {

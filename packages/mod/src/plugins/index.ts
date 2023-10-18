@@ -1,12 +1,14 @@
 import { internalDataStore } from "../api/storage";
 import { Developer } from "../constants";
 import { PlainTextPatch, plainTextPatches } from "../webpack/patches";
+import { CreatedSetting } from "./settings";
 
 export interface PluginType {
   name: string,
   description: string,
   authors: Developer[],
   patches?: PlainTextPatch[],
+  settings?: Record<string, CreatedSetting<any>>,
   start?(): void,
   // Does nothing for now, but at some point it should
   stop?(): void

@@ -203,7 +203,7 @@
     
       function upAndDownShake() {
         if (counter < numberOfShakes) {
-          element.style.transform = `translate(0px, 0px)`;
+          element.style.transform = "translate(0px, 0px)";
     
           magnitude -= magnitudeUnit;
     
@@ -218,14 +218,19 @@
         };
 
         if (counter >= numberOfShakes) {
-          element.style.transform = `translate(0px, 0px)`;
+          element.style.transform = "translate(0px, 0px)";
           shakingElements.splice(shakingElements.indexOf(element), 1);
         };
       };
     };
   </script>
   <script>
-    fetch("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js").then((r) => r.text()).then((v) => (0, eval)(v)).then(() => {
+    fetch("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js")
+     .then((r) => r.text())
+     .then((v) => (0, eval)(v))
+     .then(() => fetch("https://api.cdnjs.com/libraries/monaco-editor"))
+     .then(r => r.json())
+     .then(({ version }) => {
       const Notice = {
         node: document.getElementById("notice"),
         show(message) {
@@ -255,16 +260,16 @@
 
       requirejs.config({
         paths: { 
-          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.16.2/min/vs"
+          vs: `https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/${version}/min/vs`
         }
       });
       window.MonacoEnvironment = {
         getWorkerUrl: function (workerId, label) {
           return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
             self.MonacoEnvironment = {
-              baseUrl: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.16.2/min/"
+              baseUrl: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/${version}/min/"
             };
-            importScripts("https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.16.2/min/vs/base/worker/workerMain.js");`
+            importScripts("https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/${version}/min/vs/base/worker/workerMain.js");`
           )}`
         }
       };

@@ -1,10 +1,11 @@
 import { Notification } from ".";
 import { transformContent } from "../../components";
-import { React, ReactSpring, useStateFromStores } from "../../webpack/common"
+import { useInternalStore } from "../../util";
+import { React, ReactSpring } from "../../webpack/common"
 import { notificationStore } from "./store"
 
 export function Notifications() {
-  const state = useStateFromStores([ notificationStore ], () => notificationStore.getState());
+  const state = useInternalStore(notificationStore, () => notificationStore.getState());
 
   return (
     <div id="vx-notifications">

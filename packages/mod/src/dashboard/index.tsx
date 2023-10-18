@@ -1,7 +1,7 @@
 import { openAlertModal } from "../api/modals";
 import { byStrings, getProxy, getProxyByProtoKeys, getProxyByStrings, whenWebpackReady } from "../webpack";
 import { LayerManager, React } from "../webpack/common";
-import { Home, Themes, pluginsSection } from "./pages";
+import { Home, Themes, Plugins } from "./pages";
 
 import "./index.css";
 import { InternalStore, className } from "../util";
@@ -32,56 +32,6 @@ export function Panel(props: {
   )
 };
 
-const Notice = getProxyByStrings<any>([ ".EMPHASIZE_NOTICE", ".onReset" ]);
-
-class NoticeStore extends InternalStore {
-  #showNotice = false;
-  setShowNotice(shouldShow: boolean) {
-    this.#showNotice = shouldShow;
-    this.emit();
-  };
-  showNotice() {
-    return this.#showNotice;
-  }
-};
-
-export type NoticeStoreType = NoticeStore;
-
-interface SectionType {
-  label: string,
-  section: string,
-  onReset?(): void,
-  onSave?(): void,
-  element: (props: { notice: NoticeStore }) => React.ReactNode
-};
-export function createSection(section: SectionType) {  
-  let noticeStore: NoticeStore;  
-
-  queueMicrotask(() => {
-    // Esbuilds esm sucks and im not gonna keep using require for where it lacks
-    noticeStore = new NoticeStore();
-  });
-
-  return () => ({
-    label: section.label,
-    section: section.section,
-    notice: {
-      element: () => (
-        <Notice 
-          onReset={section.onReset}
-          onSave={section.onSave}
-        />
-      ),
-      stores: [
-        noticeStore!
-      ]
-    },
-    element: () => (
-      <section.element notice={noticeStore} />
-    )
-  });
-};
-
 function Dashboard(props: { section: string }) {
   const [ section, setSection ] = React.useState(() => props.section);
 
@@ -95,7 +45,11 @@ function Dashboard(props: { section: string }) {
       label: "Home", 
       element: () => <Home />
     },
-    pluginsSection(),
+    {
+      section: "plugins",
+      label: "Plugins",
+      element: () => <Plugins />
+    },
     { 
       section: "themes", 
       label: "Themes",

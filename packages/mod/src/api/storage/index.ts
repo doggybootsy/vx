@@ -1,6 +1,5 @@
 import { Debouncer, debounce } from "common/util";
-import { InternalStore } from "../../util";
-import { useStateFromStores } from "../../webpack/common";
+import { InternalStore, useInternalStore } from "../../util";
 
 export const { localStorage, sessionStorage } = window;
 
@@ -130,6 +129,10 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     return structuredClone(this.#raw);
   };
 
+  use<K extends keyof T>(key: K): T[K] | void {
+    return useInternalStore(this, () => this.get(key));
+  };
+
   entries(): [ keyof T, T[keyof T] ][] {
     return Object.entries(this.getAll());
   };
@@ -138,7 +141,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     const clone = structuredClone(data);
 
     for (const key in clone) {
-      if (clone.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(clone, key)) {
         const element = clone[key];
 
         this.#raw[key] = element;

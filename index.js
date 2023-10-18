@@ -101,8 +101,6 @@ const RequireAllPluginsPlugin = {
       platform: "browser",
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
-      jsxFactory: "window.VX.React.createElement",
-      jsxFragment: "window.VX.React.Fragment",
       plugins: [
         HTMLPlugin,
         RequireAllPluginsPlugin,

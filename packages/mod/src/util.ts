@@ -107,26 +107,37 @@ export function findInReactTree<T>(tree: any, searchFilter: (item: any) => any):
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
 };
 
-// To be used with 'useStateFromStores'
 export class InternalStore {
   #listeners = new Set<() => void>();
-  addReactChangeListener(callback: () => void) {
-    this.#listeners.add(callback);
-  };
-  removeReactChangeListener(callback: () => void) {
-    this.#listeners.delete(callback);
-  };
+  
   addChangeListener(callback: () => void) {
     this.#listeners.add(callback);
   };
   removeChangeListener(callback: () => void) {
     this.#listeners.delete(callback);
   };
+
   emit() {
     for (const listener of this.#listeners) {
       listener();
     };
   };
+};
+export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
+  const [ state, setState ] = React.useState(factory);
+
+  React.useInsertionEffect(() => {
+    function listener() {
+      setState(factory);
+    };
+
+    store.addChangeListener(listener);
+    return () => {
+      store.removeChangeListener(listener);
+    };
+  }, [ ]);
+
+  return state;
 };
 
 const copyCommandSupported = document.queryCommandEnabled("copy") || document.queryCommandSupported("copy");
@@ -209,4 +220,51 @@ const defaultAvatarModule = getProxyByKeys<{
 }>([ "DEFAULT_AVATARS" ]);
 export function getRandomDefaultAvatar() {
   return getRandomItem(defaultAvatarModule.DEFAULT_AVATARS);
+};
+
+const patchedReactHooks = {
+  useMemo(factory: () => any) {
+    return factory();
+  },
+  useState(initial: any) {
+    if (typeof initial === "function") return [ initial(), () => {} ];
+    return [ initial, () => {} ];
+  },
+  useReducer(initial: any) {
+    if (typeof initial === "function") return [ initial(), () => {} ];
+    return [ initial, () => {} ];
+  },
+  useEffect() {},
+  useLayoutEffect() {},
+  useRef(value: any = null) {
+    return { current: value };
+  },
+  useCallback(callback: Function) {
+    return callback;
+  },
+  useContext(context: any) {
+    return context._currentValue;
+  }
+};
+export function wrapInHooks<P>(functionComponent: React.FunctionComponent<P>): React.FunctionComponent<P> {  
+  return (props?: P, context?: any) => {
+    const reactDispatcher = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
+
+    const clone = { ...reactDispatcher };
+
+    Object.assign(reactDispatcher, patchedReactHooks);
+
+    try {
+      const result = functionComponent(props ?? {} as P, context);
+
+      Object.assign(reactDispatcher, clone);
+
+      return result;
+    } 
+    catch (error) {
+      Object.assign(reactDispatcher, clone);
+
+      throw error;
+    }
+  };
 };

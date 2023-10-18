@@ -95,3 +95,7 @@
 .vx-addon-action:hover:active {
 	color: var(--interactive-active);
 }
+.vx-addon-disabled {
+  cursor: not-allowed !important;
+  color: var(--interactive-muted) !important;
+}

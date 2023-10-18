@@ -1,4 +1,4 @@
-import { getProxyByKeys, getProxyStore } from "./webpack";
+import { getProxyStore } from "./webpack";
 import { React, dirtyDispatch } from "./webpack/common";
 import editor from "./editor.html";
 import { internalDataStore } from "./api/storage";
