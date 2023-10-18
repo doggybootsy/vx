@@ -64,6 +64,6 @@ export async function openWindow() {
     type: "POPOUT_WINDOW_OPEN",
     key: id,
     render: () => <Render />,
-    features: {}
+    features: { popout: true }
   });
 };

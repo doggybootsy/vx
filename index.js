@@ -180,14 +180,6 @@ const RequireAllPluginsPlugin = {
 
     throw "not added!";
   
-    // writeFileSync(path.join(extension, "manifest.json"), JSON.stringify({
-    //   version: "1.0.0",
-    //   name: "vx-desktop",
-    //   type: "commonjs",
-    //   main: "index.js",
-    //   author: "doggybootsy"
-    // }));
-  
     // copyFileSync(path.join(DIST, "main.js"), path.join(extension, "index.js"));
     // copyFileSync(path.join(DIST, "preload.js"), path.join(extension, "preload.js"));
     // copyFileSync(path.join(DIST, "build.js"), path.join(extension, "build.js"));
