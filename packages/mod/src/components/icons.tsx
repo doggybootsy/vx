@@ -155,12 +155,53 @@ export function Copy(props: IconProps) {
   );
 };
 
+export function Save(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path fill={color} d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5v-13Z" />
+      <path fill={color} d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V16Zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V0ZM9 1h2v4H9V1Z" />
+    </svg>
+  );
+};
+
 export function Warn(props: IconProps) {
   const { color, height, width, className } = ensureProps(props);
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 20 20">
-      <path d="M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z" fill-rule="evenodd" clip-rule="evenodd" fill={color} />
+      <path d="M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z" fillRule="evenodd" clipRule="evenodd" fill={color} />
+    </svg>
+  );
+};
+
+export function Help(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path d="M12 2C6.486 2 2 6.487 2 12C2 17.515 6.486 22 12 22C17.514 22 22 17.515 22 12C22 6.487 17.514 2 12 2ZM12 18.25C11.31 18.25 10.75 17.691 10.75 17C10.75 16.31 11.31 15.75 12 15.75C12.69 15.75 13.25 16.31 13.25 17C13.25 17.691 12.69 18.25 12 18.25ZM13 13.875V15H11V12H12C13.104 12 14 11.103 14 10C14 8.896 13.104 8 12 8C10.896 8 10 8.896 10 10H8C8 7.795 9.795 6 12 6C14.205 6 16 7.795 16 10C16 11.861 14.723 13.429 13 13.875Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Pencil(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24" fillRule="evenodd" clipRule="evenodd">
+      <path d="M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Plus(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
+      <polygon points="15 10 10 10 10 15 8 15 8 10 3 10 3 8 8 8 8 3 10 3 10 8 15 8" fill={color} fillRule="nonzero" />
     </svg>
   );
 };

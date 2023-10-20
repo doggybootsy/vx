@@ -26,9 +26,9 @@ import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
 import { _addNavigatorButton } from "./dashboard";
-import { openWindow } from "./customCSS";
 
 import { themeStore } from "./themes";
+import { Editor } from "./editor";
 
 // @ts-expect-error
 window.VX = {
@@ -63,12 +63,16 @@ window.VX = {
   windows: popoutWindows,
   _self: { 
     _addNavigatorButton,
-    openWindow,
-    themeStore
+    themeStore,
+    Editor
   }
 };
 
 waitForNode("body").then((body) => {
   const svg = masks.querySelector("svg")!.cloneNode(true);
   body.append(svg);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key.toLowerCase() === "f8") debugger;
 });

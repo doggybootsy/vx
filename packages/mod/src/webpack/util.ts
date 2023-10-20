@@ -1,3 +1,4 @@
+import { waitForNode } from "common/dom";
 import { bySource } from ".";
 import { proxyCache } from "../util";
 import { getModule } from "./searching";

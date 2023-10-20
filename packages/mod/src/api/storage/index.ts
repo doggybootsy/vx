@@ -1,4 +1,3 @@
-import { Debouncer, debounce } from "common/util";
 import { InternalStore, useInternalStore } from "../../util";
 
 export const { localStorage, sessionStorage } = window;
@@ -176,14 +175,36 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
 };
 
+export interface CustomCSSData {
+  enabled: boolean,
+  css: string,
+  name: string
+};
+
 interface InternalData {
   "enabled-plugins": string[],
   "enabled-themes": string[],
-  "custom-css": string,
-  "custom-css-minimap": boolean,
-  "custom-css-autosave": boolean
+  "custom-css": Record<string, CustomCSSData>,
+  "content-protection": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 1
+  version: 2,
+  upgrader(version, oldData) {
+    if (version === 1) {
+      const css = oldData["custom-css"];
+
+      if (typeof css === "string") {
+        oldData["custom-css"] = {
+          original: {
+            name: "Original CSS",
+            enabled: true,
+            css: css
+          }
+        };
+      };
+
+      return oldData;
+    };
+  },
 });

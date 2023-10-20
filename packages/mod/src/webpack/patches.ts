@@ -33,8 +33,8 @@ export const plainTextPatches: PlainTextPatch[] = [
     match: "__reactFiber$",
     replacements: [
       {
-        find: /(var (.{1,3})=)Math.random\(\).toString\(36\).slice\(2\)/,
-        replace: "$1''"
+        find: /(var (.{1,3}))=Math.random\(\).toString\(36\).slice\(2\)/,
+        replace: "$1=''"
       }
     ]
   }

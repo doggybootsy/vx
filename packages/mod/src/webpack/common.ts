@@ -74,13 +74,12 @@ export const insertText = (() => {
 
 export const LayerManager = {
   pushLayer(component: () => React.ReactNode) {
-    FluxDispatcher.dispatch({
+    dirtyDispatch({
       type: "LAYER_PUSH",
       component
     });
   },
   popLayer() {
-    // Using dirty dispatch even tho discord doesn't because cloning ContextMenus.close()
     dirtyDispatch({
       type: "LAYER_POP"
     });

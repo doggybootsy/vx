@@ -62,7 +62,6 @@ function handleProps(props: FlexProps) {
   // FlexProps.gap is a custom thing | so we add it to style and then delete it
   props.style ??= {};
   props.style.gap = props.gap;
-  delete props.gap;
 };
 
 function WrappedFlex(props: FlexProps) {

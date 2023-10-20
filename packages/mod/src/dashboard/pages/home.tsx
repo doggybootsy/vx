@@ -6,8 +6,7 @@ import { app, extensions } from "../../native";
 import { React, WindowUtil } from "../../webpack/common";
 
 export function Home() {
-  const [ minimap, setMinimap ] = React.useState(() => internalDataStore.get("custom-css-minimap") ?? true);
-  const [ autosave, setAutosave ] = React.useState(() => internalDataStore.get("custom-css-autosave") ?? true);
+  const [ contentProtection, setContentProtection ] = React.useState(() => internalDataStore.get("content-protection") ?? false);
 
   return (
     <Panel title="Home">
@@ -22,29 +21,6 @@ export function Home() {
           Quit Discord
         </Button>
       </Flex>
-      <Collapsable className="vx-collapsable-section" header="Custom CSS">
-        <FormSwitch
-          value={minimap}
-          onChange={(value) => {
-            setMinimap(value);
-            internalDataStore.set("custom-css-minimap", value);
-          }}
-          note="Shows the minimap off to the right of the editor"
-        >
-          MiniMap
-        </FormSwitch>
-        <FormSwitch
-          value={autosave}
-          onChange={(value) => {            
-            setAutosave(value);
-            internalDataStore.set("custom-css-autosave", value);
-          }}
-          note="When disabled you need to manually do 'ctrl+s' or click the save icon to save"
-          hideBorder
-        >
-          Autosave
-        </FormSwitch>
-      </Collapsable>
       <Collapsable className="vx-collapsable-section" header="Extensions">
         <div className="vx-ext-message">
           You can load any manifest v2 extensions (Electron itself doesn't support manifest v3) by adding any unzipped extension to the extensions directory, then restarting discord. 
@@ -69,6 +45,22 @@ export function Home() {
           >RDT Download</Button>
         </Flex>
       </Collapsable>
+
+      <FormSwitch
+        // @ts-expect-error
+        disabled={typeof DiscordNative === "object" ? !DiscordNative.window.supportsContentProtection() : true}
+        value={contentProtection}
+        onChange={(value) => {
+          setContentProtection(value);
+          internalDataStore.set("content-protection", value);
+          // @ts-expect-error
+          DiscordNative.window.setContentProtection(value);
+        }}
+        style={{ marginTop: 20 }}
+        note="When enabled you cannot take screenshots or screen recordings of Discord"
+      >
+        Content Protection
+      </FormSwitch>
     </Panel>
   )
 };

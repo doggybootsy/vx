@@ -21,6 +21,12 @@ export function combine(...filters: Webpack.Filter[]): Webpack.Filter {
     return true;
   };
 };
+export function not(filter: Webpack.ExportedOnlyFilter): Webpack.ExportedOnlyFilter
+export function not(filter: Webpack.Filter): Webpack.Filter {
+  return (exports, module, id) => {
+    return !filter.call(module, exports, module, id);
+  };
+};
 
 export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
   return (exports) => {

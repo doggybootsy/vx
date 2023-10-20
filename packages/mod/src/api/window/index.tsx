@@ -20,7 +20,7 @@ interface PopoutWindowProps {
 
 export function openWindow(opts: {
   id: string, 
-  render: React.ComponentType<{ window: Window }>, 
+  render: React.ComponentType<{ window: Window & typeof globalThis }>, 
   title: string
 }) {
   const { id, render: Component, title } = opts;
@@ -51,7 +51,13 @@ export function openWindow(opts: {
   return () => closeWindow(id);
 };
 
+export function isWindowOpen(id: string) {
+  return PopoutWindowStore.getWindowOpen(`DISCORD_VX_${id}`);
+};
+
 export function closeWindow(id: string) {
+  if (!isWindowOpen(id)) return;
+  
   try { PopoutWindowStore.unmountWindow(`DISCORD_VX_${id}`); } 
   catch (error) { }
 };

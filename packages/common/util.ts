@@ -9,8 +9,6 @@ export interface Debouncer<F extends anyFN> {
 export function debounce<F extends anyFN>(handler: F, timeout?: number | undefined): Debouncer<F> {
   let timer: number | NodeJS.Timeout | null = null;
 
-  const resolvers = new Set<(value: ReturnType<F>) => void>();
-
   function debouncer(this: ThisParameterType<F>, ...args: ParametersWithThis<F>) {
     clearTimeout(timer!);
 

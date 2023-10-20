@@ -4,11 +4,11 @@ import { LayerManager, React } from "../webpack/common";
 import { Home, Themes, Plugins } from "./pages";
 
 import "./index.css";
-import { InternalStore, className } from "../util";
+import { className } from "../util";
 import { plainTextPatches } from "../webpack/patches";
 import { Icons } from "../components";
-import { openWindow } from "../customCSS";
 import { env } from "self";
+import { CustomCSS } from "./pages/customCSS";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -58,9 +58,7 @@ function Dashboard(props: { section: string }) {
     { 
       section: "custom-css", 
       label: "Custom CSS",
-      onClick() {
-        openWindow();
-      }
+      element: () => <CustomCSS />
     },
     { section: "DIVIDER" },
     {

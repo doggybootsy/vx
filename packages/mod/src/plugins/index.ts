@@ -10,7 +10,6 @@ export interface PluginType {
   patches?: PlainTextPatch[],
   settings?: Record<string, CreatedSetting<any>>,
   start?(): void,
-  // Does nothing for now, but at some point it should
   stop?(): void
 };
 
@@ -41,7 +40,7 @@ export class Plugin {
     enabled.push(this.name);
 
     internalDataStore.set("enabled-plugins", enabled);
-    
+
     return true;
   };
   disable() {
@@ -52,7 +51,7 @@ export class Plugin {
     const filtered = enabled.filter((name) => name !== this.name);    
 
     internalDataStore.set("enabled-plugins", filtered);
-
+    
     return true;
   };
   toggle() {
