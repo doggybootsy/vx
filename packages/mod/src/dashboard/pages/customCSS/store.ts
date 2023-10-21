@@ -53,7 +53,7 @@ export const customCSSStore = new class extends InternalStore {
     clone[id] = {
       css: "",
       enabled: true,
-      name: "New Custom CSS"
+      name: `New Custom CSS - ${id}`
     };
 
     internalDataStore.set("custom-css", clone);

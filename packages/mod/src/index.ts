@@ -36,9 +36,6 @@ window.VX = {
   webpack: {
     getModule,
     get require(){ return webpackRequire },
-    _onWebpackModule(module: Webpack.Module) {
-      for (const listener of listeners) listener(module);
-    },
     getByKeys, 
     getByProtoKeys, 
     getByStrings,
@@ -61,7 +58,10 @@ window.VX = {
   storage,
   modals,
   windows: popoutWindows,
-  _self: { 
+  _self: {
+    _onWebpackModule(module: Webpack.Module) {
+      for (const listener of listeners) listener(module);
+    },
     _addNavigatorButton,
     themeStore,
     Editor

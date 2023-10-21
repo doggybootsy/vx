@@ -75,7 +75,7 @@ function createPush<T extends boolean>(getter: T, push: PushFunction): T extends
           };
         };
 
-        stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', ")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX.webpack._onWebpackModule(arguments[0]);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${id}`;
+        stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', ")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${id}`;
 
         const moduleFN = (0,eval)(stringedModule);
 

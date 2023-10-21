@@ -122,13 +122,25 @@ const RequireAllPluginsPlugin = {
     
     await esbuild.build({
       entryPoints: [ "packages/desktop/preload/index.ts" ],
-      outfile: "dist/preload.js",
+      outfile: "dist/mainPreload.js",
       bundle: true,
       platform: "node",
       external: [ "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin
+      ]
+    });
+    await esbuild.build({
+      entryPoints: [ "packages/desktop/splash/index.ts" ],
+      outfile: "dist/splashPreload.js",
+      bundle: true,
+      platform: "node",
+      external: [ "electron" ],
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      plugins: [
+        SelfPlugin,
+        HTMLPlugin
       ]
     });
     
@@ -163,7 +175,8 @@ const RequireAllPluginsPlugin = {
     }));
   
     copyFileSync(path.join(DIST, "main.js"), path.join(app, "index.js"));
-    copyFileSync(path.join(DIST, "preload.js"), path.join(app, "preload.js"));
+    copyFileSync(path.join(DIST, "mainPreload.js"), path.join(app, "main.js"));
+    copyFileSync(path.join(DIST, "splashPreload.js"), path.join(app, "splash.js"));
     copyFileSync(path.join(DIST, "build.js"), path.join(app, "build.js"));
     copyFileSync(path.join(DIST, "build.css"), path.join(app, "build.css"));
   };

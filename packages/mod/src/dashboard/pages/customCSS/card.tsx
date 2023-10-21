@@ -69,10 +69,10 @@ export function CustomCSSCard({ id }: { id: string }) {
               onClick={(event) => {
                 props.onClick();
 
-                // if (event.shiftKey) {
-                //   customCSSStore.delete(id);
-                //   return;
-                // };
+                if (event.shiftKey) {
+                  customCSSStore.delete(id);
+                  return;
+                };
                 
                 openConfirmModal("Are you sure?", [
                   `Are you sure you wan't to delete \`${storedName}\` (\`${id}\`)`,

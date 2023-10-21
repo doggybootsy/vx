@@ -1,20 +1,8 @@
+import { getAndEnsureVXPath } from "common/preloads";
 import electron from "electron";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { mkdir, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-
-const getPath = (path: "home" | "appData" | "userData" | "sessionData" | "temp" | "exe" | "module" | "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos" | "recent" | "logs" | "crashDumps") => electron.ipcRenderer.sendSync("@vx/get-path", path) as string;
-
-async function ensureVXPath(requestedPath: string) {
-  const appData = getPath("appData");
-  const vxDir = path.join(appData, ".vx");
-  const dir = path.join(vxDir, requestedPath);
-
-  if (!existsSync(vxDir)) await mkdir(vxDir);
-  if (!existsSync(dir)) await mkdir(dir);
-
-  return dir;
-};
 
 const native = {
   updater: {
@@ -31,27 +19,27 @@ const native = {
     }
   },
   extensions: {
-    async open() {
-      const extensionsDir = await ensureVXPath("extensions");
+    open() {
+      const extensionsDir = getAndEnsureVXPath("extensions", (path) => mkdirSync(path));
       
       electron.shell.openPath(extensionsDir);
     }
   },
   themes: {
-    async delete(filename: string) {
-      const themesDir = await ensureVXPath("themes");
+    delete(filename: string) {
+      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
       
       const filepath = path.join(themesDir, filename);
 
       return electron.shell.trashItem(filepath);
     },
-    async open() {
-      const themesDir = await ensureVXPath("themes");
+    open() {
+      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
       
       electron.shell.openPath(themesDir);
     },
     async getAll() {
-      const themesDir = await ensureVXPath("themes");
+      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
 
       const files = await readdir(themesDir);
 

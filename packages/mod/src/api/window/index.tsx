@@ -1,13 +1,12 @@
-import { cache, getComponentType } from "../../util";
-import { byStrings, getModule, getProxy, getProxyStore } from "../../webpack";
+import { getComponentType, lazyComponent } from "../../util";
+import { byStrings, getModule, getProxyStore } from "../../webpack";
 import { React, dirtyDispatch } from "../../webpack/common";
 
-const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", ".guestWindow,");
-// typeof proxyCache(() => any) === 'function' so react throws because PopoutWindow is forward ref and react thinks its not
-const PopoutWindowModule = cache(() => getModule<React.FunctionComponent<PopoutWindowProps>>((m) => filter(getComponentType(m)))!);
-function PopoutWindow(props: PopoutWindowProps) {
-  return React.createElement(PopoutWindowModule(), props);
-};
+const PopoutWindow = lazyComponent(() => {
+  const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", ".guestWindow,");
+
+  return getModule<React.FunctionComponent<PopoutWindowProps>>((m) => filter(getComponentType(m)))!;
+});
 
 const PopoutWindowStore = getProxyStore("PopoutWindowStore");
 

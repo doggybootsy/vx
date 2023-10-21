@@ -16,6 +16,24 @@ electron.ipcMain.handle("@vx/restart", () => {
   electron.app.relaunch();
 });
 
-electron.ipcMain.on("@vx/get-path", (event, path: "home" | "appData" | "userData" | "sessionData" | "temp" | "exe" | "module" | "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos" | "recent" | "logs" | "crashDumps") => {
+electron.ipcMain.handle("@vx/splash/no-close", (event) => {
+  const window = BrowserWindow.fromWebContents(event.sender)!;
+
+  window.close = () => false;
+  window.hide = () => false;
+});
+
+electron.ipcMain.handle("@vx/splash/devtools", (event) => {
+  if (event.sender.isDevToolsOpened()) {
+    event.sender.closeDevTools();
+    return;
+  };
+
+  event.sender.openDevTools({ mode: "detach" });
+});
+
+type Path = Parameters<electron.App["getPath"]>[0];
+
+electron.ipcMain.on("@vx/get-path", (event, path: Path) => {
   event.returnValue = electron.app.getPath(path);
 });

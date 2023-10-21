@@ -44,6 +44,12 @@ export function cache<T>(factory: () => T): () => T {
   }
 };
 
+export function lazyComponent<P>(factory: () => React.JSXElementConstructor<P>) {
+  const cacheFactory = cache(factory);
+
+  return (props: P) => React.createElement(cacheFactory(), props);
+};
+
 interface classNameValueTypes {
   array: Array<string | void | false | classNameValueTypes["object"]>
   object: Record<string, boolean>

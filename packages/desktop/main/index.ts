@@ -11,4 +11,4 @@ import "./request";
 
 replaceNodeModuleExports("electron", { ...electron, BrowserWindow });
 
-loadExtensions();
+electron.app.whenReady().then(loadExtensions);

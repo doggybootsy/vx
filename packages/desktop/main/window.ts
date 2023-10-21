@@ -9,18 +9,28 @@ export class BrowserWindow extends electron.BrowserWindow {
   };
 
   constructor(opts?: BrowserWindowConstructorOptions) {
-    if (!opts || !opts.webPreferences || !opts.webPreferences.preload || !opts.title) {
+    if (!opts || !opts.webPreferences || !opts.webPreferences.preload) {
       super(opts);
       return;
     };
 
     const originalPreload = opts.webPreferences.preload;
 
-    opts.webPreferences.preload = path.join(__dirname, "preload.js");
+    if (originalPreload.includes("splash")) {
+      opts.webPreferences.preload = path.join(__dirname, "splash.js");
+    }
+    else if (originalPreload.includes("main")) {
+      opts.webPreferences.preload = path.join(__dirname, "main.js");
+    };
 
-    super(opts);
-    
-    this[preloadSymbol] = originalPreload;
+    const window: BrowserWindow = new electron.BrowserWindow(opts);
+
+    window.close = () => false;
+    window.hide = () => false;
+
+    window[preloadSymbol] = originalPreload;
+
+    return window;
   };
   
   [preloadSymbol]?: string;
