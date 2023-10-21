@@ -23,7 +23,7 @@ document.addEventListener("keydown", (event) => {
     return;
   };
   if (event.key.toLowerCase() === "o" && event.shiftKey && ctrl) {
-    const path = getAndEnsureVXPath("custom.css", (path) => writeFileSync(path, ""));
+    const path = getAndEnsureVXPath("splash.css", (path) => writeFileSync(path, ""));
 
     electron.shell.openPath(path);
   };
