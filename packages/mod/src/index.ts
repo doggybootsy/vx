@@ -1,7 +1,7 @@
 console.log("Welcome to VX 2.0");
 
 import { getModule } from "./webpack/searching";
-import { listeners, webpackRequire } from "./webpack/webpack";
+import { webpackRequire } from "./webpack/webpack";
 import { plainTextPatches } from "./webpack/patches";
 import { byKeys, byStrings, byProtoKeys, getByKeys, getByProtoKeys, getByStrings } from "./webpack/filters";
 import * as util from "./util";
@@ -62,9 +62,7 @@ window.VX = {
   Editor,
   Injector,
   _self: {
-    _onWebpackModule(module: Webpack.Module) {
-      for (const listener of listeners) listener(module);
-    },
+    _onWebpackModule: webpack._onWebpackModule,
     themeStore,
     waitForNode,
     _addHomeButton

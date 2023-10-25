@@ -7,8 +7,21 @@ export let webpackRequire: Webpack.Require | void;
 webpackAppChunk.push([
   [ Symbol.for("VX") ],
   { },
-  (wpr) => {
+  (wpr) => {    
     webpackRequire = wpr;
+
+    // Webpack has modules are ready added?
+    for (const key in wpr.m) {
+      if (Object.prototype.hasOwnProperty.call(wpr.m, key)) {
+        set(wpr.m, key, wpr.m[key]);
+      };
+    };
+
+    wpr.m = new Proxy(wpr.m, {
+      set(modules, id, value: Webpack.RawModule) {
+        return set(modules, id, value);
+      }
+    });
 
     wpr.d = (target, exports) => {
       for (const key in exports) {
@@ -44,67 +57,41 @@ function toStringFunction(fn: Function) {
   return stringed.replace(match[1], "function");
 };
 
-type PushFunction = (chunk: Webpack.ModuleWithoutEffect | Webpack.ModuleWithEffect) => any;
-function createPush<T extends boolean>(getter: T, push: PushFunction): T extends true ? () => PushFunction : PushFunction {
-  function handlePush(this: any, chunk: Webpack.ModuleWithoutEffect | Webpack.ModuleWithEffect) {
-    const [, modules] = chunk;
+function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, module: Webpack.RawModule): boolean {
+  let stringedModule = toStringFunction(module).replace(/[\n]/g, "");
+  const identifiers = new Set<string>();
 
-    for (const id in modules) {
-      if (Object.prototype.hasOwnProperty.call(modules, id)) {
-        const originalModule = modules[id];
+  for (const patch of plainTextPatches) {
+    if (typeof patch.match === "string" ? !stringedModule.includes(patch.match) : !patch.match.test(stringedModule)) continue;
 
-        // @ts-expect-error Duplicates happen idfk
-        if (originalModule.__VXOriginal) continue;
+    if (patch.identifier) identifiers.add(patch.identifier);
 
-        let stringedModule = toStringFunction(originalModule).replace(/[\n]/g, "");
-        const identifiers = new Set<string>();
+    if (!Array.isArray(patch.replacements)) patch.replacements = [ patch.replacements ];
 
-        for (const patch of plainTextPatches) {
-          if (typeof patch.match === "string" ? !stringedModule.includes(patch.match) : !patch.match.test(stringedModule)) continue;
+    for (const replace of patch.replacements) {
+      if (replace.predicate && !replace.predicate()) continue;
+      
+      if (typeof replace.replace === "string") {
+        let replacer = replace.replace
+          .replace(/\$react/g, "window.VX.React");
+        if (typeof patch._self === "string") replacer = replacer.replace(/\$self/g, patch._self);
 
-          if (patch.identifier) identifiers.add(patch.identifier);
-
-          if (!Array.isArray(patch.replacements)) patch.replacements = [ patch.replacements ];
-
-          for (const replace of patch.replacements) {
-            if (replace.predicate && !replace.predicate()) continue;
-            
-            if (typeof replace.replace === "string") {
-              let replacer = replace.replace
-                .replace(/\$react/g, "window.VX.React");
-              if (typeof patch._self === "string") replacer = replacer.replace(/\$self/g, patch._self);
-
-              stringedModule = stringedModule.replace(replace.find as any, replacer);
-            }
-            else stringedModule = stringedModule.replace(replace.find as any, replace.replace as any);
-          };
-        };
-        
-        stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', '")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${id}`;
-
-        const moduleFN = (0, eval)(stringedModule);
-        moduleFN.__VXOriginal = originalModule;
-
-        modules[id] = moduleFN;
-      };
+        stringedModule = stringedModule.replace(replace.find as any, replacer);
+      }
+      else stringedModule = stringedModule.replace(replace.find as any, replace.replace as any);
     };
-
-    return push.call(this, chunk);
   };
+  
+  stringedModule = `(()=>\n/*\n Module Id: ${key.toString()}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', '")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${key.toString()}`;
 
-  if (getter) return () => handlePush;
-  // @ts-expect-error TS should have better stuff for this :(
-  return handlePush;
+  const moduleFN = (0, eval)(stringedModule);
+  moduleFN.__VXOriginal = module;
+
+  modules[key] = moduleFN;
+  
+  return true;
 };
 
-Object.defineProperty(webpackAppChunk, "push", {
-  configurable: true,
-  get: createPush(true, webpackAppChunk.push),
-  set: (val) => {
-    Object.defineProperty(webpackAppChunk, "push", {
-      value: createPush(false, val),
-      configurable: true,
-      writable: true
-    });
-  }
-});
+export function _onWebpackModule(module: Webpack.Module, exports: any, id: PropertyKey) {
+  for (const listener of listeners) listener(module);
+};

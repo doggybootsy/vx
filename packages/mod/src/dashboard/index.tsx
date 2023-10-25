@@ -1,5 +1,5 @@
 import { openAlertModal } from "../api/modals";
-import { byStrings, getProxy, getProxyByProtoKeys, getProxyByStrings, whenWebpackReady } from "../webpack";
+import { byStrings, getProxyByProtoKeys } from "../webpack";
 import { LayerManager, React } from "../webpack/common";
 import { Home, Themes, Plugins } from "./pages";
 

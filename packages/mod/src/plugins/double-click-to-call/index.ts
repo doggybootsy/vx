@@ -8,7 +8,7 @@ export default definePlugin({
   patches: [
     {
       match: "[this.renderVoiceCallButton(),this.renderVideoCallButton()]",
-      find: /(\(.{1,3}\..{1,3}\.Icon,{icon:.{1,3}\..{1,3},onClick:)(?!function)(.+?),/g,
+      find: /(\(.{1,3}\.default\.Icon,{icon:.{1,3}\..{1,3},onClick:)(?!function)(.+?),/g,
       replace: "$1$self._wrapOnClick($2),"
     }
   ],
