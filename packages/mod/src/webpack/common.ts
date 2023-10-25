@@ -6,6 +6,7 @@ import { getProxy } from "./util";
 import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
+import { proxyCache } from "../util";
 
 export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "hydrateRoot" ]);
@@ -16,8 +17,10 @@ export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
 export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 
+export const Flux = getProxyByKeys<any>([ "useStateFromStores", "Dispatcher" ]);
+
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
-export const useStateFromStores = getProxyByStrings<useStateFromStores>([ "useStateFromStores" ]);
+export const useStateFromStores = proxyCache<useStateFromStores>(() => Flux.useStateFromStores);
 
 export const FluxDispatcher = getProxyByKeys<FluxDispatcherType>([ "subscribe", "dispatch" ]);
 
