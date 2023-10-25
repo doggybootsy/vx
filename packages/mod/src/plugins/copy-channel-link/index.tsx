@@ -40,8 +40,8 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   patches: {
     match: "renderAcceptSuggestionButton",
-    find: /\[(.{1,3}&&(.{1,3})\.renderAcceptSuggestionButton\(\))/g,
-    replace: "[$react.createElement($self.CopyButton, $2.props), $1"
+    find: /\[(.{1,3}&&this\.renderAcceptSuggestionButton\(\))/g,
+    replace: "[$react.createElement($self.CopyButton, this.props), $1"
   },
   CopyButton: ErrorBoundary.wrap(CopyButton)
 });
