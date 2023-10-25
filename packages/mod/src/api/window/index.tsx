@@ -3,7 +3,7 @@ import { byStrings, getModule, getProxyStore } from "../../webpack";
 import { React, dirtyDispatch } from "../../webpack/common";
 
 const PopoutWindow = lazyComponent(() => {
-  const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", ".guestWindow,");
+  const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", "{guestWindow:");
 
   return getModule<React.FunctionComponent<PopoutWindowProps>>((m) => filter(getComponentType(m)))!;
 });

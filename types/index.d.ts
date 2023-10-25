@@ -4,6 +4,8 @@ declare module Webpack {
     d(target, exports): void;
     c: Record<PropertyKey, Module>;
     m: Record<PropertyKey, RawModule>;
+    el(id: PropertyKey): Promise<unknown>;
+    bind: Function["bind"]
   };
   interface Module {
     id: PropertyKey,

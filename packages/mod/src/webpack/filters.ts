@@ -3,8 +3,8 @@ import { getModule } from "./searching";
 import { getProxy } from "./util";
 import { webpackRequire } from "./webpack";
 
-export function bySource(source: string): Webpack.Filter {
-  const filter = byStrings(source);
+export function bySource(...sources: string[]): Webpack.Filter {
+  const filter = byStrings(...sources);
   return (exports, module, id) => {
     if (exports !== module.exports) return;
     

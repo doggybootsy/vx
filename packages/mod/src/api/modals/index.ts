@@ -1,5 +1,5 @@
 import { User } from "discord-types/general";
-import { getProxyByStrings } from "../../webpack";
+import { getProxyByKeys } from "../../webpack";
 
 import "./index.css";
 
@@ -10,9 +10,12 @@ export * from "./alert";
 export * from "./prompt";
 export { default as ModalComponents } from "./components";
 
-const openUserModalModule = getProxyByStrings<(opts: { userId: string }) => void>([ ",friendToken:", ".analyticsLocation," ], { searchExports: true });
+const userProfileModalActions = getProxyByKeys<{
+  openUserProfileModal(data: { userId: string }): void,
+  closeUserProfileModal(): void
+}>([ "closeUserProfileModal", "openUserProfileModal" ]);
 
 export function openUserModal(user: User | string) {
-  if (typeof user === "string") return openUserModalModule({ userId: user });
-  openUserModalModule({ userId: user.id });
+  if (typeof user === "string") return userProfileModalActions.openUserProfileModal({ userId: user });
+  userProfileModalActions.openUserProfileModal({ userId: user.id });
 };

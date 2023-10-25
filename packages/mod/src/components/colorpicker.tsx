@@ -1,6 +1,6 @@
-import { findInReactTree, proxyCache, wrapInHooks } from "../util";
-import { getByStrings, getStore, byStrings, getProxyStore } from "../webpack";
-import { React, useStateFromStores } from "../webpack/common";
+import { proxyCache } from "../util";
+import { getProxyStore, getModuleIdBySource, webpackRequire, getByKeys } from "../webpack";
+import { useStateFromStores } from "../webpack/common";
 import ErrorBoundary from "./boundary";
 
 interface ColorPickerProps {
@@ -12,76 +12,25 @@ interface ColorPickerProps {
   disabled?: boolean
 };
 
-function getColorPicker() {
-  const dummyGuild = {
-    id: "", 
-    hasFeature() { return false },
-    isOwner() { return false }
-  };
-  
-  const GuildLayer = getByStrings<React.FunctionComponent<any>>([ "canAccessGuildSettings", "GUILD_ANALYTICS_MEMBER_INSIGHTS_FETCH_SUCCESS" ])!;
+const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}.el\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1"}\)/;
 
-  const res = findInReactTree<{ type: typeof React.Component }>(wrapInHooks(GuildLayer)({ }), (item) => {
-    if (!item?.type?.prototype) return;
-    return item.type.prototype instanceof React.Component;
-  })!;
+function getColorPicker(): React.FunctionComponent<ColorPickerProps> {
+  try {
+    const lazyLib = getByKeys<any>([ "LazyLibrary", "makeLazy" ]);
 
-  const layer = new res.type({
-    guild: dummyGuild
-  });
+    const moduleId = getModuleIdBySource("Color.WHITE_500:", ".DEFAULT_ROLE_COLOR,")!;
 
-  const rendered = layer.render();
+    const module = String(webpackRequire!.m[moduleId]!);
 
-  const SettingsView = findInReactTree<{
-    sections: { section: string, element(): React.ReactElement }[]
-  }>(rendered, (node) => node?.sections)!;
+    const [, matchedId ] = module.match(moduleIdRegex)!;
+    
+    return lazyLib.makeLazy({
+      createPromise: () => webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId))
+    });
+  } 
+  catch (error) {}
 
-  const rolesSection = SettingsView.sections.find((section) => section.section === "ROLES")!;
-  
-  const GuildSettingsStore = getStore("GuildSettingsStore");
-
-  GuildSettingsStore.getSelectedRoleId = () => dummyGuild.id;
-
-  const GuildSettingsRolesStore = Object.getPrototypeOf(getStore("GuildSettingsRolesStore"));
-  const guildDescriptor = Object.getOwnPropertyDescriptor(GuildSettingsRolesStore, "guild")!;
-  const rolesDescriptor = Object.getOwnPropertyDescriptor(GuildSettingsRolesStore, "roles")!;
-  const getRole = GuildSettingsRolesStore.getRole;
-  GuildSettingsRolesStore.getRole = () => dummyGuild;
-
-  Object.defineProperty(GuildSettingsRolesStore, "guild", {
-    configurable: true,
-    enumerable: false,
-    get() { return dummyGuild }
-  });
-  Object.defineProperty(GuildSettingsRolesStore, "roles", {
-    configurable: true,
-    enumerable: false,
-    get() { return [ dummyGuild ] }
-  });
-
-  const result = wrapInHooks(rolesSection.element)({ })! as { type: React.FunctionComponent<any> };
-  
-  const resultant = wrapInHooks(result.type)({ 
-    everyoneRole: dummyGuild,
-    selectedSection: 0
-  });  
-
-  const idk = findInReactTree<{ type: React.FunctionComponent<any>, props: any }>(resultant, (item) => byStrings(".setSelectedSection", "().noticeContainer")(item?.type))!;
-
-  const editRolesPage = wrapInHooks(idk.type)(idk.props);
-
-  const colorPickerWrapper = findInReactTree<{ type: React.FunctionComponent<any>, props: any }>(editRolesPage, (item) => byStrings(".Messages.FORM_LABEL_ROLE_COLOR", ".Messages.ROLE_COLOR_HELP")(item?.type))!;
-
-  const colorPicker = wrapInHooks(colorPickerWrapper.type)(colorPickerWrapper.props);
-
-  const ColorPicker = findInReactTree<{ type: React.FunctionComponent<ColorPickerProps> }>(colorPicker, (item) => item?.type?.displayName)!;
-
-  Object.defineProperty(GuildSettingsRolesStore, "guild", guildDescriptor);
-  Object.defineProperty(GuildSettingsRolesStore, "roles", rolesDescriptor);
-  GuildSettingsRolesStore.getRole = getRole;
-  delete GuildSettingsStore.getSelectedRoleId;
-
-  return ColorPicker.type;
+  return () => null;
 };
 
 const ColorPickerModule = proxyCache(getColorPicker);
