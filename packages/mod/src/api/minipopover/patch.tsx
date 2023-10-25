@@ -1,16 +1,12 @@
 import { Channel, Message, Guild, User } from "discord-types/general";
-import { plainTextPatches } from "../../webpack/patches";
+import { addPlainTextPatch } from "../../webpack/patches";
 import { GuildStore, useStateFromStores } from "../../webpack/common";
 
-plainTextPatches.push({
+addPlainTextPatch({
   identifier: "VX(Minipopover)",
   match: ".Messages.MESSAGE_UTILITIES_A11Y_LABEL",
-  replacements: [
-    {
-      find: /(return .{1,3}\.message\.state!==.{1,3}\..{1,3}\.SEND_FAILED\?)(\(0,.{1,3}\.jsx\)\(.{1,3},.{1,3}\({},.{1,3}\)\))(:null)/,
-      replace: "$1VX.minipopover._patchPopover($2)$3"
-    }
-  ]
+  find: /(return .{1,3}\.message\.state!==.{1,3}\..{1,3}\.SEND_FAILED\?)(\(0,.{1,3}\.jsx\)\(.{1,3},.{1,3}\({},.{1,3}\)\))(:null)/,
+  replace: "$1window.VX.minipopover._patchPopover($2)$3"
 });
 
 export interface Props { message: Message, channel: Channel, guild?: Guild, author: User };

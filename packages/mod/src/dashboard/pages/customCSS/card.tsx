@@ -2,7 +2,7 @@ import { React } from "../../../webpack/common";
 import { Icons, Button, Tooltip, Switch } from "../../../components";
 import { openWindow } from "./popout";
 import { customCSSStore } from "./store";
-import { useInternalStore } from "../../../util";
+import { useInternalStore } from "../../../hooks";
 import { openConfirmModal } from "../../../api/modals";
 
 export function CustomCSSCard({ id }: { id: string }) {

@@ -14,12 +14,12 @@ interface PopoutWindowStore extends GenericStore {
   unmountWindow(id: string): void
 };
 interface ThemeStore extends GenericStore {
-  theme: "light" | "dark" | "amoled",
+  theme: "light" | "dark",
   darkSidebar: boolean,
   isSystemThemeAvailable: boolean,
   systemPrefersColorScheme: "light" | "dark",
   systemTheme: null | "light" | "dark",
-  getState(): { theme: "light" | "dark" | "amoled" }
+  getState(): { theme: "light" | "dark" }
 };
 
 interface KnownStores {

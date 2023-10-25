@@ -1,0 +1,19 @@
+.vx-loop-button {
+  display: block;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  cursor: pointer;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  opacity: .6;
+  margin-right: 8px;
+}
+.vx-loop-looping {
+  color: var(--brand-experiment);
+}
+
+:root [class*="videoButton-"] {
+  margin-right: 0;
+}

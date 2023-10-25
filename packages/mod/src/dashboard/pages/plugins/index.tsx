@@ -1,5 +1,5 @@
 import { Panel } from "../..";
-import { Flex, Icons, FlexChild } from "../../../components";
+import { Flex, Icons, FlexChild, Tooltip, Button } from "../../../components";
 import { plugins } from "../../../plugins";
 import { PluginCard } from "./card";
 
@@ -7,7 +7,29 @@ export function Plugins() {
   const pluginKeys = Object.keys(plugins);
 
   return (
-    <Panel title="Plugins">
+    <Panel 
+      title="Plugins"
+      buttons={
+        <>
+          <Tooltip text="Reload Discord">
+            {(props) => (
+              <Button
+                {...props}
+                size={Button.Sizes.NONE}
+                look={Button.Looks.BLANK} 
+                className="vx-header-button"
+                onClick={() => {
+                  props.onClick();
+                  location.reload();
+                }}
+              >
+                <Icons.Reload />
+              </Button>
+            )}
+          </Tooltip>
+        </>
+      }
+    >
       <div className="vx-addons-warning">
         <Icons.Warn 
           width={20} 

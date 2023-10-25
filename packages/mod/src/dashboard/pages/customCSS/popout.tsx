@@ -5,7 +5,7 @@ import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../webpack";
 import { Icons } from "../../../components";
 import { customCSSStore } from "./store";
-import { useInternalStore } from "../../../util";
+import { useInternalStore } from "../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
@@ -72,12 +72,16 @@ export function openWindow(id: string) {
         #label-input:not(:focus) {
           opacity: 0;
         }
+        [data-popout-root] {
+          background: var(--background-tertiary);
+        }
         `));
         window.document.head.appendChild(style);
       }, [ ]);
 
       React.useInsertionEffect(() => {
-        function listener(event: MessageEvent) {          
+        function listener(event: MessageEvent) {   
+          // Use custom event because message even doesnt work?       
           const customEvent = new CustomEvent("message");
           // @ts-expect-error
           customEvent.data = event.data;

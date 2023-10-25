@@ -29,21 +29,19 @@ export default definePlugin({
   description: "Custom Switch Colors",
   authors: [ Developers.doggybootsy ],
   settings,
-  patches: [
-    {
-      match: ".unsafe_rawColors.PRIMARY_400).spring()",
-      replacements: [
-        {
-          find: /=\(0,.{1,3}\..{1,3}\)\(.{1,3}\..{1,3}\.unsafe_rawColors\.GREEN_360\)\.spring\(\),/,
-          replace: "=$self.useColor('on'),"
-        },
-        {
-          find: /=\(0,.{1,3}\..{1,3}\)\(.{1,3}\..{1,3}\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\),/,
-          replace: "=$self.useColor('off'),"
-        }
-      ]
-    }
-  ],
+  patches: {
+    match: ".unsafe_rawColors.PRIMARY_400).spring()",
+    replacements: [
+      {
+        find: /=\(0,.{1,3}\..{1,3}\)\(.{1,3}\..{1,3}\.unsafe_rawColors\.GREEN_360\)\.spring\(\),/,
+        replace: "=$self.useColor('on'),"
+      },
+      {
+        find: /=\(0,.{1,3}\..{1,3}\)\(.{1,3}\..{1,3}\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\),/,
+        replace: "=$self.useColor('off'),"
+      }
+    ]
+  },
   useColor(type: "on" | "off") {
     const color = settings[type].use();
 

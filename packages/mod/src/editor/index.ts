@@ -1,5 +1,6 @@
+import { waitForElementRemoved } from "common/dom";
 import { getProxyStore } from "../webpack";
-import { HTMLEditorElement, EDITOR_TAGNAME, getCache } from "./element";
+import { HTMLEditorElement, EDITOR_TAGNAME, getCache, getTheme } from "./element";
 
 customElements.define(EDITOR_TAGNAME, HTMLEditorElement);
 
@@ -16,7 +17,7 @@ const cache = new WeakMap<Editor, ReturnType<typeof getCache>>();
 const ThemeStore = getProxyStore("ThemeStore");
 
 export class Editor {
-  constructor(element: Element, language: string, value: string) {
+  constructor(element: Element, language: string, value: string) {    
     element.innerHTML = "";
 
     const editorElement = document.createElement(EDITOR_TAGNAME) as HTMLEditorElement;
@@ -31,8 +32,7 @@ export class Editor {
       editorElement.postMessage("set-options", {
         value, 
         language, 
-        // Check for light instead of dark because amoled
-        theme: ThemeStore.theme === "light" ? "vs" : "vs-dark"
+        theme: ThemeStore.theme
       });
     });
 
@@ -46,6 +46,15 @@ export class Editor {
       for (const listener of this.#listeners.get(type)!) {
         listener(event.data.data);
       };
+    });
+
+    function listener() {
+      self.postMessage("set-options", { theme: ThemeStore.theme });
+      self.postMessage("update-options", { theme: ThemeStore.theme });
+    };
+    ThemeStore.addChangeListener(listener);
+    waitForElementRemoved(element).then(() => {
+      ThemeStore.removeChangeListener(listener);
     });
   };
 

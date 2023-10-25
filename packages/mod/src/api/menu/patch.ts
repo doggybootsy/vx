@@ -1,5 +1,5 @@
 import { MenuRenderProps } from ".";
-import { plainTextPatches } from "../../webpack/patches";
+import { addPlainTextPatch } from "../../webpack/patches";
 
 type MenuCallback = (props: MenuProps, res: React.ReactElement) => void;
 const menuPatches = new Map<string, Map<string, Set<MenuCallback>>>();
@@ -32,15 +32,11 @@ export function unpatch(caller: string, menuId?: string, callback?: MenuCallback
   menusPatches.delete(callback);
 };
 
-plainTextPatches.push({
+addPlainTextPatch({
   identifier: "VX(menus)",
   match: 'dispatch({type:"CONTEXT_MENU_CLOSE"})',
-  replacements: [
-    {
-      find: /render:(.{1,3}),renderLazy:(.{1,3}),/,
-      replace: "render:VX.menus._handleMenu($1,false),renderLazy:VX.menus._handleMenu($2,true),"
-    }
-  ]
+  find: /render:(.{1,3}),renderLazy:(.{1,3}),/,
+  replace: "render:window.VX.menus._handleMenu($1,false),renderLazy:VX.menus._handleMenu($2,true),"
 });
 
 interface MenuProps extends MenuRenderProps {

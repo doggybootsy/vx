@@ -14,6 +14,16 @@ function argvIncludesArg(expression) {
   return argvIncludesMatch(new RegExp(`^-?-${expression}$`));
 };
 
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0, len = str.length; i < len; i++) {
+    let chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 const DIST = path.join(__dirname, "dist");
 
 /** @type {esbuild.Plugin} */
@@ -38,6 +48,44 @@ const HTMLPlugin = {
     });
   }
 };
+/** @type {esbuild.Plugin} */
+const ManagedCSSPlugin = {
+  name: "managed-css-plugin",
+  setup(build) {
+    build.onResolve({
+      filter: /\.css\?managed$/
+    }, (args) => ({
+      path: path.resolve(args.resolveDir, args.path).replace(__dirname, ".").replaceAll(path.sep, "/").replace(/\?managed$/, ""),
+      namespace: "managed-css-plugin"
+    }));
+
+    build.onLoad({
+      filter: /.*/, namespace: "managed-css-plugin"
+    }, async (args) => {
+      const css = await readFile(args.path, { encoding: "binary" });
+
+      // How can require 'common/dom' in this? so i dont have to use 'queueMicrotask'
+      return {
+        contents: `
+        export const css = ${JSON.stringify(css)};
+        export function addStyle() {
+          const style = document.createElement("style");
+          style.setAttribute("vx-style-path", ${JSON.stringify(args.path)});
+          style.appendChild(document.createTextNode(css));
+
+          queueMicrotask(() => {
+            removeStyle();
+            VX._self.waitForNode("vx-plugins").then((head) => head.appendChild(style));
+          });
+        };
+        export function removeStyle() {
+          const style = document.querySelector('[vx-style-path=${JSON.stringify(args.path)}');
+          if (style) style.remove();
+        };`
+      }
+    });
+  }
+};
 
 /** @type {esbuild.Plugin} */
 const SelfPlugin = {
@@ -47,6 +95,8 @@ const SelfPlugin = {
       IS_DEV: true,
       VERSION: "1.0.0"
     };
+
+    env.VERSION_HASH = hashCode(env.VERSION).toString(36).toUpperCase();
 
     build.onResolve({
       filter: /^self$/
@@ -58,7 +108,8 @@ const SelfPlugin = {
     build.onLoad({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
-      contents: `export const env = ${JSON.stringify(env)};\nexport const browser = typeof chrome === "object" ? chrome : browser;`
+      contents: `export const env = ${JSON.stringify(env)};
+      export const browser = typeof chrome === "object" ? chrome : browser;`
     }));
   }
 };
@@ -78,7 +129,7 @@ const RequireAllPluginsPlugin = {
     }, async (args) => {
       const pluginDirs = (await readdir("./packages/mod/src/plugins", {
         encoding: "binary"
-      })).filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory());
+      })).filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory()).filter(dir => !dir.endsWith(".ignore"));
 
       return {
         resolveDir: "./packages/mod/src",
@@ -104,7 +155,8 @@ const RequireAllPluginsPlugin = {
       plugins: [
         HTMLPlugin,
         RequireAllPluginsPlugin,
-        SelfPlugin
+        SelfPlugin,
+        ManagedCSSPlugin
       ]
     });
     

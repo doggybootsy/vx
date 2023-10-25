@@ -129,22 +129,6 @@ export class InternalStore {
     };
   };
 };
-export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
-  const [ state, setState ] = React.useState(factory);
-
-  React.useInsertionEffect(() => {
-    function listener() {
-      setState(factory);
-    };
-
-    store.addChangeListener(listener);
-    return () => {
-      store.removeChangeListener(listener);
-    };
-  }, [ ]);
-
-  return state;
-};
 
 const copyCommandSupported = document.queryCommandEnabled("copy") || document.queryCommandSupported("copy");
 export const clipboard = {
@@ -206,15 +190,6 @@ export function getComponentType<P>(component: string | React.ComponentType<P> |
 export function escapeRegex(text: string, flags?: string): RegExp {
   text = text.replace(/[\.\[\]\(\)\\\$\^\|\?\*]/g, "\\$&");
   return new RegExp(text, flags);
-};
-
-export function useSignal() {
-  const controller = React.useMemo(() => new AbortController(), [ ]);
-
-  return <const>[
-    controller.signal, 
-    (reason?: any) => controller.abort(reason)
-  ];
 };
 
 export function getRandomItem<T extends any[]>(array: T): T[number] {

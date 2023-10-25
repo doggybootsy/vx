@@ -6,7 +6,7 @@ export interface EditorEvents {
   ready: MessageEvent<any>
 };
 
-function getTheme(theme: string | void | null): MonacoThemes {
+export function getTheme(theme: string | void | null): MonacoThemes {
   switch (theme) {
     case "light":
     case "vs":

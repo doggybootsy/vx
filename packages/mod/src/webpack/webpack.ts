@@ -35,7 +35,7 @@ function toStringFunction(fn: Function) {
 
   if (!match) return stringed;
 
-  if (match[1].includes("=>") && !/^['"]/.test(match[1])) {
+  if (match[1].includes("=>") && !/^[\['"]/.test(match[1])) {
     return stringed;
   };
 
@@ -53,6 +53,9 @@ function createPush<T extends boolean>(getter: T, push: PushFunction): T extends
       if (Object.prototype.hasOwnProperty.call(modules, id)) {
         const originalModule = modules[id];
 
+        // @ts-expect-error Duplicates happen idfk
+        if (originalModule.__VXOriginal) continue;
+
         let stringedModule = toStringFunction(originalModule).replace(/[\n]/g, "");
         const identifiers = new Set<string>();
 
@@ -60,6 +63,8 @@ function createPush<T extends boolean>(getter: T, push: PushFunction): T extends
           if (typeof patch.match === "string" ? !stringedModule.includes(patch.match) : !patch.match.test(stringedModule)) continue;
 
           if (patch.identifier) identifiers.add(patch.identifier);
+
+          if (!Array.isArray(patch.replacements)) patch.replacements = [ patch.replacements ];
 
           for (const replace of patch.replacements) {
             if (replace.predicate && !replace.predicate()) continue;
@@ -74,15 +79,13 @@ function createPush<T extends boolean>(getter: T, push: PushFunction): T extends
             else stringedModule = stringedModule.replace(replace.find as any, replace.replace as any);
           };
         };
+        
+        stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', '")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${id}`;
 
-        stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', ")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${id}`;
-
-        const moduleFN = (0,eval)(stringedModule);
+        const moduleFN = (0, eval)(stringedModule);
+        moduleFN.__VXOriginal = originalModule;
 
         modules[id] = moduleFN;
-        
-        // @ts-expect-error expose original
-        modules[id].__original = originalModule;
       };
     };
 

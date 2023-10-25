@@ -1,6 +1,6 @@
 import { Panel } from "../..";
 import { Button, Flex, FlexChild, Icons, Tooltip } from "../../../components";
-import { useInternalStore } from "../../../util";
+import { useInternalStore } from "../../../hooks";
 import { CustomCSSCard } from "./card";
 import { customCSSStore } from "./store";
 
@@ -16,7 +16,9 @@ export function CustomCSS() {
             {(props) => (
               <Button
                 {...props}
-                size={Button.Sizes.ICON} 
+                size={Button.Sizes.NONE}
+                look={Button.Looks.BLANK} 
+                className="vx-header-button"
                 onClick={() => {
                   props.onClick();
 

@@ -14,13 +14,13 @@ waitForNode("body").then((body) => {
 waitForNode("head").then((head) => {
   const style = document.createElement("style");
   
-  style.id = "vx-logo";
+  style.id = "vx-logo-css";
   style.appendChild(document.createTextNode(`#vx-logo {
     position: fixed;
     bottom: 4px;
     right: 4px;
     color: rgb(148, 155, 164);
-    z-index: 10000;
+    z-index: 3000;
   }`));
 
   head.appendChild(style);

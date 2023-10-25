@@ -31,7 +31,7 @@ interface InputSettingType extends SettingsCommon {
 export interface CustomSettingType<V> {
   type: SettingType.CUSTOM,
   default: V,
-  render(props: { setState(state: V): void, state: V }): React.ReactNode
+  render?(props: { setState(state: V): void, state: V }): React.ReactNode
 };
 
 type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | CustomSettingType<any>;
@@ -43,6 +43,7 @@ export interface CreatedSetting<T extends SettingTypes> {
   use(): GetSettingType<T>,
   get(): GetSettingType<T>,
   set(value: GetSettingType<T>): void,
+  reset(): void,
   default: GetSettingType<T>,
   type: SettingType,
   render(): React.ReactNode
@@ -50,8 +51,11 @@ export interface CreatedSetting<T extends SettingTypes> {
 
 function getRender(element: SettingTypes, setting: CreatedSetting<any>) {
   if (element.type === SettingType.CUSTOM) {
+    if (!element.render) return () => null;
+
+    const Render = element.render;
     return () => (
-      <element.render state={setting.use()} setState={setting.set} />
+      <Render state={setting.use()} setState={setting.set} />
     )
   };
 
@@ -110,7 +114,7 @@ export function createSettings<K extends Record<string, SettingTypes>>(pluginNam
     if (Object.prototype.hasOwnProperty.call(settings, key)) {
       const element = settings[key];
 
-      const setting = {
+      const setting: CreatedSetting<K[keyof K]> = {
         use() {
           const value = dataStore.use(key);
           
@@ -124,9 +128,13 @@ export function createSettings<K extends Record<string, SettingTypes>>(pluginNam
         set(value) {
           dataStore.set(key, value);
         },
+        reset() {
+          dataStore.set(key, element.default);
+        },
+        render: () => null,
         default: element.default,
         type: element.type
-      } as CreatedSetting<K[keyof K]>;
+      };
 
       setting.render = getRender(element, setting);
 

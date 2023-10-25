@@ -59,7 +59,7 @@ interface Wrap {
 };
 
 function handleProps(props: FlexProps) {
-  // FlexProps.gap is a custom thing | so we add it to style and then delete it
+  // FlexProps.gap is a custom thing | so we add it to style
   props.style ??= {};
   props.style.gap = props.gap;
 };

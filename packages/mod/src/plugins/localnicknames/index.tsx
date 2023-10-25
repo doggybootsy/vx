@@ -3,50 +3,64 @@ import { User } from "discord-types/general";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
 import { getLazyByKeys, getLazyByProtoKeys } from "../../webpack";
-import { GuildMemberStore } from "discord-types/stores";
+import { GuildMemberStore, UserStore } from "discord-types/stores";
 import { MenuComponents, patch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
 import { findInReactTree } from "../../util";
+import { Injector } from "../../patcher";
 
-type PatchedUser = User & { _globalName: string | null, globalName: string | null };
+const injector = new Injector();
+
+type PatchedUser = User & { globalName: string | null, _globalName: string | null };
 
 const dataStore = new DataStore<Record<string, string>>("LocalNicknames", {
   version: 1
 });
 
 async function patchUser() {
-  const UserModule = await getLazyByProtoKeys<typeof User>([ "isClaimed", "isSystemUser" ]);
+  const GuildMemberStore = await getLazyByKeys<UserStore>([ "getCurrentUser", "getUser" ]);
   
-  Object.defineProperty(UserModule.prototype, "globalName", {
-    get(this: PatchedUser) {
-      if (this.id in dataStore.proxy) {
-        return dataStore.proxy[this.id];
-      };
+  injector.after(GuildMemberStore, "getUser", (that, [ userId ], res) => {
+    if (!res) return;
+    // Is patched
+    if ("_globalName" in res) return;
 
-      return this._globalName;
-    },
-    set(this: PatchedUser, v) {
-      this._globalName = v;
-      return true;
-    }
+    let globalName = (res as PatchedUser).globalName;
+
+    Object.defineProperty(res, "globalName", {
+      get(this: PatchedUser) {
+        if (userId in dataStore.proxy) {
+          return dataStore.proxy[userId];
+        };
+  
+        return globalName;
+      },
+      set(this: PatchedUser, v) {
+        globalName = v;
+        return true;
+      }
+    });
+
+    Object.defineProperty(res, "_globalName", {
+      get() {
+        return globalName;
+      }
+    });
   });
 };
 async function patchGuildMember() {
   const GuildMemberStore = await getLazyByKeys<GuildMemberStore>([ "getMember", "getMemberIds" ]);
   
-  const getMember = GuildMemberStore.getMember;
-  GuildMemberStore.getMember = function(guildId, userId) {
-    const res = getMember.call(this, guildId, userId);
-
+  injector.after(GuildMemberStore, "getMember", (that, [ guildId, userId ], res) => {
     if (res && userId in dataStore.proxy) {
       res.nick = dataStore.proxy[userId];
     };
-
-    return res;
-  };
+  });
 };
 
-function useMenu(user: PatchedUser) {
+function useMenu(user?: PatchedUser) {
+  if (!user) return null;
+  
   const label = user.id in dataStore.proxy ? "Edit Local Nickname" : "Add Local Nickname";
 
   return (
@@ -78,8 +92,9 @@ export default definePlugin({
     patchUser();
     patchGuildMember();
 
-    patch("LocalNicknames", "user-context", (props, res) => {
+    patch("LocalNicknames", "user-context", (props, res) => {      
       const menu = useMenu(props.user);
+      if (!menu) return;
 
       const innerProps = findInReactTree<{ children: React.ReactNode[] }>(res, (item) => {
         if (!Array.isArray(item?.children)) return false;

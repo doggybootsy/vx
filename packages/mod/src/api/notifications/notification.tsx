@@ -1,6 +1,6 @@
 import { Notification } from ".";
 import { transformContent } from "../../components";
-import { useInternalStore } from "../../util";
+import { useInternalStore } from "../../hooks";
 import { React, ReactSpring } from "../../webpack/common"
 import { notificationStore } from "./store"
 
@@ -73,22 +73,16 @@ function Notification({ notification }: { notification: Notification }) {
     <div 
       className={`vx-notification${notification.type ? ` vx-notification-type-${notification.type}` : ""}`}
       data-vx-notification-id={notification.id}
-      onMouseOver={(event) => {
-        notification.onMouseOver?.(event);
-
+      onMouseOver={() => {
         if (!springRef.current) return;
         
         springRef.current.reset();
         springRef.current.pause();
       }}
       onMouseLeave={(event) => {
-        notification.onMouseLeave?.(event);
-
         if (!springRef.current) return;
         springRef.current.resume();
       }}
-      onClick={notification.onClick}
-      onContextMenu={notification.onContextMenu}
       ref={notification.ref}
     >
       <div 

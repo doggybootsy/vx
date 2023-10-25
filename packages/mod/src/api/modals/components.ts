@@ -1,4 +1,4 @@
-import { getProxyByKeys } from "../../webpack"
+import { getProxyByKeys } from "../../webpack";
 
 interface ModalCloseButtonProps {
   className?: string,

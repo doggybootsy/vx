@@ -205,3 +205,47 @@ export function Plus(props: IconProps) {
     </svg>
   );
 };
+
+export function Refresh(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
+      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <path d="M9,3 L9,0.75 L6,3.75 L9,6.75 L9,4.5 C11.4825,4.5 13.5,6.5175 13.5,9 C13.5,9.7575 13.3125,10.4775 12.975,11.1 L14.07,12.195 C14.655,11.2725 15,10.1775 15,9 C15,5.685 12.315,3 9,3 Z M9,13.5 C6.5175,13.5 4.5,11.4825 4.5,9 C4.5,8.2425 4.6875,7.5225 5.025,6.9 L3.93,5.805 C3.345,6.7275 3,7.8225 3,9 C3,12.315 5.685,15 9,15 L9,17.25 L12,14.25 L9,11.25 L9,13.5 Z" fill={color} fillRule="nonzero" />
+      </g>
+    </svg>
+  );
+};
+
+export function Reload(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path d="M12 2C6.485 2 2 6.485 2 12H5.33333C5.33333 8.32333 8.32333 5.33333 12 5.33333C15.6767 5.33333 18.6667 8.32333 18.6667 12C18.6667 15.6767 15.6767 18.6667 12 18.6667C10.2033 18.6667 8.55833 17.9333 7.315 16.6867L10.3333 13.6667H2V22L4.935 19.065C6.79833 20.94 9.30167 22 12 22C17.515 22 22 17.515 22 12C22 6.48667 17.515 2 12 2Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Loop(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="-5 0 459 459.648">
+      <path fillRule="evenodd" clipRule="evenOdd" d="m416.324219 293.824219c0 26.507812-21.492188 48-48 48h-313.375l63.199219-63.199219-22.625-22.625-90.511719 90.511719c-6.246094 6.25-6.246094 16.375 0 22.625l90.511719 90.511719 22.625-22.625-63.199219-63.199219h313.375c44.160156-.054688 79.945312-35.839844 80-80v-64h-32zm0 0" fill={color} />
+      <path fillRule="evenodd" clipRule="evenOdd" d="m32.324219 165.824219c0-26.511719 21.488281-48 48-48h313.375l-63.199219 63.199219 22.625 22.625 90.511719-90.511719c6.246093-6.25 6.246093-16.375 0-22.625l-90.511719-90.511719-22.625 22.625 63.199219 63.199219h-313.375c-44.160157.050781-79.949219 35.839843-80 80v64h32zm0 0" fill={color} />
+    </svg>
+  );
+};
+
+export function PIP(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props);
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z" fill={color} />
+      <path d="M8 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-3z" fill={color} />
+    </svg>
+  );
+};

@@ -44,7 +44,9 @@ export function openWindow(opts: {
     type: "POPOUT_WINDOW_OPEN",
     key: windowKey,
     render: () => <Render />,
-    features: {}
+    features: {
+      popout: true
+    }
   });
 
   return () => closeWindow(id);

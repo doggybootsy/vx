@@ -2,7 +2,6 @@ import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
 import { byStrings, getProxyByKeys, getProxyByStrings } from "./filters"
 import { getProxyStore } from "./stores";
-import { InternalStore, useSignal } from "../util";
 import { getMangledProxy, getProxy } from "./util";
 import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
@@ -26,11 +25,11 @@ interface NavigationUtil {
   transitionTo(path: string): void,
 
   // DM
-  transtionToGuild(guildId: null, channelId: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: null, channelId: string, messageId?: string): void,
   // Guild
-  transtionToGuild(guildId: SNOWFLAKE, channelId?: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: string, channelId?: string, messageId?: string): void,
   // Guild Thread
-  transtionToGuild(guildId: SNOWFLAKE | null, channelId: SNOWFLAKE, threadId: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
 
   replace(path: string): void,
 
@@ -60,6 +59,7 @@ interface i18n {
 };
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
+// ComponentDispatch can be easily called before its loaded so this is a just incase
 export const insertText = (() => {
   let ComponentDispatch: any;
   
@@ -105,28 +105,6 @@ export function fetchUser(userId: string): Promise<User> {
   cachedUserFetches.set(userId, request);
 
   return request;
-};
-
-export function useUser(userId: string): User | null {
-  const [ user, setUser ] = React.useState(() => UserStore.getUser(userId) || null);
-  const [ signal, abort ] = useSignal();
-
-  React.useLayoutEffect(() => {
-    if (user) return;
-
-    const fetched = fetchUser(userId); 
-    
-
-    fetched.then((user) => {      
-      if (signal.aborted) return;
-
-      setUser(user);
-    });
-
-    return () => abort();
-  }, [ ]);
-  
-  return user;
 };
 
 export const WindowUtil = getMangledProxy<{

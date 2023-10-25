@@ -10,17 +10,11 @@ export default definePlugin({
   name: "RemoveNoRoles",
   description: "Removes the 'NO ROLES' section from user popouts",
   authors: [ Developers.doggybootsy ],
-  patches: [
-    {
-      match: ".Messages.BOT_PROFILE_REMOVE_PRIVATE_CHANNEL_INTEGRATION",
-      replacements: [
-        {
-          find: /(function .{1,3}\((.{1,3})\){)(var .{1,3}=.{1,3}\.(?:user|guild|guildMember),.{1,3}=.{1,3}\.(?:user|guild|guildMember),)/,
-          replace: "$1if($self.shouldHide($2))return;$3"
-        }
-      ]
-    }
-  ],
+  patches: {
+    match: ".Messages.BOT_PROFILE_REMOVE_PRIVATE_CHANNEL_INTEGRATION",
+    find: /(function .{1,3}\((.{1,3})\){)(var .{1,3}=.{1,3}\.(?:user|guild|guildMember),.{1,3}=.{1,3}\.(?:user|guild|guildMember),)/,
+    replace: "$1if($self.shouldHide($2))return;$3"
+  },
   shouldHide(props: { user: User, guild: Guild, guildMember: GuildMember }) {    
     if (!props.guild || !props.guildMember) return false;
 

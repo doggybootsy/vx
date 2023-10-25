@@ -1,4 +1,4 @@
-import { plainTextPatches } from "../../webpack/patches";
+import { addPlainTextPatch } from "../../webpack/patches";
 import { Notifications } from "./notification";
 import { notificationStore } from "./store";
 
@@ -14,22 +14,14 @@ export interface Notification {
   duration?: number,
 
   // events
-  onMouseOver?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void,
-  onMouseLeave?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void,
-  onClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void,
-  onContextMenu?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void,
   ref?(div: HTMLDivElement): void
 };
 
-plainTextPatches.push({
+addPlainTextPatch({
   identifier: "VX(notifications)",
   match: ".Messages.BILLING_SWITCH_PLAN_UPGRADE",
-  replacements: [
-    {
-      find: /(function .{1,3}\((.{1,3})\){)(var .{1,3}=.{1,3}\.children,.{1,3}=.{1,3}\(.{1,3}\.useState\(null\),2\))/,
-      replace: "$1window.VX.notifications._handleNotifications($2);$3"
-    }
-  ]
+  find: /(function .{1,3}\((.{1,3})\){)(var .{1,3}=.{1,3}\.children,.{1,3}=.{1,3}\(.{1,3}\.useState\(null\),2\))/,
+  replace: "$1window.VX.notifications._handleNotifications($2);$3"
 });
 
 const allowedTypes = new Set([

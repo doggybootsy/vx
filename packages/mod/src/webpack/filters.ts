@@ -45,7 +45,7 @@ export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
 export function getByStrings<T>(strings: string[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byStrings(...strings), opts);
 };
-export function getProxyByStrings<T extends object>(keys: string[], opts?: Webpack.FilterOptions) {
+export function getProxyByStrings<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.FilterOptions) {
   return getProxy<T>(byStrings(...keys), opts);
 };
 export function getLazyByStrings<T>(keys: string[], opts?: Webpack.FilterOptions) {
@@ -69,7 +69,7 @@ export function byRegex(...regexes: RegExp[]): Webpack.ExportedOnlyFilter {
 export function getByRegex<T>(regexes: RegExp[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byRegex(...regexes), opts);
 };
-export function getProxyByRegex<T extends object>(regexes: RegExp[], opts?: Webpack.FilterOptions) {
+export function getProxyByRegex<T extends Record<PropertyKey, any>>(regexes: RegExp[], opts?: Webpack.FilterOptions) {
   return getProxy<T>(byRegex(...regexes), opts);
 };
 export function getLazyByRegex<T>(regexes: RegExp[], opts?: Webpack.FilterOptions) {
@@ -90,7 +90,7 @@ export function byKeys(...keys: string[]): Webpack.ExportedOnlyFilter {
 export function getByKeys<T>(keys: string[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byKeys(...keys), opts);
 };
-export function getProxyByKeys<T extends object>(keys: string[], opts?: Webpack.FilterOptions) {
+export function getProxyByKeys<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.FilterOptions) {
   return getProxy<T>(byKeys(...keys), opts);
 };
 export function getLazyByKeys<T>(keys: string[], opts?: Webpack.FilterOptions) {
@@ -109,7 +109,7 @@ export function byProtoKeys(...keys: string[]): Webpack.ExportedOnlyFilter {
 export function getByProtoKeys<T>(keys: string[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byProtoKeys(...keys), opts);
 };
-export function getProxyByProtoKeys<T extends object>(keys: string[], opts?: Webpack.FilterOptions) {
+export function getProxyByProtoKeys<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.FilterOptions) {
   return getProxy<T>(byProtoKeys(...keys), opts);
 };
 export function getLazyByProtoKeys<T>(keys: string[], opts?: Webpack.FilterOptions) {

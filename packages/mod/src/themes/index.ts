@@ -2,9 +2,19 @@ import { waitForNode } from "common/dom";
 import { themes } from "../native";
 import { internalDataStore } from "../api/storage";
 import { AddonMeta, readMeta } from "./meta";
+import { cssHead } from "../dashboard/pages/customCSS/store";
+import { InternalStore } from "../util";
+
+const vxHead = document.createElement("vx-head");
 
 const themesHead = document.createElement("vx-themes");
-waitForNode("head").then((head) => head.appendChild(themesHead));
+vxHead.append(
+  document.createElement("vx-plugins"), 
+  themesHead,
+  cssHead
+);
+
+waitForNode("head").then((head) => head.append(vxHead));
 
 export class Theme {
   constructor(filename: string, contents: string) {
@@ -68,25 +78,47 @@ export class Theme {
     this.enable();
     return true;
   };
-  delete() {
-    delete themeStore.themes[this.id];
+  async delete() {    
+    await themes.delete(this.id);
+
     this.disable();
 
-    return themes.delete(this.id);
+    delete themeStore.themes[this.id];
+    themeStore.emit();
   };
 };
 
-export const themeStore = new class ThemeStore {
+export const themeStore = new class extends InternalStore {
   constructor() {
-    themes.getAll().then((themes) => {
-      for (const key in themes) {
-        if (Object.prototype.hasOwnProperty.call(themes, key)) {
-          const element = themes[key];
-          
-          this.themes[key] = new Theme(key, element);
-        }
-      }
-    });
+    super();
+
+    this.loadThemes();
+  };
+
+  async loadThemes() {
+    for (const key in this.themes) {
+      if (Object.prototype.hasOwnProperty.call(this.themes, key)) {
+        const theme = this.themes[key];
+        
+        theme._removeStyle();
+      };
+    };
+
+    this.themes = {};
+
+    this.emit();
+
+    const allThemes = await themes.getAll();
+
+    for (const key in allThemes) {
+      if (Object.prototype.hasOwnProperty.call(allThemes, key)) {
+        const element = allThemes[key];
+
+        this.themes[key] = new Theme(key, element);
+      };
+    };
+
+    this.emit();
   };
 
   themes: Record<string, Theme> = {};

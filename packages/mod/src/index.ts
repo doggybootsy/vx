@@ -25,10 +25,11 @@ import "./index.css";
 import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
-import { _addNavigatorButton } from "./dashboard";
+import { _addHomeButton } from "./dashboard";
 
 import { themeStore } from "./themes";
 import { Editor } from "./editor";
+import { Injector } from "./patcher";
 
 // @ts-expect-error
 window.VX = {
@@ -58,13 +59,15 @@ window.VX = {
   storage,
   modals,
   windows: popoutWindows,
+  Editor,
+  Injector,
   _self: {
     _onWebpackModule(module: Webpack.Module) {
       for (const listener of listeners) listener(module);
     },
-    _addNavigatorButton,
     themeStore,
-    Editor
+    waitForNode,
+    _addHomeButton
   }
 };
 

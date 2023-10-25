@@ -47,14 +47,12 @@ export function Home() {
       </Collapsable>
 
       <FormSwitch
-        // @ts-expect-error
-        disabled={typeof DiscordNative === "object" ? !DiscordNative.window.supportsContentProtection() : true}
+        disabled={typeof window.DiscordNative === "object" ? !window.DiscordNative.window.supportsContentProtection() : true}
         value={contentProtection}
         onChange={(value) => {
           setContentProtection(value);
           internalDataStore.set("content-protection", value);
-          // @ts-expect-error
-          DiscordNative.window.setContentProtection(value);
+          window.DiscordNative!.window.setContentProtection(value);
         }}
         style={{ marginTop: 20 }}
         note="When enabled you cannot take screenshots or screen recordings of Discord"

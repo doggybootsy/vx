@@ -4,7 +4,8 @@ import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../com
 import { themes } from "../../native";
 import { Theme, themeStore } from "../../themes";
 import { className, getRandomDefaultAvatar } from "../../util";
-import { React, WindowUtil, openUserContextMenu, useUser } from "../../webpack/common";
+import { useInternalStore, useUser } from "../../hooks";
+import { React, WindowUtil, openUserContextMenu } from "../../webpack/common";
 
 function AuthorIcon({ theme }: { theme: Theme }) {
   const user = theme.meta.authorid ? useUser(theme.meta.authorid) : null;  
@@ -51,7 +52,7 @@ function AuthorIcon({ theme }: { theme: Theme }) {
   );
 };
 
-function ThemeCard({ theme, updateThemes }: { theme: Theme, updateThemes: () => void }) {
+function ThemeCard({ theme }: { theme: Theme }) {
   const [ isEnabled, setEnabled ] = React.useState(() => theme.isEnabled());
   
   return (
@@ -91,7 +92,6 @@ function ThemeCard({ theme, updateThemes }: { theme: Theme, updateThemes: () => 
                   danger: true,
                   onConfirm() {
                     theme.delete();
-                    updateThemes();
                   }
                 });
               }}
@@ -133,18 +133,37 @@ function ThemeCard({ theme, updateThemes }: { theme: Theme, updateThemes: () => 
 };
 
 export function Themes() {
-  const [ themeKeys, setThemeKeys ] = React.useState(() => Object.keys(themeStore.themes));
+  const themeEntries = useInternalStore(themeStore, () => Object.entries(themeStore.themes))
 
   return (
     <Panel 
       title="Themes"
       buttons={
         <>
+          <Tooltip text="Refresh Themes">
+            {(props) => (
+              <Button
+                {...props}
+                size={Button.Sizes.NONE}
+                look={Button.Looks.BLANK} 
+                className="vx-header-button"
+                onClick={() => {
+                  props.onClick();
+
+                  themeStore.loadThemes();
+                }}
+              >
+                <Icons.Refresh />
+              </Button>
+            )}
+          </Tooltip>
           <Tooltip text="Open Folder">
             {(props) => (
               <Button
                 {...props}
-                size={Button.Sizes.ICON} 
+                size={Button.Sizes.NONE}
+                look={Button.Looks.BLANK} 
+                className="vx-header-button"
                 onClick={() => {
                   props.onClick();
                   themes.open();
@@ -164,17 +183,14 @@ export function Themes() {
           className="vx-addons-icon" 
         />
         <span>
-          You need to reload to see themes that you add
+          You need to refresh to see themes that you add / edited
         </span>
       </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
-        {themeKeys.map((key) => (
+        {themeEntries.map(([ key, theme ]) => (
           <FlexChild key={`vx-t-${key}`} >
             <ThemeCard 
-              theme={themeStore.themes[key]} 
-              updateThemes={() => {
-                setThemeKeys(Object.keys(themeStore.themes))
-              }} 
+              theme={theme}
             />
           </FlexChild>
         ))}

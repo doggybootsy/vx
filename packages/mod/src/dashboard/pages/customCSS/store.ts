@@ -1,11 +1,10 @@
-import { waitForNode } from "common/dom";
 import { CustomCSSData, internalDataStore } from "../../../api/storage";
 import { InternalStore } from "../../../util";
 import { closeWindow } from "../../../api/window";
 
-const cssHead = document.createElement("vx-custom-css");
-waitForNode("head").then((head) => head.appendChild(cssHead));
+export const cssHead = document.createElement("vx-custom-css");
 
+// TODO: Make this update when / if internalDataStore is changed
 export const customCSSStore = new class extends InternalStore {
   constructor() {
     super();

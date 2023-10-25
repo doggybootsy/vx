@@ -1,4 +1,5 @@
-import { InternalStore, useInternalStore } from "../../util";
+import { InternalStore } from "../../util";
+import { useInternalStore } from "../../hooks";
 
 export const { localStorage, sessionStorage } = window;
 

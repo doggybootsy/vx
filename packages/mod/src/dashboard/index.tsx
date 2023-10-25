@@ -5,7 +5,7 @@ import { Home, Themes, Plugins } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
-import { plainTextPatches } from "../webpack/patches";
+import { addPlainTextPatch } from "../webpack/patches";
 import { Icons } from "../components";
 import { env } from "self";
 import { CustomCSS } from "./pages/customCSS";
@@ -74,11 +74,10 @@ function Dashboard(props: { section: string }) {
       element: () => (
         <div className="vx-section-info">
           <div className="vx-section-version">
-            VX
-            {" "}
+            <span>{`VX ${env.VERSION} `}</span>
             <span
               className={className([ env.IS_DEV && "vx-section-devmode" ])}
-            >{env.VERSION}</span>
+            >({env.VERSION_HASH})</span>
           </div>
         </div>
       )
@@ -101,33 +100,36 @@ function openDashboard(section: string = "home") {
   ));
 };
 
-plainTextPatches.push(
+addPlainTextPatch(
   {
-    identifier: "VX(private-channels-list)",
-    match: ".showDMHeader",
-    replacements: [
-      {
-        find: /,(.{1,3})=(.{1,3}\.children)/,
-        replace: ",$1=window.VX._self._addNavigatorButton($2)"
-      }
-    ]
+    identifier: "VX(home-button)",
+    find: /(containerRef:.{1,3},children:)\[(.{1,3}),(.{1,3})\]/,
+    replace: "$1[window.VX._self._addHomeButton($2),$3]"
   }
 );
 
-const filter = byStrings("linkButtonIcon", ".linkButton,");
-const NavigatorButton = getProxy<React.FunctionComponent<any>>((m) => m.prototype && filter(m.prototype.render), { searchExports: true })
-
-export function _addNavigatorButton(children: React.ReactNode[]) {  
-  return [
-    ...children,
-    <NavigatorButton 
-      selected={false}
-      text="VX"
-      key="vx-navigation-button"
+function HomeButton() {
+  return (
+    <div
+      id="vx-home-button"
       onClick={() => {
         openDashboard();
       }}
-      icon={Icons.Logo}
-    />
-  ];
+    >
+      <Icons.Logo />
+    </div>
+  );
+};
+
+const seperatorFilter = byStrings(".guildSeparator");
+export function _addHomeButton(children: React.ReactNode[]) {
+  if (!Array.isArray(children)) return children;
+  
+  const index = children.findIndex((child) => React.isValidElement(child) ? seperatorFilter(child.type) : false);
+  
+  if (~index) {
+    children.splice(index - 1, 0, <HomeButton />);
+  };
+
+  return children;
 };

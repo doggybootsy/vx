@@ -1,7 +1,7 @@
 import { getAndEnsureVXPath } from "common/preloads";
 import electron from "electron";
-import { existsSync, mkdirSync } from "node:fs";
-import { mkdir, readFile, readdir } from "node:fs/promises";
+import { mkdirSync } from "node:fs";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 const native = {

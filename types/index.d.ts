@@ -35,21 +35,34 @@ declare module Webpack {
   type AppObject = Array<ModuleWithoutEffect | ModuleWithEffect>;
 };
 
-type NativeObject = import("../packages/desktop/preload/native").NativeObject;
-declare global {
-  interface Window {
-    webpackChunkdiscord_app?: Webpack.AppObject,
-    VXNative?: NativeObject
-  };
-}
-interface Window {
-  webpackChunkdiscord_app?: Webpack.AppObject,
-  VXNative?: NativeObject
+interface DiscordNative {
+  window: {
+    USE_OSX_NATIVE_TRAFFIC_LIGHTS: boolean,
+    setDevtoolsCallbacks(onOpen: () => void, onClose: () => void): void,
+    supportsContentProtection(): boolean,
+    setContentProtection(enabled: boolean): void
+  }
 };
 
-declare type SNOWFLAKE = `${bigint}`;
+interface DiscordWindow {
+  webpackChunkdiscord_app?: Webpack.AppObject,
+  VXNative?: NativeObject,
+  DiscordNative?: DiscordNative
+};
+
+type NativeObject = import("../packages/desktop/preload/native").NativeObject;
+declare global {
+  interface Window extends DiscordWindow {};
+}
+interface Window extends DiscordWindow {};
 
 declare module "*.css" {};
+declare module "*.css?managed" {
+  export const css: string;
+  export function addStyle(document?: Document): void;
+  export function removeStyle(document?: Document): void;
+};
+
 declare module "*.html" {
   const type: Document;
   export default type;
@@ -59,7 +72,8 @@ declare module "@plugins" {};
 declare module "self" {
   interface Enviroment {
     IS_DEV: boolean,
-    VERSION: string
+    VERSION: string,
+    VERSION_HASH: string
   };
   interface Browser {
     runtime: { 

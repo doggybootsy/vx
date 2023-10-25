@@ -46,3 +46,38 @@ export function waitForNode(query: string, options: waitForNodeOptions = {}): Pr
     }
   });
 };
+
+interface waitForElementRemovedOptions {
+  target?: Node,
+  signal?: AbortSignal
+};
+
+export function waitForElementRemoved(element: Node, options: waitForElementRemovedOptions = {}) {
+  const { target = element.ownerDocument ?? document, signal } = options;
+
+  return new Promise<void>((resolve, reject) => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const removedNode of mutation.removedNodes) {
+          if (!removedNode.contains(element)) continue;
+  
+          observer.disconnect();
+          resolve();
+        };
+      };
+    });
+
+    observer.observe(target, {
+      subtree: true,
+      childList: true
+    });
+
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        reject(new DOMException("The user aborted a request"));
+
+        observer.disconnect();
+      });
+    };
+  });
+};

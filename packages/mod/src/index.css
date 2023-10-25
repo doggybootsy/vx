@@ -11,3 +11,6 @@
 .doggybootsy-editor {
   display: block;
 }
+#vx-masks {
+  position: fixed;
+}

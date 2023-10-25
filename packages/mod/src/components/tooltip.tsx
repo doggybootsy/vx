@@ -1,5 +1,5 @@
-import { proxyCache } from "../util";
 import { getProxyByProtoKeys } from "../webpack";
+import { React } from "../webpack/common";
 import ErrorBoundary from "./boundary";
 
 interface TooltipColors {
@@ -17,9 +17,9 @@ interface TooltipColors {
 interface PassedChildrenProps {
   ["aria-label"]: string,
   onBlur(): void,
+  onFocus(): void,
   onClick(): void,
   onContextMenu(): void,
-  onFocus(): void,
   onMouseEnter(): void,
   onMouseLeave(): void
 };
@@ -48,4 +48,48 @@ export function Tooltip(props: TooltipProps) {
       <RawTooltip {...props} />
     </ErrorBoundary>
   );
+};
+
+export function WrapTooltip(props: Omit<TooltipProps, "children"> & { children: React.ReactElement }) {
+  return (
+    <Tooltip {...props}>
+      {(passedProps) => {
+        const child = React.Children.only(props.children);
+        
+        return React.cloneElement(child, {
+          ["aria-label"]: passedProps["aria-label"],
+          onBlur(event: React.FocusEvent) {
+            passedProps.onBlur();
+            
+            if (typeof child.props.onBlur === "function") return child.props.onBlur(event);  
+          },
+          onFocus(event: React.FocusEvent) {
+            passedProps.onFocus();
+            
+            if (typeof child.props.onFocus === "function") return child.props.onFocus(event);  
+          },
+          onClick(event: React.MouseEvent) {
+            passedProps.onClick();
+            
+            if (typeof child.props.onClick === "function") return child.props.onClick(event);  
+          },
+          onContextMenu(event: React.MouseEvent) {
+            passedProps.onMouseLeave();
+            
+            if (typeof child.props.onContextMenu === "function") return child.props.onContextMenu(event);  
+          },
+          onMouseEnter(event: React.MouseEvent) {
+            passedProps.onMouseEnter();
+            
+            if (typeof child.props.onMouseEnter === "function") return child.props.onMouseEnter(event);  
+          },
+          onMouseLeave(event: React.MouseEvent) {
+            passedProps.onMouseLeave();
+            
+            if (typeof child.props.onMouseLeave === "function") return child.props.onMouseLeave(event);  
+          }
+        });
+      }}
+    </Tooltip>
+  )
 };

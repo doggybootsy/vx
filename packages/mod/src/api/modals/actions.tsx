@@ -1,9 +1,11 @@
 import { getProxyByKeys, webpackReady } from "../../webpack";
 
-export type ModalComponent = (props: {
+export interface ModalProps {
   transitionState: 0 | 1 | 2 | 3 | 4 | null,
   onClose: () => void
-}) => React.ReactNode;
+};
+
+export type ModalComponent = (props: ModalProps) => React.ReactNode;
 
 export type ModalOptions = {
   modalKey?: string,
@@ -29,6 +31,8 @@ export function openModal(Component: ModalComponent, options: ModalOptions = {})
     queue.set(options.modalKey!, { options, component: Component });
   }
   else {
+    if (typeof Component !== "function") () => Component;
+
     ModalActions.openModal((props) => (
       <Component {...props} />
     ), options);
