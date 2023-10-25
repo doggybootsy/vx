@@ -15,7 +15,7 @@ export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.F
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("Z", "ZP", "default");
+      else if (searchDefault) keys.push("default");
       
       if (filter.call(module, module.exports, module, module.id)) {
         return module.exports as T;
@@ -50,7 +50,7 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("Z", "ZP", "default");
+      else if (searchDefault) keys.push("default");
       
       if (filter.call(module, module.exports, module, module.id)) {
         modules.push(module.exports);
@@ -91,7 +91,7 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
 
         const keys: string[] = [ ];
         if (searchExports) keys.push(...Object.keys(module.exports));
-        else if (searchDefault) keys.push("Z", "ZP", "default");
+        else if (searchDefault) keys.push("default");
         
         if (filter.call(module, module.exports, module, module.id)) {
           chunk.value = module.exports;

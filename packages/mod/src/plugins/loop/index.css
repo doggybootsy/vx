@@ -14,6 +14,6 @@
   color: var(--brand-experiment);
 }
 
-:root [class*="videoButton-"] {
+:root [class*="videoButton__"] {
   margin-right: 0;
 }

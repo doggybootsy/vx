@@ -42,8 +42,8 @@ export default definePlugin({
   settings,
   patches: {
     match: "ChannelTextAreaButtons",
-    find: /};?(.{1,3}&&.{1,3}\.type===.{1,3}\..{1,3}\.GUILD_TEXT&&null==.{1,3}&&(.{1,3}).push\(\(0,.{1,3}\.jsx\)\(.{1,3},{disabled:(.{1,3}),channel:.{1,3},type:(.{1,3})},"activity"\)\);)/,
-    replace: "};$self._addButton($2,$3,$4);$1"
+    find: /.{1,3}&&.{1,3}\.type===.{1,3}\.ChannelTypes\.GUILD_TEXT&&null==.{1,3}&&(.{1,3})\.push\(\(0,.{1,3}jsx\)\(.{1,3}\.default,{disabled:(.{1,3}),channel:.{1,3},type:(.{1,3})}/,
+    replace: ",$self._addButton($1,$2,$3)$&"
   },
   start() {
     patchSilentTyping();

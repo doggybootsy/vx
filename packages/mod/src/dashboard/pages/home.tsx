@@ -37,10 +37,10 @@ export function Home() {
             }}
           >Open Extensions Directory</Button>
           <Button
-            onClick={() => {
-              WindowUtil.open({
+            onClick={(event) => {
+              WindowUtil.handleClick({
                 href: "https://web.archive.org/web/20221207185248/https://polypane.app/fmkadmapgofadopljbjfkapdkoienihi.zip"
-              });
+              }, event);
             }}
           >RDT Download</Button>
         </Flex>

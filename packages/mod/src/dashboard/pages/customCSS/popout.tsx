@@ -100,10 +100,10 @@ export function openWindow(id: string) {
         <>
           <HeaderBar.Icon
             icon={Icons.Help}
-            onClick={() => {
-              WindowUtil.open({
+            onClick={(event: React.MouseEvent) => {
+              WindowUtil.handleClick({
                 href: "https://developer.mozilla.org/en-US/docs/Web/CSS"
-              });
+              }, event);
             }}
             tooltip="Help"
           />

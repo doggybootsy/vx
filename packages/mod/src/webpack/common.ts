@@ -1,8 +1,8 @@
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { byStrings, getProxyByKeys, getProxyByStrings } from "./filters"
+import { getProxyByKeys, getProxyByStrings } from "./filters"
 import { getProxyStore } from "./stores";
-import { getMangledProxy, getProxy } from "./util";
+import { getProxy } from "./util";
 import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
@@ -37,13 +37,7 @@ interface NavigationUtil {
   goForward(): void
 };
 
-export const NavigationUtils = getMangledProxy<NavigationUtil>("transitionTo - Transitioning to", {
-  transitionTo: byStrings("\"transitionTo - Transitioning to \""),
-  replace: byStrings("\"Replacing route with \""),
-  goBack: byStrings(".goBack()"),
-  goForward: byStrings(".goForward()"),
-  transtionToGuild: byStrings("\"transitionToGuild - Transitioning to \"")
-});
+export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
 
 export function dirtyDispatch(event: DispatchEvent) {
   return new Promise<void>((resolve) => {
@@ -107,13 +101,10 @@ export function fetchUser(userId: string): Promise<User> {
   return request;
 };
 
-export const WindowUtil = getMangledProxy<{
-  open: (opts: { href: string }) => void,
-  isTrusted: (url: string, idk: unknown) => boolean
-}>(".Messages.MALFORMED_LINK_BODY", {
-  open: byStrings(".apply"),
-  isTrusted: byStrings(".getChannelId()")
-});
+export const WindowUtil = getProxyByKeys<{
+  handleClick(options: { href: string }, event?: React.MouseEvent): Promise<void>,
+  isLinkTrusted(link: string): boolean
+}>([ "isLinkTrusted" , "handleClick" ]);
 
 const openUserContextMenuModule = getProxyByStrings<(event: React.MouseEvent, user: User, channel: Channel) => void>([ ".isGroupDM()?", ".isDM()?", "targetIsUser:", ",Promise.all(" ], { searchExports: true });
 export const openUserContextMenu = (event: React.MouseEvent, user: User) => {

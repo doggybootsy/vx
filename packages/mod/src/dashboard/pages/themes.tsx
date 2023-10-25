@@ -107,12 +107,12 @@ function ThemeCard({ theme }: { theme: Theme }) {
                 <div
                   {...props}
                   className="vx-addon-action"
-                  onClick={() => {
+                  onClick={(event) => {
                     props.onClick();
 
-                    WindowUtil.open({
+                    WindowUtil.handleClick({
                       href: theme.meta.source!
-                    })
+                    }, event)
                   }}
                 >
                   <Icons.Github />

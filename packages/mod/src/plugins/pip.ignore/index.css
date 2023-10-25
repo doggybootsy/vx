@@ -13,7 +13,3 @@
 .vx-pip-active {
   color: var(--brand-experiment);
 }
-
-:root [class*="videoButton-"] {
-  margin-right: 0;
-}
