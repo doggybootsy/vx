@@ -25,7 +25,7 @@ import "./index.css";
 import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
-import { _addHomeButton } from "./dashboard";
+import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
 
 import { themeStore } from "./themes";
 import { Editor } from "./editor";
@@ -65,7 +65,8 @@ window.VX = {
     _onWebpackModule: webpack._onWebpackModule,
     themeStore,
     waitForNode,
-    _addHomeButton
+    _addHomeButton,
+    _settingButtonOnClickWrapper
   }
 };
 

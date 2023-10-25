@@ -3,7 +3,7 @@ import { Developers } from "../../constants";
 
 export default definePlugin({
   name: "DoubleClickToCall",
-  description: "Adds a prompt to confirm you wan't to call someone",
+  description: "You need to double click to start a call instead of a single click",
   authors: [ Developers.doggybootsy ],
   patches: [
     {

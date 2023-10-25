@@ -1,12 +1,10 @@
 import { openAlertModal } from "../api/modals";
-import { byStrings, getProxyByProtoKeys } from "../webpack";
+import { getProxyByProtoKeys } from "../webpack";
 import { LayerManager, React } from "../webpack/common";
 import { Home, Themes, Plugins } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
-import { addPlainTextPatch } from "../webpack/patches";
-import { Icons } from "../components";
 import { env } from "self";
 import { CustomCSS } from "./pages/customCSS";
 
@@ -94,42 +92,8 @@ function Dashboard(props: { section: string }) {
   )
 };
 
-function openDashboard(section: string = "home") {
+export function openDashboard(section: string = "home") {
   LayerManager.pushLayer(() => (
     <Dashboard section={section} />
   ));
-};
-
-addPlainTextPatch(
-  {
-    identifier: "VX(home-button)",
-    find: /(containerRef:.{1,3},children:)\[(.{1,3}),(.{1,3})\]/,
-    replace: "$1[window.VX._self._addHomeButton($2),$3]"
-  }
-);
-
-function HomeButton() {
-  return (
-    <div
-      id="vx-home-button"
-      onClick={() => {
-        openDashboard();
-      }}
-    >
-      <Icons.Logo />
-    </div>
-  );
-};
-
-const seperatorFilter = byStrings(".guildSeparator");
-export function _addHomeButton(children: React.ReactNode[]) {
-  if (!Array.isArray(children)) return children;
-  
-  const index = children.findIndex((child) => React.isValidElement(child) ? seperatorFilter(child.type) : false);
-  
-  if (~index) {
-    children.splice(index - 1, 0, <HomeButton />);
-  };
-
-  return children;
 };
