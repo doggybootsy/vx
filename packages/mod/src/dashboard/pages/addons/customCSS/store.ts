@@ -54,43 +54,44 @@ export const customCSSStore = new class extends InternalStore {
     return Object.keys(this.#raw);
   };
 
-  async upload() {
-    const file = await showFilePicker(".vx,.css");
-    if (!file) return;
-
-    const text = await file.text();
-
-    if (file.type === "text/css") {
-      const name = file.name.replace(/\.css$/, "");
-
+  upload() {
+    showFilePicker(async (file) => {
+      if (!file) return;
+  
+      const text = await file.text();
+  
+      if (file.type === "text/css") {
+        const name = file.name.replace(/\.css$/, "");
+  
+        this._updateData((clone) => {
+          const id = Date.now().toString(36).toUpperCase();
+          
+          clone[id] = {
+            css: text,
+            enabled: false,
+            name: name
+          };
+        });
+  
+        return;
+      };
+  
+      if (!text.startsWith("vx")) return;
+      
+      const { type, data } = JSON.parse(text.replace("vx", ""));
+  
+      if (type !== "custom-css") return;
+      
       this._updateData((clone) => {
         const id = Date.now().toString(36).toUpperCase();
         
         clone[id] = {
-          css: text,
+          css: data.css,
           enabled: false,
-          name: name
+          name: data.name
         };
       });
-
-      return;
-    };
-
-    if (!text.startsWith("vx")) return;
-    
-    const { type, data } = JSON.parse(text.replace("vx", ""));
-
-    if (type !== "custom-css") return;
-    
-    this._updateData((clone) => {
-      const id = Date.now().toString(36).toUpperCase();
-      
-      clone[id] = {
-        css: data.css,
-        enabled: false,
-        name: data.name
-      };
-    });
+    }, ".vx,.css");
   };
 
   new() {

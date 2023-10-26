@@ -101,6 +101,7 @@ export function byProtoKeys(...keys: string[]): Webpack.ExportedOnlyFilter {
   const filter = byKeys(...keys);
 
   return (exports) => {
+    if (!exports) return;
     if (!exports.prototype) return;
 
     return filter(exports.prototype);
