@@ -7,21 +7,6 @@ export const extensions = {
   }
 };
 
-export const themes = {
-  open() {
-    if (!window.VXNative) return;
-    window.VXNative.themes.open();
-  },
-  getAll(): Promise<Record<string, string>> {
-    if (!window.VXNative) return Promise.resolve({});
-    return window.VXNative.themes.getAll();
-  },
-  delete(filename: string) {
-    if (!window.VXNative) return Promise.resolve();
-    return window.VXNative.themes.delete(filename);
-  }
-};
-
 export const app = {
   quit() {
     if (!window.VXNative) return window.close();

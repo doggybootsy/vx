@@ -1,16 +1,15 @@
 import { React } from "../../../../webpack/common";
 import { Icons, Button, Tooltip, Switch } from "../../../../components";
 import { openWindow } from "./popout";
-import { customCSSStore } from "./store";
+import { themeStore } from "./store";
 import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
-import { download } from "../../../../util";
 
-export function CustomCSSCard({ id }: { id: string }) {
-  const [ name, setName ] = React.useState(() => customCSSStore.getName(id));
-  const { isEnabled, storedName } = useInternalStore(customCSSStore, () => ({
-    isEnabled: customCSSStore.isEnabled(id),
-    storedName: customCSSStore.getName(id)
+export function ThemeCard({ id }: { id: string }) {
+  const [ name, setName ] = React.useState(() => themeStore.getName(id));
+  const { isEnabled, storedName } = useInternalStore(themeStore, () => ({
+    isEnabled: themeStore.isEnabled(id),
+    storedName: themeStore.getName(id)
   }));
 
   const deferredValue = React.useDeferredValue(storedName);
@@ -38,7 +37,7 @@ export function CustomCSSCard({ id }: { id: string }) {
                 event.currentTarget.blur();
               }}
               onBlur={() => {
-                const oldName = customCSSStore.getName(id);
+                const oldName = themeStore.getName(id);
                 const trimmed = name.trim();
                 
                 setName(trimmed);
@@ -49,7 +48,7 @@ export function CustomCSSCard({ id }: { id: string }) {
                 };
                 if (oldName === trimmed) return;
 
-                customCSSStore.setName(id, trimmed);
+                themeStore.setName(id, trimmed);
               }}
             />
             <div className="vx-addon-input">{name}</div>
@@ -71,18 +70,18 @@ export function CustomCSSCard({ id }: { id: string }) {
                 props.onClick();
 
                 if (event.shiftKey) {
-                  customCSSStore.delete(id);
+                  themeStore.delete(id);
                   return;
                 };
                 
                 openConfirmModal("Are you sure?", [
                   `Are you sure you wan't to delete \`${storedName}\` (\`${id}\`)`,
-                  "You cannot recover deleted custom CSS snippets"
+                  "You cannot recover deleted Themes"
                 ], {
                   confirmText: "Delete",
                   danger: true,
                   onConfirm() {
-                    customCSSStore.delete(id);
+                    themeStore.delete(id);
                   }
                 });
               }}
@@ -97,13 +96,7 @@ export function CustomCSSCard({ id }: { id: string }) {
               size={Button.Sizes.ICON}
               {...props}
               onClick={() => {
-                download(`${id}.vx`, `vx${JSON.stringify({
-                  type: "custom-css",
-                  data: {
-                    css: customCSSStore.getCSS(id),
-                    name: customCSSStore.getName(id)
-                  }
-                })}`);
+                themeStore.download(id);
               }}
             >
               <Icons.Download />
@@ -128,7 +121,7 @@ export function CustomCSSCard({ id }: { id: string }) {
           <Switch 
             checked={isEnabled}
             onChange={() => {
-              customCSSStore.toggle(id);
+              themeStore.toggle(id);
             }}
           />
         </div>

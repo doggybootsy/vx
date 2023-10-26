@@ -1,15 +1,19 @@
-import { CustomCSSData, internalDataStore } from "../../../../api/storage";
-import { InternalStore, showFilePicker } from "../../../../util";
+import { ThemeData, internalDataStore } from "../../../../api/storage";
+import { InternalStore, download, showFilePicker } from "../../../../util";
 import { closeWindow } from "../../../../api/window";
+import { waitForNode } from "common/dom";
 
-export const cssHead = document.createElement("vx-custom-css");
+const themeHead = document.createElement("vx-themes");
 
-// TODO: Make this update when / if internalDataStore is changed
-export const customCSSStore = new class extends InternalStore {
+waitForNode("head").then((head) => {
+  head.append(themeHead, document.createElement("vx-plugins"));
+});
+
+export const themeStore = new class extends InternalStore {
   constructor() {
     super();
 
-    const raw = internalDataStore.get("custom-css") ?? {};
+    const raw = internalDataStore.get("themes") ?? {};
 
     this.#raw = raw;
 
@@ -22,29 +26,29 @@ export const customCSSStore = new class extends InternalStore {
     };
   };
 
-  #raw: Record<string, CustomCSSData>;
+  #raw: Record<string, ThemeData>;
 
   _insertCSS(id: string) {
     const data = this.#raw[id];
 
     const style = document.createElement("style");
-    style.setAttribute("data-vx-custom-css", id);
+    style.setAttribute("data-vx-theme", id);
 
-    const text = document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/custom-css/${id}.css */`);
+    const text = document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/themes/${id}.css */`);
     style.appendChild(text);
 
-    cssHead.appendChild(style);
+    themeHead.appendChild(style);
   };
   _clearCSS(id: string) {
-    const node = cssHead.querySelector(`[data-vx-custom-css=${JSON.stringify(id)}]`);
+    const node = themeHead.querySelector(`[data-vx-theme=${JSON.stringify(id)}]`);
     if (node) node.remove();
   };
-  _updateData(cb: (clone: Record<string, CustomCSSData>) => void) {    
+  _updateData(cb: (clone: Record<string, ThemeData>) => void) {    
     const clone = structuredClone(this.#raw);
 
     cb(clone);
     
-    internalDataStore.set("custom-css", clone);
+    internalDataStore.set("themes", clone);
 
     this.#raw = clone;
     this.emit();
@@ -53,6 +57,16 @@ export const customCSSStore = new class extends InternalStore {
   keys() {
     return Object.keys(this.#raw);
   };
+
+  download(id: string) {
+    download(`${id}.vx`, `vx${JSON.stringify({
+      type: "theme",
+      data: {
+        css: this.getCSS(id),
+        name: this.getName(id)
+      }
+    })}`);
+  }
 
   upload() {
     showFilePicker(async (file) => {
@@ -80,7 +94,7 @@ export const customCSSStore = new class extends InternalStore {
       
       const { type, data } = JSON.parse(text.replace("vx", ""));
   
-      if (type !== "custom-css") return;
+      if (type !== "theme") return;
       
       this._updateData((clone) => {
         const id = Date.now().toString(36).toUpperCase();
@@ -101,12 +115,12 @@ export const customCSSStore = new class extends InternalStore {
       clone[id] = {
         css: "",
         enabled: true,
-        name: `New Custom CSS - ${id}`
+        name: `New Theme - ${id}`
       };
     });
   };
   delete(id: string) {
-    closeWindow(`CUSTOM_CSS_${id}`);
+    closeWindow(`THEME_${id}`);
     this._clearCSS(id);
 
     this._updateData((clone) => {

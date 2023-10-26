@@ -1,8 +1,6 @@
 import { getAndEnsureVXPath } from "common/preloads";
 import electron from "electron";
 import { mkdirSync } from "node:fs";
-import { readFile, readdir } from "node:fs/promises";
-import path from "node:path";
 
 const native = {
   app: {
@@ -18,37 +16,6 @@ const native = {
       const extensionsDir = getAndEnsureVXPath("extensions", (path) => mkdirSync(path));
       
       electron.shell.openPath(extensionsDir);
-    }
-  },
-  themes: {
-    delete(filename: string) {
-      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
-      
-      const filepath = path.join(themesDir, filename);
-
-      return electron.shell.trashItem(filepath);
-    },
-    open() {
-      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
-      
-      electron.shell.openPath(themesDir);
-    },
-    async getAll() {
-      const themesDir = getAndEnsureVXPath("themes", (path) => mkdirSync(path));
-
-      const files = await readdir(themesDir);
-
-      const regex = /\.theme\.css$/;
-      const filteredFiles = files.filter((value) => regex.test(value));
-
-      const entries = await Promise.all(
-        filteredFiles.map(async (file) => {
-          const content = await readFile(path.join(themesDir, file), "binary");
-          return [ file, content ];
-        })
-      );
-
-      return Object.fromEntries(entries);
     }
   },
   clipboard: {

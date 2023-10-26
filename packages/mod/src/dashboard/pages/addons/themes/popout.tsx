@@ -4,28 +4,28 @@ import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
 import { Icons } from "../../../../components";
-import { customCSSStore } from "./store";
+import { themeStore } from "./store";
 import { useInternalStore } from "../../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
 export function openWindow(id: string) {
-  const name = customCSSStore.getName(id);
+  const name = themeStore.getName(id);
   
   windowApi.openWindow({
-    title: `Custom CSS - ${name}`,
-    id: `CUSTOM_CSS_${id}`,
+    title: `Themes - ${name}`,
+    id: `THEME_${id}`,
     render({ window }) {
       const ref = React.useRef<HTMLDivElement>(null);
 
       React.useLayoutEffect(() => {
         if (!ref.current) return;
 
-        const css = customCSSStore.getCSS(id);
+        const css = themeStore.getCSS(id);
         const editor = new Editor(ref.current, "css", css);
         
         const debounced = debounce((css: string) => {          
-          customCSSStore.setCSS(id, css);
+          themeStore.setCSS(id, css);
         }, 500);
         
         editor.on("change", debounced);
@@ -110,14 +110,14 @@ export function openWindow(id: string) {
         </>
       );
 
-      const [ name, setName ] = React.useState(() => customCSSStore.getName(id));
-      const storedName = useInternalStore(customCSSStore, () => customCSSStore.getName(id));
+      const [ name, setName ] = React.useState(() => themeStore.getName(id));
+      const storedName = useInternalStore(themeStore, () => themeStore.getName(id));
 
       const deferredValue = React.useDeferredValue(storedName);
       React.useLayoutEffect(() => {
         setName(deferredValue);
         
-        window.document.title = `Custom CSS - ${storedName}`;
+        window.document.title = `Themes - ${storedName}`;
       }, [ deferredValue ]);
 
       return (
@@ -142,7 +142,7 @@ export function openWindow(id: string) {
                     event.currentTarget.blur();
                   }}
                   onBlur={() => {
-                    const oldName = customCSSStore.getName(id);
+                    const oldName = themeStore.getName(id);
                     const trimmed = name.trim();
                     
                     setName(trimmed);
@@ -153,7 +153,7 @@ export function openWindow(id: string) {
                     };
                     if (oldName === trimmed) return;
     
-                    customCSSStore.setName(id, trimmed);
+                    themeStore.setName(id, trimmed);
                   }}
                 />
                 <div id="label-text" className="vx-input">{name}</div>

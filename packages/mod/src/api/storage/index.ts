@@ -176,7 +176,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
 };
 
-export interface CustomCSSData {
+export interface ThemeData {
   enabled: boolean,
   css: string,
   name: string
@@ -184,15 +184,23 @@ export interface CustomCSSData {
 
 interface InternalData {
   "enabled-plugins": string[],
-  "enabled-themes": string[],
-  "custom-css": Record<string, CustomCSSData>,
+  "themes": Record<string, ThemeData>,
   "content-protection": boolean,
   "user-setting-shortcut": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 2,
+  version: 3,
   upgrader(version, oldData) {
+    if (version === 2) {
+      const themes = oldData["custom-css"];
+
+      delete oldData["custom-css"];
+
+      oldData.themes = themes;
+
+      return oldData;
+    };
     if (version === 1) {
       const css = oldData["custom-css"];
 

@@ -2,15 +2,15 @@ import { Panel } from "../../..";
 import { Button, Flex, FlexChild, Icons, Tooltip } from "../../../../components";
 import { useInternalStore } from "../../../../hooks";
 import { NoAddons } from "../shared";
-import { CustomCSSCard } from "./card";
-import { customCSSStore } from "./store";
+import { ThemeCard } from "./card";
+import { themeStore } from "./store";
 
-export function CustomCSS() {
-  const keys = useInternalStore(customCSSStore, () => customCSSStore.keys());
+export function Themes() {
+  const keys = useInternalStore(themeStore, () => themeStore.keys());
 
   return (
     <Panel
-      title="Custom CSS"
+      title="Themes"
       buttons={
         <>
           <Tooltip text="Upload">
@@ -23,7 +23,7 @@ export function CustomCSS() {
                 onClick={() => {
                   props.onClick();
 
-                  customCSSStore.upload();
+                  themeStore.upload();
                 }}
               >
                 <Icons.Upload />
@@ -40,7 +40,7 @@ export function CustomCSS() {
                 onClick={() => {
                   props.onClick();
 
-                  customCSSStore.new();
+                  themeStore.new();
                 }}
               >
                 <Icons.Plus />
@@ -53,7 +53,7 @@ export function CustomCSS() {
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
         {keys.length ? keys.map((key) => (
           <FlexChild key={`vx-c-${key}`} >
-            <CustomCSSCard id={key} />
+            <ThemeCard id={key} />
           </FlexChild>
         )) : (
           <NoAddons message="No Custom CSS Found" />

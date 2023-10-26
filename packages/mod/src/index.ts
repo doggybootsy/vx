@@ -27,7 +27,6 @@ import { waitForNode } from "common/dom";
 import masks from "./masks.html";
 import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
 
-import { themeStore } from "./themes";
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
 
@@ -63,7 +62,6 @@ window.VX = {
   Injector,
   _self: {
     _onWebpackModule: webpack._onWebpackModule,
-    themeStore,
     waitForNode,
     _addHomeButton,
     _settingButtonOnClickWrapper
