@@ -18,9 +18,7 @@ webpackAppChunk.push([
     };
 
     wpr.m = new Proxy(wpr.m, {
-      set(modules, id, value: Webpack.RawModule) {
-        return set(modules, id, value);
-      }
+      set(modules, id, value: Webpack.RawModule) { return set(modules, id, value); }
     });
 
     wpr.d = (target, exports) => {
@@ -46,7 +44,7 @@ function toStringFunction(fn: Function) {
   const stringed = fn.toString();
   const match = stringed.match(getPrefix);
 
-  if (!match) return stringed;
+  if (!match || !match[1]) return stringed;
 
   if (match[1].includes("=>") && !/^[\['"]/.test(match[1])) {
     return stringed;
@@ -92,6 +90,6 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   return true;
 };
 
-export function _onWebpackModule(module: Webpack.Module, exports: any, id: PropertyKey) {
+export function _onWebpackModule(module: Webpack.Module) {
   for (const listener of listeners) listener(module);
 };

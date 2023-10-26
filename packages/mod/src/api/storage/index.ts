@@ -186,7 +186,8 @@ interface InternalData {
   "enabled-plugins": string[],
   "enabled-themes": string[],
   "custom-css": Record<string, CustomCSSData>,
-  "content-protection": boolean
+  "content-protection": boolean,
+  "user-setting-shortcut": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {

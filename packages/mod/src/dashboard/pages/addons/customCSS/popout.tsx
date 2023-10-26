@@ -1,11 +1,11 @@
-import { React, WindowUtil } from "../../../webpack/common";
-import * as windowApi from "../../../api/window";
-import { Editor } from "../../../editor";
+import { React, WindowUtil } from "../../../../webpack/common";
+import * as windowApi from "../../../../api/window";
+import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
-import { byKeys, byStrings, combine, getProxy, not } from "../../../webpack";
-import { Icons } from "../../../components";
+import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
+import { Icons } from "../../../../components";
 import { customCSSStore } from "./store";
-import { useInternalStore } from "../../../hooks";
+import { useInternalStore } from "../../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 

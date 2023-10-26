@@ -1,10 +1,11 @@
-import { Panel } from "../..";
-import { Flex, Icons, FlexChild, Tooltip, Button } from "../../../components";
-import { plugins } from "../../../plugins";
+import { Panel } from "../../..";
+import { Flex, Icons, FlexChild, Tooltip, Button } from "../../../../components";
+import { plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
+import { React } from "../../../../webpack/common";
 
 export function Plugins() {
-  const pluginKeys = Object.keys(plugins);
+  const entries = React.useMemo(() => Object.entries(plugins), [ ]);
 
   return (
     <Panel 
@@ -41,9 +42,9 @@ export function Plugins() {
         </span>
       </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
-        {pluginKeys.map((key) => (
+        {entries.map(([ key, plugin ]) => (
           <FlexChild key={`vx-p-${key}`} >
-            <PluginCard plugin={plugins[key]} />
+            <PluginCard plugin={plugin} />
           </FlexChild>
         ))}
       </Flex>

@@ -2,7 +2,7 @@ import { waitForNode } from "common/dom";
 import { themes } from "../native";
 import { internalDataStore } from "../api/storage";
 import { AddonMeta, readMeta } from "./meta";
-import { cssHead } from "../dashboard/pages/customCSS/store";
+import { cssHead } from "../dashboard/pages/addons/customCSS/store";
 import { InternalStore } from "../util";
 
 const vxHead = document.createElement("vx-head");

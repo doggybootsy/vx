@@ -28,14 +28,14 @@ async function patchUser() {
     let globalName = (res as PatchedUser).globalName;
 
     Object.defineProperty(res, "globalName", {
-      get(this: PatchedUser) {
+      get() {
         if (userId in dataStore.proxy) {
           return dataStore.proxy[userId];
         };
   
         return globalName;
       },
-      set(this: PatchedUser, v) {
+      set(v) {
         globalName = v;
         return true;
       }

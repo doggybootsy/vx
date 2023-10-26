@@ -1,11 +1,4 @@
-export const didNativeExist = typeof window.VXNative === "object";
-
-export const updater = {
-  update() {
-    if (!window.VXNative) return;
-    window.VXNative.updater.update();
-  }
-};
+export const IS_DESKTOP = typeof window.VXNative === "object";
 
 export const extensions = {
   open() {

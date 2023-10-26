@@ -1,9 +1,10 @@
-import { React } from "../../../webpack/common";
-import { Icons, Button, Tooltip, Switch } from "../../../components";
+import { React } from "../../../../webpack/common";
+import { Icons, Button, Tooltip, Switch } from "../../../../components";
 import { openWindow } from "./popout";
 import { customCSSStore } from "./store";
-import { useInternalStore } from "../../../hooks";
-import { openConfirmModal } from "../../../api/modals";
+import { useInternalStore } from "../../../../hooks";
+import { openConfirmModal } from "../../../../api/modals";
+import { download } from "../../../../util";
 
 export function CustomCSSCard({ id }: { id: string }) {
   const [ name, setName ] = React.useState(() => customCSSStore.getName(id));
@@ -87,6 +88,25 @@ export function CustomCSSCard({ id }: { id: string }) {
               }}
             >
               <Icons.Trash />
+            </Button>
+          )}
+        </Tooltip>
+        <Tooltip text="Download">
+          {(props) => (
+            <Button
+              size={Button.Sizes.ICON}
+              {...props}
+              onClick={() => {
+                download(`${id}.vx`, `vx${JSON.stringify({
+                  type: "custom-css",
+                  data: {
+                    css: customCSSStore.getCSS(id),
+                    name: customCSSStore.getName(id)
+                  }
+                })}`);
+              }}
+            >
+              <Icons.Download />
             </Button>
           )}
         </Tooltip>

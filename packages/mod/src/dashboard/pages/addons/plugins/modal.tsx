@@ -1,6 +1,6 @@
-import { ModalComponents, openModal } from "../../../api/modals";
-import { Flex, FlexChild } from "../../../components";
-import { Plugin } from "../../../plugins";
+import { ModalComponents, openModal } from "../../../../api/modals";
+import { Flex, FlexChild } from "../../../../components";
+import { Plugin } from "../../../../plugins";
 
 export function openPluginSettingsModal(plugin: Plugin) {
   const settings = plugin.exports.settings!;

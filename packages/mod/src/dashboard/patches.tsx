@@ -1,4 +1,5 @@
 import { openDashboard } from ".";
+import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { byStrings } from "../webpack";
 import { React } from "../webpack/common";
@@ -45,8 +46,10 @@ export function _addHomeButton(children: React.ReactNode[]) {
 };
 
 export function _settingButtonOnClickWrapper(onClick: (event: React.MouseEvent) => void) {
+  const shouldOpen = () => internalDataStore.get("user-setting-shortcut") ?? true;
+  
   return (event: React.MouseEvent) => {
-    if (event.shiftKey) {
+    if (event.shiftKey && shouldOpen()) {
       openDashboard();
 
       return;

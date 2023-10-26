@@ -1,11 +1,11 @@
-import { openUserModal } from "../../../api/modals";
-import { Icons, Mask, Tooltip, Switch } from "../../../components";
-import { Developer } from "../../../constants";
-import { Plugin } from "../../../plugins";
-import { className, getRandomDefaultAvatar } from "../../../util";
-import { React, openUserContextMenu } from "../../../webpack/common";
+import { openUserModal } from "../../../../api/modals";
+import { Icons, Mask, Tooltip, Switch } from "../../../../components";
+import { Developer } from "../../../../constants";
+import { Plugin } from "../../../../plugins";
+import { className, getRandomDefaultAvatar } from "../../../../util";
+import { React, openUserContextMenu } from "../../../../webpack/common";
 import { openPluginSettingsModal } from "./modal";
-import { useUser } from "../../../hooks";
+import { useUser } from "../../../../hooks";
 
 function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
   const user = useUser(dev.discord);

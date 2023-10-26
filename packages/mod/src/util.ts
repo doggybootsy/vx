@@ -249,3 +249,46 @@ export function wrapInHooks<P>(functionComponent: React.FunctionComponent<P>): R
     }
   };
 };
+
+export function showFilePicker(accepts: string = "*") {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = accepts;
+  document.body.append(input);
+
+  input.showPicker();
+  input.focus();
+
+  const then = Date.now();
+  return new Promise<File | null>((resolve) => {
+    input.addEventListener("blur", () => {
+      // No idea if its a bug or not, but re open if its instantly blurred
+      if (50 >= (Date.now() - then)) {                
+        input.focus();
+        return;
+      };
+
+      input.remove();
+
+      const [ file ] = input.files!;
+      
+      resolve(file ?? null);
+    });
+    input.addEventListener("change", () => input.blur());
+  })
+};
+
+export function download(filename: string, text: string) {
+  const blob = new Blob([ text ], { type: "application/octet-binary" });
+  const blobURL = URL.createObjectURL(blob);
+
+  const anchor = document.createElement("a");
+  anchor.href = blobURL;
+  anchor.download = filename;
+  document.body.append(anchor);
+
+  anchor.click();
+
+  anchor.remove();
+  URL.revokeObjectURL(blobURL);
+};

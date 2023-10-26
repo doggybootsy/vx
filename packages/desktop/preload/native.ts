@@ -5,11 +5,6 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 const native = {
-  updater: {
-    update() {
-      electron.ipcRenderer.invoke("@vx/update");
-    }
-  },
   app: {
     quit() {
       electron.ipcRenderer.invoke("@vx/quit");

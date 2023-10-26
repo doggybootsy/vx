@@ -50,6 +50,17 @@ export const plainTextPatches: PlainTextPatch[] = [
         replace: "$1=''"
       }
     ]
+  },
+  // No more "HOLD UP!"
+  {
+    identifier: "VX(no-hold-up)",
+    match: ".window.setDevtoolsCallbacks",
+    replacements: [
+      {
+        find: /.+/,
+        replace: "function(module,exports,require){require.r(exports);require.d(exports,{default(){return ()=>{}}})}"
+      }
+    ]
   }
 ];
 

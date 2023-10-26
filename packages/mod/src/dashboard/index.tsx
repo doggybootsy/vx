@@ -1,12 +1,12 @@
 import { openAlertModal } from "../api/modals";
 import { getProxyByProtoKeys } from "../webpack";
 import { LayerManager, React } from "../webpack/common";
-import { Home, Themes, Plugins } from "./pages";
+import { Home, Themes, Plugins, CustomCSS } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
 import { env } from "self";
-import { CustomCSS } from "./pages/customCSS";
+import { IS_DESKTOP } from "../native";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -51,6 +51,7 @@ function Dashboard(props: { section: string }) {
     { 
       section: "themes", 
       label: "Themes",
+      predicate: () => IS_DESKTOP,
       element: () => <Themes />
     },
     { 

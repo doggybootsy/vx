@@ -1,11 +1,12 @@
-import { Panel } from "..";
-import { openConfirmModal, openUserModal } from "../../api/modals";
-import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../components";
-import { themes } from "../../native";
-import { Theme, themeStore } from "../../themes";
-import { className, getRandomDefaultAvatar } from "../../util";
-import { useInternalStore, useUser } from "../../hooks";
-import { React, WindowUtil, openUserContextMenu } from "../../webpack/common";
+import { Panel } from "../..";
+import { openConfirmModal, openUserModal } from "../../../api/modals";
+import { Button, Icons, Tooltip, Switch, Flex, FlexChild, Mask } from "../../../components";
+import { themes } from "../../../native";
+import { Theme, themeStore } from "../../../themes";
+import { className, getRandomDefaultAvatar } from "../../../util";
+import { useInternalStore, useUser } from "../../../hooks";
+import { React, WindowUtil, openUserContextMenu } from "../../../webpack/common";
+import { NoAddons } from "./shared";
 
 function AuthorIcon({ theme }: { theme: Theme }) {
   const user = theme.meta.authorid ? useUser(theme.meta.authorid) : null;  
@@ -133,7 +134,7 @@ function ThemeCard({ theme }: { theme: Theme }) {
 };
 
 export function Themes() {
-  const themeEntries = useInternalStore(themeStore, () => Object.entries(themeStore.themes))
+  const entries = useInternalStore(themeStore, () => Object.entries(themeStore.themes))
 
   return (
     <Panel 
@@ -187,13 +188,15 @@ export function Themes() {
         </span>
       </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
-        {themeEntries.map(([ key, theme ]) => (
+        {entries.length ? entries.map(([ key, theme ]) => (
           <FlexChild key={`vx-t-${key}`} >
             <ThemeCard 
               theme={theme}
             />
           </FlexChild>
-        ))}
+        )) : (
+          <NoAddons message="No Custom CSS Found" />
+        )}
       </Flex>
     </Panel>
   )
