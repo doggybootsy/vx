@@ -5,7 +5,21 @@ import { Plugin } from "../../../../plugins";
 export function openPluginSettingsModal(plugin: Plugin) {
   const settings = plugin.exports.settings!;
 
-  const entries = Object.entries(settings);
+  let Content: React.FunctionComponent;
+  if (typeof settings === "function") Content = settings;
+  else {
+    const entries = Object.entries(settings);
+
+    Content = () => (
+      <Flex direction={Flex.Direction.VERTICAL} gap={20}>
+        {entries.map(([ key, setting ]) => (
+          <FlexChild key={`vx-p-s-${key}`}>
+            <setting.render />
+          </FlexChild>
+        ))}
+      </Flex>
+    );
+  };
 
   openModal((props) => {
     return (
@@ -20,13 +34,7 @@ export function openPluginSettingsModal(plugin: Plugin) {
           <ModalComponents.ModalCloseButton onClick={props.onClose} />
         </ModalComponents.ModalHeader>
         <ModalComponents.ModalContent>
-          <Flex direction={Flex.Direction.VERTICAL} gap={20}>
-            {entries.map(([ key, setting ]) => (
-              <FlexChild key={`vx-p-s-${key}`}>
-                <setting.render />
-              </FlexChild>
-            ))}
-          </Flex>
+          <Content />
         </ModalComponents.ModalContent>
       </ModalComponents.ModalRoot>
     );

@@ -9,7 +9,7 @@ import { Channel, User } from "discord-types/general";
 import { proxyCache } from "../util";
 
 export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
-export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "hydrateRoot" ]);
+export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
 export const UserStore = getProxyStore("UserStore");
 export const ChannelStore = getProxyStore("ChannelStore");
@@ -36,8 +36,8 @@ interface NavigationUtil {
 
   replace(path: string): void,
 
-  goBack(): void,
-  goForward(): void
+  back(): void,
+  forward(): void
 };
 
 export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);

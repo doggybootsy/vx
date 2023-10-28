@@ -67,10 +67,11 @@ const ManagedCSSPlugin = {
       // How can require 'common/dom' in this? so i dont have to use 'queueMicrotask'
       return {
         contents: `
+        export const id = ${JSON.stringify(args.path)};
         export const css = ${JSON.stringify(css)};
         export function addStyle() {
           const style = document.createElement("style");
-          style.setAttribute("vx-style-path", ${JSON.stringify(args.path)});
+          style.setAttribute("vx-style-path", id);
           style.appendChild(document.createTextNode(css));
 
           queueMicrotask(() => {
@@ -79,7 +80,7 @@ const ManagedCSSPlugin = {
           });
         };
         export function removeStyle() {
-          const style = document.querySelector('[vx-style-path=${JSON.stringify(args.path)}');
+          const style = document.querySelector(\`[vx-style-path=\${JSON.stringify(id)}\`);
           if (style) style.remove();
         };`
       }
@@ -113,8 +114,8 @@ const SelfPlugin = {
     }));
   }
 };
-/** @type {esbuild.Plugin} */
-const RequireAllPluginsPlugin = {
+/** @type {(desktop: boolean) => esbuild.Plugin} */
+const RequireAllPluginsPlugin = (desktop) => ({
   name: "require-all-plugins-plugin",
   setup(build) {
     build.onResolve({
@@ -129,7 +130,10 @@ const RequireAllPluginsPlugin = {
     }, async (args) => {
       const pluginDirs = (await readdir("./packages/mod/src/plugins", {
         encoding: "binary"
-      })).filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory()).filter(dir => !dir.endsWith(".ignore"));
+      }))
+        .filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory())
+        .filter(dir => !dir.endsWith(".ignore"))
+        .filter(dir => !dir.endsWith(desktop ? "web" : "desktop"));
 
       return {
         resolveDir: "./packages/mod/src",
@@ -137,24 +141,26 @@ const RequireAllPluginsPlugin = {
       }
     });
   }
-};
+});
 
 (async function() {
-  if (argvIncludesArg("b(uild)?")) {
-    console.log("Building");
-  
-    if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });
+  if (argvIncludesArg("d(esktop)?")) {
+    console.log("Building Desktop Files!");
+    
+    const app = path.join(__dirname, "app");
+    if (existsSync(app)) rmSync(app, { recursive: true, force: true });
+    mkdirSync(app);
 
     await esbuild.build({
       entryPoints: [ "packages/mod/src/index.ts" ],
-      outfile: "dist/build.js",
+      outfile: "app/build.js",
       bundle: true,
       platform: "browser",
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
       plugins: [
         HTMLPlugin,
-        RequireAllPluginsPlugin,
+        RequireAllPluginsPlugin(true),
         SelfPlugin,
         ManagedCSSPlugin
       ]
@@ -162,7 +168,7 @@ const RequireAllPluginsPlugin = {
     
     await esbuild.build({
       entryPoints: [ "packages/desktop/main/index.ts" ],
-      outfile: "dist/main.js",
+      outfile: "app/index.js",
       bundle: true,
       platform: "node",
       external: [ "electron" ],
@@ -174,7 +180,7 @@ const RequireAllPluginsPlugin = {
     
     await esbuild.build({
       entryPoints: [ "packages/desktop/preload/index.ts" ],
-      outfile: "dist/mainPreload.js",
+      outfile: "app/main.js",
       bundle: true,
       platform: "node",
       external: [ "electron" ],
@@ -185,7 +191,7 @@ const RequireAllPluginsPlugin = {
     });
     await esbuild.build({
       entryPoints: [ "packages/desktop/splash/index.ts" ],
-      outfile: "dist/splashPreload.js",
+      outfile: "app/splash.js",
       bundle: true,
       platform: "node",
       external: [ "electron" ],
@@ -195,17 +201,6 @@ const RequireAllPluginsPlugin = {
         HTMLPlugin
       ]
     });
-  };
-  if (argvIncludesArg("d(esktop)?")) {
-    if (!existsSync(DIST)) {
-      // todo: escape / error handle
-      throw "compile first";
-    }
-    
-    const app = path.join(__dirname, "app");
-    if (existsSync(app)) rmSync(app, { recursive: true, force: true });
-  
-    mkdirSync(app);
   
     writeFileSync(path.join(app, "package.json"), JSON.stringify({
       version: "1.0.0",
@@ -214,15 +209,31 @@ const RequireAllPluginsPlugin = {
       main: "index.js",
       author: "doggybootsy"
     }));
-  
-    copyFileSync(path.join(DIST, "main.js"), path.join(app, "index.js"));
-    copyFileSync(path.join(DIST, "mainPreload.js"), path.join(app, "main.js"));
-    copyFileSync(path.join(DIST, "splashPreload.js"), path.join(app, "splash.js"));
-    copyFileSync(path.join(DIST, "build.js"), path.join(app, "build.js"));
-    copyFileSync(path.join(DIST, "build.css"), path.join(app, "build.css"));
   };
   if (argvIncludesArg("a(sar)?")) {
     await asar.createPackage("./app", "app.asar");
     console.log("Made asar");
+  };
+  if (argvIncludesArg("w(eb)?")) {
+    console.log("Building Web Files!");
+    
+    const web = path.join(__dirname, "web");
+    if (existsSync(web)) rmSync(web, { recursive: true, force: true });
+    mkdirSync(web);
+
+    await esbuild.build({
+      entryPoints: [ "packages/mod/src/index.ts" ],
+      outfile: "web/build.js",
+      bundle: true,
+      platform: "browser",
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      jsx: "transform",
+      plugins: [
+        HTMLPlugin,
+        RequireAllPluginsPlugin(false),
+        SelfPlugin,
+        ManagedCSSPlugin
+      ]
+    });
   };
 })();

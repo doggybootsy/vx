@@ -21,7 +21,7 @@ export function ThemeCard({ id }: { id: string }) {
     <div className="vx-addon-card">
       <div className="vx-addon-top">
         <div className="vx-addon-icon-wrapper">
-          <Icons.Brush className="vx-addon-icon" height={32} width={32} />
+          <Icons.Palette className="vx-addon-icon" height={32} width={32} />
         </div>
         <div className="vx-addon-details">
           <div className="vx-addon-name">

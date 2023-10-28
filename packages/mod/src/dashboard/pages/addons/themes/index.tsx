@@ -6,7 +6,11 @@ import { ThemeCard } from "./card";
 import { themeStore } from "./store";
 
 export function Themes() {
-  const keys = useInternalStore(themeStore, () => themeStore.keys());
+  const keys = useInternalStore(themeStore, () => {
+    const keys = themeStore.keys();
+
+    return keys.sort((a, b) => themeStore.getName(a).localeCompare(themeStore.getName(b)));
+  });
 
   return (
     <Panel

@@ -1,9 +1,5 @@
 console.log("Welcome to VX 2.0");
 
-import { getModule } from "./webpack/searching";
-import { webpackRequire } from "./webpack/webpack";
-import { plainTextPatches } from "./webpack/patches";
-import { byKeys, byStrings, byProtoKeys, getByKeys, getByProtoKeys, getByStrings } from "./webpack/filters";
 import * as util from "./util";
 import * as components from "./components";
 import { React } from "./webpack/common";
@@ -29,30 +25,16 @@ import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patche
 
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
+import { api } from "./webpack/api";
 
 // @ts-expect-error
 window.VX = {
   plugins,
-  webpack: {
-    getModule,
-    get require(){ return webpackRequire },
-    getByKeys, 
-    getByProtoKeys, 
-    getByStrings,
-    filters: {
-      byKeys,
-      byProtoKeys,
-      byStrings
-    },
-    patches: plainTextPatches,
-    common: common,
-
-    __raw: webpack
-  },
+  webpack: api,
   menus,
   notifications,
   minipopover: mp,
-  React: React,
+  React,
   util,
   components,
   storage,

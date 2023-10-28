@@ -66,7 +66,7 @@ function ensureProps(props: ColorPickerProps) {
     props.colors = roleColors;
   }
   if (typeof props.defaultColor !== "number") {
-    props.defaultColor = isLightTheme ? 14935528 : 2105893;
+    props.defaultColor = isLightTheme ? 0xE3E5E8 : 0x202225;
   }
 };
 

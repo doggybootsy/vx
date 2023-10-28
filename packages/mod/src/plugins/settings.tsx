@@ -11,12 +11,13 @@ export const enum SettingType {
 interface SettingsCommon {
   title: string,
   description?: string,
-  disabled?(): boolean
+  // How does one type this, so it shows all of the settings? Because SettingTypes can't be used in itself
+  disabled?(settings: CreatedSettings<Record<string, SettingTypes>>): boolean
 };
 
 interface SwitchSettingType extends SettingsCommon {
   type: SettingType.SWITCH,
-  props?: Omit<FormSwitchProps, "value" | "onChange" | "children" | "note">,
+  props?: Omit<FormSwitchProps, "disabled" | "value" | "onChange" | "children" | "note">,
   default: boolean
 };
 interface ColorSettingType extends SettingsCommon {
@@ -49,7 +50,7 @@ export interface CreatedSetting<T extends SettingTypes> {
   render(): React.ReactNode
 };
 
-function getRender(element: SettingTypes, setting: CreatedSetting<any>) {
+function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>, settings: CreatedSettings<Record<string, SettingTypes>>) {
   if (element.type === SettingType.CUSTOM) {
     if (!element.render) return () => null;
 
@@ -65,7 +66,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<any>) {
 
     return () => {
       const value = setting.use() as boolean;
-      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled() : false;
+      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled(settings) : false;
 
       return (
         <FormSwitch
@@ -83,7 +84,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<any>) {
 
     return () => {
       const value = setting.use() as number;
-      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled() : false;
+      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled(settings) : false;
 
       return (
         <FormBody title={element.title} description={element.description}>
@@ -105,10 +106,12 @@ function getRender(element: SettingTypes, setting: CreatedSetting<any>) {
   );
 };
 
-export function createSettings<K extends Record<string, SettingTypes>>(pluginName: string, settings: K): { [key in keyof K]: CreatedSetting<K[key]> } {
+type CreatedSettings<K extends Record<string, SettingTypes>> = { [key in keyof K]: CreatedSetting<K[key]> };
+
+export function createSettings<K extends Record<string, SettingTypes>>(pluginName: string, settings: K): CreatedSettings<K> {
   let dataStore: DataStore = new DataStore(pluginName);
 
-  const result = { } as{ [key in keyof K]: CreatedSetting<K[key]> };
+  const result = { } as CreatedSettings<K>;
 
   for (const key in settings) {
     if (Object.prototype.hasOwnProperty.call(settings, key)) {
@@ -118,7 +121,7 @@ export function createSettings<K extends Record<string, SettingTypes>>(pluginNam
         use() {
           const value = dataStore.use(key);
           
-          if (value === undefined) return element.default;
+          if (!dataStore.has(key)) return element.default;
           return value;
         },
         get() {
@@ -136,7 +139,7 @@ export function createSettings<K extends Record<string, SettingTypes>>(pluginNam
         type: element.type
       };
 
-      setting.render = getRender(element, setting);
+      setting.render = getRender(element, setting, result);
 
       result[key] = setting;
     };

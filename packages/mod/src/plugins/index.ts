@@ -8,7 +8,7 @@ export interface PluginType {
   description: string,
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
-  settings?: Record<string, CreatedSetting<any>>,
+  settings?: Record<string, CreatedSetting<any>> | React.FunctionComponent,
   start?(): void,
   stop?(): void
 };

@@ -1,4 +1,5 @@
 import { className } from "../util";
+import { React } from "../webpack/common";
 
 export interface IconProps {
   width?: React.CSSProperties["width"],
@@ -6,19 +7,18 @@ export interface IconProps {
   color?: React.CSSProperties["color"],
   className?: string
 };
-
-function ensureProps(props: IconProps): Required<IconProps> {
+function ensureProps(props: IconProps, name: string): Required<IconProps> {
   const color: React.CSSProperties["color"] = props.color ?? "currentcolor";
   const height: React.CSSProperties["height"] = props.height ?? 24;
   const width: React.CSSProperties["width"] = props.width ?? 24;
 
-  const classNameProp = className([ "vx-icon", props.className ]);
+  const classNameProp = React.useMemo(() => className([ "vx-icon", `vx-icon-${name.toLocaleLowerCase()}`, props.className ]), [ props.className ]);
 
   return { color, height, width, className: classNameProp };
 };
 
 export function At(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "At");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -28,7 +28,7 @@ export function At(props: IconProps) {
 };
 
 export function Trash(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Trash");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -39,7 +39,7 @@ export function Trash(props: IconProps) {
 };
 
 export function Gear(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Gear");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export function Gear(props: IconProps) {
 };
 
 export function Folder(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Folder");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -59,7 +59,7 @@ export function Folder(props: IconProps) {
 };
 
 export function Github(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Github");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -69,7 +69,7 @@ export function Github(props: IconProps) {
 };
 
 export function Brush(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Brush");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -79,7 +79,7 @@ export function Brush(props: IconProps) {
 };
 
 export function Code(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Code");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 32 20">
@@ -89,7 +89,7 @@ export function Code(props: IconProps) {
 };
 
 export function Palette(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Palette");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -99,7 +99,7 @@ export function Palette(props: IconProps) {
 };
 
 export function Logo(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Logo");
 
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +109,7 @@ export function Logo(props: IconProps) {
 };
 
 export function Sort(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Sort");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -120,7 +120,7 @@ export function Sort(props: IconProps) {
 };
 
 export function SortReverse(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "SortReverse");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -132,7 +132,7 @@ export function SortReverse(props: IconProps) {
 };
 
 export function Store(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Store");
 
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +145,7 @@ export function Store(props: IconProps) {
 };
 
 export function Copy(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Copy");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
@@ -156,7 +156,7 @@ export function Copy(props: IconProps) {
 };
 
 export function Save(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Save");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
@@ -167,7 +167,7 @@ export function Save(props: IconProps) {
 };
 
 export function Warn(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Warn");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 20 20">
@@ -177,7 +177,7 @@ export function Warn(props: IconProps) {
 };
 
 export function Help(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Help");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
@@ -187,7 +187,7 @@ export function Help(props: IconProps) {
 };
 
 export function Pencil(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Pencil");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24" fillRule="evenodd" clipRule="evenodd">
@@ -197,7 +197,7 @@ export function Pencil(props: IconProps) {
 };
 
 export function Plus(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Plus");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
@@ -207,7 +207,7 @@ export function Plus(props: IconProps) {
 };
 
 export function Refresh(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Refresh");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
@@ -219,7 +219,7 @@ export function Refresh(props: IconProps) {
 };
 
 export function Reload(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Reload");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
@@ -229,7 +229,7 @@ export function Reload(props: IconProps) {
 };
 
 export function Loop(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Loop");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="-5 0 459 459.648">
@@ -240,7 +240,7 @@ export function Loop(props: IconProps) {
 };
 
 export function PIP(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "PIP");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
@@ -251,7 +251,7 @@ export function PIP(props: IconProps) {
 };
 
 export function Upload(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Upload");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
@@ -261,7 +261,7 @@ export function Upload(props: IconProps) {
 };
 
 export function Download(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Download");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">

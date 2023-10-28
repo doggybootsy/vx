@@ -5,6 +5,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: all 200ms ease-in-out;
+}
+.vx-addon-card:is(:hover, :focus-within) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-low-hover);
 }
 .vx-addon-top {
   display: flex;

@@ -1,15 +1,17 @@
 import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
-import { byStrings } from "../webpack";
+import { lazyComponent } from "../util";
+import { byStrings, combine, getByKeys, not } from "../webpack";
 import { React } from "../webpack/common";
 import { addPlainTextPatch } from "../webpack/patches";
 
 addPlainTextPatch(
   {
     identifier: "VX(home-button)",
-    find: /(containerRef:.{1,3},children:)\[(.{1,3}),(.{1,3})\]/,
-    replace: "$1[window.VX._self._addHomeButton($2),$3]"
+    match: ".default.Messages.GUILDS_BAR_A11Y_LABEL",
+    find: /\(.{1,3}\.AdvancedScrollerNone/,
+    replace: "(window.VX._self._addHomeButton"
   },
   {
     identifier: "VX(settings-button)",
@@ -32,18 +34,20 @@ function HomeButton() {
   );
 };
 
-const seperatorFilter = byStrings(".guildSeparator");
-export function _addHomeButton(children: React.ReactNode[]) {
-  if (!Array.isArray(children)) return children;
-  
-  const index = children.findIndex((child) => React.isValidElement(child) ? seperatorFilter(child.type) : false);
-  
-  if (~index) {
-    children.splice(index - 1, 0, <HomeButton />);
-  };
+export const _addHomeButton = lazyComponent(() => {
+  const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
+  const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 
-  return children;
-};
+  return React.forwardRef((props: { children: React.ReactNode[] }, ref) => {
+    const index = props.children.findIndex((child) => React.isValidElement(child) ? dmsFilter(child.type) : false);
+  
+    if (~index) {    
+      props.children.splice(index, 0, <HomeButton />);
+    };
+      
+    return <Components.AdvancedScrollerNone {...props} ref={ref} />
+  });
+});
 
 export function _settingButtonOnClickWrapper(onClick: (event: React.MouseEvent) => void) {
   const shouldOpen = () => internalDataStore.get("user-setting-shortcut") ?? true;

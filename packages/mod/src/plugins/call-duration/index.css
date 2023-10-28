@@ -1,0 +1,7 @@
+.vx-call-duration {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: var(--header-secondary);
+  line-height: 13px;
+}

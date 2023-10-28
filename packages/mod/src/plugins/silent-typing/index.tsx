@@ -19,7 +19,15 @@ export const settings = createSettings("SilentTyping", {
     default: true,
     title: "Silent Typing Button",
     description: "Adds a button to toggle silent typing",
-    props: { hideBorder: true }
+    props: { style: { margin: 0 } }
+  },
+  alwaysShowButton: {
+    type: SettingType.SWITCH,
+    default: false,
+    title: "Always Show Button",
+    description: "Shows the button even when you can't type",
+    disabled(settings) { return !settings.button.use(); },
+    props: { hideBorder: true, style: { margin: 0 } }
   }
 });
 
@@ -29,7 +37,7 @@ async function patchSilentTyping() {
   }>([ "startTyping", "stopTyping" ]);
 
   injector.instead(typing, "startTyping", (that, args, startTyping) => {
-    if (!settings.shouldShowTyping.get()) return;
+    if (settings.shouldShowTyping.get() && !settings.shouldShowTyping.get()) return;
 
     return startTyping.apply(that, args);
   });
@@ -51,9 +59,10 @@ export default definePlugin({
   },
   _addButton(buttons: React.ReactNode[], disabled: boolean, type: { analyticsName: string }) {
     const shouldAddButton = settings.button.use();
+    const alwaysShowButton = settings.alwaysShowButton.use();
     
     if (type.analyticsName !== "normal") return;
-    if (!shouldAddButton || disabled) return;
+    if (!shouldAddButton || (disabled && !alwaysShowButton)) return;
 
     buttons.push(
       <KeyboardButton key="silent-typing-keyboard-button" />
