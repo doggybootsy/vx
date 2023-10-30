@@ -2,6 +2,7 @@ import { ThemeData, internalDataStore } from "../../../../api/storage";
 import { InternalStore, download, showFilePicker } from "../../../../util";
 import { closeWindow } from "../../../../api/window";
 import { waitForNode } from "common/dom";
+import { UserStore } from "../../../../webpack/common";
 
 const themeHead = document.createElement("vx-themes");
 
@@ -43,10 +44,10 @@ export const themeStore = new class extends InternalStore {
     const node = themeHead.querySelector(`[data-vx-theme=${JSON.stringify(id)}]`);
     if (node) node.remove();
   };
-  _updateData(cb: (clone: Record<string, ThemeData>) => void) {    
+  _updateData(callback: (clone: Record<string, ThemeData>) => void) {    
     const clone = structuredClone(this.#raw);
 
-    cb(clone);
+    callback(clone);
     
     internalDataStore.set("themes", clone);
 
@@ -63,7 +64,8 @@ export const themeStore = new class extends InternalStore {
       type: "theme",
       data: {
         css: this.getCSS(id),
-        name: this.getName(id)
+        name: this.getName(id),
+        meta: this.#raw[id].meta
       }
     })}`);
   }
@@ -83,7 +85,8 @@ export const themeStore = new class extends InternalStore {
           clone[id] = {
             css: text,
             enabled: false,
-            name: name
+            name: name,
+            meta: { }
           };
         });
   
@@ -102,7 +105,10 @@ export const themeStore = new class extends InternalStore {
         clone[id] = {
           css: data.css,
           enabled: false,
-          name: data.name
+          name: data.name,
+          meta: {
+            author: UserStore.getCurrentUser().id
+          }
         };
       });
     }, ".vx,.css");
@@ -115,7 +121,10 @@ export const themeStore = new class extends InternalStore {
       clone[id] = {
         css: "",
         enabled: true,
-        name: `New Theme - ${id}`
+        name: `New Theme - ${id}`,
+        meta: {
+          author: UserStore.getCurrentUser().id
+        }
       };
     });
   };

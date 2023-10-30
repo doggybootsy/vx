@@ -88,7 +88,7 @@ Object.defineProperties(WrappedFlex, {
     get: () => FlexModule.Wrap
   },
   Child: {
-    get: () => FlexModule.Child
+    get: () => FlexChild
   }
 });
 

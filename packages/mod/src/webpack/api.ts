@@ -6,6 +6,7 @@ import { getProxy } from "./util";
 import { webpackAppChunk, webpackRequire } from "./webpack";
 
 import * as webpack from "./";
+import * as common from "./common";
 
 export const api = {
   getModule,
@@ -45,6 +46,8 @@ export const api = {
     combine,
     not
   },
+
+  common,
 
   __raw: webpack
 };

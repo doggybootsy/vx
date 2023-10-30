@@ -2,11 +2,12 @@ import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
 import { getProxyByKeys, getProxyByStrings } from "./filters"
 import { getProxyStore } from "./stores";
-import { getProxy } from "./util";
+import { getModuleIdBySource, getProxy } from "./util";
 import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { proxyCache } from "../util";
+import { webpackRequire } from "./webpack";
 
 export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
@@ -56,18 +57,21 @@ interface i18n {
 };
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
-// ComponentDispatch can be easily called before its loaded so this is a just incase
-export const insertText = (() => {
+export const insertText = proxyCache(() => {
   let ComponentDispatch: any;
-  
+
   return (content: string) => {
-    if (!ComponentDispatch) ComponentDispatch = getModule(m => m.dispatchToLastSubscribed && m.emitter?.listeners?.('INSERT_TEXT')?.length, { searchExports: true });
-    
+    // ComponentDispatch can be easily called before its loaded so this will require it
+    if (!ComponentDispatch) {
+      const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
+      ComponentDispatch = webpackRequire!(id).ComponentDispatch;
+    };
+
     ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
       plainText: content
     });
   };
-})();
+});
 
 export const LayerManager = {
   pushLayer(component: () => React.ReactNode) {

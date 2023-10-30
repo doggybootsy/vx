@@ -22,13 +22,17 @@ interface ThemeStore extends GenericStore {
   getState(): { theme: "light" | "dark" }
 };
 
+interface CorrectRelationshipStore extends RelationshipStore {
+  getSince(userId: string): string | void
+};
+
 interface KnownStores {
   UserStore: UserStore,
   ChannelStore: ChannelStore,
   SelectedChannelStore: SelectedChannelStore,
   GuildMemberStore: GuildMemberStore,
   MessageStore: MessageStore,
-  RelationshipStore: RelationshipStore,
+  RelationshipStore: CorrectRelationshipStore,
   SelectedGuildStore: SelectedGuildStore,
   GuildStore: GuildStore,
   PermissionStore: PermissionStore,

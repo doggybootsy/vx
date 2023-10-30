@@ -4,7 +4,7 @@ import { useInternalStore } from "../../hooks";
 export const { localStorage, sessionStorage } = window;
 
 function setItem(name: string, structure: any) {
-  localStorage.setItem(`VX(${name})`, JSON.stringify(structure, null, "\t"));
+  localStorage.setItem(`VX(${name})`, JSON.stringify(structure));
 };
 
 interface DataStoreOptions<T extends Record<string, any>> {
@@ -53,18 +53,18 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     const self = this;
     const proxy = new Proxy(this.#raw, {
       set(t, p, newValue) {
-        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+        if (typeof p !== "string") throw new TypeError(`Can not set a property key with typeof '${typeof p}'`);
 
         self.set(p, newValue);
         return true;
       },
       deleteProperty(t, p) {
-        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+        if (typeof p !== "string") throw new TypeError(`Can not delete a property key with typeof '${typeof p}'`);
 
         self.delete(p);
         return true;
       },
-      defineProperty(target, property: string, attributes) {
+      defineProperty(target, property, attributes) {
         throw new TypeError("Can not define a property on 'DataStore.proxy'");
       }
     });
@@ -136,6 +136,9 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   entries(): [ keyof T, T[keyof T] ][] {
     return Object.entries(this.getAll());
   };
+  keys(): Array<keyof T> {
+    return Object.keys(this.getAll());
+  };
 
   merge(data: Partial<T>): void {
     const clone = structuredClone(data);
@@ -166,9 +169,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     };
   };
   toString() {
-    const tag = this[Symbol.toStringTag];
-
-    return tag.slice(0, tag.length - 1);
+    return `VX(${this.name}) - v${this.version}`;
   };
 
   *[Symbol.iterator](): IterableIterator<[ keyof T, T[keyof T] ]> {
@@ -179,7 +180,8 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 export interface ThemeData {
   enabled: boolean,
   css: string,
-  name: string
+  name: string,
+  meta: Record<string, string>
 };
 
 interface InternalData {
@@ -190,31 +192,31 @@ interface InternalData {
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 3,
+  version: 4,
   upgrader(version, oldData) {
-    if (version === 2) {
-      const themes = oldData["custom-css"];
-
-      delete oldData["custom-css"];
-
-      oldData.themes = themes;
-
-      return oldData;
-    };
-    if (version === 1) {
-      const css = oldData["custom-css"];
-
-      if (typeof css === "string") {
-        oldData["custom-css"] = {
-          original: {
-            name: "Original CSS",
-            enabled: true,
-            css: css
-          }
-        };
+    switch (version) {
+      case 2: {
+        const themes = oldData["custom-css"];
+  
+        delete oldData["custom-css"];
+  
+        oldData.themes = themes;
+  
+        return oldData;
       };
+      case 3: {
+        for (const key in oldData.themes) {
+          if (Object.prototype.hasOwnProperty.call(oldData.themes, key)) {
+            const element = oldData.themes[key];
+            element.meta = {};
+          };
+        };
 
-      return oldData;
+        return oldData;
+      };
+    
+      default:
+        console.log("[VX~DataStore~internal]: Unknown Version handler for version:", version);
     };
   },
 });
