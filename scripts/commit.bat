@@ -10,6 +10,10 @@ IF NOT "%~2" == "" (SET description="%~2")
 IF "%~3" == "" (for /f %%i in ('git rev-parse --abbrev-ref HEAD') DO (SET "branch=%%i"))
 IF NOT "%~3" == "" (SET branch="%~3")
 
+@REM Make sure, ive had to many accidents
+%SystemRoot%\System32\choice.exe /C YN /N /M "Are you sure [Y/N]?"
+IF errorlevel 2 EXIT /B
+
 @REM GIT
 git add .
 git commit -m %commitName% -m %description%
