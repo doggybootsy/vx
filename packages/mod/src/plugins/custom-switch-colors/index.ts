@@ -26,7 +26,7 @@ const settings = createSettings("CustomSwitchColors", {
 
 export default definePlugin({
   name: "CustomSwitchColors",
-  description: "Custom Switch Colors",
+  description: "Change the color of switches to any hexadecimal color you want",
   authors: [ Developers.doggybootsy ],
   settings,
   patches: {

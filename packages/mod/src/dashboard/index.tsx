@@ -52,14 +52,14 @@ function Dashboard(props: { section: string }) {
       label: "Themes",
       element: () => <Themes />
     },
-    { section: "DIVIDER" },
-    {
-      section: "change-log",
-      label: "Changelog",
-      onClick() {
-        openAlertModal("Changelog", [ "Not added yet" ]);
-      }
-    },
+    // { section: "DIVIDER" },
+    // {
+    //   section: "change-log",
+    //   label: "Changelog",
+    //   onClick() {
+    //     openAlertModal("Changelog", [ "Not added yet" ]);
+    //   }
+    // },
     { section: "DIVIDER" },
     {
       section: "CUSTOM", 

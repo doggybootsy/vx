@@ -180,8 +180,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 export interface ThemeData {
   enabled: boolean,
   css: string,
-  name: string,
-  meta: Record<string, string>
+  name: string
 };
 
 interface InternalData {
@@ -195,20 +194,11 @@ export const internalDataStore = new DataStore<InternalData>("Internal", {
   version: 4,
   upgrader(version, oldData) {
     switch (version) {
-      case 2: {
-        const themes = oldData["custom-css"];
-  
-        delete oldData["custom-css"];
-  
-        oldData.themes = themes;
-  
-        return oldData;
-      };
-      case 3: {
+      case 4: {
         for (const key in oldData.themes) {
           if (Object.prototype.hasOwnProperty.call(oldData.themes, key)) {
             const element = oldData.themes[key];
-            element.meta = {};
+            delete element.meta;
           };
         };
 

@@ -64,8 +64,7 @@ export const themeStore = new class extends InternalStore {
       type: "theme",
       data: {
         css: this.getCSS(id),
-        name: this.getName(id),
-        meta: this.#raw[id].meta
+        name: this.getName(id)
       }
     })}`);
   }
@@ -85,8 +84,7 @@ export const themeStore = new class extends InternalStore {
           clone[id] = {
             css: text,
             enabled: false,
-            name: name,
-            meta: { }
+            name: name
           };
         });
   
@@ -105,10 +103,7 @@ export const themeStore = new class extends InternalStore {
         clone[id] = {
           css: data.css,
           enabled: false,
-          name: data.name,
-          meta: {
-            author: UserStore.getCurrentUser().id
-          }
+          name: data.name
         };
       });
     }, ".vx,.css");
@@ -121,10 +116,7 @@ export const themeStore = new class extends InternalStore {
       clone[id] = {
         css: "",
         enabled: true,
-        name: `New Theme - ${id}`,
-        meta: {
-          author: UserStore.getCurrentUser().id
-        }
+        name: `New Theme - ${id}`
       };
     });
   };

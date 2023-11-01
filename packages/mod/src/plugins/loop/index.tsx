@@ -49,7 +49,7 @@ function Loop() {
 
 export default definePlugin({
   name: "Loop",
-  description: "Adds a loop button to videos",
+  description: "Adds a loop button to videos and audios",
   authors: [ Developers.doggybootsy ],
   settings,
   patches: [
