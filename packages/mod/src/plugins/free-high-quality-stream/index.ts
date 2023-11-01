@@ -11,11 +11,11 @@ export default definePlugin({
       replacements: [
         {
           find: /canUseHighVideoUploadQuality:/,
-          replace: "canUseHighVideoUploadQuality:()=>true||"
+          replace: "canUseHighVideoUploadQuality:(()=>true)??"
         },
         {
           find: /canStreamQuality:/,
-          replace: "canStreamQuality:()=>true||"
+          replace: "canStreamQuality:(()=>true)??"
         }
       ]
     },

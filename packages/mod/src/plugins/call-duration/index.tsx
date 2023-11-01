@@ -39,7 +39,7 @@ function CallDuration() {
 
 export default definePlugin({
   name: "CallDuration",
-  description: "Quickly copy channel links",
+  description: "Shows how long you have been in call for",
   authors: [ Developers.doggybootsy ],
   patches: {
     find: "this.renderConnectionStatus()",

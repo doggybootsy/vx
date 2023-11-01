@@ -10,7 +10,7 @@ type TypedUser = User & { isPomelo(): boolean, globalName: string | null };
 
 export default definePlugin({
   name: "DisplayUsername",
-  description: "Shows the users",
+  description: "Shows the users username in chat next to there name",
   authors: [ Developers.doggybootsy ],
   patches: {
     match: "showCommunicationDisabledStyles:",

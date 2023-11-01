@@ -36,13 +36,6 @@ async function patchSilentTyping() {
     startTyping: (channelId: string) => void
   }>([ "startTyping", "stopTyping" ]);
 
-  console.log(
-    settings.button.get(),
-    settings.shouldShowTyping.get(),
-    settings.shouldShowTyping.get() && !settings.button.get()
-  );
-  
-
   injector.instead(typing, "startTyping", (that, args, startTyping) => {
     if (!settings.button.get()) return;
     if (!settings.shouldShowTyping.get()) return;
