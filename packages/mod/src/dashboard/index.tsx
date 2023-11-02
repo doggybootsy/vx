@@ -5,6 +5,7 @@ import { Home, Plugins, Themes } from "./pages";
 import "./index.css";
 import { className } from "../util";
 import { env, git } from "self";
+import { openAlertModal } from "../api/modals";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -60,17 +61,32 @@ function Dashboard(props: { section: string }) {
             <span>{`VX ${env.VERSION} `}</span>
             <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
           </div>
-          <div 
-            className="vx-section-git"
-            onClick={(event) => {
-              WindowUtil.handleClick({
-                href: `${git.url}/tree/${git.branch}`
-              }, event);
-            }}
-          >
-            <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
-            <span className={"vx-section-hash"}>({git.hashShort})</span>
-          </div>
+          {git.exists ? (
+            <div 
+              className="vx-section-git"
+              onClick={(event) => {
+                WindowUtil.handleClick({
+                  href: `${git.url}/tree/${git.branch}`
+                }, event);
+              }}
+            >
+              <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
+              <span className={"vx-section-hash"}>({git.hashShort})</span>
+            </div>
+          ) : (
+            <div 
+              className="vx-section-git"
+              onClick={() => {
+                openAlertModal("Github", [
+                  "Current build has no git details!", 
+                  "This is from your local machine not having git installed when compiling VX"
+                ]);
+              }}
+            >
+              <span>???/???{" "}</span>
+              <span className={"vx-section-hash"}>(???)</span>
+            </div>
+          )}
         </div>
       )
     }

@@ -103,15 +103,28 @@ function cache(factory) {
   }
 };
 
+function exec(cmd) {
+  return cp.execSync(cmd, { cwd: process.cwd() }).toString("binary").trim();
+};
+
 const git = cache(() => {
-  const branch = cp.execSync("git rev-parse --abbrev-ref HEAD").toString("binary").trim();
-  const hash = cp.execSync(`git rev-parse HEAD`).toString("binary").trim();
-  const hashShort = cp.execSync(`git rev-parse --short HEAD`).toString("binary").trim();
+  try {
+    exec("git --version");
+  } 
+  catch (error) {
+    console.log("Git is not installed! Aborting getting git details");
+
+    return { exists: false };
+  }
+
+  const branch = exec("git rev-parse --abbrev-ref HEAD");
+  const hash = exec(`git rev-parse HEAD`);
+  const hashShort = exec(`git rev-parse --short HEAD`);
   
-  let url = cp.execSync("git config --get remote.origin.url").toString("binary").trim();
+  let url = exec("git config --get remote.origin.url");
   if (url.endsWith(".git")) url = url.slice(0, url.length - 4);
 
-  return { branch, hash, hashShort, url };
+  return { branch, hash, hashShort, url, exists: true };
 });
 
 /** @type {esbuild.Plugin} */
@@ -136,7 +149,7 @@ const SelfPlugin = (desktop) => ({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
       contents: `export const env = Object.freeze(${JSON.stringify(env)});
-      export const git = Object.freeze(${JSON.stringify(git())});
+      export const git = (${JSON.stringify(git())});
       export const browser = typeof chrome === "object" ? chrome : browser;
       export const IS_DESKTOP = ${desktop};`
     }));

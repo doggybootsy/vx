@@ -82,12 +82,14 @@ declare module "self" {
       getURL(path: string): string 
     }
   };
-  interface Git {
-    branch: string, 
-    hash: string, 
-    hashShort: string, 
-    url: string
+  interface GitDetails {
+    branch?: string, 
+    hash?: string, 
+    hashShort?: string, 
+    url?: string
   };
+
+  type Git = (Required<GitDetails> & { exists: true }) | (GitDetails & { exists: false });
 
   export const env: Enviroment;
   export const browser: Browser;

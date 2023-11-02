@@ -112,7 +112,9 @@ export const WindowUtil = getProxyByKeys<{
   isLinkTrusted(link: string): boolean
 }>([ "isLinkTrusted" , "handleClick" ]);
 
-const openUserContextMenuModule = getProxyByStrings<(event: React.MouseEvent, user: User, channel: Channel) => void>([ ".isGroupDM()?", ".isDM()?", "targetIsUser:", ",Promise.all(" ], { searchExports: true });
+const openMenuModule = getProxyByKeys<{
+  openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
+}>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
 export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
   const dummyChannel = {
     isGroupDM() { return false; },
@@ -120,5 +122,5 @@ export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
     guild_id: null
   } as unknown as Channel;
   
-  openUserContextMenuModule(event, user, dummyChannel);
+  openMenuModule.openUserContextMenu(event, user, dummyChannel);
 };
