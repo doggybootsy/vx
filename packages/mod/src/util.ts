@@ -1,4 +1,3 @@
-import { IS_DESKTOP } from "./native";
 import { getProxyByKeys } from "./webpack";
 import { React } from "./webpack/common";
 

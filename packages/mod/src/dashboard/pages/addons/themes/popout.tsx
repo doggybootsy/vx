@@ -5,7 +5,7 @@ import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
 import { Icons } from "../../../../components";
 import { themeStore } from "./store";
-import { useInternalStore } from "../../../../hooks";
+import { useDeferedEffect, useInternalStore } from "../../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
@@ -78,7 +78,7 @@ export function openWindow(id: string) {
         `));
         window.document.head.appendChild(style);
       }, [ ]);
-
+      // Idk if this is good or not | Should i use useEffect or this? (There is a chance that it can be done before useEffect so idk)
       React.useInsertionEffect(() => {
         function listener(event: MessageEvent) {   
           // Use custom event because message even doesnt work?       
@@ -113,12 +113,11 @@ export function openWindow(id: string) {
       const [ name, setName ] = React.useState(() => themeStore.getName(id));
       const storedName = useInternalStore(themeStore, () => themeStore.getName(id));
 
-      const deferredValue = React.useDeferredValue(storedName);
-      React.useLayoutEffect(() => {
+      useDeferedEffect((deferredValue) => {
         setName(deferredValue);
         
         window.document.title = `Themes - ${storedName}`;
-      }, [ deferredValue ]);
+      }, storedName);
 
       return (
         <>

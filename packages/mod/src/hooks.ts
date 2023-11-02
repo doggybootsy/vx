@@ -28,11 +28,30 @@ export function useSignal() {
   ];
 };
 
-export function useUser(userId: string): User | null {
-  const [ user, setUser ] = React.useState(() => UserStore.getUser(userId) || null);
+type ReactEffectWithArg<T> = (value: T) => void | (() => void);
+
+export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
   const [ signal, abort ] = useSignal();
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
+    try {
+      const ret = effect(signal);
+
+      return () => {
+        abort();
+        if (typeof ret === "function") ret();
+      };
+    } 
+    catch (error) {
+      return () => abort();
+    }
+  }, [ ]);
+};
+
+export function useUser(userId: string): User | null {
+  const [ user, setUser ] = React.useState(() => UserStore.getUser(userId) || null);
+
+  useAbortEffect((signal) => {
     if (user) return;
 
     const fetched = fetchUser(userId); 
@@ -42,9 +61,14 @@ export function useUser(userId: string): User | null {
 
       setUser(user);
     });
-
-    return () => abort();
-  }, [ ]);
+  });
   
   return user;
+};
+
+export function useDeferedEffect<T>(effect: ReactEffectWithArg<T>, value: T, deps: React.DependencyList = []) {
+  const deferredValue = React.useDeferredValue(value);
+  React.useEffect(() => {
+    return effect(deferredValue);
+  }, [ deferredValue, ...deps ]);
 };

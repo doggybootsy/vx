@@ -1,5 +1,3 @@
-export const IS_DESKTOP = typeof window.VXNative === "object";
-
 export const extensions = {
   open() {
     if (!window.VXNative) return;

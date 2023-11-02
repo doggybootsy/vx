@@ -1,11 +1,10 @@
-import { openAlertModal } from "../api/modals";
 import { getProxyByProtoKeys } from "../webpack";
-import { LayerManager, React } from "../webpack/common";
+import { LayerManager, React, WindowUtil } from "../webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
-import { env } from "self";
+import { env, git } from "self";
 
 const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
 
@@ -52,14 +51,6 @@ function Dashboard(props: { section: string }) {
       label: "Themes",
       element: () => <Themes />
     },
-    // { section: "DIVIDER" },
-    // {
-    //   section: "change-log",
-    //   label: "Changelog",
-    //   onClick() {
-    //     openAlertModal("Changelog", [ "Not added yet" ]);
-    //   }
-    // },
     { section: "DIVIDER" },
     {
       section: "CUSTOM", 
@@ -67,9 +58,18 @@ function Dashboard(props: { section: string }) {
         <div className="vx-section-info">
           <div className="vx-section-version">
             <span>{`VX ${env.VERSION} `}</span>
-            <span
-              className={className([ env.IS_DEV && "vx-section-devmode" ])}
-            >({env.VERSION_HASH})</span>
+            <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+          </div>
+          <div 
+            className="vx-section-git"
+            onClick={(event) => {
+              WindowUtil.handleClick({
+                href: `${git.url}/tree/${git.branch}`
+              }, event);
+            }}
+          >
+            <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
+            <span className={"vx-section-hash"}>({git.hashShort})</span>
           </div>
         </div>
       )

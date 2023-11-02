@@ -3,7 +3,6 @@ import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
 import { getProxyByKeys, getProxyByStrings } from "./filters"
 import { getProxyStore } from "./stores";
 import { getModuleIdBySource, getProxy } from "./util";
-import { getModule } from "./searching";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { proxyCache } from "../util";

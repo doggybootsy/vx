@@ -82,7 +82,15 @@ declare module "self" {
       getURL(path: string): string 
     }
   };
+  interface Git {
+    branch: string, 
+    hash: string, 
+    hashShort: string, 
+    url: string
+  };
 
   export const env: Enviroment;
   export const browser: Browser;
+  export const git: Git;
+  export const IS_DESKTOP: boolean;
 };

@@ -11,7 +11,6 @@ import * as menus from "./api/menu";
 import * as storage from "./api/storage";
 
 import * as webpack from "./webpack";
-import * as common from "./webpack/common";
 import * as popoutWindows from "./api/window";
 
 import { plugins } from "./plugins";
@@ -26,6 +25,8 @@ import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patche
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
 import { api } from "./webpack/api";
+
+import * as self from "self";
 
 // @ts-expect-error
 window.VX = {
@@ -47,7 +48,8 @@ window.VX = {
     waitForNode,
     _addHomeButton,
     _settingButtonOnClickWrapper
-  }
+  },
+  self
 };
 
 waitForNode("body").then((body) => {

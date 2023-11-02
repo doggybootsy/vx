@@ -1,8 +1,9 @@
+import { IS_DESKTOP } from "self";
 import { Panel } from "..";
 import { internalDataStore } from "../../api/storage";
-import { Button, Collapsable, Flex, FlexChild, Markdown } from "../../components";
+import { Button, Collapsable, Flex } from "../../components";
 import { FormSwitch } from "../../components/switch";
-import { IS_DESKTOP, app, extensions } from "../../native";
+import { app, extensions } from "../../native";
 import { React, WindowUtil } from "../../webpack/common";
 
 export function Home() {
@@ -52,7 +53,8 @@ export function Home() {
       
       {IS_DESKTOP && (
         <FormSwitch
-          disabled={typeof window.DiscordNative === "object" ? !window.DiscordNative.window.supportsContentProtection() : true}
+          // idk if this is everywhere 
+          disabled={window.DiscordNative!.window.supportsContentProtection?.()}
           value={contentProtection}
           onChange={(value) => {
             setContentProtection(value);

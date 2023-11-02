@@ -3,6 +3,7 @@ const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync } =
 const { readFile, readdir } = require("fs/promises");
 const path = require("path");
 const asar = require("asar")
+const cp = require("child_process");
 
 function argvIncludesMatch(regex) {
   for (const arg of process.argv) {
@@ -82,14 +83,39 @@ const ManagedCSSPlugin = {
         export function removeStyle() {
           const style = document.querySelector(\`[vx-style-path=\${JSON.stringify(id)}\`);
           if (style) style.remove();
-        };`
+        };
+        `
       }
     });
   }
 };
 
+function cache(factory) {
+  const cache = { ref: null, hasValue: false };
+
+  return () => {
+    if (cache.hasValue) return cache.ref;
+    
+    cache.ref = factory();
+    cache.hasValue = true;
+
+    return cache.ref;
+  }
+};
+
+const git = cache(() => {
+  const branch = cp.execSync("git rev-parse --abbrev-ref HEAD").toString("binary").trim();
+  const hash = cp.execSync(`git rev-parse HEAD`).toString("binary").trim();
+  const hashShort = cp.execSync(`git rev-parse --short HEAD`).toString("binary").trim();
+  
+  let url = cp.execSync("git config --get remote.origin.url").toString("binary").trim();
+  if (url.endsWith(".git")) url = url.slice(0, url.length - 4);
+
+  return { branch, hash, hashShort, url };
+});
+
 /** @type {esbuild.Plugin} */
-const SelfPlugin = {
+const SelfPlugin = (desktop) => ({
   name: "self-plugin",
   setup(build) {
     const env = {
@@ -109,11 +135,13 @@ const SelfPlugin = {
     build.onLoad({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
-      contents: `export const env = ${JSON.stringify(env)};
-      export const browser = typeof chrome === "object" ? chrome : browser;`
+      contents: `export const env = Object.freeze(${JSON.stringify(env)});
+      export const git = Object.freeze(${JSON.stringify(git())});
+      export const browser = typeof chrome === "object" ? chrome : browser;
+      export const IS_DESKTOP = ${desktop};`
     }));
   }
-};
+});
 /** @type {(desktop: boolean) => esbuild.Plugin} */
 const RequireAllPluginsPlugin = (desktop) => ({
   name: "require-all-plugins-plugin",
@@ -133,7 +161,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       }))
         .filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory())
         .filter(dir => !dir.endsWith(".ignore"))
-        .filter(dir => !dir.endsWith(desktop ? "web" : "desktop"));
+        .filter(dir => !dir.endsWith(desktop ? ".web" : ".desktop"));
 
       return {
         resolveDir: "./packages/mod/src",
@@ -161,9 +189,13 @@ const RequireAllPluginsPlugin = (desktop) => ({
       plugins: [
         HTMLPlugin,
         RequireAllPluginsPlugin(true),
-        SelfPlugin,
+        SelfPlugin(true),
         ManagedCSSPlugin
-      ]
+      ],
+      footer: {
+        css: "/*# sourceURL=vx://VX/app/build.css */",
+        js: "//# sourceURL=vx://VX/app/build.js"
+      }
     });
     
     await esbuild.build({
@@ -174,8 +206,11 @@ const RequireAllPluginsPlugin = (desktop) => ({
       external: [ "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
-        SelfPlugin
-      ]
+        SelfPlugin(true)
+      ],
+      footer: {
+        js: "//# sourceURL=vx://VX/desktop/main.js"
+      }
     });
     
     await esbuild.build({
@@ -186,8 +221,11 @@ const RequireAllPluginsPlugin = (desktop) => ({
       external: [ "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
-        SelfPlugin
-      ]
+        SelfPlugin(true)
+      ],
+      footer: {
+        js: "//# sourceURL=vx://VX/desktop/preload.js"
+      }
     });
     await esbuild.build({
       entryPoints: [ "packages/desktop/splash/index.ts" ],
@@ -197,9 +235,12 @@ const RequireAllPluginsPlugin = (desktop) => ({
       external: [ "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
-        SelfPlugin,
+        SelfPlugin(true),
         HTMLPlugin
-      ]
+      ],
+      footer: {
+        js: "//# sourceURL=vx://VX/desktop/splash-preload.js"
+      }
     });
   
     writeFileSync(path.join(app, "package.json"), JSON.stringify({
@@ -231,9 +272,13 @@ const RequireAllPluginsPlugin = (desktop) => ({
       plugins: [
         HTMLPlugin,
         RequireAllPluginsPlugin(false),
-        SelfPlugin,
+        SelfPlugin(false),
         ManagedCSSPlugin
-      ]
+      ],
+      footer: {
+        css: "/*# sourceURL=vx://VX/app/build.css */",
+        js: "//# sourceURL=vx://VX/app/build.js"
+      }
     });
   };
 })();

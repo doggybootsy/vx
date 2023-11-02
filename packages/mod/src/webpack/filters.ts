@@ -13,6 +13,7 @@ export function bySource(...sources: string[]): Webpack.Filter {
   };
 };
 export function combine(...filters: Webpack.ExportedOnlyFilter[]): Webpack.ExportedOnlyFilter
+export function combine(...filters: (Webpack.ExportedOnlyFilter | Webpack.Filter)[]): Webpack.ExportedOnlyFilter
 export function combine(...filters: Webpack.Filter[]): Webpack.Filter {
   return (exports, module, id) => {
     for (const filter of filters) {

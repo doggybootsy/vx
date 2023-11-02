@@ -36,8 +36,11 @@
   line-height: 16px;
   font-weight: 400;
 }
-.vx-section-devmode {
+.vx-section-hash.vx-section-devmode {
   color: var(--text-danger);
+}
+.vx-section-info > .vx-section-git {
+  cursor: pointer;
 }
 
 .vx-header-button .vx-button-inner {

@@ -191,7 +191,7 @@ interface InternalData {
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 4,
+  version: 5,
   upgrader(version, oldData) {
     switch (version) {
       case 4: {
