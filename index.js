@@ -149,7 +149,7 @@ const SelfPlugin = (desktop) => ({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
       contents: `export const env = Object.freeze(${JSON.stringify(env)});
-      export const git = (${JSON.stringify(git())});
+      export const git = Object.freeze(${JSON.stringify(git())});
       export const browser = typeof chrome === "object" ? chrome : browser;
       export const IS_DESKTOP = ${desktop};`
     }));

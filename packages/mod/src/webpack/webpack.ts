@@ -80,7 +80,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
     };
   };
   
-  stringedModule = `(()=>\n/*\n Module Id: ${key.toString()}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', '")}'` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${key.toString()}`;
+  stringedModule = `(()=>\n/*\n Module Id: ${key.toString()}${identifiers.size ? `\n Known string patch identifiers '${Array.from(identifiers).join("', '")}'` : ""} (This doesn't mean they actually patched anything, just means they matched to it)\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${key.toString()}`;
 
   const moduleFN = (0, eval)(stringedModule);
   moduleFN.__VXOriginal = module;

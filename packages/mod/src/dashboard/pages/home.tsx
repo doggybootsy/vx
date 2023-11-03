@@ -54,7 +54,7 @@ export function Home() {
       {IS_DESKTOP && (
         <FormSwitch
           // idk if this is everywhere 
-          disabled={window.DiscordNative!.window.supportsContentProtection?.()}
+          disabled={!window.DiscordNative!.window.supportsContentProtection?.()}
           value={contentProtection}
           onChange={(value) => {
             setContentProtection(value);
