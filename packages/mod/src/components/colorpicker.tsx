@@ -12,22 +12,35 @@ interface ColorPickerProps {
   disabled?: boolean
 };
 
-const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1"}\)/;
-
 function getColorPicker(): React.FunctionComponent<ColorPickerProps> {
   try {
     const lazyLib = getByKeys<any>([ "LazyLibrary", "makeLazy" ]);
 
-    const moduleId = getModuleIdBySource("Color.WHITE_500:", ".DEFAULT_ROLE_COLOR,")!;
-
-    const module = String(webpackRequire!.m[moduleId]!);
-
-    const [, matchedId ] = module.match(moduleIdRegex)!;
-    
     return lazyLib.makeLazy({
       name: "ColorPicker",
-      webpackId: matchedId,
-      createPromise: () => webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId))
+      createPromise: async () => {
+        {
+          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"GuildSettings"}\)/;
+
+          const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
+      
+          const module = String(webpackRequire!.m[moduleId]!);
+      
+          const [, matchedId ] = module.match(moduleIdRegex)!;
+  
+          await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
+        }
+
+        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1"}\)/;
+
+        const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format", ".DEFAULT_ROLE_COLOR,")!;
+    
+        const module = String(webpackRequire!.m[moduleId]!);
+    
+        const [, matchedId ] = module.match(moduleIdRegex)!;
+
+        return webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
+      }
     });
   } 
   catch (error) {}
