@@ -1,7 +1,10 @@
-import { proxyCache } from "../util";
-import { getProxyStore, getModuleIdBySource, webpackRequire, getByKeys } from "../webpack";
+import { className, makeLazy, proxyCache } from "../util";
+import { getProxyStore, getModuleIdBySource, webpackRequire, getByKeys, getProxyByKeys } from "../webpack";
 import { useStateFromStores } from "../webpack/common";
 import ErrorBoundary from "./boundary";
+
+import "./colorpicker.css";
+import { Tooltip } from "./tooltip";
 
 interface ColorPickerProps {
   colors?: number[],
@@ -12,13 +15,24 @@ interface ColorPickerProps {
   disabled?: boolean
 };
 
-function getColorPicker(): React.FunctionComponent<ColorPickerProps> {
-  try {
-    const lazyLib = getByKeys<any>([ "LazyLibrary", "makeLazy" ]);
+const Components = getProxyByKeys([ "Spinner", "Tooltip" ]);
 
-    return lazyLib.makeLazy({
+function getColorPicker() {
+  try {
+    return makeLazy({
       name: "ColorPicker",
-      createPromise: async () => {
+      fallback() {
+        return (
+          <Tooltip text="Loading ColorPicker...">
+            {(props) => (
+              <div className="vx-colorpicker-loader" {...props}>
+                <Components.Spinner className="vx-colorpicker-spinner" type={Components.Spinner.Type.SPINNING_CIRCLE} />
+              </div>
+            )}
+          </Tooltip>
+        )
+      },
+      factory: async () => {
         {
           const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"GuildSettings"}\)/;
 
@@ -29,7 +43,7 @@ function getColorPicker(): React.FunctionComponent<ColorPickerProps> {
           const [, matchedId ] = module.match(moduleIdRegex)!;
   
           await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
-        }
+        };
 
         const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1"}\)/;
 
@@ -39,7 +53,7 @@ function getColorPicker(): React.FunctionComponent<ColorPickerProps> {
     
         const [, matchedId ] = module.match(moduleIdRegex)!;
 
-        return webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
+        return webpackRequire!.el(matchedId).then(() => webpackRequire!(matchedId));
       }
     });
   } 
@@ -85,12 +99,14 @@ function ensureProps(props: ColorPickerProps) {
   }
 };
 
-export function ColorPicker(props: ColorPickerProps) {
+export function ColorPicker({ className: cn, ...props }: ColorPickerProps & { className?: string }) {
   ensureProps(props);
 
   return (
     <ErrorBoundary>
-      <ColorPickerModule {...props} />
+      <div className={className([ "vx-colorpicker", cn ])}>
+        <ColorPickerModule {...props} />
+      </div>
     </ErrorBoundary>
   )
 };

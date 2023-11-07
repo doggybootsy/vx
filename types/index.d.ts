@@ -1,11 +1,10 @@
 declare module Webpack {
-  interface Require {
+  interface Require extends Function {
     (id: PropertyKey): any;
     d(target, exports): void;
     c: Record<PropertyKey, Module>;
     m: Record<PropertyKey, RawModule>;
     el(id: PropertyKey): Promise<unknown>;
-    bind: Function["bind"]
   };
   interface Module {
     id: PropertyKey,
@@ -40,9 +39,8 @@ declare module Webpack {
 interface DiscordNative {
   window: {
     USE_OSX_NATIVE_TRAFFIC_LIGHTS: boolean,
-    setDevtoolsCallbacks(onOpen: () => void, onClose: () => void): void,
-    supportsContentProtection(): boolean,
-    setContentProtection(enabled: boolean): void
+    supportsContentProtection?(): boolean,
+    setContentProtection?(enabled: boolean): void
   }
 };
 
@@ -83,16 +81,16 @@ declare module "self" {
     }
   };
   interface GitDetails {
-    branch?: string, 
-    hash?: string, 
-    hashShort?: string, 
-    url?: string
+    branch: string, 
+    hash: string, 
+    hashShort: string, 
+    url: string
   };
 
-  type Git = (Required<GitDetails> & { exists: true }) | (GitDetails & { exists: false });
+  type Git = (GitDetails & { exists: true }) | { exists: false };
 
   export const env: Enviroment;
-  export const browser: Browser;
+  export const browser: Readonly<Browser>;
   export const git: Git;
   export const IS_DESKTOP: boolean;
 };

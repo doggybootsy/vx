@@ -44,10 +44,54 @@ export function cache<T>(factory: () => T): () => T {
   }
 };
 
-export function lazyComponent<P>(factory: () => React.JSXElementConstructor<P>) {
+export function cacheComponent<P extends Omit<Record<string, any>, "ref">>(factory: () => React.ComponentType<P>) {
   const cacheFactory = cache(factory);
 
   return (props: P) => React.createElement(cacheFactory(), props);
+};
+export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<T | { default: T }>): React.LazyExoticComponent<T> {
+  const cache = proxyCache(() => React.lazy(async () => ({ default() { return null }})));
+
+  return {
+    $$typeof: Symbol.for("react.lazy"),
+    // @ts-expect-error
+    get _init() { return cache._init; },
+    _payload: {
+      _status: -1,
+      async _result() {
+        const result = await factory();
+
+        if (result instanceof Object && "default" in result) return result;
+        return { default: result };
+      }
+    }
+  };
+};
+export function makeLazy<T extends React.ComponentType<any>>(opts: {
+  factory: () => Promise<T>,
+  fallback?: React.ComponentType<{}>,
+  name?: string
+}): React.ComponentClass<React.ComponentPropsWithRef<T>> {
+  const { factory } = opts;
+
+  const Component = lazy(factory);
+  const Fallback = opts.fallback ?? (() => null);
+
+  const LazyComponent = proxyCache(() => (
+    class LazyComponent extends React.Component<React.ComponentPropsWithRef<T>> {
+      static displayName: string = `Suspense(${"name" in opts ? opts.name : "Unknown"})`;
+
+      render() {
+        return (
+          <React.Suspense fallback={<Fallback />}>
+            {React.createElement(Component, this.props as React.ComponentPropsWithRef<T>)}
+          </React.Suspense>
+        );
+      };
+    }
+  ));
+
+  return LazyComponent ;
 };
 
 interface classNameValueTypes {

@@ -2,15 +2,16 @@ import { Channel, Guild } from "discord-types/general";
 import { definePlugin } from "..";
 import { ErrorBoundary, Icons, Tooltip } from "../../components";
 import { getProxyByKeys } from "../../webpack";
-import { clipboard } from "../../util";
+import { className, clipboard } from "../../util";
 import { Developers } from "../../constants";
 
 const classes = getProxyByKeys<Record<string, string>>([ "iconItem", "summary" ]);
 
 function CopyButton(props: {
   guild: Guild,
-  channel: Channel
-}) {
+  channel: Channel,
+  forceShowButtons: boolean
+}) {  
   return (
     <Tooltip
       text="Copy Link"
@@ -18,7 +19,7 @@ function CopyButton(props: {
       {(ttProps) => (
         <div
           {...ttProps}
-          className={classes.iconItem}
+          className={className([ classes.iconItem, props.forceShowButtons && classes.alwaysShown ])}
           onClick={() => {
             if (clipboard.SUPPORTS_COPY) {
               clipboard.copy(new URL(`/channels/${props.guild.id}/${props.channel.id}`, location.href).href);

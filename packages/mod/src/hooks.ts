@@ -1,6 +1,6 @@
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
-import { React, UserStore, fetchUser } from "./webpack/common";
+import { FluxDispatcher, React, UserStore, fetchUser } from "./webpack/common";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   const [ state, setState ] = React.useState(factory);
@@ -66,9 +66,23 @@ export function useUser(userId: string): User | null {
   return user;
 };
 
-export function useDeferedEffect<T>(effect: ReactEffectWithArg<T>, value: T, deps: React.DependencyList = []) {
+export function useDeferredEffect<T>(effect: ReactEffectWithArg<T>, value: T) {
   const deferredValue = React.useDeferredValue(value);
+
   React.useEffect(() => {
     return effect(deferredValue);
-  }, [ deferredValue, ...deps ]);
+  }, [ effect, deferredValue ]);
+};
+
+interface DispatchEvent {
+  type: string;
+  [key: string]: any;
+};
+
+export function useFluxSubscription(name: string, actionHandler: (event: DispatchEvent) => void, otherDeps: React.DependencyList = []) {
+  React.useEffect(() => {
+    FluxDispatcher.subscribe("RTC_CONNECTION_STATE", actionHandler);
+
+    return () => FluxDispatcher.unsubscribe("RTC_CONNECTION_STATE", actionHandler);
+  }, [ name, actionHandler, ...otherDeps ]);
 };

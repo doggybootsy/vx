@@ -1,8 +1,8 @@
-import { getComponentType, lazyComponent } from "../../util";
+import { getComponentType, cacheComponent } from "../../util";
 import { byStrings, getModule, getProxyStore } from "../../webpack";
 import { React, dirtyDispatch } from "../../webpack/common";
 
-const PopoutWindow = lazyComponent(() => {
+const PopoutWindow = cacheComponent(() => {
   const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", "{guestWindow:");
 
   return getModule<React.FunctionComponent<PopoutWindowProps>>((m) => filter(getComponentType(m)))!;

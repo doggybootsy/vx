@@ -59,7 +59,7 @@ export function Home() {
           onChange={(value) => {
             setContentProtection(value);
             internalDataStore.set("content-protection", value);
-            window.DiscordNative!.window.setContentProtection(value);
+            window.DiscordNative!.window.setContentProtection!(value);
           }}
           style={{ marginTop: 20 }}
           note="When enabled you cannot take screenshots or screen recordings of Discord"

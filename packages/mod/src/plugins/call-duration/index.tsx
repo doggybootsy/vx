@@ -1,8 +1,9 @@
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
+import { useFluxSubscription } from "../../hooks";
 import { getProxyByKeys } from "../../webpack";
-import { FluxDispatcher, React } from "../../webpack/common";
+import { React } from "../../webpack/common";
 
 import { addStyle } from "./index.css?managed";
 
@@ -20,19 +21,15 @@ function CallDuration() {
     return () => cancelAnimationFrame(id);
   }, [ elapsed, then ]);
 
-  React.useEffect(() => {
-    function listener() {
-      setThen(Date.now);
-    };
+  useFluxSubscription("RTC_CONNECTION_STATE", (event) => {
+    if (!(event.state === "RTC_DISCONNECTED" && !Reflect.has(event, "streamKey"))) return;
 
-    FluxDispatcher.subscribe("RTC_CONNECTION_STATE", listener);
-
-    return () => FluxDispatcher.unsubscribe("RTC_CONNECTION_STATE", listener);
+    setThen(Date.now);
   }, [ elapsed, then ]);
 
   return (
     <Components.Text variant="text-xs/normal" color="none" className="vx-call-duration">
-      {`Duration: ${new Date(elapsed).toUTCString().split(" ").at(-2)}`}
+      {`Call Duration: ${new Date(elapsed).toUTCString().split(" ").at(-2)}`}
     </Components.Text>
   )
 };

@@ -1,0 +1,14 @@
+.vx-colorpicker {
+  min-height: 60px;
+}
+.vx-colorpicker-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vx-colorpicker-loader > .vx-colorpicker-spinner {
+  background: var(--background-tertiary);
+  width: fit-content;
+  padding: 6px;
+  border-radius: 50%;
+}

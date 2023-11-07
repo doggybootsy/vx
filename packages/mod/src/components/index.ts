@@ -16,3 +16,4 @@ export * from "./collapsable";
 export * from "./switch";
 export * from "./colorpicker";
 export * from "./form";
+export * from "./settingsView";

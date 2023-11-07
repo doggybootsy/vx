@@ -1,5 +1,5 @@
 import { React } from "./../webpack/common";
-import { lazyComponent } from "./../util";
+import { cacheComponent } from "./../util";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode,
@@ -14,7 +14,7 @@ const NoFallback = () => (
   <div className="vx-react-error">React Error</div>
 );
 
-const ErrorBoundary = lazyComponent(() => {
+const ErrorBoundary = cacheComponent(() => {
   class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     state = { hasError: false };
 

@@ -1,7 +1,7 @@
 import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
-import { lazyComponent } from "../util";
+import { cacheComponent } from "../util";
 import { byStrings, combine, getByKeys, not } from "../webpack";
 import { React } from "../webpack/common";
 import { addPlainTextPatch } from "../webpack/patches";
@@ -34,7 +34,7 @@ function HomeButton() {
   );
 };
 
-export const _addHomeButton = lazyComponent(() => {
+export const _addHomeButton = cacheComponent(() => {
   const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 

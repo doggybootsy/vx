@@ -118,8 +118,8 @@ const git = cache(() => {
   }
 
   const branch = exec("git rev-parse --abbrev-ref HEAD");
-  const hash = exec(`git rev-parse HEAD`);
-  const hashShort = exec(`git rev-parse --short HEAD`);
+  const hash = exec("git rev-parse HEAD");
+  const hashShort = exec("git rev-parse --short HEAD");
   
   let url = exec("git config --get remote.origin.url");
   if (url.endsWith(".git")) url = url.slice(0, url.length - 4);

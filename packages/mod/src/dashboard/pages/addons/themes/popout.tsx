@@ -5,7 +5,7 @@ import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
 import { Icons } from "../../../../components";
 import { themeStore } from "./store";
-import { useDeferedEffect, useInternalStore } from "../../../../hooks";
+import { useDeferredEffect, useInternalStore } from "../../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
@@ -113,7 +113,7 @@ export function openWindow(id: string) {
       const [ name, setName ] = React.useState(() => themeStore.getName(id));
       const storedName = useInternalStore(themeStore, () => themeStore.getName(id));
 
-      useDeferedEffect((deferredValue) => {
+      useDeferredEffect((deferredValue) => {
         setName(deferredValue);
         
         window.document.title = `Themes - ${storedName}`;

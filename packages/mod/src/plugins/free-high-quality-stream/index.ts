@@ -21,7 +21,7 @@ export default definePlugin({
     },
     {
       match: "STREAM_FPS_OPTION.format",
-      find: /guildPremiumTier:\i\.\i\.TIER_\d,?/g,
+      find: /guildPremiumTier:.{1,3}\.TIER_\d,?/g,
       replace: ""
     },
     {

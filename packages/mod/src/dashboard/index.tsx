@@ -1,36 +1,11 @@
-import { getModuleIdBySource, webpackRequire, getByKeys, getByProtoKeys } from "../webpack";
 import { LayerManager, React, WindowUtil } from "../webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
-import { className, proxyCache } from "../util";
+import { className } from "../util";
 import { env, git } from "self";
 import { openAlertModal } from "../api/modals";
-import { ErrorBoundary } from "../components";
-
-const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"UserSettings"}\)/;
-
-function getSettingsView() {
-  const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
-
-  const module = String(webpackRequire!.m[moduleId]!);
-
-  const [, matchedId ] = module.match(moduleIdRegex)!;
-
-  const lazyLib = getByKeys<any>([ "LazyLibrary", "makeLazy" ]);
-
-  return lazyLib.makeLazy({
-    name: "SettingsView",
-    webpackId: matchedId,
-    createPromise: async () => {
-      await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
-      
-      return { default: getByProtoKeys<any>([ "renderSidebar" ]) };
-    }
-  });
-};
-
-const SettingsView = proxyCache(getSettingsView);
+import { ErrorBoundary, SettingsView } from "../components";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -88,6 +63,9 @@ function Dashboard(props: { section: string }) {
             <div 
               className="vx-section-git"
               onClick={(event) => {
+                // I hate ts so damn much | Like this only exists when 'git.exists'
+                if (!git.exists) return;
+
                 WindowUtil.handleClick({
                   href: `${git.url}/tree/${git.branch}`
                 }, event);
