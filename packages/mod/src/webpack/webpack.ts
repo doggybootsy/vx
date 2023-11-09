@@ -55,7 +55,10 @@ function toStringFunction(fn: Function) {
   return stringed.replace(match[1], "function");
 };
 
-function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, module: Webpack.RawModule): boolean {
+export const modules: Record<PropertyKey, Webpack.RawModule> = {};
+export const cache: Record<PropertyKey, Webpack.Module> = {};
+
+function set(modulesList: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, module: Webpack.RawModule): boolean {
   let stringedModule = toStringFunction(module).replace(/[\n]/g, "");
   const identifiers = new Set<string>();
 
@@ -85,11 +88,14 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   const moduleFN = (0, eval)(stringedModule);
   moduleFN.__VXOriginal = module;
 
+  modulesList[key] = moduleFN;
   modules[key] = moduleFN;
   
   return true;
 };
 
 export function _onWebpackModule(module: Webpack.Module) {
+  cache[module.id] = module;
+  
   for (const listener of listeners) listener(module);
 };

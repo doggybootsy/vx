@@ -26,6 +26,8 @@ import { Editor } from "./editor";
 import { Injector } from "./patcher";
 import { api } from "./webpack/api";
 
+import { net } from "./native";
+
 import * as self from "self";
 
 // @ts-expect-error
@@ -49,6 +51,7 @@ window.VX = {
     _addHomeButton,
     _settingButtonOnClickWrapper
   },
+  net,
   self
 };
 

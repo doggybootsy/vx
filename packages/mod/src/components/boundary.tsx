@@ -34,10 +34,10 @@ const ErrorBoundary = cacheComponent(() => {
   return ErrorBoundary;
 }) as React.FunctionComponent<ErrorBoundaryProps> & { wrap: typeof wrap };
 
-function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback: React.FunctionComponent<{}> = NoFallback): React.FunctionComponent<P> {
+function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback: React.FunctionComponent<P> = NoFallback): React.FunctionComponent<P> {
   function Wrapped(props: P) {
     return (
-      <ErrorBoundary fallback={<Fallback />}>
+      <ErrorBoundary fallback={<Fallback {...props} />}>
         <Component {...props} />
       </ErrorBoundary>
     );

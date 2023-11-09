@@ -4,6 +4,7 @@ import { useStateFromStores } from "../webpack/common";
 import ErrorBoundary from "./boundary";
 
 import "./colorpicker.css";
+import { Spinner } from "./spinner";
 import { Tooltip } from "./tooltip";
 
 interface ColorPickerProps {
@@ -15,8 +16,6 @@ interface ColorPickerProps {
   disabled?: boolean
 };
 
-const Components = getProxyByKeys([ "Spinner", "Tooltip" ]);
-
 function getColorPicker() {
   try {
     return makeLazy({
@@ -26,7 +25,7 @@ function getColorPicker() {
           <Tooltip text="Loading ColorPicker...">
             {(props) => (
               <div className="vx-colorpicker-loader" {...props}>
-                <Components.Spinner className="vx-colorpicker-spinner" type={Components.Spinner.Type.SPINNING_CIRCLE} />
+                <Spinner className="vx-colorpicker-spinner" type={Spinner.Type.SPINNING_CIRCLE} />
               </div>
             )}
           </Tooltip>

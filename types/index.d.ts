@@ -25,12 +25,12 @@ declare module Webpack {
   type LazyFilterOptions = FilterOptions & { signal?: AbortSignal };
 
   type ModuleWithEffect = [
-    Array<symbol, string, number>,
+    Array<any>,
     Record<PropertyKey, RawModule>,
     (require: Require) => void
   ];
   type ModuleWithoutEffect = [
-    Array<symbol, string, number>,
+    Array<any>,
     Record<PropertyKey, RawModule>
   ];
   type AppObject = Array<ModuleWithoutEffect | ModuleWithEffect>;

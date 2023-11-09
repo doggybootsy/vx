@@ -1,7 +1,7 @@
 import { getProxyByKeys } from "./webpack";
 import { React } from "./webpack/common";
 
-export function proxyCache<T extends object>(factory: () => T): T {
+export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
 
   const cacheFactory = cache(factory);
@@ -25,7 +25,7 @@ export function proxyCache<T extends object>(factory: () => T): T {
     };
   }
 
-  const proxy = new Proxy(Object.assign(function() {}, {
+  const proxy = new Proxy(Object.assign(typeofIsObject ? {} : function() {}, {
     [Symbol.for("vx.proxy.cache")]: cacheFactory
   }) as T, handlers);
 
@@ -50,22 +50,14 @@ export function cacheComponent<P extends Omit<Record<string, any>, "ref">>(facto
   return (props: P) => React.createElement(cacheFactory(), props);
 };
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<T | { default: T }>): React.LazyExoticComponent<T> {
-  const cache = proxyCache(() => React.lazy(async () => ({ default() { return null }})));
-
-  return {
-    $$typeof: Symbol.for("react.lazy"),
-    // @ts-expect-error
-    get _init() { return cache._init; },
-    _payload: {
-      _status: -1,
-      async _result() {
-        const result = await factory();
-
-        if (result instanceof Object && "default" in result) return result;
-        return { default: result };
-      }
-    }
-  };
+  return proxyCache(() => (
+    React.lazy(async () => {
+      const result = await factory();
+  
+      if (result instanceof Object && "default" in result) return result;
+      return { default: result };
+    })
+  ), true);
 };
 export function makeLazy<T extends React.ComponentType<any>>(opts: {
   factory: () => Promise<T>,
@@ -310,8 +302,8 @@ export function showFilePicker(callback: (file: File | null) => void, accepts: s
   });
 };
 
-export function download(filename: string, text: string) {
-  const blob = new Blob([ text ], { type: "application/octet-binary" });
+export function download(filename: string, part: BlobPart) {
+  const blob = new Blob([ part ], { type: "application/octet-binary" });
   const blobURL = URL.createObjectURL(blob);
 
   const anchor = document.createElement("a");
