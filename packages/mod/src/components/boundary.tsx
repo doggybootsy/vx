@@ -46,7 +46,7 @@ function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback:
   const name = Component.name ? Component.name : "anonymous";
 
   // @ts-expect-error
-  Wrapped.displayName = Component.displayName ? `VX-Wrapped(${Component.displayName})` : `VX-Wrapped(${name})`;
+  Wrapped.displayName = Component.displayName ? `VX(ErrorBoundary(${Component.displayName}))` : `VX(ErrorBoundary(${name}))`;
   
   Object.defineProperty(Wrapped, "name", {
     value: name,

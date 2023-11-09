@@ -94,14 +94,12 @@ function Dashboard(props: { section: string }) {
   ], [ ]);
 
   return (
-    <ErrorBoundary>
-      <SettingsView 
-        sections={sections}
-        section={section}
-        onClose={LayerManager.popLayer}
-        onSetSection={setSection}
-      />
-    </ErrorBoundary>
+    <SettingsView 
+      sections={sections}
+      section={section}
+      onClose={LayerManager.popLayer}
+      onSetSection={setSection}
+    />
   )
 };
 

@@ -73,9 +73,11 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
   
   hookedFunction[HOOK_SYMBOL] = hook;
 
-  hookedFunction.displayName = "displayName" in fn ? `VX-Patched(${fn.displayName})` : "VX-Patched";
+  const name = fn.name ? fn.name : "anonymous";
+
+  hookedFunction.displayName = "displayName" in fn ? `VX(Patched(${fn.displayName}))` : `VX(Patched(${name}))`;
   Object.defineProperty(hookedFunction, "name", {
-    value: `VX-Patched(${fn.name ? fn.name : "anonymous"})`,
+    value: `VX(Patched(${name}))`,
     configurable: true
   });
 

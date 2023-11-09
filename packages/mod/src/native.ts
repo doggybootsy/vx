@@ -38,11 +38,23 @@ export const net = {
       if (input.signal.aborted) controller.abort(input.signal.reason);
       else input.signal.addEventListener("abort", () => controller.abort((input as Request).signal.reason));
   
-      return new Response(data, {
+      const response = new Response(data, {
         headers,
         status: code,
         statusText: message
       });
+
+      const url = input.url;
+
+      Object.defineProperty(Object.getPrototypeOf(response), "url", {
+        get() { return url }
+      });
+      Object.defineProperty(response, "url", {
+        value: url,
+        enumerable: true
+      });
+
+      return response;
     } 
     catch (error) {
       throw new DOMException(error as string);

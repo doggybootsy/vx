@@ -1,7 +1,8 @@
 import http from "node:http";
 import https from "node:https";
+import stream from "node:stream";
 
-export const protocols: Record<string, typeof http.request> = {
+export const protocols: Record<string, (url: string, options: http.RequestOptions, callback: (res: http.IncomingMessage) => void) => stream.Writable> = {
   "https:": https.request,
   "http:": http.request
 };

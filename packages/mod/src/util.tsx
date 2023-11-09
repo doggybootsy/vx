@@ -71,7 +71,7 @@ export function makeLazy<T extends React.ComponentType<any>>(opts: {
 
   const LazyComponent = proxyCache(() => (
     class LazyComponent extends React.Component<React.ComponentPropsWithRef<T>> {
-      static displayName: string = `Suspense(${"name" in opts ? opts.name : "Unknown"})`;
+      static displayName: string = `VX(Suspense(${"name" in opts ? opts.name : "Unknown"}))`;
 
       render() {
         return (
