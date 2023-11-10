@@ -22,7 +22,7 @@ export function Switch(props: SwitchProps) {
   );
 };
 
-interface FormSwitchProps {
+export interface FormSwitchProps {
   value: boolean,
   disabled?: boolean,
   hideBorder?: boolean,

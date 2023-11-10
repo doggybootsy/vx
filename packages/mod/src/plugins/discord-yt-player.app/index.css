@@ -1,0 +1,87 @@
+.vx-yt-player {
+  max-width: calc(550px + 1.75rem + 4px);
+  border-left: 4px solid;
+  padding: .5rem 1rem 1rem .75rem;
+  background: var(--background-secondary);
+  border-radius: 4px;
+}
+.vx-yt-header {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.vx-yt-pfp {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-tertiary);
+  border-radius: 50%;
+  overflow: hidden;
+}
+.vx-yt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vx-yt-title {
+  color: var(--header-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-block;
+  grid-column: 1/1;
+  cursor: pointer;
+}
+.vx-yt-author {
+  color: var(--header-primary);
+  font-size: .875rem;
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
+  align-items: center;
+}
+.vx-yt-player div:has(> .vx-yt-overlay) {
+  animation: unset;
+}
+.vx-yt-player:hover .vx-yt-overlay {
+  opacity: 1;
+}
+.vx-yt-overlay {
+  display: flex;
+  opacity: 0;
+  z-index: 2;
+  position: absolute;
+  border-radius: 5px;
+  top: 4px;
+  right: 4px;
+  background-color: var(--background-primary);
+  overflow: hidden;
+}
+.vx-yt-button {
+  display: flex;
+  padding: 6px;
+  color: var(--interactive-normal);
+}
+.vx-yt-button {
+  display: flex;
+  padding: 6px;
+  color: var(--interactive-normal);
+  cursor: pointer;
+}
+.vx-yt-button:is(:hover, :focus) {
+  background-color: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-yt-button:active {
+  background-color: var(--background-modifier-active);
+  color: var(--interactive-active);
+}
+.vx-yt-loader {
+  background-color: var(--background-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

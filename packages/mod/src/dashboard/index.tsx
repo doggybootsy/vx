@@ -1,14 +1,11 @@
-import { openAlertModal } from "../api/modals";
-import { byStrings, getProxy, getProxyByProtoKeys, getProxyByStrings, whenWebpackReady } from "../webpack";
-import { LayerManager, React } from "../webpack/common";
-import { Home, Themes, pluginsSection } from "./pages";
+import { LayerManager, React, WindowUtil } from "../webpack/common";
+import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
-import { InternalStore } from "../util";
-import { plainTextPatches } from "../webpack/patches";
-import { Icons } from "../components";
-
-const SettingsView = getProxyByProtoKeys<any>([ "renderSidebar" ]);
+import { className } from "../util";
+import { env, git } from "self";
+import { openAlertModal } from "../api/modals";
+import { ErrorBoundary, SettingsView } from "../components";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -30,56 +27,6 @@ export function Panel(props: {
   )
 };
 
-const Notice = getProxyByStrings<any>([ ".EMPHASIZE_NOTICE", ".onReset" ]);
-
-class NoticeStore extends InternalStore {
-  #showNotice = false;
-  setShowNotice(shouldShow: boolean) {
-    this.#showNotice = shouldShow;
-    this.emit();
-  };
-  showNotice() {
-    return this.#showNotice;
-  }
-};
-
-export type NoticeStoreType = NoticeStore;
-
-interface SectionType {
-  label: string,
-  section: string,
-  onReset?(): void,
-  onSave?(): void,
-  element: (props: { notice: NoticeStore }) => React.ReactNode
-};
-export function createSection(section: SectionType) {  
-  let noticeStore: NoticeStore;  
-
-  queueMicrotask(() => {
-    // Esbuilds esm sucks and im not gonna keep using require for where it lacks
-    noticeStore = new NoticeStore();
-  });
-
-  return () => ({
-    label: section.label,
-    section: section.section,
-    notice: {
-      element: () => (
-        <Notice 
-          onReset={section.onReset}
-          onSave={section.onSave}
-        />
-      ),
-      stores: [
-        noticeStore!
-      ]
-    },
-    element: () => (
-      <section.element notice={noticeStore} />
-    )
-  });
-};
-
 function Dashboard(props: { section: string }) {
   const [ section, setSection ] = React.useState(() => props.section);
 
@@ -93,33 +40,54 @@ function Dashboard(props: { section: string }) {
       label: "Home", 
       element: () => <Home />
     },
-    pluginsSection(),
+    {
+      section: "plugins",
+      label: "Plugins",
+      element: () => <Plugins />
+    },
     { 
       section: "themes", 
       label: "Themes",
       element: () => <Themes />
-    },
-    { 
-      section: "custom-css", 
-      label: "Custom CSS",
-      onClick() {
-        openAlertModal("Custom CSS", [ "Not added yet" ]);
-      }
-    },
-    { section: "DIVIDER" },
-    {
-      section: "change-log",
-      label: "Changelog",
-      onClick() {
-        openAlertModal("Changelog", [ "Not added yet" ]);
-      }
     },
     { section: "DIVIDER" },
     {
       section: "CUSTOM", 
       element: () => (
         <div className="vx-section-info">
-          <div className="vx-section-version">VX 1.0.0</div>
+          <div className="vx-section-version">
+            <span>{`VX ${env.VERSION} `}</span>
+            <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+          </div>
+          {git.exists ? (
+            <div 
+              className="vx-section-git"
+              onClick={(event) => {
+                // I hate ts so damn much | Like this only exists when 'git.exists'
+                if (!git.exists) return;
+
+                WindowUtil.handleClick({
+                  href: `${git.url}/tree/${git.branch}`
+                }, event);
+              }}
+            >
+              <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
+              <span className="vx-section-hash">({git.hashShort})</span>
+            </div>
+          ) : (
+            <div 
+              className="vx-section-git"
+              onClick={() => {
+                openAlertModal("Github", [
+                  "Current build has no git details!", 
+                  "This is from your local machine (or the local machine that compiled VX) not having git installed when compiling VX"
+                ]);
+              }}
+            >
+              <span>???/???{" "}</span>
+              <span className="vx-section-hash">(???????)</span>
+            </div>
+          )}
         </div>
       )
     }
@@ -135,39 +103,8 @@ function Dashboard(props: { section: string }) {
   )
 };
 
-function openDashboard(section: string = "home") {
+export function openDashboard(section: string = "home") {
   LayerManager.pushLayer(() => (
     <Dashboard section={section} />
   ));
-};
-
-plainTextPatches.push(
-  {
-    identifier: "VX(private-channels-list)",
-    match: ".showDMHeader",
-    replacements: [
-      {
-        find: /,(.{1,3})=(.{1,3}\.children)/,
-        replace: ",$1=window.VX._self._addNavigatorButton($2)"
-      }
-    ]
-  }
-);
-
-const filter = byStrings("linkButtonIcon", ".linkButton,");
-const NavigatorButton = getProxy<React.FunctionComponent<any>>((m) => m.prototype && filter(m.prototype.render), { searchExports: true })
-
-export function _addNavigatorButton(children: React.ReactNode[]) {  
-  return [
-    ...children,
-    <NavigatorButton 
-      selected={false}
-      text="VX"
-      key="vx-navigation-button"
-      onClick={() => {
-        openDashboard();
-      }}
-      icon={Icons.Logo}
-    />
-  ];
 };

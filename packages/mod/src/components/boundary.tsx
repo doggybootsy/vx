@@ -1,5 +1,5 @@
 import { React } from "./../webpack/common";
-import { proxyCache } from "./../util";
+import { cacheComponent } from "./../util";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode,
@@ -10,7 +10,11 @@ interface ErrorBoundaryState {
   hasError: boolean
 };
 
-const ErrorBoundary = proxyCache(() => {
+const NoFallback = () => (
+  <div className="vx-react-error">React Error</div>
+);
+
+const ErrorBoundary = cacheComponent(() => {
   class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     state = { hasError: false };
 
@@ -23,13 +27,35 @@ const ErrorBoundary = proxyCache(() => {
     render() {
       if (!this.state.hasError) return this.props.children;
       if (this.props.fallback) return this.props.fallback;
-      return (
-        <div className="vx-react-error">React Error</div>
-      );
+      return <NoFallback />;
     };
   };
 
   return ErrorBoundary;
-});
+}) as React.FunctionComponent<ErrorBoundaryProps> & { wrap: typeof wrap };
+
+function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback: React.FunctionComponent<P> = NoFallback): React.FunctionComponent<P> {
+  function Wrapped(props: P) {
+    return (
+      <ErrorBoundary fallback={<Fallback {...props} />}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
+
+  const name = Component.name ? Component.name : "anonymous";
+
+  // @ts-expect-error
+  Wrapped.displayName = Component.displayName ? `VX(ErrorBoundary(${Component.displayName}))` : `VX(ErrorBoundary(${name}))`;
+  
+  Object.defineProperty(Wrapped, "name", {
+    value: name,
+    configurable: true
+  });
+
+  return Wrapped;
+};
+
+ErrorBoundary.wrap = wrap;
 
 export default ErrorBoundary;

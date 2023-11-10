@@ -1,21 +1,26 @@
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { byStrings, getProxyByKeys, getProxyByStrings } from "./filters"
+import { getProxyByKeys, getProxyByStrings } from "./filters"
 import { getProxyStore } from "./stores";
-import { InternalStore, useSignal } from "../util";
-import { getMangledProxy, getProxy } from "./util";
-import { getModule } from "./searching";
+import { getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
-import { User } from "discord-types/general";
+import { Channel, User } from "discord-types/general";
+import { proxyCache } from "../util";
+import { webpackRequire } from "./webpack";
 
 export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
-export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "hydrateRoot" ]);
+export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
 export const UserStore = getProxyStore("UserStore");
+export const ChannelStore = getProxyStore("ChannelStore");
+export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
+export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 
-type useStateFromStores = <T>(stores: Array<FluxStore | InternalStore>, effect: () => T) => T;
-export const useStateFromStores = getProxyByStrings<useStateFromStores>([ "useStateFromStores" ]);
+export const Flux = getProxyByKeys<any>([ "useStateFromStores", "Dispatcher" ]);
+
+type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
+export const useStateFromStores = proxyCache<useStateFromStores>(() => Flux.useStateFromStores);
 
 export const FluxDispatcher = getProxyByKeys<FluxDispatcherType>([ "subscribe", "dispatch" ]);
 
@@ -23,25 +28,19 @@ interface NavigationUtil {
   transitionTo(path: string): void,
 
   // DM
-  transtionToGuild(guildId: null, channelId: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: null, channelId: string, messageId?: string): void,
   // Guild
-  transtionToGuild(guildId: SNOWFLAKE, channelId?: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: string, channelId?: string, messageId?: string): void,
   // Guild Thread
-  transtionToGuild(guildId: SNOWFLAKE | null, channelId: SNOWFLAKE, threadId: SNOWFLAKE, messageId?: SNOWFLAKE): void,
+  transtionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
 
   replace(path: string): void,
 
-  goBack(): void,
-  goForward(): void
+  back(): void,
+  forward(): void
 };
 
-export const NavigationUtils = getMangledProxy<NavigationUtil>("transitionTo - Transitioning to", {
-  transitionTo: byStrings("\"transitionTo - Transitioning to \""),
-  replace: byStrings("\"Replacing route with \""),
-  goBack: byStrings(".goBack()"),
-  goForward: byStrings(".goForward()"),
-  transtionToGuild: byStrings("\"transitionToGuild - Transitioning to \"")
-});
+export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
 
 export function dirtyDispatch(event: DispatchEvent) {
   return new Promise<void>((resolve) => {
@@ -57,27 +56,30 @@ interface i18n {
 };
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
-export const insertText = (() => {
+export const insertText = proxyCache(() => {
   let ComponentDispatch: any;
-  
+
   return (content: string) => {
-    if (!ComponentDispatch) ComponentDispatch = getModule(m => m.dispatchToLastSubscribed && m.emitter?.listeners?.('INSERT_TEXT')?.length, { searchExports: true });
-    
+    // ComponentDispatch can be easily called before its loaded so this will require it
+    if (!ComponentDispatch) {
+      const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
+      ComponentDispatch = webpackRequire!(id).ComponentDispatch;
+    };
+
     ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
       plainText: content
     });
   };
-})();
+});
 
 export const LayerManager = {
   pushLayer(component: () => React.ReactNode) {
-    FluxDispatcher.dispatch({
+    dirtyDispatch({
       type: "LAYER_PUSH",
       component
     });
   },
   popLayer() {
-    // Using dirty dispatch even tho discord doesn't because cloning ContextMenus.close()
     dirtyDispatch({
       type: "LAYER_POP"
     });
@@ -105,29 +107,20 @@ export function fetchUser(userId: string): Promise<User> {
   return request;
 };
 
-export function useUser(userId: string): User | null {
-  const [ user, setUser ] = React.useState(() => UserStore.getUser(userId) || null);
-  const [ signal, abort ] = useSignal();
+export const WindowUtil = getProxyByKeys<{
+  handleClick(options: { href: string }, event?: React.MouseEvent): Promise<void>,
+  isLinkTrusted(link: string): boolean
+}>([ "isLinkTrusted" , "handleClick" ]);
 
-  React.useLayoutEffect(() => {
-    if (!user) return;
-
-    fetchUser(userId).then((user) => {
-      if (signal.aborted) return;
-
-      setUser(user);
-    });
-
-    return () => abort();
-  }, [ ]);
+const openMenuModule = getProxyByKeys<{
+  openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
+}>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
+export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
+  const dummyChannel = {
+    isGroupDM() { return false; },
+    isDM() { return false; },
+    guild_id: null
+  } as unknown as Channel;
   
-  return user;
+  openMenuModule.openUserContextMenu(event, user, dummyChannel);
 };
-
-export const WindowUtil = getMangledProxy<{
-  open: (opts: { href: string }) => void,
-  isTrusted: (url: string, idk: unknown) => boolean
-}>(".Messages.MALFORMED_LINK_BODY", {
-  open: byStrings(".apply"),
-  isTrusted: byStrings(".getChannelId()")
-});

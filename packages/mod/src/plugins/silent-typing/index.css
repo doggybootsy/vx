@@ -1,0 +1,32 @@
+.vx-st-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.vx-st-inner {
+  padding: 4px;
+  margin-left: 4px;
+  margin-right: 4px;
+
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  color: var(--interactive-normal);
+}
+
+.vx-st-wrapper {
+  display: flex;
+}
+
+.vx-st-strike {
+  color: var(--status-danger);
+}

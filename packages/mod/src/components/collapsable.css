@@ -1,0 +1,18 @@
+.vx-collapsable {
+  background: var(--background-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--background-secondary-alt);
+}
+.vx-collapsable-header {
+  color: var(--text-primary);
+  padding: 8px;
+  cursor: pointer;
+}
+.vx-collapsable-seperator {
+  height: 1px;
+  background: var(--background-secondary-alt);
+  margin: 0 8px;
+}
+.vx-collapsable-body {
+  padding: 8px;
+}

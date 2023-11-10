@@ -1,0 +1,21 @@
+.vx-form-body {
+  margin-top: 0;
+}
+.vx-form-title {
+  margin-bottom: var(--custom-margin-margin-small);
+  color: var(--header-secondary);
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+.vx-form-description {
+  margin-bottom: var(--custom-margin-margin-medium);
+  color: var(--header-secondary);
+  cursor: default;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}

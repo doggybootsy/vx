@@ -1,3 +1,16 @@
 .vx-button-inner {
   display: flex;
 }
+.vx-settings-modal-title {
+  color: var(--header-primary);
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+}
+.doggybootsy-editor {
+  display: block;
+}
+#vx-masks {
+  position: fixed;
+}

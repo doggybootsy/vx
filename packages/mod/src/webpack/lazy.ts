@@ -22,7 +22,7 @@ export function getLazy<T>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptio
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("Z", "ZP", "default");
+      else if (searchDefault) keys.push("default");
 
       for (const key of keys) {
         const item = module.exports[key];

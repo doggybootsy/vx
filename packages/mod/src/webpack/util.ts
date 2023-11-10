@@ -1,43 +1,20 @@
-import { bySource } from ".";
 import { proxyCache } from "../util";
+import { byStrings } from "./filters";
 import { getModule } from "./searching";
+import { modules } from "./webpack";
 
-export function getProxy<T extends object>(filter: Webpack.Filter, opts?: Webpack.FilterOptions): T {
+export function getProxy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter, opts?: Webpack.FilterOptions): T {
   return proxyCache(() => getModule(filter, opts)!);
 };
-export function getMangledProxy<T extends object>(filter: Webpack.Filter | string, mangled: Record<string, (exports: any) => any>): T extends never ? Record<string, any> : T {
-  return proxyCache(() => getMangled(filter, mangled));
-};
 
-export function getMangled<T extends object>(filter: Webpack.Filter | string, mangled: Record<string, (exports: any) => any>): T extends never ? Record<string, any> : T {
-  if (typeof filter === "string") filter = bySource(filter);
+export function getModuleIdBySource(...sources: string[]) {
+  const filter = byStrings(...sources);
 
-  const returnValue = {} as T extends never ? Record<string, any> : T;
-
-  const module = getModule<Record<string, any>>((exports, module, id) => {
-    if (!(exports instanceof Object)) return;
-    return (filter as Webpack.Filter).call(module, exports, module, id);
-  }, { searchDefault: false, searchExports: false });
-  if (!module) return returnValue;
-
-  const entries = Object.entries(mangled) as [ string, (exports: any) => any ][];
-
-  for (const searchKey in module) {
-    if (Object.prototype.hasOwnProperty.call(module, searchKey)) {      
-      for (const [ key, filter ] of entries) {
-        if (key in returnValue) continue;
-
-        if (filter(module[searchKey])) {
-          Object.defineProperty(returnValue, key, {
-            get() { return module[searchKey]; },
-            set(v) { return module[searchKey] = v; },
-            enumerable: true,
-            configurable: false
-          });
-        };
-      }
+  for (const key in modules) {
+    if (Object.prototype.hasOwnProperty.call(modules, key)) {
+      const module = modules[key];
+      
+      if (filter(module)) return key;
     };
   };
-
-  return returnValue;
 };

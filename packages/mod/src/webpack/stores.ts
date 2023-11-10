@@ -3,8 +3,27 @@ import { ChannelStore, FluxStore, GuildMemberStore, MessageStore, RelationshipSt
 import { proxyCache } from "../util";
 import { getByKeys } from "./filters";
 
-interface PermissionStore extends FluxStore {
+export type GenericStore = FluxStore & Record<string, any>;
+
+interface PermissionStore extends GenericStore {
   canManageUser(permission: bigint, user: User, guild: Guild): boolean
+};
+interface PopoutWindowStore extends GenericStore {
+  getWindow(id: string): Window & typeof globalThis | void,
+  getWindowOpen(id: string): boolean,
+  unmountWindow(id: string): void
+};
+interface ThemeStore extends GenericStore {
+  theme: "light" | "dark",
+  darkSidebar: boolean,
+  isSystemThemeAvailable: boolean,
+  systemPrefersColorScheme: "light" | "dark",
+  systemTheme: null | "light" | "dark",
+  getState(): { theme: "light" | "dark" }
+};
+
+interface CorrectRelationshipStore extends RelationshipStore {
+  getSince(userId: string): string | void
 };
 
 interface KnownStores {
@@ -13,13 +32,13 @@ interface KnownStores {
   SelectedChannelStore: SelectedChannelStore,
   GuildMemberStore: GuildMemberStore,
   MessageStore: MessageStore,
-  RelationshipStore: RelationshipStore,
+  RelationshipStore: CorrectRelationshipStore,
   SelectedGuildStore: SelectedGuildStore,
   GuildStore: GuildStore,
-  PermissionStore: PermissionStore
+  PermissionStore: PermissionStore,
+  PopoutWindowStore: PopoutWindowStore,
+  ThemeStore: ThemeStore
 };
-
-export type GenericStore = FluxStore & Record<string, any>;
 
 let Store: { getAll(): GenericStore[] } | void;
 export function getStore<S extends keyof KnownStores>(store: S): KnownStores[S]

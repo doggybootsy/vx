@@ -4,6 +4,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 .vx-section-title {
   color: var(--header-primary);
@@ -17,12 +18,16 @@
 .vx-section-buttons {
   display: flex;
   gap: 8px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 .vx-section-info {
   padding: 8px 10px;
   user-select: text;
 }
-.vx-section-version {
+.vx-section-info > div {
   color: var(--text-muted);
   display: inline-block;
   width: 100%;
@@ -30,4 +35,43 @@
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
+}
+.vx-section-hash.vx-section-devmode {
+  color: var(--text-danger);
+}
+.vx-section-info > .vx-section-git {
+  cursor: pointer;
+}
+
+.vx-header-button .vx-button-inner {
+  color: var(--interactive-normal);
+  /* background: var(--background-modifier-accent); */
+  padding: 4px;
+  border-radius: 4px;
+}
+.vx-header-button:hover .vx-button-inner {
+  color: var(--interactive-hover);
+  background: var(--background-modifier-hover);
+}
+.vx-header-button:hover:active .vx-button-inner {
+  color: var(--interactive-active);
+  background: var(--background-modifier-active);
+}
+
+#vx-home-button {
+  transition: background-color .15s ease-out, color .15s ease-out;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  margin: 0 12px 8px 12px;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 550;
+}
+#vx-home-button:hover {
+  color: var(--white-500);
+  background-color: var(--brand-experiment);
 }

@@ -77,7 +77,7 @@
 }
 
 .vx-notification-close:hover:active {
-	color: var(--interactive-hover);
+	color: var(--interactive-active);
 }
 
 .vx-notification-description {

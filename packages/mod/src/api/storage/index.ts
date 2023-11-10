@@ -1,11 +1,10 @@
-import { Debouncer, debounce } from "common/util";
 import { InternalStore } from "../../util";
-import { useStateFromStores } from "../../webpack/common";
+import { useInternalStore } from "../../hooks";
 
 export const { localStorage, sessionStorage } = window;
 
 function setItem(name: string, structure: any) {
-  localStorage.setItem(`VX(${name})`, JSON.stringify(structure, null, "\t"));
+  localStorage.setItem(`VX(${name})`, JSON.stringify(structure));
 };
 
 interface DataStoreOptions<T extends Record<string, any>> {
@@ -13,56 +12,75 @@ interface DataStoreOptions<T extends Record<string, any>> {
   upgrader?(version: number, oldData: any): Partial<T> | void
 };
 
+const cache = new Map<string, DataStore>();
+
 export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {  
   constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
+    // @ts-expect-error TS doesnt like return in constructors
+    if (cache.has(name)) return cache.get(name)!;
+
     super();
 
-    const { version = 1, upgrader } = opts;
+    const { version: $version, upgrader } = opts;
 
     const data = localStorage.getItem(`VX(${name})`);
 
     if (!data) {
-      setItem(name, { data: {}, version });
+      setItem(name, { data: {}, version: 1 });
     }
     else {
       try {
-        const parsed = JSON.parse(data);
-        if (parsed.version !== version) {
+        const parsed = JSON.parse(data)
+        if (typeof $version === "number" ? parsed.version !== $version : false) {
           const data = typeof upgrader === "function" ? upgrader(parsed.version, parsed.data) ?? {} : {};
 
-          setItem(name, { data: data, version });
+          setItem(name, { data: data, version: $version });
         }
         else if (!("version" in parsed || "data" in parsed)) {
-          setItem(name, { data: {}, version });
+          setItem(name, { data: {}, version: $version ?? 1 });
         };
       } 
       catch (error) {
         console.error(`[vx] Error reading data for '${name}'`, error);
-        setItem(name, { data: {}, version });
+        setItem(name, { data: {}, version: $version ?? 1 });
       };
     };
 
-    this.#raw = JSON.parse(localStorage.getItem(`VX(${name})`)!).data;
+    const raw = JSON.parse(localStorage.getItem(`VX(${name})`)!);
+    
+    this.#raw = raw.data;
 
     const self = this;
-    this.proxy = new Proxy(this.#raw, {
+    const proxy = new Proxy(this.#raw, {
       set(t, p, newValue) {
-        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+        if (typeof p !== "string") throw new TypeError(`Can not set a property key with typeof '${typeof p}'`);
 
         self.set(p, newValue);
         return true;
       },
       deleteProperty(t, p) {
-        if (typeof p === "symbol") throw new TypeError("Can not set a property key with typeo 'symbol'");
+        if (typeof p !== "string") throw new TypeError(`Can not delete a property key with typeof '${typeof p}'`);
 
         self.delete(p);
         return true;
       },
-      defineProperty(target, property: string, attributes) {
+      defineProperty(target, property, attributes) {
         throw new TypeError("Can not define a property on 'DataStore.proxy'");
       }
     });
 
+    Object.defineProperty(this, "proxy", {
+      get() { return proxy },
+      set(v: Partial<T>) {
+        self.clear();
+
+        self.merge(v);
+
+        return true;
+      }
+    });
+
+    const version = $version ?? raw.version;
     this[Symbol.toStringTag] = `VX(${name}) - v${version}\n`;
     this.version = version;
   };
@@ -77,10 +95,11 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
   [Symbol.toStringTag]: string = "VX(undefined) - vNaN\n";
   
-  version: number;
+  version!: number;
 
-  #raw: Partial<T>;
-  proxy: Partial<T>;
+  #raw!: Partial<T>;
+  proxy!: Partial<T>;
+
   clear() {
     for (const key in this.#raw) {
       if (Object.prototype.hasOwnProperty.call(this.#raw, key)) {
@@ -110,15 +129,22 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     return structuredClone(this.#raw);
   };
 
+  use<K extends keyof T>(key: K): T[K] | void {
+    return useInternalStore(this, () => this.get(key));
+  };
+
   entries(): [ keyof T, T[keyof T] ][] {
     return Object.entries(this.getAll());
+  };
+  keys(): Array<keyof T> {
+    return Object.keys(this.getAll());
   };
 
   merge(data: Partial<T>): void {
     const clone = structuredClone(data);
 
     for (const key in clone) {
-      if (clone.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(clone, key)) {
         const element = clone[key];
 
         this.#raw[key] = element;
@@ -126,10 +152,6 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     };
 
     this._queueUpdate();
-  };
-
-  use<key extends keyof T>(key: key): T[key] {
-    return useStateFromStores([ this ], () => this.get(key)!);
   };
 
   ensure<key extends keyof T>(key: key, value: T[key]) {
@@ -147,9 +169,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     };
   };
   toString() {
-    const tag = this[Symbol.toStringTag];
-
-    return tag.slice(0, tag.length - 1);
+    return `VX(${this.name}) - v${this.version}`;
   };
 
   *[Symbol.iterator](): IterableIterator<[ keyof T, T[keyof T] ]> {
@@ -157,10 +177,36 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
 };
 
+export interface ThemeData {
+  enabled: boolean,
+  css: string,
+  name: string
+};
+
 interface InternalData {
-  "enabled-plugins": string[]
+  "enabled-plugins": string[],
+  "themes": Record<string, ThemeData>,
+  "content-protection": boolean,
+  "user-setting-shortcut": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 1
+  version: 5,
+  upgrader(version, oldData) {
+    switch (version) {
+      case 4: {
+        for (const key in oldData.themes) {
+          if (Object.prototype.hasOwnProperty.call(oldData.themes, key)) {
+            const element = oldData.themes[key];
+            delete element.meta;
+          };
+        };
+
+        return oldData;
+      };
+    
+      default:
+        console.log("[VX~DataStore~internal]: Unknown Version handler for version:", version);
+    };
+  },
 });

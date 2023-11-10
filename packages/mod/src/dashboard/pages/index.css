@@ -5,6 +5,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: all 200ms ease-in-out;
+}
+.vx-addon-card:is(:hover, :focus-within) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-low-hover);
 }
 .vx-addon-top {
   display: flex;
@@ -30,16 +35,13 @@
   width: 24px;
   border-radius: 50%;
   background-size: cover;
+}
+.vx-addon-author:not(.vx-addon-disabled) {
   cursor: pointer;
 }
 .vx-addon-divider {
   height: 1px;
   background: var(--background-secondary);
-}
-.vx-addon-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 .vx-addon-details {
   display: flex;
@@ -54,6 +56,7 @@
   color: var(--text-primary);
   font-size: larger;
   font-weight: 450;
+  position: relative;
 }
 .vx-addon-actions {
   display: flex;
@@ -61,12 +64,6 @@
   gap: 6px;
   align-items: center;
   flex: 1 1 auto;
-}
-
-.vx-addons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 .vx-addons-warning {
   background-color: var(--background-mentioned);
@@ -81,4 +78,80 @@
 }
 .vx-addons-icon {
   color: var(--text-warning);
+}
+.vx-collapsable-section {
+  margin-top: 8px;
+}
+.vx-ext-message {
+  color: var(--text-normal);
+  margin-bottom: 8px;
+  white-space: pre-line;
+}
+.vx-addon-footer {
+  display: flex;
+  gap: 8px;
+}
+.vx-addon-action {
+  display: flex;
+  cursor: pointer;
+	color: var(--interactive-normal);
+}
+.vx-addon-action:hover {
+	color: var(--interactive-hover);
+}
+.vx-addon-action:hover:active {
+	color: var(--interactive-active);
+}
+.vx-addon-disabled {
+  cursor: not-allowed !important;
+  color: var(--interactive-muted) !important;
+}
+.vx-addon-input {
+  font-family: var(--font-display);
+  font-weight: 450;
+  font-size: 16px;
+  line-height: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border: none;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: pre;
+  border-radius: 3px;
+  -webkit-app-region: no-drag;
+  background: transparent;
+  color: var(--text-normal);
+  box-sizing: border-box;
+}
+input.vx-addon-input {
+  position: absolute;
+  left: 0px;
+  width: 100%;
+}
+input.vx-addon-input:focus {
+  background-color: var(--background-secondary);
+  -webkit-box-shadow: inset 0 0 0 1px var(--background-tertiary);
+  box-shadow: inset 0 0 0 1px var(--background-tertiary);
+}
+input.vx-addon-input:not(:focus) {
+  opacity: 0;
+}
+.vx-addon-name:hover > .vx-input {
+  box-shadow: inset 0 0 0 1px var(--background-tertiary);
+}
+.vx-addons-empty-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.vx-addons-empty-text {
+  margin: 20px auto 0;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-secondary);
+}
+.vx-addons-empty {
+  padding-bottom: 40px;
 }

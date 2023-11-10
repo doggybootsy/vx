@@ -1,4 +1,5 @@
 import { className } from "../util";
+import { React } from "../webpack/common";
 
 export interface IconProps {
   width?: React.CSSProperties["width"],
@@ -6,19 +7,18 @@ export interface IconProps {
   color?: React.CSSProperties["color"],
   className?: string
 };
-
-function ensureProps(props: IconProps): Required<IconProps> {
+function ensureProps(props: IconProps, name: string): Required<IconProps> {
   const color: React.CSSProperties["color"] = props.color ?? "currentcolor";
   const height: React.CSSProperties["height"] = props.height ?? 24;
   const width: React.CSSProperties["width"] = props.width ?? 24;
 
-  const classNameProp = className([ "vx-icon", props.className ]);
+  const classNameProp = React.useMemo(() => className([ "vx-icon", `vx-icon-${name.toLocaleLowerCase()}`, props.className ]), [ props.className ]);
 
   return { color, height, width, className: classNameProp };
 };
 
 export function At(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "At");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -28,7 +28,7 @@ export function At(props: IconProps) {
 };
 
 export function Trash(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Trash");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -39,7 +39,7 @@ export function Trash(props: IconProps) {
 };
 
 export function Gear(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Gear");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -49,7 +49,7 @@ export function Gear(props: IconProps) {
 };
 
 export function Folder(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Folder");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 24 24">
@@ -59,7 +59,7 @@ export function Folder(props: IconProps) {
 };
 
 export function Github(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Github");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -69,7 +69,7 @@ export function Github(props: IconProps) {
 };
 
 export function Brush(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Brush");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -79,7 +79,7 @@ export function Brush(props: IconProps) {
 };
 
 export function Code(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Code");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 32 20">
@@ -89,7 +89,7 @@ export function Code(props: IconProps) {
 };
 
 export function Palette(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Palette");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -99,7 +99,7 @@ export function Palette(props: IconProps) {
 };
 
 export function Logo(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Logo");
 
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +109,7 @@ export function Logo(props: IconProps) {
 };
 
 export function Sort(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Sort");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -120,7 +120,7 @@ export function Sort(props: IconProps) {
 };
 
 export function SortReverse(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "SortReverse");
 
   return (
     <svg width={width} height={height} className={className} viewBox="0 0 16 16">
@@ -132,7 +132,7 @@ export function SortReverse(props: IconProps) {
 };
 
 export function Store(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Store");
 
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +145,7 @@ export function Store(props: IconProps) {
 };
 
 export function Copy(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Copy");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
@@ -155,12 +155,127 @@ export function Copy(props: IconProps) {
   );
 };
 
+export function Save(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Save");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path fill={color} d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5v-13Z" />
+      <path fill={color} d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V16Zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V0ZM9 1h2v4H9V1Z" />
+    </svg>
+  );
+};
+
 export function Warn(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props);
+  const { color, height, width, className } = ensureProps(props, "Warn");
 
   return (
     <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 20 20">
-      <path d="M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z" fill-rule="evenodd" clip-rule="evenodd" fill={color} />
+      <path d="M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z" fillRule="evenodd" clipRule="evenodd" fill={color} />
+    </svg>
+  );
+};
+
+export function Help(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Help");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path d="M12 2C6.486 2 2 6.487 2 12C2 17.515 6.486 22 12 22C17.514 22 22 17.515 22 12C22 6.487 17.514 2 12 2ZM12 18.25C11.31 18.25 10.75 17.691 10.75 17C10.75 16.31 11.31 15.75 12 15.75C12.69 15.75 13.25 16.31 13.25 17C13.25 17.691 12.69 18.25 12 18.25ZM13 13.875V15H11V12H12C13.104 12 14 11.103 14 10C14 8.896 13.104 8 12 8C10.896 8 10 8.896 10 10H8C8 7.795 9.795 6 12 6C14.205 6 16 7.795 16 10C16 11.861 14.723 13.429 13 13.875Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Pencil(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Pencil");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24" fillRule="evenodd" clipRule="evenodd">
+      <path d="M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Plus(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Plus");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
+      <polygon points="15 10 10 10 10 15 8 15 8 10 3 10 3 8 8 8 8 3 10 3 10 8 15 8" fill={color} fillRule="nonzero" />
+    </svg>
+  );
+};
+
+export function Refresh(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Refresh");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 18 18">
+      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <path d="M9,3 L9,0.75 L6,3.75 L9,6.75 L9,4.5 C11.4825,4.5 13.5,6.5175 13.5,9 C13.5,9.7575 13.3125,10.4775 12.975,11.1 L14.07,12.195 C14.655,11.2725 15,10.1775 15,9 C15,5.685 12.315,3 9,3 Z M9,13.5 C6.5175,13.5 4.5,11.4825 4.5,9 C4.5,8.2425 4.6875,7.5225 5.025,6.9 L3.93,5.805 C3.345,6.7275 3,7.8225 3,9 C3,12.315 5.685,15 9,15 L9,17.25 L12,14.25 L9,11.25 L9,13.5 Z" fill={color} fillRule="nonzero" />
+      </g>
+    </svg>
+  );
+};
+
+export function Reload(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Reload");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path d="M12 2C6.485 2 2 6.485 2 12H5.33333C5.33333 8.32333 8.32333 5.33333 12 5.33333C15.6767 5.33333 18.6667 8.32333 18.6667 12C18.6667 15.6767 15.6767 18.6667 12 18.6667C10.2033 18.6667 8.55833 17.9333 7.315 16.6867L10.3333 13.6667H2V22L4.935 19.065C6.79833 20.94 9.30167 22 12 22C17.515 22 22 17.515 22 12C22 6.48667 17.515 2 12 2Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Loop(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Loop");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="-5 0 459 459.648">
+      <path fillRule="evenodd" clipRule="evenOdd" d="m416.324219 293.824219c0 26.507812-21.492188 48-48 48h-313.375l63.199219-63.199219-22.625-22.625-90.511719 90.511719c-6.246094 6.25-6.246094 16.375 0 22.625l90.511719 90.511719 22.625-22.625-63.199219-63.199219h313.375c44.160156-.054688 79.945312-35.839844 80-80v-64h-32zm0 0" fill={color} />
+      <path fillRule="evenodd" clipRule="evenOdd" d="m32.324219 165.824219c0-26.511719 21.488281-48 48-48h313.375l-63.199219 63.199219 22.625 22.625 90.511719-90.511719c6.246093-6.25 6.246093-16.375 0-22.625l-90.511719-90.511719-22.625 22.625 63.199219 63.199219h-313.375c-44.160157.050781-79.949219 35.839843-80 80v64h32zm0 0" fill={color} />
+    </svg>
+  );
+};
+
+export function PIP(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "PIP");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h13A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5v-9zM1.5 3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z" fill={color} />
+      <path d="M8 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-3z" fill={color} />
+    </svg>
+  );
+};
+
+export function Upload(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Upload");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill={color} />
+    </svg>
+  );
+};
+
+export function Download(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Download");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 24 24">
+      <path fillRule="evenodd" clipRule="evenOdd" d="M16.293 9.293L17.707 10.707L12 16.414L6.29297 10.707L7.70697 9.293L11 12.586V2H13V12.586L16.293 9.293ZM18 20V18H20V20C20 21.102 19.104 22 18 22H6C4.896 22 4 21.102 4 20V18H6V20H18Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Youtube(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Download");
+
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 24 24" aria-hidden="true" role="img">
+      <path fillRule="evenodd" clipRule="evenodd" d="M21.3766 4.10479C22.4093 4.38257 23.2225 5.20102 23.4985 6.24038C24 8.12411 24 12.0545 24 12.0545C24 12.0545 24 15.9848 23.4985 17.8688C23.2225 18.908 22.4093 19.7265 21.3766 20.0044C19.505 20.5091 12 20.5091 12 20.5091C12 20.5091 4.49496 20.5091 2.62336 20.0044C1.59082 19.7265 0.777545 18.908 0.501545 17.8688C0 15.9848 0 12.0545 0 12.0545C0 12.0545 0 8.12411 0.501545 6.24038C0.777545 5.20102 1.59082 4.38257 2.62336 4.10479C4.49496 3.59998 12 3.59998 12 3.59998C12 3.59998 19.505 3.59998 21.3766 4.10479ZM15.8182 12.0546L9.54551 15.623V8.48596L15.8182 12.0546Z" fill={color} />
     </svg>
   );
 };
