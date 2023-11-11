@@ -66,14 +66,6 @@ export function useUser(userId: string): User | null {
   return user;
 };
 
-export function useDeferredEffect<T>(effect: ReactEffectWithArg<T>, value: T) {
-  const deferredValue = React.useDeferredValue(value);
-
-  React.useEffect(() => {
-    return effect(deferredValue);
-  }, [ effect, deferredValue ]);
-};
-
 interface DispatchEvent {
   type: string;
   [key: string]: any;

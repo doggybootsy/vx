@@ -1,7 +1,7 @@
 import { IS_DESKTOP } from "self";
 import { Panel } from "..";
 import { internalDataStore } from "../../api/storage";
-import { Button, Collapsable, Flex } from "../../components";
+import { Button, Collapsable, Flex, Icons } from "../../components";
 import { FormSwitch } from "../../components/switch";
 import { app, extensions } from "../../native";
 import { React, WindowUtil } from "../../webpack/common";
@@ -12,17 +12,28 @@ export function Home() {
 
   return (
     <Panel title="Home">
-      <Flex justify={Flex.Justify.BETWEEN}>
-        <Button onClick={() => app.restart()}>
-          Restart Discord
-        </Button>
-        <Button onClick={() => location.reload()}>
-          Reload Discord
-        </Button>
-        <Button onClick={() => app.quit()}>
-          Quit Discord
-        </Button>
-      </Flex>
+      <div className="vx-home-header">
+        <div className="vx-home-logo">
+          <img src="https://media0.giphy.com/media/3og0IFrHkIglEOg8Ba/giphy.gif" />
+          <Icons.Logo size={60} />
+        </div>
+        <Flex className="vx-home-body" justify={Flex.Justify.BETWEEN} direction={Flex.Direction.VERTICAL}>
+          <div className="vx-home-welcome">
+            Welcome To VX
+          </div>
+          <Flex justify={Flex.Justify.START} gap={6} grow={0}>
+            <Button onClick={() => app.restart()}>
+              Restart Discord
+            </Button>
+            <Button onClick={() => location.reload()}>
+              Reload Discord
+            </Button>
+            <Button onClick={() => app.quit()}>
+              Quit Discord
+            </Button>
+          </Flex>
+        </Flex>
+      </div>
       
       {IS_DESKTOP && (
         <Collapsable className="vx-collapsable-section" header="Extensions">

@@ -2,7 +2,7 @@ import { React } from "../../../../webpack/common";
 import { Icons, Button, Tooltip, Switch } from "../../../../components";
 import { openWindow } from "./popout";
 import { themeStore } from "./store";
-import { useDeferredEffect, useInternalStore } from "../../../../hooks";
+import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
 
 export function ThemeCard({ id }: { id: string }) {
@@ -12,9 +12,10 @@ export function ThemeCard({ id }: { id: string }) {
     storedName: themeStore.getName(id)
   }));
 
-  useDeferredEffect((deferredValue) => {
+  const deferredValue = React.useDeferredValue(storedName);
+  React.useLayoutEffect(() => {
     setName(deferredValue);
-  }, storedName);
+  }, [ deferredValue ]);
   
   return (
     <div className="vx-addon-card">

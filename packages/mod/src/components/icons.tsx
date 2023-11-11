@@ -1,16 +1,34 @@
 import { className } from "../util";
 import { React } from "../webpack/common";
 
-export interface IconProps {
+export interface IconFullProps {
   width?: React.CSSProperties["width"],
   height?: React.CSSProperties["height"],
   color?: React.CSSProperties["color"],
   className?: string
 };
-function ensureProps(props: IconProps, name: string): Required<IconProps> {
+export interface IconSizeProps {
+  size?: React.CSSProperties["width"] | React.CSSProperties["height"],
+  color?: React.CSSProperties["color"],
+  className?: string
+};
+
+export type IconProps = IconFullProps | IconSizeProps;
+
+function isSizeStyle(props: IconProps): props is IconSizeProps {
+  return "size" in props;
+}
+
+function ensureProps(props: IconProps, name: string): Required<IconFullProps> {
+  const sizeStyle = isSizeStyle(props);
+
   const color: React.CSSProperties["color"] = props.color ?? "currentcolor";
-  const height: React.CSSProperties["height"] = props.height ?? 24;
-  const width: React.CSSProperties["width"] = props.width ?? 24;
+  
+  const baseHeight = sizeStyle ? props.size : props.height;
+  const height: React.CSSProperties["height"] = baseHeight ?? 24;
+
+  const baseWidth = sizeStyle ? props.size : props.width;
+  const width: React.CSSProperties["width"] = baseWidth ?? 24;
 
   const classNameProp = React.useMemo(() => className([ "vx-icon", `vx-icon-${name.toLocaleLowerCase()}`, props.className ]), [ props.className ]);
 

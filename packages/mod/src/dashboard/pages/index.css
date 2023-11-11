@@ -155,3 +155,34 @@ input.vx-addon-input:not(:focus) {
 .vx-addons-empty {
   padding-bottom: 40px;
 }
+.vx-home-header {
+  display: flex;
+  gap: 12px;
+}
+.vx-home-logo {
+  display: flex;
+  position: relative;
+    -webkit-mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
+    mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
+}
+.vx-home-logo img {
+  height: 100px;
+  width: 100px;
+}
+.vx-home-logo .vx-icon-logo {
+  color: white;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.vx-home-welcome {
+  color: var(--header-primary);
+  font-weight: var(--font-weight-medium);
+  font-size: x-large;
+}
+.vx-home-body {
+  background: var(--background-secondary);
+  padding: 6px;
+  border-radius: 4px;
+}
