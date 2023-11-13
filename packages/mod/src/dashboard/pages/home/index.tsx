@@ -1,10 +1,11 @@
 import { IS_DESKTOP } from "self";
-import { Panel } from "..";
-import { internalDataStore } from "../../api/storage";
-import { Button, Collapsable, Flex, Icons } from "../../components";
-import { FormSwitch } from "../../components/switch";
-import { app, extensions } from "../../native";
-import { React, WindowUtil } from "../../webpack/common";
+import { Panel } from "../..";
+import { internalDataStore } from "../../../api/storage";
+import { Button, Collapsable, Flex, Icons } from "../../../components";
+import { FormSwitch } from "../../../components/switch";
+import { app, extensions } from "../../../native";
+import { React, WindowUtil } from "../../../webpack/common";
+import { Updater } from "./updater";
 
 export function Home() {
   const [ contentProtection, setContentProtection ] = React.useState(() => internalDataStore.get("content-protection") ?? false);
@@ -34,6 +35,8 @@ export function Home() {
           </Flex>
         </Flex>
       </div>
+
+      <Updater />
       
       {IS_DESKTOP && (
         <Collapsable className="vx-collapsable-section" header="Extensions">

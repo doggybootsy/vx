@@ -83,6 +83,8 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     const version = $version ?? raw.version;
     this[Symbol.toStringTag] = `VX(${name}) - v${version}\n`;
     this.version = version;
+
+    this.displayName = this.toString();
   };
 
   _queueUpdate() {

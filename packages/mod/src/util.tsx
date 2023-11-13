@@ -59,6 +59,11 @@ export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<
     })
   ), true);
 };
+
+export function memo<T extends React.ComponentType<any>>(type: T, compare?: (prevProps: Readonly<React.ComponentProps<T>>, nextProps: Readonly<React.ComponentProps<T>>) => boolean): React.MemoExoticComponent<T> {
+  return proxyCache(() => React.memo(type, compare), true);
+};
+
 export function makeLazy<T extends React.ComponentType<any>>(opts: {
   factory: () => Promise<T>,
   fallback?: React.ComponentType<{}>,
@@ -137,9 +142,12 @@ export function findInTree<T>(tree: any, searchFilter: (item: any) => any, optio
   else {
     const toWalk = walkable == null ? Object.keys(tree) : walkable;
     for (const key of toWalk) {
-      if (typeof(tree[key]) == "undefined" || ignore.includes(key)) continue;
-      tempReturn = findInTree(tree[key], searchFilter, { walkable, ignore });
-      if (typeof tempReturn != "undefined") return tempReturn;
+      const value = tree[key];
+
+      if (typeof(value) === "undefined" || ignore.includes(key)) continue;
+
+      tempReturn = findInTree(value, searchFilter, { walkable, ignore });
+      if (typeof tempReturn !== "undefined") return tempReturn;
     }
   }
   return tempReturn;
@@ -150,6 +158,13 @@ export function findInReactTree<T>(tree: any, searchFilter: (item: any) => any):
 };
 
 export class InternalStore {
+  static stores = new Set();
+  constructor() {
+    InternalStore.stores.add(this);
+  };
+
+  displayName?: string;
+
   #listeners = new Set<() => void>();
   
   addChangeListener(callback: () => void) {

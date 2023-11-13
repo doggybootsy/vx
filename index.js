@@ -15,6 +15,11 @@ function argvIncludesArg(expression) {
   return argvIncludesMatch(new RegExp(`^-?-${expression}$`));
 };
 
+const IS_PROD = argvIncludesArg("p(roduction)?");
+console.log("is production:", IS_PROD);
+
+console.log(Array(20).fill("-").join("-"));
+
 function hashCode(str) {
   let hash = 0;
   for (let i = 0, len = str.length; i < len; i++) {
@@ -24,8 +29,6 @@ function hashCode(str) {
   }
   return hash;
 }
-
-const DIST = path.join(__dirname, "dist");
 
 /** @type {esbuild.Plugin} */
 const HTMLPlugin = {
@@ -132,7 +135,7 @@ const SelfPlugin = (desktop) => ({
   name: "self-plugin",
   setup(build) {
     const env = {
-      IS_DEV: true,
+      IS_DEV: !IS_PROD,
       VERSION: "1.0.0"
     };
 
@@ -148,10 +151,12 @@ const SelfPlugin = (desktop) => ({
     build.onLoad({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
-      contents: `export const env = Object.freeze(${JSON.stringify(env)});
-      export const git = Object.freeze(${JSON.stringify(git())});
+      contents: `
+      export const env = ${JSON.stringify(env)};
+      export const git = ${JSON.stringify(git())};
       export const browser = typeof chrome === "object" ? chrome : browser;
-      export const IS_DESKTOP = ${desktop};`
+      export const IS_DESKTOP = ${desktop};
+      `
     }));
   }
 });
@@ -216,7 +221,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/index.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true)
@@ -231,7 +236,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/main.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true)
@@ -245,7 +250,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/splash.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true),

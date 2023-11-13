@@ -162,8 +162,8 @@ input.vx-addon-input:not(:focus) {
 .vx-home-logo {
   display: flex;
   position: relative;
-    -webkit-mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
-    mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
+  -webkit-mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
+  mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
 }
 .vx-home-logo img {
   height: 100px;
@@ -180,9 +180,20 @@ input.vx-addon-input:not(:focus) {
   color: var(--header-primary);
   font-weight: var(--font-weight-medium);
   font-size: x-large;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 .vx-home-body {
   background: var(--background-secondary);
   padding: 6px;
   border-radius: 4px;
+}
+.vx-updater {
+  background: var(--background-secondary);
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--text-normal);
+  margin-top: 8px;
+  border: 1px solid var(--background-secondary-alt);
 }

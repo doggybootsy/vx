@@ -26,6 +26,8 @@ export const themeStore = new class extends InternalStore {
     };
   };
 
+  displayName = "ThemeStore";
+
   #raw: Record<string, ThemeData>;
 
   _insertCSS(id: string) {

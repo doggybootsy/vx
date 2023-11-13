@@ -1,14 +1,14 @@
 import { getLazy } from "./lazy";
 import { getModule } from "./searching";
 import { getProxy } from "./util";
-import { modules } from "./webpack";
+import { webpackRequire } from "./webpack";
 
 export function bySource(...sources: string[]): Webpack.Filter {
   const filter = byStrings(...sources);
   return (exports, module, id) => {
     if (exports !== module.exports) return;
     
-    const fn = modules[id];
+    const fn = webpackRequire!.m[id];
     return filter(fn);
   };
 };
