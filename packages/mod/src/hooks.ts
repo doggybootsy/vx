@@ -65,16 +65,3 @@ export function useUser(userId: string): User | null {
   
   return user;
 };
-
-interface DispatchEvent {
-  type: string;
-  [key: string]: any;
-};
-
-export function useFluxSubscription(name: string, actionHandler: (event: DispatchEvent) => void, otherDeps: React.DependencyList = []) {
-  React.useEffect(() => {
-    FluxDispatcher.subscribe("RTC_CONNECTION_STATE", actionHandler);
-
-    return () => FluxDispatcher.unsubscribe("RTC_CONNECTION_STATE", actionHandler);
-  }, [ name, actionHandler, ...otherDeps ]);
-};

@@ -5,6 +5,8 @@ const path = require("path");
 const asar = require("asar")
 const cp = require("child_process");
 
+const { version } = require("./package.json");
+
 function argvIncludesMatch(regex) {
   for (const arg of process.argv) {
     if (regex.test(arg)) return true;
@@ -17,6 +19,7 @@ function argvIncludesArg(expression) {
 
 const IS_PROD = argvIncludesArg("p(roduction)?");
 console.log("is production:", IS_PROD);
+console.log("version:", version);
 
 console.log(Array(20).fill("-").join("-"));
 
@@ -136,10 +139,9 @@ const SelfPlugin = (desktop) => ({
   setup(build) {
     const env = {
       IS_DEV: !IS_PROD,
-      VERSION: "1.0.0"
+      VERSION: version,
+      VERSION_HASH: hashCode(version).toString(36).toUpperCase()
     };
-
-    env.VERSION_HASH = hashCode(env.VERSION).toString(36).toUpperCase();
 
     build.onResolve({
       filter: /^self$/

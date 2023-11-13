@@ -88,7 +88,7 @@ export function Updater() {
       <div className="vx-updater-info">
         <div className="vx-updater-notice">
           {
-            state.compared ? state.compared === -1 ? "Update Available" : "Up To Date" : "Unknown"
+            typeof state.compared === "number" ? state.compared === -1 ? "Update Available" : "Up To Date" : "Unknown"
           }
         </div>
         <div className="vx-updater-fetch">
