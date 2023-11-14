@@ -40,6 +40,11 @@ function Dashboard(props: { section: string }) {
       label: "Home", 
       element: () => <Home />
     },
+    { section: "DIVIDER" },
+    {
+      section: "HEADER",
+      label: "Addons" 
+    },
     {
       section: "plugins",
       label: "Plugins",
@@ -67,7 +72,7 @@ function Dashboard(props: { section: string }) {
                 if (!git.exists) return;
 
                 WindowUtil.handleClick({
-                  href: `${git.url}/tree/${git.branch}`
+                  href: `${git.url}/tree/${git.hash}`
                 }, event);
               }}
             >

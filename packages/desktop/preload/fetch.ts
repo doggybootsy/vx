@@ -42,6 +42,8 @@ export function fetch(input: RequestInput) {
       method: input.method
     };
 
+    options.headers!["user-agent"] = navigator.userAgent;
+
     const ret = request((url as URL).href, options, (response) => {
       let ended = false;
 

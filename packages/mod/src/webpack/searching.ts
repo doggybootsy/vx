@@ -1,14 +1,15 @@
 import { shouldSkipModule, wrapFilter } from "./shared";
-import { cache } from "./webpack";
+import { webpackRequire } from "./webpack";
 
 export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}): T | void {
   filter = wrapFilter(filter);
+  if (!webpackRequire) return;
   
   const { searchDefault = true, searchExports = false } = opts;
 
-  for (const id in cache) {
-    if (Object.prototype.hasOwnProperty.call(cache, id)) {
-      const module = cache[id];
+  for (const id in webpackRequire.c) {
+    if (Object.prototype.hasOwnProperty.call(webpackRequire.c, id)) {
+      const module = webpackRequire.c[id];
       
       if (shouldSkipModule(module)) continue;
 
@@ -36,13 +37,15 @@ export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.F
 export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}) {
   const modules: any[] = [];
 
+  if (!webpackRequire) return modules;
+
   filter = wrapFilter(filter);
   
   const { searchDefault = true, searchExports = false } = opts;
 
-  for (const id in cache) {
-    if (Object.prototype.hasOwnProperty.call(cache, id)) {
-      const module = cache[id];
+  for (const id in webpackRequire.c) {
+    if (Object.prototype.hasOwnProperty.call(webpackRequire.c, id)) {
+      const module = webpackRequire.c[id];
 
       if (shouldSkipModule(module)) continue;
 
@@ -68,15 +71,17 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
   return modules;
 };
 export function getBulk(...filters: Array<Webpack.BulkFilter>) {
+  if (!webpackRequire) return;
+  
   const modules = Array(filters.length).fill(null).map(() => ({ value: null, hasValue: false }));
   
   filters.map((opts) => opts.filter = wrapFilter(opts.filter));  
 
-  for (const id in cache) {
+  for (const id in webpackRequire.c) {
     if (modules.every((m) => m.hasValue)) break;
 
-    if (Object.prototype.hasOwnProperty.call(cache, id)) {
-      const module = cache[id];
+    if (Object.prototype.hasOwnProperty.call(webpackRequire.c, id)) {
+      const module = webpackRequire.c[id];
       
       if (shouldSkipModule(module)) continue;
 

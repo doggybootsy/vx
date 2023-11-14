@@ -1,4 +1,4 @@
-type masks = "none" | "avatar-overlay";
+type masks = "none" | "avatar-overlay" | "squircle";
 
 const createMaskURL = (mask: masks) => {
   if (mask === "none") return "";
@@ -14,8 +14,8 @@ export function Mask({ width, height, mask, children }: { mask: masks, width: nu
     >
       <foreignObject
         mask={createMaskURL(mask)}
-        height={24}
-        width={24}
+        height={height}
+        width={width}
         x={0}
         y={0}
       >

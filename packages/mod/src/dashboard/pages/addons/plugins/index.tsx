@@ -1,17 +1,32 @@
 import { Panel } from "../../..";
-import { Flex, Icons, FlexChild, Tooltip, Button } from "../../../../components";
+import { Flex, Icons, FlexChild, Tooltip, Button, SearchBar } from "../../../../components";
 import { plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
 import { React } from "../../../../webpack/common";
+import { NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 
 export function Plugins() {
   const entries = React.useMemo(() => Object.entries(plugins), [ ]);
+
+  const [ query, setQuery ] = React.useState("");
+  const queredEntries = React.useMemo(() => entries.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, entries ]);
+
+  const alt = React.useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   return (
     <Panel 
       title="Plugins"
       buttons={
         <>
+          <SearchBar 
+            query={query}
+            size={SearchBar.Sizes.SMALL}
+            onChange={setQuery}
+            onClear={() => {
+              setQuery("");
+            }}
+            autoFocus
+          />
           <Tooltip text="Reload Discord">
             {(props) => (
               <Button
@@ -42,11 +57,15 @@ export function Plugins() {
         </span>
       </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
-        {entries.map(([ key, plugin ]) => (
-          <FlexChild key={`vx-p-${key}`} >
-            <PluginCard plugin={plugin} />
-          </FlexChild>
-        ))}
+        {queredEntries.length ? (
+          queredEntries.map(([ key, plugin ]) => (
+            <FlexChild key={`vx-p-${key}`} >
+              <PluginCard plugin={plugin} />
+            </FlexChild>
+          ))
+        ) : (
+          <NoAddons message="No Results Found" img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
+        )}
       </Flex>
     </Panel>
   )

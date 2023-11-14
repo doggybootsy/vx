@@ -17,10 +17,12 @@ export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
 export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 
-export const Flux = getProxyByKeys<any>([ "useStateFromStores", "Dispatcher" ]);
-
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
-export const useStateFromStores = proxyCache<useStateFromStores>(() => Flux.useStateFromStores);
+export const Flux = getProxyByKeys<{
+  useStateFromStores: useStateFromStores
+}>([ "useStateFromStores", "Dispatcher" ]);
+
+export const useStateFromStores = proxyCache(() => Flux.useStateFromStores);
 
 export const FluxDispatcher = getProxyByKeys<FluxDispatcherType>([ "subscribe", "dispatch" ]);
 
@@ -57,15 +59,12 @@ interface i18n {
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
 export const insertText = proxyCache(() => {
-  let ComponentDispatch: any;
+  const ComponentDispatch = proxyCache(() => {
+    const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
+    return webpackRequire!(id).ComponentDispatch;
+  });
 
   return (content: string) => {
-    // ComponentDispatch can be easily called before its loaded so this will require it
-    if (!ComponentDispatch) {
-      const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
-      ComponentDispatch = webpackRequire!(id).ComponentDispatch;
-    };
-
     ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
       plainText: content
     });

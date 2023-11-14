@@ -27,6 +27,11 @@ const native = {
       electron.clipboard.writeText(text);
     }
   },
+  updater: {
+    update(release: Git.Release) {
+      electron.ipcRenderer.invoke("@vx/update", release);
+    }
+  },
   util: {
     // Cross context abort controller | for fetch
     AbortController() {

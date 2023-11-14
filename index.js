@@ -5,6 +5,8 @@ const path = require("path");
 const asar = require("asar")
 const cp = require("child_process");
 
+const { version } = require("./package.json");
+
 function argvIncludesMatch(regex) {
   for (const arg of process.argv) {
     if (regex.test(arg)) return true;
@@ -15,6 +17,12 @@ function argvIncludesArg(expression) {
   return argvIncludesMatch(new RegExp(`^-?-${expression}$`));
 };
 
+const IS_PROD = argvIncludesArg("p(roduction)?");
+console.log("is production:", IS_PROD);
+console.log("version:", version);
+
+console.log(Array(20).fill("-").join("-"));
+
 function hashCode(str) {
   let hash = 0;
   for (let i = 0, len = str.length; i < len; i++) {
@@ -24,8 +32,6 @@ function hashCode(str) {
   }
   return hash;
 }
-
-const DIST = path.join(__dirname, "dist");
 
 /** @type {esbuild.Plugin} */
 const HTMLPlugin = {
@@ -132,11 +138,10 @@ const SelfPlugin = (desktop) => ({
   name: "self-plugin",
   setup(build) {
     const env = {
-      IS_DEV: true,
-      VERSION: "1.0.0"
+      IS_DEV: !IS_PROD,
+      VERSION: version,
+      VERSION_HASH: hashCode(version).toString(36).toUpperCase()
     };
-
-    env.VERSION_HASH = hashCode(env.VERSION).toString(36).toUpperCase();
 
     build.onResolve({
       filter: /^self$/
@@ -148,10 +153,12 @@ const SelfPlugin = (desktop) => ({
     build.onLoad({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
-      contents: `export const env = Object.freeze(${JSON.stringify(env)});
-      export const git = Object.freeze(${JSON.stringify(git())});
+      contents: `
+      export const env = ${JSON.stringify(env)};
+      export const git = ${JSON.stringify(git())};
       export const browser = typeof chrome === "object" ? chrome : browser;
-      export const IS_DESKTOP = ${desktop};`
+      export const IS_DESKTOP = ${desktop};
+      `
     }));
   }
 });
@@ -216,7 +223,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/index.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true)
@@ -231,7 +238,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/main.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true)
@@ -245,7 +252,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       outfile: "app/splash.js",
       bundle: true,
       platform: "node",
-      external: [ "electron" ],
+      external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
       plugins: [
         SelfPlugin(true),

@@ -35,6 +35,20 @@ declare module Webpack {
   ];
   type AppObject = Array<ModuleWithoutEffect | ModuleWithEffect>;
 };
+declare module Git {
+  interface Asset {
+    name: string,
+    url: string,
+    content_type: string
+  };
+
+  interface Release {
+    html_url: string,
+    url: string,
+    tag_name: string,
+    assets: Asset[]
+  };
+}
 
 interface DiscordNative {
   window: {
@@ -44,9 +58,16 @@ interface DiscordNative {
   }
 };
 
+interface ExtensionNative {
+  id: string,
+  update(release: Git.Release): void,
+  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+};
+
 interface DiscordWindow {
   webpackChunkdiscord_app?: Webpack.AppObject,
   VXNative?: NativeObject,
+  VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative
 };
 

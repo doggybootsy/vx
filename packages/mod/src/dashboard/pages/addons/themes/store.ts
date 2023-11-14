@@ -2,12 +2,11 @@ import { ThemeData, internalDataStore } from "../../../../api/storage";
 import { InternalStore, download, showFilePicker } from "../../../../util";
 import { closeWindow } from "../../../../api/window";
 import { waitForNode } from "common/dom";
-import { UserStore } from "../../../../webpack/common";
 
 const themeHead = document.createElement("vx-themes");
 
-waitForNode("head").then((head) => {
-  head.append(themeHead, document.createElement("vx-plugins"));
+waitForNode(".drag-previewer").then(() => {
+  document.body.append(themeHead, document.createElement("vx-plugins"));
 });
 
 export const themeStore = new class extends InternalStore {
@@ -26,6 +25,8 @@ export const themeStore = new class extends InternalStore {
       };
     };
   };
+
+  displayName = "ThemeStore";
 
   #raw: Record<string, ThemeData>;
 
