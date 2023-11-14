@@ -47,7 +47,7 @@ const updaterStore = new class extends InternalStore {
 
     const version = release.tag_name.replace(/v/i, "");
         
-    const compared = compare(env.VERSION, release.tag_name);
+    const compared = compare(release.tag_name, env.VERSION);
 
     this.#compared = compared;
     this.#fetching = false;
@@ -119,7 +119,7 @@ export function Updater() {
     
             updaterStore.checkForUpdates();
           }} 
-          disabled={!state.canCheck}
+          disabled={state.compared === -1 ? false : state.canCheck}
         >
           {state.fetching ? "Fetching..." : state.compared === -1 ? "Update" : "Check For Updates"}
         </Button>
