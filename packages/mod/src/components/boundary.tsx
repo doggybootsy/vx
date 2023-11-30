@@ -1,5 +1,4 @@
-import { React } from "./../webpack/common";
-import { cacheComponent } from "./../util";
+import { Component } from "react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode,
@@ -14,25 +13,23 @@ const NoFallback = () => (
   <div className="vx-react-error">React Error</div>
 );
 
-const ErrorBoundary = cacheComponent(() => {
-  class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-    state = { hasError: false };
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state = { hasError: false };
 
-    componentDidCatch() {
-      this.setState({
-        hasError: true
-      });
-    };
-
-    render() {
-      if (!this.state.hasError) return this.props.children;
-      if (this.props.fallback) return this.props.fallback;
-      return <NoFallback />;
-    };
+  componentDidCatch() {
+    this.setState({
+      hasError: true
+    });
   };
 
-  return ErrorBoundary;
-}) as React.FunctionComponent<ErrorBoundaryProps> & { wrap: typeof wrap };
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    if (this.props.fallback) return this.props.fallback;
+    return <NoFallback />;
+  };
+
+  static wrap = wrap;
+};
 
 function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback: React.FunctionComponent<P> = NoFallback): React.FunctionComponent<P> {
   function Wrapped(props: P) {
@@ -55,7 +52,5 @@ function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback:
 
   return Wrapped;
 };
-
-ErrorBoundary.wrap = wrap;
 
 export default ErrorBoundary;

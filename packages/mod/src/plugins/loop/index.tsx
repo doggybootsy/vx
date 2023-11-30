@@ -1,8 +1,9 @@
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+
 import { definePlugin } from "..";
 import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { className } from "../../util";
-import { React } from "../../webpack/common";
 import { SettingType, createSettings } from "../settings";
 
 import { addStyle } from "./index.css?managed";
@@ -17,11 +18,11 @@ const settings = createSettings("loop", {
 });
 
 function Loop() {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [ media, setMedia ] = React.useState<null | HTMLMediaElement>(null);
-  const [ isLooping, setIsLooping ] = React.useState(() => settings.autoLoop.get());
+  const ref = useRef<HTMLDivElement>(null);
+  const [ media, setMedia ] = useState<null | HTMLMediaElement>(null);
+  const [ isLooping, setIsLooping ] = useState(() => settings.autoLoop.get());
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (!ref.current) return;
     const media = ref.current.parentElement!.parentElement!.querySelector<HTMLMediaElement>(":is(video, audio)")!;
 
@@ -29,7 +30,7 @@ function Loop() {
     media.loop = isLooping;
   }, [ ]);
 
-  const toggleLoop = React.useCallback(() => {
+  const toggleLoop = useCallback(() => {
     if (!media) return;
     
     media.loop = !isLooping;

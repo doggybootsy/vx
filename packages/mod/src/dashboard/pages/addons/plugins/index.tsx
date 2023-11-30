@@ -1,17 +1,18 @@
+import { useMemo, useState } from "react";
+
 import { Panel } from "../../..";
 import { Flex, Icons, FlexChild, Tooltip, Button, SearchBar } from "../../../../components";
 import { plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
-import { React } from "../../../../webpack/common";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 
 export function Plugins() {
-  const entries = React.useMemo(() => Object.entries(plugins), [ ]);
+  const entries = useMemo(() => Object.entries(plugins), [ ]);
 
-  const [ query, setQuery ] = React.useState("");
-  const queredEntries = React.useMemo(() => entries.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, entries ]);
+  const [ query, setQuery ] = useState("");
+  const queredEntries = useMemo(() => entries.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, entries ]);
 
-  const alt = React.useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
+  const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   return (
     <Panel 

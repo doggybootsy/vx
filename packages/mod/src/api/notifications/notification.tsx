@@ -1,7 +1,9 @@
+import { useLayoutEffect, useRef } from "react";
+
 import { Notification } from ".";
 import { transformContent } from "../../components";
 import { useInternalStore } from "../../hooks";
-import { React, ReactSpring } from "../../webpack/common"
+import { ReactSpring } from "../../webpack/common"
 import { notificationStore } from "./store"
 
 export function Notifications() {
@@ -40,7 +42,7 @@ function Slider({ duration, springRef, close }: { duration: number, springRef: R
     }
   });
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     springRef.current = {
       resume() { props.width.resume(); },
       pause() { props.width.pause(); },
@@ -65,7 +67,7 @@ enum MouseButtons {
 };
 
 function Notification({ notification }: { notification: Notification }) {
-  const springRef = React.useRef<SpringRef | void>();
+  const springRef = useRef<SpringRef | void>();
 
   const displaySlider = shouldDisplaySlider(notification);
 

@@ -1,5 +1,5 @@
+import React, { createElement, lazy as $lazy, Suspense, Component } from "react";
 import { getProxyByKeys } from "./webpack";
-import { React } from "./webpack/common";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -44,24 +44,18 @@ export function cache<T>(factory: () => T): () => T {
   }
 };
 
-export function cacheComponent<P extends Omit<Record<string, any>, "ref">>(factory: () => React.ComponentType<P>) {
+export function cacheComponent<P extends {}>(factory: () => React.FunctionComponent<P>) {
   const cacheFactory = cache(factory);
 
-  return (props: P) => React.createElement(cacheFactory(), props);
+  return (props: P) => createElement(cacheFactory(), props);
 };
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<T | { default: T }>): React.LazyExoticComponent<T> {
-  return proxyCache(() => (
-    React.lazy(async () => {
-      const result = await factory();
-  
-      if (result instanceof Object && "default" in result) return result;
-      return { default: result };
-    })
-  ), true);
-};
+  return $lazy(async () => {
+    const result = await factory();
 
-export function memo<T extends React.ComponentType<any>>(type: T, compare?: (prevProps: Readonly<React.ComponentProps<T>>, nextProps: Readonly<React.ComponentProps<T>>) => boolean): React.MemoExoticComponent<T> {
-  return proxyCache(() => React.memo(type, compare), true);
+    if (result instanceof Object && "default" in result) return result;
+    return { default: result };
+  });
 };
 
 export function makeLazy<T extends React.ComponentType<any>>(opts: {
@@ -71,24 +65,22 @@ export function makeLazy<T extends React.ComponentType<any>>(opts: {
 }): React.ComponentClass<React.ComponentPropsWithRef<T>> {
   const { factory } = opts;
 
-  const Component = lazy(factory);
+  const Lazy = lazy(factory);
   const Fallback = opts.fallback ?? (() => null);
 
-  const LazyComponent = proxyCache(() => (
-    class LazyComponent extends React.Component<React.ComponentPropsWithRef<T>> {
-      static displayName: string = `VX(Suspense(${"name" in opts ? opts.name : "Unknown"}))`;
+  class LazyComponent extends Component<React.ComponentPropsWithRef<T>> {
+    static displayName: string = `VX(Suspense(${"name" in opts ? opts.name : "Unknown"}))`;
 
-      render() {
-        return (
-          <React.Suspense fallback={<Fallback />}>
-            {React.createElement(Component, this.props as React.ComponentPropsWithRef<T>)}
-          </React.Suspense>
-        );
-      };
-    }
-  ));
+    render() {
+      return (
+        <Suspense fallback={<Fallback />}>
+          {createElement(Lazy, this.props as React.ComponentPropsWithRef<T>)}
+        </Suspense>
+      );
+    };
+  };
 
-  return LazyComponent ;
+  return LazyComponent;
 };
 
 interface classNameValueTypes {

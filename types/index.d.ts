@@ -64,11 +64,24 @@ interface ExtensionNative {
   fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 };
 
+type sassCompilerData = {
+  status: 1
+} | {
+  status: 0,
+  text: string
+}
+
+interface Sass {
+  style: Record<string, number>,
+  compile(text: string, options: { style: number, indentedSyntax: boolean }, callback: (data: sassCompilerData) => void): void
+}
+
 interface DiscordWindow {
   webpackChunkdiscord_app?: Webpack.AppObject,
   VXNative?: NativeObject,
   VXExtension?: ExtensionNative,
-  DiscordNative?: DiscordNative
+  DiscordNative?: DiscordNative,
+  Sass?: Sass
 };
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;

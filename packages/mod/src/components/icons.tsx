@@ -1,5 +1,6 @@
+import { useMemo } from "react";
+
 import { className } from "../util";
-import { React } from "../webpack/common";
 
 export interface IconFullProps {
   width?: React.CSSProperties["width"],
@@ -30,7 +31,7 @@ function ensureProps(props: IconProps, name: string): Required<IconFullProps> {
   const baseWidth = sizeStyle ? props.size : props.width;
   const width: React.CSSProperties["width"] = baseWidth ?? 24;
 
-  const classNameProp = React.useMemo(() => className([ "vx-icon", `vx-icon-${name.toLocaleLowerCase()}`, props.className ]), [ props.className ]);
+  const classNameProp = useMemo(() => className([ "vx-icon", `vx-icon-${name.toLocaleLowerCase()}`, props.className ]), [ props.className ]);
 
   return { color, height, width, className: classNameProp };
 };

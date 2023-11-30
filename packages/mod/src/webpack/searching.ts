@@ -1,4 +1,4 @@
-import { shouldSkipModule, wrapFilter } from "./shared";
+import { shouldSearchDefault, shouldSkipModule, wrapFilter } from "./shared";
 import { webpackRequire } from "./webpack";
 
 export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}): T | void {
@@ -15,7 +15,7 @@ export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.F
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("default");
+      else if (searchDefault && shouldSearchDefault(module)) keys.push("default");
       
       if (filter.call(module, module.exports, module, module.id)) {
         return module.exports as T;
@@ -51,7 +51,7 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("default");
+      else if (searchDefault && shouldSearchDefault(module)) keys.push("default");
       
       if (filter.call(module, module.exports, module, module.id)) {
         modules.push(module.exports);
@@ -60,6 +60,8 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
       for (const key of keys) {
         if (!Reflect.has(module.exports, key)) continue;
         const exported = module.exports[key];
+
+        if (!(exported instanceof Object)) continue;
 
         if (filter.call(module, exported, module, module.id)) {
           modules.push(exported);
@@ -93,7 +95,7 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
 
         const keys: string[] = [ ];
         if (searchExports) keys.push(...Object.keys(module.exports));
-        else if (searchDefault) keys.push("default");
+        else if (searchDefault && shouldSearchDefault(module)) keys.push("default");
         
         if (filter.call(module, module.exports, module, module.id)) {
           chunk.value = module.exports;
@@ -106,6 +108,8 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
 
           const exported = module.exports[key];
   
+          if (!(exported instanceof Object)) continue;
+
           if (filter.call(module, exported, module, module.id)) {
             chunk.value = exported;
             chunk.hasValue = true;

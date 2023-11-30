@@ -1,4 +1,4 @@
-import { React } from "../../../../webpack/common";
+import { useDeferredValue, useLayoutEffect, useState } from "react";
 import { Icons, Button, Tooltip, Switch } from "../../../../components";
 import { openWindow } from "./popout";
 import { themeStore } from "./store";
@@ -6,14 +6,14 @@ import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
 
 export function ThemeCard({ id }: { id: string }) {
-  const [ name, setName ] = React.useState(() => themeStore.getName(id));
+  const [ name, setName ] = useState(() => themeStore.getName(id));
   const { isEnabled, storedName } = useInternalStore(themeStore, () => ({
     isEnabled: themeStore.isEnabled(id),
     storedName: themeStore.getName(id)
   }));
 
-  const deferredValue = React.useDeferredValue(storedName);
-  React.useLayoutEffect(() => {
+  const deferredValue = useDeferredValue(storedName);
+  useLayoutEffect(() => {
     setName(deferredValue);
   }, [ deferredValue ]);
   

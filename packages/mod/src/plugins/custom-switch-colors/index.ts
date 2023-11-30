@@ -1,6 +1,7 @@
+import { useMemo } from "react";
+
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
-import { React } from "../../webpack/common";
 import { SettingType, createSettings } from "../settings";
 
 const settings = createSettings("CustomSwitchColors", {
@@ -45,6 +46,6 @@ export default definePlugin({
   useColor(type: "on" | "off") {
     const color = settings[type].use();
 
-    return React.useMemo(() => `#${color.toString(16).padStart(6, "0")}`, [ color ]);
+    return useMemo(() => `#${color.toString(16).padStart(6, "0")}`, [ color ]);
   }
 });

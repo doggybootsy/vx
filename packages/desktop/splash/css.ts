@@ -18,7 +18,7 @@ watch(
   debounce(() => {
     style.innerHTML = "";
     style.appendChild(document.createTextNode(getCustomCSS()));
-  }, 500)
+  }, 100)
 );
 
 export { style as customCSS };

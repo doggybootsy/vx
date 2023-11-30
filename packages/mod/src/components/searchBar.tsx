@@ -1,5 +1,5 @@
 import { className } from "../util";
-import { getProxy, getProxyByKeys } from "../webpack";
+import { getProxy } from "../webpack";
 import ErrorBoundary from "./boundary";
 
 interface SearchBarProps {

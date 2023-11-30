@@ -20,6 +20,7 @@
   background: var(--background-tertiary);
   border-radius: 50%;
   overflow: hidden;
+  cursor: pointer;
 }
 .vx-yt-info {
   display: flex;

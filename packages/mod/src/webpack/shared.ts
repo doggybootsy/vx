@@ -16,8 +16,14 @@ export function wrapFilter(filter: Webpack.Filter): Webpack.Filter {
     catch (error) {
       if (hasErrored) return false;
       hasErrored = true;
-      console.warn("Webpack Module Search Error", "\nFilter:", filter, "\nthrew:", error, "\nmodule", module);
+      console.warn("Webpack Module Search Error", { filter, module, error, moduleId: id });
       return false
     };
   };
+};
+
+export function shouldSearchDefault(module: Webpack.Module): boolean {
+  if (!Reflect.has(module.exports, "__esModule")) return false;
+  if (!module.exports.__esModule) return false;
+  return "default" in module.exports;
 };

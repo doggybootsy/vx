@@ -1,6 +1,8 @@
+import { useRef, useState } from "react";
+
 import { Button } from "../../components";
 import { getProxyByKeys } from "../../webpack";
-import { I18n, React } from "../../webpack/common";
+import { I18n } from "../../webpack/common";
 import { openModal } from "./actions";
 import { ConfirmModalOptions } from "./confirmModal";
 
@@ -38,9 +40,9 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
     
   return new Promise((resolve) => {
     const modal = openModal((props) => {
-      const ref = React.useRef<{ shake(): void }>();
-      const [ state, setState ] = React.useState(input);
-      const [ hasError, setHasError ] = React.useState(() => !match.test(input));
+      const ref = useRef<{ shake(): void }>();
+      const [ state, setState ] = useState(input);
+      const [ hasError, setHasError ] = useState(() => !match.test(input));
       
       return (
         <components.Shakeable

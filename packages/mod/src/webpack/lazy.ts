@@ -1,5 +1,5 @@
 import { getModule, listeners } from ".";
-import { shouldSkipModule, wrapFilter } from "./shared";
+import { shouldSearchDefault, shouldSkipModule, wrapFilter } from "./shared";
 
 export function getLazy<T>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptions = {}): Promise<T> {
   filter = wrapFilter(filter);
@@ -22,13 +22,16 @@ export function getLazy<T>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptio
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
-      else if (searchDefault) keys.push("default");
+      else if (searchDefault && shouldSearchDefault(module)) keys.push("default");
 
       for (const key of keys) {
-        const item = module.exports[key];
-        if (!item) continue;
-        if (filter.call(module, item, module, module.id)) {
-          resolve(item);
+        const exported = module.exports[key];
+        
+        if (!(exported instanceof Object)) continue;
+        if (!Reflect.has(module.exports, key)) continue;
+
+        if (filter.call(module, exported, module, module.id)) {
+          resolve(exported);
           return undoListener();
         };
       };

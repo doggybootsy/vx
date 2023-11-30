@@ -1,22 +1,23 @@
+import { useMemo, useState } from "react";
+
 import { Panel } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { useInternalStore } from "../../../../hooks";
-import { React } from "../../../../webpack/common";
 import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 import { ThemeCard } from "./card";
 import { themeStore } from "./store";
 
 export function Themes() {
-  const [ query, setQuery ] = React.useState("");
+  const [ query, setQuery ] = useState("");
 
   const keys = useInternalStore(themeStore, () => {
     const keys = themeStore.keys();
 
     return keys.sort((a, b) => themeStore.getName(a).localeCompare(themeStore.getName(b)));
   });
-  const queredKeys = React.useMemo(() => keys.filter((key) => themeStore.getName(key).toLowerCase().includes(query.toLowerCase())), [ query, keys ]);
+  const queredKeys = useMemo(() => keys.filter((key) => themeStore.getName(key).toLowerCase().includes(query.toLowerCase())), [ query, keys ]);
 
-  const alt = React.useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
+  const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   return (
     <Panel
