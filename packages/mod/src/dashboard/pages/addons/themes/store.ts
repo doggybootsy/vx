@@ -2,6 +2,8 @@ import { ThemeData, internalDataStore } from "../../../../api/storage";
 import { InternalStore, download, showFilePicker } from "../../../../util";
 import { closeWindow } from "../../../../api/window";
 import { waitForNode } from "common/dom";
+import { openNotification } from "../../../../api/notifications";
+import { Icons } from "../../../../components";
 
 const themeHead = document.createElement("vx-themes");
 
@@ -61,53 +63,65 @@ export const themeStore = new class extends InternalStore {
   };
 
   download(id: string) {
-    download(`${id}.vx`, `vx${JSON.stringify({
-      type: "theme",
-      data: {
-        css: this.getCSS(id),
-        name: this.getName(id)
-      }
-    })}`);
-  }
+    download(`${id}.css`, this.getCSS(id));
+  };
 
   upload() {
+    const canLoadSass = typeof window.Sass === "object";
+
     showFilePicker(async (file) => {
       if (!file) return;
   
       const text = await file.text();
-  
-      if (file.type === "text/css") {
-        const name = file.name.replace(/\.css$/, "");
+
+      const handleCSS = (css: string) => {
+        const match = text.match(/^\s*\/\*\*(?:[\s\S]?(?!\*\/))+@name\s+(.+)\s*(?:\*\/|$)/mi);
+
+        let name = file.name.replace(/\.(s(a|c)|c)ss$/, "");
+        // BD Meta style
+        if (match) name = match[1];
   
         this._updateData((clone) => {
           const id = Date.now().toString(36).toUpperCase();
           
           clone[id] = {
-            css: text,
+            css: css,
             enabled: false,
             name: name
           };
         });
   
         return;
+      }
+  
+      if (file.type === "text/css") {
+        handleCSS(text);
+        return;
       };
-  
-      if (!text.startsWith("vx")) return;
       
-      const { type, data } = JSON.parse(text.replace("vx", ""));
+      if (window.Sass && /\.s(c|a)ss$/.test(file.name)) {
+        window.Sass.compile(text, {
+          style: window.Sass.style.nested,
+          indentedSyntax: file.name.endsWith(".sass")
+        }, (data) => {
+          if (data.status === 1) {
+            console.warn("SASS Compiler Error", data);
+            return;
+          };
   
-      if (type !== "theme") return;
-      
-      this._updateData((clone) => {
-        const id = Date.now().toString(36).toUpperCase();
-        
-        clone[id] = {
-          css: data.css,
-          enabled: false,
-          name: data.name
-        };
+          handleCSS(data.text);
+        });
+
+        return;
+      };
+
+      openNotification({
+        title: "Unable To Load Theme",
+        id: "vx-unable-to-load",
+        icon: Icons.Warn,
+        type: "warn"
       });
-    }, ".vx,.css");
+    }, canLoadSass ? ".css,.scss,.sass" : ".css");
   };
 
   new() {
@@ -115,7 +129,7 @@ export const themeStore = new class extends InternalStore {
       const id = Date.now().toString(36).toUpperCase();
       
       clone[id] = {
-        css: "",
+        css: "/* Insert CSS Here */\n",
         enabled: true,
         name: `New Theme - ${id}`
       };

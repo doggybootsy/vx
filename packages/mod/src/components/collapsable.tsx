@@ -1,6 +1,7 @@
+import { useState } from "react";
+
 import { Flex, FlexChild } from ".";
 import { className } from "../util";
-import { React } from "../webpack/common";
 
 import "./collapsable.css";
 
@@ -14,7 +15,7 @@ interface CollapsableProps {
 };
 
 export function Collapsable(props: CollapsableProps) {
-  const [ isOpen, setOpen ] = React.useState(() => props.open ?? false);
+  const [ isOpen, setOpen ] = useState(() => props.open ?? false);
 
   return (
     <Flex 

@@ -1,5 +1,6 @@
+import { Children, cloneElement } from "react";
+
 import { getProxyByProtoKeys } from "../webpack";
-import { React } from "../webpack/common";
 import ErrorBoundary from "./boundary";
 
 interface TooltipColors {
@@ -54,9 +55,9 @@ export function WrapTooltip(props: Omit<TooltipProps, "children"> & { children: 
   return (
     <Tooltip {...props}>
       {(passedProps) => {
-        const child = React.Children.only(props.children);
+        const child = Children.only(props.children);
         
-        return React.cloneElement(child, {
+        return cloneElement(child, {
           ["aria-label"]: passedProps["aria-label"],
           onBlur(event: React.FocusEvent) {
             passedProps.onBlur();

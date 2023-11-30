@@ -81,14 +81,14 @@ const updaterStore = new class extends InternalStore {
 export function Updater() {
   if (!git.exists) return null;
 
-  const state = useInternalStore(updaterStore, () => updaterStore.getState());
+  const state = useInternalStore(updaterStore, () => updaterStore.getState());  
 
   return (
     <Flex className="vx-updater" justify={Flex.Justify.BETWEEN} align={Flex.Align.CENTER}>
       <div className="vx-updater-info">
         <div className="vx-updater-notice">
           {
-            typeof state.compared === "number" ? state.compared === -1 ? "Update Available" : "Up To Date" : "Unknown"
+            typeof state.compared === "number" ? state.compared === -1 ? "Update Available" : state.compared === 0 ? "Up To Date" : "Above Latest Release" : "Unknown"
           }
         </div>
         <div className="vx-updater-fetch">
@@ -119,7 +119,7 @@ export function Updater() {
     
             updaterStore.checkForUpdates();
           }} 
-          disabled={state.compared === -1 ? false : state.canCheck}
+          disabled={state.compared === -1 ? false : !state.canCheck}
         >
           {state.fetching ? "Fetching..." : state.compared === -1 ? "Update" : "Check For Updates"}
         </Button>

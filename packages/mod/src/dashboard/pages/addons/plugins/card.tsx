@@ -1,18 +1,19 @@
+import { useMemo, useState } from "react";
 import { openUserModal } from "../../../../api/modals";
 import { Icons, Mask, Tooltip, Switch } from "../../../../components";
 import { Developer } from "../../../../constants";
 import { Plugin } from "../../../../plugins";
 import { className, getRandomDefaultAvatar } from "../../../../util";
-import { React, openUserContextMenu } from "../../../../webpack/common";
+import { openUserContextMenu } from "../../../../webpack/common";
 import { openPluginSettingsModal } from "./modal";
 import { useUser } from "../../../../hooks";
 
 function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
   const user = useUser(dev.discord);
 
-  const randomDefaultAvatar = React.useMemo(() => getRandomDefaultAvatar(), [ ]);
+  const randomDefaultAvatar = useMemo(() => getRandomDefaultAvatar(), [ ]);
 
-  const backgroundImage = React.useMemo(() => {
+  const backgroundImage = useMemo(() => {
     const wrapURL = (url: string) => `url(${JSON.stringify(url)})`;
 
     if (user) return wrapURL(user.getAvatarURL(undefined, 120, true));
@@ -48,7 +49,7 @@ function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
 };
 
 export function PluginCard({ plugin }: { plugin: Plugin }) {
-  const [ isEnabled, setEnabled ] = React.useState(() => plugin.isEnabled());
+  const [ isEnabled, setEnabled ] = useState(() => plugin.isEnabled());
   
   return (
     <div className="vx-addon-card">

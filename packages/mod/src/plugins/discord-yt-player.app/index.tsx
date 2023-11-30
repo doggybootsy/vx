@@ -1,12 +1,13 @@
+import { useState } from "react";
+
 import { definePlugin } from "..";
 import { openImageModal } from "../../api/modals";
 import { ErrorBoundary, Icons, Spinner } from "../../components";
 import { Developers } from "../../constants";
 import { useAbortEffect } from "../../hooks";
-import { net } from "../../native";
 import { download } from "../../util";
 import { byStrings, getProxy, getProxyByKeys } from "../../webpack";
-import { WindowUtil, React } from "../../webpack/common";
+import { WindowUtil } from "../../webpack/common";
 
 import { addStyle } from "./index.css?managed";
 
@@ -25,7 +26,7 @@ const volumeSettings = getProxyByKeys([ "getMuted", "setMuted", "setVolume", "ge
 
 function OverlayContent({ src, filename }: { src: string, filename: string }) {
   // no 'Access-Control-Allow-Origin' is set, so it can't download. 
-  // Should i make my own Invidious thing or? Also net.fetch always gets to many requests
+  // Should i make my own Invidious thing or? Also window.fetch always gets to many requests
   // I couldnt figure out how to override that header on mv3
   const CAN_DOWNLOAD = false;
 
@@ -46,12 +47,17 @@ function OverlayContent({ src, filename }: { src: string, filename: string }) {
   );
 };
 
+function getMiddle<T>(array: Array<T>): T {
+  const sub = array.length % 2 ? 0 : 1;
+  return array.at(Math.floor(array.length / 2) - sub)!;
+};
+
 const cache = new Map<string, { video: string, pfp: string }>();
 
 async function getYoutubeData(id: string) {
   if (cache.has(id)) return cache.get(id)!;
 
-  const response = await net.fetch(`https://www.youtube.com/watch?v=${id}`);
+  const response = await window.fetch(`https://www.youtube.com/watch?v=${id}`);
   const text = await response.text();
   const DOM = new DOMParser().parseFromString(text, "text/html");
   
@@ -74,13 +80,20 @@ async function getYoutubeData(id: string) {
   delete window.ytInitialData;
 
   const data = {
-    video: ytInitialPlayerResponse!.streamingData.formats.at(-1).url as string,
+    // 0 worst, -1 best, so we pick a middle item but lean towards worse
+    video: getMiddle(ytInitialPlayerResponse!.streamingData.formats as { url: string }[]).url as string,
     pfp: ytInitialData!.contents.twoColumnWatchNextResults.results.results.contents[1].videoSecondaryInfoRenderer.owner.videoOwnerRenderer.thumbnail.thumbnails.at(-1).url as string
   };
 
   // Cache Video, but stil let it to attempt to play at first, this takes to long
   (async () => {
-    const blob = await (await net.fetch(data.video)).blob();
+    const res = await window.fetch(data.video);
+    if (res.status >= 400 && res.status < 500) {
+      cache.delete(id);      
+      return;
+    };
+
+    const blob = await res.blob();
   
     data.video = URL.createObjectURL(blob);
 
@@ -104,7 +117,7 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
 
   const id = getID(props.embed.video.url);
 
-  const [ yt, setYT ] = React.useState<null | { video: string, pfp: string }>(null);
+  const [ yt, setYT ] = useState<null | { video: string, pfp: string }>(null);
 
   useAbortEffect((signal) => {
     const fetch = getYoutubeData(id);
@@ -115,7 +128,7 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
       setYT(data);
     });
   });
-  
+    
   return (
     <div className="vx-yt-player" style={{ borderLeftColor: props.embed.color }}>
       <div className="vx-yt-header">

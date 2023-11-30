@@ -1,7 +1,7 @@
 import { definePlugin } from "../";
 import { getProxyStore } from "../../webpack";
 import { Developers } from "../../constants";
-import { UserStore, dirtyDispatch } from "../../webpack/common";
+import { UserStore, fluxDispatchEvent } from "../../webpack/common";
 
 const MessageStore = getProxyStore("MessageStore");
 
@@ -24,7 +24,7 @@ export default definePlugin({
     const currentUser = UserStore.getCurrentUser();
 
     if (message.author.id === currentUser.id) {
-      dirtyDispatch({
+      fluxDispatchEvent({
         type: "MESSAGE_START_EDIT",
         channelId,
         messageId,

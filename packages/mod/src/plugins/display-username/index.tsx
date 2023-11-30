@@ -1,7 +1,8 @@
+import { useMemo } from "react";
+
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Message, User } from "discord-types/general";
-import { React } from "../../webpack/common";
 import { ErrorBoundary } from "../../components";
 
 import { addStyle } from "./index.css?managed";
@@ -21,7 +22,7 @@ export default definePlugin({
     addStyle();
   },
   DisplayUsername: ErrorBoundary.wrap((message: Message & { author: TypedUser }) => {
-    const isPomelo = React.useMemo(() => message.author.isPomelo() || (message.author.discriminator === "0000"), [ message ]);
+    const isPomelo = useMemo(() => message.author.isPomelo() || (message.author.discriminator === "0000"), [ message ]);
 
     if (isPomelo && !message.author.globalName) return;
   

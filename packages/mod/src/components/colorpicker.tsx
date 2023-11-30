@@ -1,5 +1,7 @@
+import { useMemo } from "react";
+
 import { className, makeLazy, proxyCache } from "../util";
-import { getProxyStore, getModuleIdBySource, webpackRequire, getByKeys, getProxyByKeys } from "../webpack";
+import { getProxyStore, getModuleIdBySource, webpackRequire } from "../webpack";
 import { useStateFromStores } from "../webpack/common";
 import ErrorBoundary from "./boundary";
 
@@ -84,27 +86,20 @@ const roleColors = [
   0x992D22,
   0x979C9F,
   0x546E7A
-];
+] as const;
 
 const ThemeStore = getProxyStore("ThemeStore");
-function ensureProps(props: ColorPickerProps) {
-  const isLightTheme = useStateFromStores([ ThemeStore ], () => ThemeStore.theme === "light");
-
-  if (!Array.isArray(props.colors)) {
-    props.colors = roleColors;
-  }
-  if (typeof props.defaultColor !== "number") {
-    props.defaultColor = isLightTheme ? 0xE3E5E8 : 0x202225;
-  }
-};
 
 export function ColorPicker({ className: cn, ...props }: ColorPickerProps & { className?: string }) {
-  ensureProps(props);
+  const isLightTheme = useStateFromStores([ ThemeStore ], () => ThemeStore.theme === "light");
+
+  const colors = useMemo(() => props.colors ?? roleColors, [ props.colors ]);
+  const defaultColor = useMemo(() => props.defaultColor ?? isLightTheme ? 0xE3E5E8 : 0x202225, [ props.defaultColor ]);
 
   return (
     <ErrorBoundary>
       <div className={className([ "vx-colorpicker", cn ])}>
-        <ColorPickerModule {...props} />
+        <ColorPickerModule {...props} defaultColor={defaultColor} colors={colors} />
       </div>
     </ErrorBoundary>
   )

@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { forwardRef, isValidElement } from "react";
+
 import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
-import { cache, proxyCache } from "../util";
+import { cache } from "../util";
 import { byStrings, getByKeys } from "../webpack";
-import { React } from "../webpack/common";
 import { addPlainTextPatch } from "../webpack/patches";
 
 addPlainTextPatch(
@@ -39,10 +39,10 @@ export const _addHomeButton = cache(() => {
   const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 
-  return React.forwardRef((props: { children: React.ReactNode[] }, ref) => {
+  return forwardRef((props: { children: React.ReactNode[] }, ref) => {
     const children = props.children.concat();
 
-    const index = children.findIndex((child) => React.isValidElement(child) ? dmsFilter(child.type) : false);
+    const index = children.findIndex((child) => isValidElement(child) ? dmsFilter(child.type) : false);
     
     if (~index) {
       children.splice(index, 0, <HomeButton />);

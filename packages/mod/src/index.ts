@@ -1,8 +1,9 @@
 console.log("Welcome to VX 2.0");
 
+import React from "react";
+
 import * as util from "./util";
 import * as components from "./components";
-import { React } from "./webpack/common";
 
 import * as mp from "./api/minipopover";
 import * as notifications from "./api/notifications";
@@ -25,8 +26,6 @@ import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patche
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
 import { api } from "./webpack/api";
-
-import { net } from "./native";
 
 import * as self from "self";
 
@@ -51,13 +50,16 @@ window.VX = {
     _addHomeButton,
     _settingButtonOnClickWrapper
   },
-  net,
   self
 };
 
 waitForNode("body").then((body) => {
+  const script = document.createElement("script");
+  script.src = "https://medialize.github.io/sass.js/dist/sass.sync.js";
+  script.id = "sass.sync.js";
+
   const svg = masks.querySelector("svg")!.cloneNode(true);
-  body.append(svg);
+  body.append(script, svg);
 });
 
 document.addEventListener("keydown", (event) => {

@@ -14,7 +14,7 @@ interface DataStoreOptions<T extends Record<string, any>> {
 
 const cache = new Map<string, DataStore>();
 
-export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {  
+export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
   constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
     // @ts-expect-error TS doesnt like return in constructors
     if (cache.has(name)) return cache.get(name)!;

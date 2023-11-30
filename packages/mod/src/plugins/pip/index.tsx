@@ -1,24 +1,25 @@
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+
 import { definePlugin } from "..";
 import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { className } from "../../util";
-import { React } from "../../webpack/common";
 
 import { addStyle } from "./index.css?managed";
 
 function PIP() {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [ video, setVideo ] = React.useState<null | HTMLVideoElement>(null);
-  const [ active, setActive ] = React.useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const [ video, setVideo ] = useState<null | HTMLVideoElement>(null);
+  const [ active, setActive ] = useState(false);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (!ref.current) return;    
-    const video = ref.current.parentElement!.parentElement!.querySelector<HTMLVideoElement>("video")!;
+    const video = ref.current.parentElement!.querySelector<HTMLVideoElement>("video")!;
 
     setVideo(video);
   }, [ ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!video) return;
 
     function listener() {
@@ -28,7 +29,7 @@ function PIP() {
     return () => void video.removeEventListener("enterpictureinpicture", listener);
   }, [ video ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!video) return;
 
     function listener() {
@@ -38,7 +39,7 @@ function PIP() {
     return () => void video.removeEventListener("leavepictureinpicture", listener);
   }, [ video ]);
 
-  const open = React.useCallback(async () => {
+  const open = useCallback(async () => {
     if (!video) return;
     if (active) return document.exitPictureInPicture();
 
@@ -46,7 +47,7 @@ function PIP() {
       await document.exitPictureInPicture();
     };
 
-    if (video.readyState === 4) {
+    if (video.readyState >= 2) {
       video.requestPictureInPicture();
     }
     else {
@@ -71,9 +72,9 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   patches: [
     {
-      match: "this.renderPlayIcon()",
-      find: /(this\.renderPlayIcon\(\),.+?),(.{1,3}])/,
-      replace: "$1,this.props.type==='VIDEO'&&$react.createElement($self.PIP),$2"
+      match: "this.renderVideo()",
+      find: /this\.renderVideo\(\)/g,
+      replace: "[$react.createElement($self.PIP),$&]"
     }
   ],
   PIP: ErrorBoundary.wrap(PIP),

@@ -59,6 +59,9 @@ electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
         const asar = path.join(__dirname, "..", `${version}.asar`)
         
         fs.writeFileSync(asar, data, { encoding: "binary" });
+
+        electron.app.quit();
+        electron.app.relaunch();
       });
     }).end();
   }).end();
@@ -67,8 +70,8 @@ electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
 electron.ipcMain.handle("@vx/splash/no-close", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender)!;
 
-  window.close = () => false;
-  window.hide = () => false;
+  window.close = () => {};
+  window.hide = () => {};
 });
 
 electron.ipcMain.handle("@vx/splash/devtools", (event) => {

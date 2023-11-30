@@ -1,8 +1,4 @@
-type AnyFunction = (this: any, ...args: any) => any;
-
-type AnyFunctionThisParameters<T extends AnyFunction> = T extends (this: infer This, ...args: never) => any ? This : unknown;
-type AnyFunctionParameters<T extends AnyFunction> = T extends (this: never, ...args: infer Arguments) => any ? Arguments : unknown[];
-type AnyFunctionReturnType<T extends AnyFunction> = T extends (this: never, ...args: never) => infer ReturnValue ? ReturnValue : unknown;
+import { FunctionType, ThisParameterType, Parameters, ReturnType } from "typings";
 
 type KeysMatching<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never }[keyof T];
 
@@ -12,13 +8,13 @@ interface AfterCallbackSetReturn<T> {
   [SET_VALUE]: T
 };
 
-type AfterCallback<F extends AnyFunction> = (that: AnyFunctionThisParameters<F>, args: AnyFunctionParameters<F>, result: AnyFunctionReturnType<F>) => void | AfterCallbackSetReturn<AnyFunctionReturnType<F>>;
-type InsteadCallback<F extends AnyFunction> = (that: AnyFunctionThisParameters<F>, args: AnyFunctionParameters<F>, original: F) => AnyFunctionReturnType<F>;
-type BeforeCallback<F extends AnyFunction> = (that: AnyFunctionThisParameters<F>, args: AnyFunctionParameters<F>) => void;
+type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, result: ReturnType<F>) => void | AfterCallbackSetReturn<ReturnType<F>>;
+type InsteadCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, original: F) => ReturnType<F>;
+type BeforeCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>) => void;
 
 type UndoFunction = () => void;
 
-type Hook<F extends AnyFunction> = {
+type Hook<F extends FunctionType> = {
   after: Set<AfterCallback<F>>,
   instead: Set<InsteadCallback<F>>,
   before: Set<BeforeCallback<F>>,
@@ -26,7 +22,7 @@ type Hook<F extends AnyFunction> = {
 };
 
 const HOOK_SYMBOL = Symbol.for("vx.patcher.hook");
-function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching<M, AnyFunction>, F extends M[K]>(module: M, key: K): Hook<F> {
+function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K): Hook<F> {
   const fn = module[key];
 
   if (HOOK_SYMBOL in fn) return fn[HOOK_SYMBOL];
@@ -38,12 +34,12 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
     original: fn
   };
 
-  function hookedFunction(this: AnyFunctionThisParameters<F>): AnyFunctionReturnType<F> {
-    const args = Array.from(arguments) as AnyFunctionParameters<F>;
+  function hookedFunction(this: ThisParameterType<F>): ReturnType<F> {
+    const args = Array.from(arguments) as Parameters<F>;
 
     for (const before of hook.before) before(this, args)
 
-    let result: AnyFunctionReturnType<F>;
+    let result: ReturnType<F>;
     if (!hook.instead.size) {
       result = fn.apply(this, args);
     }
@@ -52,7 +48,7 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
       const instead = insteadHooks.at(0)!;
       let depth = 1;
 
-      function goDeeper(this: AnyFunctionThisParameters<F>, ...args: AnyFunctionParameters<F>): any {
+      function goDeeper(this: ThisParameterType<F>, ...args: Parameters<F>): any {
         const hook = insteadHooks.at(depth++);
         if (hook) return hook(this, args, goDeeper.apply(this, args));
         return fn.apply(this, args);
@@ -94,12 +90,12 @@ export class Injector {
   static afterReturn<T extends any>(value: T): AfterCallbackSetReturn<T> {
     return { [SET_VALUE]: value };
   };
-  static getOriginal<T extends AnyFunction>(hooked: T): T {
+  static getOriginal<T extends FunctionType>(hooked: T): T {
     if (HOOK_SYMBOL in hooked) (hooked[HOOK_SYMBOL] as Hook<T>).original;
     return hooked;
   };
 
-  after<M extends Record<PropertyKey, any>, K extends KeysMatching<M, AnyFunction>, F extends M[K]>(module: M, key: K, callback: AfterCallback<F>) {
+  after<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: AfterCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.after.add(callback);
@@ -115,7 +111,7 @@ export class Injector {
     $patches.add(undo);
     return undo;
   };
-  instead<M extends Record<PropertyKey, any>, K extends KeysMatching<M, AnyFunction>, F extends M[K]>(module: M, key: K, callback: InsteadCallback<F>) {
+  instead<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: InsteadCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.instead.add(callback);
@@ -131,7 +127,7 @@ export class Injector {
     $patches.add(undo);
     return undo;
   };
-  before<M extends Record<PropertyKey, any>, K extends KeysMatching<M, AnyFunction>, F extends M[K]>(module: M, key: K, callback: BeforeCallback<F>) {
+  before<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: BeforeCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.before.add(callback);

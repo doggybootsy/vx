@@ -1,15 +1,16 @@
+import { useState } from "react";
 import { IS_DESKTOP } from "self";
 import { Panel } from "../..";
 import { internalDataStore } from "../../../api/storage";
 import { Button, Collapsable, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
 import { app, extensions } from "../../../native";
-import { React, WindowUtil } from "../../../webpack/common";
+import { WindowUtil } from "../../../webpack/common";
 import { Updater } from "./updater";
 
 export function Home() {
-  const [ contentProtection, setContentProtection ] = React.useState(() => internalDataStore.get("content-protection") ?? false);
-  const [ userSettingShortcut, setUserSettingShortcut ] = React.useState(() => internalDataStore.get("user-setting-shortcut") ?? true);
+  const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
+  const [ userSettingShortcut, setUserSettingShortcut ] = useState(() => internalDataStore.get("user-setting-shortcut") ?? true);
 
   return (
     <Panel title="Home">
@@ -23,15 +24,20 @@ export function Home() {
             Welcome To VX
           </div>
           <Flex justify={Flex.Justify.START} gap={6} grow={0}>
-            <Button onClick={() => app.restart()}>
-              Restart Discord
-            </Button>
             <Button onClick={() => location.reload()}>
               Reload Discord
             </Button>
-            <Button onClick={() => app.quit()}>
-              Quit Discord
-            </Button>
+            {IS_DESKTOP && (
+              <Button onClick={() => app.restart()}>
+                Restart Discord
+              </Button>
+            )}
+            {IS_DESKTOP && (
+              // Web api prevents you from closing current window
+              <Button onClick={() => app.quit()}>
+                Quit Discord
+              </Button>
+            )}
           </Flex>
         </Flex>
       </div>

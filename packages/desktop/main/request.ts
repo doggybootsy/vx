@@ -1,42 +1,40 @@
 import electron from "electron";
-import { URL } from "node:url";
+import { URL } from "url";
 
-// To not cause duplicates because headers aren't really case sensitive, we delete all of the headers that match
-function deleteHeader(responseHeaders: Record<string, string[]>, header: string) {
-  const headerToDelete = header.toLowerCase();
+// Convert headers to a Kebab like case style
+function normalizeHeaders(responseHeaders: Record<string, string[]> = { }) {
+  const headers: Record<string, string[]> = {};
 
-  for (const header in responseHeaders) {
-    if (Object.prototype.hasOwnProperty.call(responseHeaders, header)) {
-      if (!header.toLowerCase().startsWith(headerToDelete)) continue;
-      delete responseHeaders[header];
+  for (const key in responseHeaders) {
+    if (Object.prototype.hasOwnProperty.call(responseHeaders, key)) {
+      headers[key.toLowerCase().replace(/(^|-)\D/g, (string) => string.toUpperCase())] = responseHeaders[key];
     };
   };
+
+  return headers;
 };
 
 electron.app.whenReady().then(() => {
-  electron.session.defaultSession.webRequest.onHeadersReceived(({ responseHeaders, url: requestedURL, resourceType }, callback) => {
-    const url = new URL(requestedURL);
+  electron.session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const { responseHeaders, resourceType, frame } = details;
 
-    if (responseHeaders) {
-      deleteHeader(responseHeaders, "Content-Security-Policy");
+    const headers = normalizeHeaders(responseHeaders);
 
-      const vxCors = url.searchParams.get("vx-cors");
-      
-      if (vxCors === "true") {
-        // Sometimes electron just ignores this?
-        deleteHeader(responseHeaders, "Access-Control-Allow-Origin");
-        responseHeaders["Access-Control-Allow-Origin"] = [ "*" ];
-      };
+    delete headers["Content-Security-Policy"];
+    
+    if (frame && frame.url) {      
+      headers["Access-Control-Allow-Origin"] = [
+        new URL(frame.url).origin
+      ];
+    };
 
-      if (resourceType === "stylesheet") {
-        deleteHeader(responseHeaders, "Content-Type");
-        responseHeaders["Content-Type"] = [ "text/css" ];
-      };
+    if (resourceType === "stylesheet") {
+      headers["Content-Type"] = [ "text/css" ];
     };
 
     callback({ 
       cancel: false, 
-      responseHeaders
+      responseHeaders: headers
     });
   });
 });

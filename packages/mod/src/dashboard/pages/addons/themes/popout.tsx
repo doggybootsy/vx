@@ -1,4 +1,5 @@
-import { React, WindowUtil } from "../../../../webpack/common";
+import { useDeferredValue, useInsertionEffect, useLayoutEffect, useRef, useState } from "react";
+import { WindowUtil } from "../../../../webpack/common";
 import * as windowApi from "../../../../api/window";
 import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
@@ -16,9 +17,9 @@ export function openWindow(id: string) {
     title: `Themes - ${name}`,
     id: `THEME_${id}`,
     render({ window }) {
-      const ref = React.useRef<HTMLDivElement>(null);
+      const ref = useRef<HTMLDivElement>(null);
 
-      React.useLayoutEffect(() => {
+      useLayoutEffect(() => {
         if (!ref.current) return;
 
         const css = themeStore.getCSS(id);
@@ -31,7 +32,7 @@ export function openWindow(id: string) {
         editor.on("change", debounced);
       }, [ ]);
 
-      React.useInsertionEffect(() => {
+      useInsertionEffect(() => {
         const style = document.createElement("style");
         style.append(document.createTextNode(`
         #editor { flex: 1 1 auto; width: 100%; }
@@ -79,7 +80,7 @@ export function openWindow(id: string) {
         window.document.head.appendChild(style);
       }, [ ]);
       // Idk if this is good or not | Should i use useEffect or this? (There is a chance that it can be done before useEffect so idk)
-      React.useInsertionEffect(() => {
+      useInsertionEffect(() => {
         function listener(event: MessageEvent) {   
           // Use custom event because message even doesnt work?       
           const customEvent = new CustomEvent("message");
@@ -110,11 +111,11 @@ export function openWindow(id: string) {
         </>
       );
 
-      const [ name, setName ] = React.useState(() => themeStore.getName(id));
+      const [ name, setName ] = useState(() => themeStore.getName(id));
       const storedName = useInternalStore(themeStore, () => themeStore.getName(id));
 
-      const deferredValue = React.useDeferredValue(storedName);
-      React.useLayoutEffect(() => {
+      const deferredValue = useDeferredValue(storedName);
+      useLayoutEffect(() => {
         setName(deferredValue);
         
         window.document.title = `Themes - ${storedName}`;
@@ -126,7 +127,7 @@ export function openWindow(id: string) {
             toolbar={toolbar}
             mobileToolbar={toolbar}
           >
-            <HeaderBar.Icon icon={Icons.Brush} />
+            <HeaderBar.Icon icon={Icons.Palette} />
             <HeaderBar.Title>
               <div id="label-wrapper">
                 <input 

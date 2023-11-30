@@ -34,6 +34,27 @@ function hashCode(str) {
 }
 
 /** @type {esbuild.Plugin} */
+const ReactPlugin = {
+  name: "react-plugin",
+  setup(build) {
+    build.onResolve({
+      filter: /^react$/
+    }, () => ({
+      namespace: "react-plugin",
+      path: "react"
+    }));
+
+    build.onLoad({
+      filter: /.*/, namespace: "react-plugin"
+    }, (args) => {
+      return {
+        resolveDir: "./packages/mod/src",
+        contents: `export * from "./webpack/react.ts";export { default } from "./webpack/react.ts";`
+      }
+    });
+  }
+};
+/** @type {esbuild.Plugin} */
 const HTMLPlugin = {
   name: "html-plugin",
   setup(build) {
@@ -71,9 +92,10 @@ const ManagedCSSPlugin = {
     }, async (args) => {
       const css = await readFile(args.path, { encoding: "binary" });
 
-      // How can require 'common/dom' in this? so i dont have to use 'queueMicrotask'
       return {
         contents: `
+        import { waitForNode } from "common/dom";
+
         export const id = ${JSON.stringify(args.path)};
         export const css = ${JSON.stringify(css)};
         export function addStyle() {
@@ -81,16 +103,14 @@ const ManagedCSSPlugin = {
           style.setAttribute("vx-style-path", id);
           style.appendChild(document.createTextNode(css));
 
-          queueMicrotask(() => {
-            removeStyle();
-            VX._self.waitForNode("vx-plugins").then((head) => head.appendChild(style));
-          });
+          waitForNode("vx-plugins").then((head) => head.appendChild(style));
         };
         export function removeStyle() {
           const style = document.querySelector(\`[vx-style-path=\${JSON.stringify(id)}\`);
           if (style) style.remove();
         };
-        `
+        `,
+        resolveDir: "./packages/mod/src"
       }
     });
   }
@@ -156,7 +176,7 @@ const SelfPlugin = (desktop) => ({
       contents: `
       export const env = ${JSON.stringify(env)};
       export const git = ${JSON.stringify(git())};
-      export const browser = typeof chrome === "object" ? chrome : browser;
+      export const browser = typeof globalThis.chrome === "object" ? globalThis.chrome : globalThis.browser;
       export const IS_DESKTOP = ${desktop};
       `
     }));
@@ -210,7 +230,8 @@ const RequireAllPluginsPlugin = (desktop) => ({
         HTMLPlugin,
         RequireAllPluginsPlugin(true),
         SelfPlugin(true),
-        ManagedCSSPlugin
+        ManagedCSSPlugin,
+        ReactPlugin
       ],
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
@@ -293,7 +314,8 @@ const RequireAllPluginsPlugin = (desktop) => ({
         HTMLPlugin,
         RequireAllPluginsPlugin(false),
         SelfPlugin(false),
-        ManagedCSSPlugin
+        ManagedCSSPlugin,
+        ReactPlugin
       ],
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",

@@ -1,26 +1,27 @@
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
+
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys } from "../../webpack";
-import { FluxDispatcher, React } from "../../webpack/common";
+import { FluxDispatcher } from "../../webpack/common";
 
 import { addStyle } from "./index.css?managed";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 
 function CallDuration() {
-  const [ then, setThen ] = React.useState(Date.now);
-  const [ elapsed, setElapsed ] = React.useState(0);
+  const [ then, setThen ] = useState(Date.now);
+  const [ elapsed, setElapsed ] = useState(0);
 
-  React.useEffect(() => {
-    const id = requestAnimationFrame(() => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       setElapsed(Date.now() - then);
-    });
-
-    return () => cancelAnimationFrame(id);
+    }, 450);
+    return () => clearTimeout(timer);
   }, [ elapsed, then ]);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     function actionHandler(event: any) {
       if (!(event.state === "RTC_DISCONNECTED" && !Reflect.has(event, "streamKey"))) return;
   
@@ -47,6 +48,6 @@ export default definePlugin({
     find: "this.renderConnectionStatus()",
     replace: "[$&,$react.createElement($self.CallDuration)]"
   },
-  CallDuration: ErrorBoundary.wrap(CallDuration),
+  CallDuration: memo(ErrorBoundary.wrap(CallDuration)),
   start: addStyle
 });

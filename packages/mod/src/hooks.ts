@@ -1,11 +1,13 @@
+import { useEffect, useInsertionEffect, useMemo } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
-import { FluxDispatcher, React, UserStore, fetchUser } from "./webpack/common";
+import { UserStore, fetchUser } from "./webpack/common";
+import { useState } from "react";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
-  const [ state, setState ] = React.useState(factory);
+  const [ state, setState ] = useState(factory);
 
-  React.useInsertionEffect(() => {
+  useInsertionEffect(() => {
     function listener() {
       setState(factory);
     };
@@ -20,7 +22,7 @@ export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
 };
 
 export function useSignal() {
-  const controller = React.useMemo(() => new AbortController(), [ ]);
+  const controller = useMemo(() => new AbortController(), [ ]);
 
   return <const>[
     controller.signal, 
@@ -33,7 +35,7 @@ type ReactEffectWithArg<T> = (value: T) => void | (() => void);
 export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
   const [ signal, abort ] = useSignal();
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const ret = effect(signal);
 
@@ -49,7 +51,7 @@ export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
 };
 
 export function useUser(userId: string): User | null {
-  const [ user, setUser ] = React.useState(() => UserStore.getUser(userId) || null);
+  const [ user, setUser ] = useState(() => UserStore.getUser(userId) || null);
 
   useAbortEffect((signal) => {
     if (user) return;

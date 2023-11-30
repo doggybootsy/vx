@@ -1,11 +1,13 @@
-import { LayerManager, React, WindowUtil } from "../webpack/common";
+import { useMemo, useState } from "react";
+import { env, git } from "self";
+
+import { LayerManager, WindowUtil } from "../webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
-import { env, git } from "self";
 import { openAlertModal } from "../api/modals";
-import { ErrorBoundary, SettingsView } from "../components";
+import { SettingsView } from "../components";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -28,9 +30,9 @@ export function Panel(props: {
 };
 
 function Dashboard(props: { section: string }) {
-  const [ section, setSection ] = React.useState(() => props.section);
+  const [ section, setSection ] = useState(() => props.section);
 
-  const sections = React.useMemo(() => [
+  const sections = useMemo(() => [
     {
       section: "HEADER",
       label: "VX" 

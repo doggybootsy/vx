@@ -1,3 +1,5 @@
+export { default as React } from "./react";
+
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
 import { getProxyByKeys, getProxyByStrings } from "./filters"
@@ -8,7 +10,6 @@ import { Channel, User } from "discord-types/general";
 import { proxyCache } from "../util";
 import { webpackRequire } from "./webpack";
 
-export const React = getProxyByKeys<typeof import("react")>([ "createElement", "memo" ]);
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
 export const UserStore = getProxyStore("UserStore");
@@ -44,12 +45,8 @@ interface NavigationUtil {
 
 export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
 
-export function dirtyDispatch(event: DispatchEvent) {
-  return new Promise<void>((resolve) => {
-    FluxDispatcher.wait(() => {
-      resolve(FluxDispatcher.dispatch(event));
-    });
-  });
+export function fluxDispatchEvent(event: DispatchEvent) {
+  return Promise.resolve(FluxDispatcher.dispatch(event));
 };
 
 interface i18n {
@@ -73,18 +70,18 @@ export const insertText = proxyCache(() => {
 
 export const LayerManager = {
   pushLayer(component: () => React.ReactNode) {
-    dirtyDispatch({
+    fluxDispatchEvent({
       type: "LAYER_PUSH",
       component
     });
   },
   popLayer() {
-    dirtyDispatch({
+    fluxDispatchEvent({
       type: "LAYER_POP"
     });
   },
   popAllLayers() {
-    dirtyDispatch({
+    fluxDispatchEvent({
       type: "LAYER_POP_ALL"
     });
   }
