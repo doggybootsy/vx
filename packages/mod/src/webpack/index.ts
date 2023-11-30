@@ -7,6 +7,7 @@ export * from "./searching";
 export * from "./util";
 export * from "./stores";
 export * from "./lazy";
+export * from "./patches";
 
 let resolve = () => {};
 const webpackReadyPromise = new Promise<void>((r) => resolve = r);

@@ -5,13 +5,13 @@ import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { cache } from "../util";
 import { byStrings, getByKeys } from "../webpack";
-import { addPlainTextPatch } from "../webpack/patches";
+import { addPlainTextPatch } from "../webpack";
 
 addPlainTextPatch(
   {
     identifier: "VX(home-button)",
     match: ".default.Messages.GUILDS_BAR_A11Y_LABEL",
-    find: /\(.{1,3}\.AdvancedScrollerNone/,
+    find: /\((.{1,3}\.AdvancedScrollerNone)/,
     replace: "(window.VX._self._addHomeButton()"
   },
   {
