@@ -1,6 +1,6 @@
 import { internalDataStore } from "../api/storage";
 import { Developer } from "../constants";
-import { PlainTextPatchType, addPlainTextPatch } from "../webpack/patches";
+import { PlainTextPatchType, addPlainTextPatch } from "../webpack";
 import { CreatedSetting } from "./settings";
 
 export interface PluginType {

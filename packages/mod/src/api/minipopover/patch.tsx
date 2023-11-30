@@ -1,5 +1,5 @@
 import { Channel, Message, Guild, User } from "discord-types/general";
-import { addPlainTextPatch } from "../../webpack/patches";
+import { addPlainTextPatch } from "../../webpack";
 import { GuildStore, useStateFromStores } from "../../webpack/common";
 
 addPlainTextPatch({

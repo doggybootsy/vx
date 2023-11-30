@@ -7,7 +7,10 @@ export let webpackRequire: Webpack.Require | void;
 webpackAppChunk.push([
   [ Symbol.for("VX") ],
   { },
-  (wpr) => {    
+  (wpr) => {
+    // Sentry's wpr doesn't have a lot of things
+    if (!("b" in wpr)) return; 
+    
     webpackRequire = wpr;
 
     // Webpack has modules are ready added?

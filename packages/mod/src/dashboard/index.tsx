@@ -32,6 +32,18 @@ export function Panel(props: {
 function Dashboard(props: { section: string }) {
   const [ section, setSection ] = useState(() => props.section);
 
+  // Add electron to the list of versions | This is because discord doesn't
+  const electronVersionSection = useMemo(() => {
+    const match = navigator.userAgent.match(/electron\/((?:\d+\.){1,}\d+)/i);
+    if (!match) return null;
+
+    return (
+      <div className="vx-section-version">
+        <span>{`Electron ${match.at(1)}`}</span>
+      </div>
+    )
+  }, [ ]);
+
   const sections = useMemo(() => [
     {
       section: "HEADER",
@@ -95,6 +107,7 @@ function Dashboard(props: { section: string }) {
               <span className="vx-section-hash">(???????)</span>
             </div>
           )}
+          {electronVersionSection}
         </div>
       )
     }

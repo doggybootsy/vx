@@ -1,5 +1,5 @@
 import { MenuRenderProps } from ".";
-import { addPlainTextPatch } from "../../webpack/patches";
+import { addPlainTextPatch } from "../../webpack";
 
 type MenuCallback = (props: MenuProps, res: React.ReactElement) => void;
 const menuPatches = new Map<string, Map<string, Set<MenuCallback>>>();
