@@ -17,7 +17,7 @@ const cache = new WeakMap<Editor, ReturnType<typeof getCache>>();
 const ThemeStore = getProxyStore("ThemeStore");
 
 export class Editor {
-  constructor(element: Element, language: string, value: string) {    
+  constructor(element: Element, language: string, value: string, options: { readonly?: boolean } = {}) {    
     element.innerHTML = "";
 
     const editorElement = document.createElement(EDITOR_TAGNAME) as HTMLEditorElement;
@@ -28,11 +28,22 @@ export class Editor {
     // @ts-expect-error
     element.append(editorElement);
 
+    function setOptions(options: Record<string, any>) {
+      self.postMessage("set-options", options);
+      self.postMessage("update-options", options);
+
+      setTimeout(() => {
+        self.postMessage("set-options", options);
+        self.postMessage("update-options", options);
+      }, 50);
+    };
+
     editorElement.addEventListener("waiting", () => {
-      editorElement.postMessage("set-options", {
+      setOptions({
         value, 
         language, 
-        theme: ThemeStore.theme
+        theme: ThemeStore.theme,
+        readonly: Boolean(options.readonly)
       });
     });
 
@@ -49,8 +60,7 @@ export class Editor {
     });
 
     function listener() {
-      self.postMessage("set-options", { theme: ThemeStore.theme });
-      self.postMessage("update-options", { theme: ThemeStore.theme });
+      setOptions({ theme: ThemeStore.theme });
     };
     ThemeStore.addChangeListener(listener);
     waitForElementRemoved(element).then(() => {
@@ -65,6 +75,12 @@ export class Editor {
   set language(language) {
     this.postMessage("set-options", { language });
     this.postMessage("update-options", { language });
+  };
+
+  get readonly() { return cache.get(this)!.readonly; };
+  set readonly(readonly) {
+    this.postMessage("set-options", { readonly });
+    this.postMessage("update-options", { readonly });
   };
 
   get ready() { return cache.get(this)!.ready; };

@@ -11,7 +11,7 @@ export default definePlugin({
   description: "Removes the 'NO ROLES' section from user popouts",
   authors: [ Developers.doggybootsy ],
   patches: {
-    match: ".rolePillBorder\]",
+    match: ".rolePillBorder]",
     find: /function .{1,3}\((.{1,3})\){/,
     replace: "$&if($self.shouldHide($1))return null;"
   },

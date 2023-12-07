@@ -28,7 +28,7 @@ export function openPluginSettingsModal(plugin: Plugin) {
         size={ModalComponents.ModalSize.MEDIUM}
       >
         <ModalComponents.ModalHeader separator={false} justify={Flex.Justify.BETWEEN}>
-          <div className="vx-settings-modal-title">
+          <div className="vx-modal-title">
             {plugin.name}
           </div>
           <ModalComponents.ModalCloseButton onClick={props.onClose} />

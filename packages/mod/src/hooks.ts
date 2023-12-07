@@ -30,7 +30,7 @@ export function useSignal() {
   ];
 };
 
-type ReactEffectWithArg<T> = (value: T) => void | (() => void);
+type ReactEffectWithArg<T> = (value: T) => (void | (() => void) | Promise<void>);
 
 export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
   const [ signal, abort ] = useSignal();

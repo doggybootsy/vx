@@ -1,16 +1,35 @@
 .vx-button-inner {
   display: flex;
 }
-.vx-settings-modal-title {
+.vx-modal-title {
   color: var(--header-primary);
   font-family: var(--font-display);
   font-size: 20px;
   line-height: 24px;
   font-weight: 600;
+  flex: 1 0 auto;
 }
 .doggybootsy-editor {
   display: block;
 }
 #vx-masks {
   position: fixed;
+}
+
+[class*="codeContainer_"] {
+  position: relative;
+}
+[class*="codeContainer_"]:hover [class*="codeActions_"] {
+  display: block;
+}
+[class*="codeContainer_"] code {
+  user-select: text;
+}
+[class*="codeActions_"] {
+  position: absolute;
+  display: none;
+  right: 4px;
+  top: 8px;
+  color: var(--text-normal);
+  cursor: pointer;
 }
