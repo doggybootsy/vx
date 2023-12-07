@@ -1,17 +1,25 @@
-import { ModalComponents, ModalProps, openCodeModal, openImageModal, openVideoModal } from "../../api/modals";
+import { ModalComponents, ModalProps, openCodeModal, openImageModal, openModal, openVideoModal } from "../../api/modals";
 import JSZip from "jszip";
 import { useAbortEffect } from "../../hooks";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { Button, Flex, Icons, Spinner, Tooltip } from "../../components";
 import { getProxyByKeys } from "../../webpack";
 import { className, download, getParents } from "../../util";
+import { archiveOpenFileAsync } from "uncompress.js";
+import { isZIP } from ".";
 
 interface ZipModalProps extends ModalProps {
-  src: string
+  src: string | File
 };
 
+interface GetContent extends Function {
+  (type: "text"): Promise<string>,
+  (type: "uint8array"): Promise<Uint8Array>,
+  (type: "blob"): Promise<Blob>
+}
+
 type FileTypeDir = { children: { [key in string]: FileType }, name: string, dir: true, path: string };
-type FileTypeFile = { name: string, dir: false, file: JSZip.JSZipObject, path: string, is: { image: boolean, video: boolean, code: boolean } };
+type FileTypeFile = { name: string, dir: false, getContent: GetContent, path: string, is: { image: boolean, video: boolean, code: boolean, zip: boolean } };
 type FileType = FileTypeDir | FileTypeFile;
 
 const mediaFileUtils = getProxyByKeys<{ isImageFile(name: string): boolean, isVideoFile(name: string): boolean }>([ "isImageFile", "isVideoFile" ]);
@@ -38,6 +46,8 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
           <Icons.Image />
         ) : file.is.video ? (
           <Icons.Movie />
+        ) : file.is.zip ? (
+          <Icons.ZIP />
         ) : (
           <Icons.File />
         )}
@@ -87,7 +97,15 @@ function sort(a: FileType, b: FileType) {
   return a.name.localeCompare(b.name);
 };
 
-export function ZipModal(props: ZipModalProps) {
+export function openZipModal(src: string | File | Blob) {
+  if (src instanceof Blob && !(src instanceof File)) {
+    src = new File([ src ], "archive.zip");
+  };
+
+  openModal((modalProps) => <ZipModal {...modalProps} src={src as File | string} />);
+}
+
+function ZipModal(props: ZipModalProps) {
   const [ files, setFiles ] = useState<null | Record<string, FileType>>(null);
   const [ viewingFiles, setViewingFiles ] = useState<null | Record<string, FileType>>(null);
   const [ path, setPath ] = useState("");
@@ -104,57 +122,71 @@ export function ZipModal(props: ZipModalProps) {
   };
 
   useAbortEffect(async (signal) => {
-    const res = await fetch(props.src, { cache: "force-cache" });
+    let file: File;
+    if (typeof props.src === "string") {
+      const res = await fetch(props.src, { cache: "force-cache" });
+      if (signal.aborted) return;
+      const blob = await res.blob();
+      if (signal.aborted) return;
+      file = new File([ blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
+    }
+    else file = props.src;    
+
+    const archive = await archiveOpenFileAsync(file, "");
     if (signal.aborted) return;
-    const blob = await res.blob();
-    if (signal.aborted) return;
-    const zip = await new JSZip().loadAsync(blob);
-    if (signal.aborted) return;
-    
+
     const files: Record<string, FileType> = {};
 
-    for (const filename in zip.files) {
-      if (Object.prototype.hasOwnProperty.call(zip.files, filename)) {
-        const file = zip.files[filename];
-        
-        const split = filename.split("/").filter(Boolean);
-        let level = files;
+    for (const file of archive.entries) {      
+      const split = file.name.split("/").filter(Boolean);
+      let level = files;
 
-        for (const index in split) {
-          if (Object.prototype.hasOwnProperty.call(split, index)) {
-            const key = split[index];
-            const last = (Number(index) + 1) === split.length;
+      for (const index in split) {
+        if (Object.prototype.hasOwnProperty.call(split, index)) {
+          const key = split[index];
+          const last = (Number(index) + 1) === split.length;
 
-            const path = split.slice(0, Number(index)).join("/");            
-            
-            if (last && !file.dir) {
-              level[key] = {
-                dir: false,
-                name: key,
-                file: file,
-                path,
-                is: {
-                  image: mediaFileUtils.isImageFile(key),
-                  video: mediaFileUtils.isVideoFile(key),
-                  code: textFileUtils.isPlaintextPreviewableFile(key)
-                }
-              };
-            }
-            else if (key in level && level[key].dir) {
-              const dir = level[key];
-              if (dir.dir) level = dir.children;
-            }
-            else {
-              const dir: FileType = {
-                dir: true,
-                children: Object.create(null),
-                name: key,
-                path
-              };
-  
-              level[key] = dir;
-              level = dir.children;
-            }
+          const path = split.slice(0, Number(index)).join("/");            
+          
+          if (last && file.is_file) {
+            level[key] = {
+              dir: false,
+              name: key,
+              getContent(type) {
+                return new Promise<any>((resolve) => {
+                  file.readData((archive) => {
+                    if (type === "uint8array") return resolve(new Uint8Array(archive));
+                    if (type === "text") {
+                      const decoder = new TextDecoder();
+                      return resolve(decoder.decode(archive));
+                    }
+                    if (type === "blob") return resolve(new Blob([ new Uint8Array(archive) ]));
+                  });
+                });
+              },
+              path,
+              is: {
+                image: mediaFileUtils.isImageFile(key),
+                video: mediaFileUtils.isVideoFile(key),
+                code: textFileUtils.isPlaintextPreviewableFile(key),
+                zip: isZIP(key)
+              }
+            };
+          }
+          else if (key in level && level[key].dir) {
+            const dir = level[key];
+            if (dir.dir) level = dir.children;
+          }
+          else {
+            const dir: FileType = {
+              dir: true,
+              children: Object.create(null),
+              name: key,
+              path
+            };
+
+            level[key] = dir;
+            level = dir.children;
           }
         }
       }
@@ -163,6 +195,11 @@ export function ZipModal(props: ZipModalProps) {
     setFiles(files);
     setViewingFiles(files);
   });
+
+  const name = useMemo(() => {
+    if (typeof props.src === "string") return props.src.split("/").at(-1)!.split("?").at(0)!;
+    return props.src.name;
+  }, [ ]);
   
   return (
     <ModalComponents.ModalRoot
@@ -186,7 +223,7 @@ export function ZipModal(props: ZipModalProps) {
                   
                   setPath("");
                 }}
-              >{props.src.split("/").at(-1)!.split("?").at(0)}</span>
+              >{name}</span>
               {path.split("/").map(($path, i) => (
                 <Fragment key={`path-${$path}-${i}`}>
                   <span className="vx-zip-sep">/</span>
@@ -237,12 +274,12 @@ export function ZipModal(props: ZipModalProps) {
                         if (file.is.code) {
                           openCodeModal({
                             filename: file.name,
-                            code: await file.file.async("text"),
+                            code: await file.getContent("text"),
                             language: file.name.split(".").at(-1)!
                           });
                         }
                         if (file.is.image || file.is.video) {
-                          const data = await file.file.async("uint8array");
+                          const data = await file.getContent("uint8array");
                           const url = URL.createObjectURL(new Blob([ data ]));
 
                           if (file.is.image) openImageModal(url);
@@ -252,6 +289,11 @@ export function ZipModal(props: ZipModalProps) {
                           setTimeout(() => {
                             URL.revokeObjectURL(url);
                           }, 1000 * 60);
+                        }
+                        if (file.is.zip) {
+                          const blob = await file.getContent("blob");
+                          
+                          openZipModal(new File([ blob ], file.name));
                         }
 
                         return;
@@ -274,7 +316,7 @@ export function ZipModal(props: ZipModalProps) {
                                 continue;
                               };
 
-                              zip.file(name, element.file.async("uint8array"));
+                              zip.file(name, element.getContent("uint8array"));
                             }
                           }
                         };
@@ -286,7 +328,7 @@ export function ZipModal(props: ZipModalProps) {
                         return;
                       };
 
-                      const data = await file.file.async("uint8array");
+                      const data = await file.getContent("uint8array");
                       download(file.name, data);
                     }}
                     onSelect={(state) => {
@@ -332,7 +374,7 @@ export function ZipModal(props: ZipModalProps) {
                     continue;
                   };
 
-                  zip.file(name, element.file.async("uint8array"));
+                  zip.file(name, element.getContent("uint8array"));
                 }
               }
             };
@@ -342,7 +384,7 @@ export function ZipModal(props: ZipModalProps) {
             const data = await zip.generateAsync({ type: "uint8array" });
             if (data) download(`zip-viewer-${Date.now().toString(36)}.zip`, data);
           }}
-        >Download All</Button>
+        >Download Selected</Button>
       </ModalComponents.ModalFooter>
     </ModalComponents.ModalRoot>
   )

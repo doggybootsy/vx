@@ -104,6 +104,28 @@ declare module "*.html" {
 };
 declare module "@plugins" {};
 
+declare module "uncompress.js" {
+  interface Entry {
+    is_file: boolean,
+    name: string,
+    readData(cb: Callback<ArrayBuffer>): void,
+    size_compressed: number,
+    size_uncompressed: number
+  };
+  
+  interface Archive {
+    archive_type: string,
+    entries: Entry[]
+  };
+
+  interface Callback<T> extends Function {
+    (archive: T, err: Error | null): void
+  };
+
+  export function archiveOpenFile(file: File, password: string, callback: Callback<Archive>): void;
+  export function archiveOpenFileAsync(file: File, password: string): Promise<Archive>;
+}
+
 declare module "self" {
   interface Enviroment {
     IS_DEV: boolean,
