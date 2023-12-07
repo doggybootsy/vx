@@ -55,6 +55,27 @@ const ReactPlugin = {
   }
 };
 /** @type {esbuild.Plugin} */
+const UncompressJSPlugin = {
+  name: "uncompress.js-plugin",
+  setup(build) {
+    build.onResolve({
+      filter: /^uncompress\.js$/
+    }, () => ({
+      namespace: "uncompress.js-plugin",
+      path: "uncompress.js"
+    }));
+
+    build.onLoad({
+      filter: /.*/, namespace: "uncompress.js-plugin"
+    }, (args) => {
+      return {
+        resolveDir: "./packages/modules",
+        contents: `export * from "./uncompress";`
+      }
+    });
+  }
+};
+/** @type {esbuild.Plugin} */
 const HTMLPlugin = {
   name: "html-plugin",
   setup(build) {
@@ -231,7 +252,8 @@ const RequireAllPluginsPlugin = (desktop) => ({
         RequireAllPluginsPlugin(true),
         SelfPlugin(true),
         ManagedCSSPlugin,
-        ReactPlugin
+        ReactPlugin,
+        UncompressJSPlugin
       ],
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
@@ -315,7 +337,8 @@ const RequireAllPluginsPlugin = (desktop) => ({
         RequireAllPluginsPlugin(false),
         SelfPlugin(false),
         ManagedCSSPlugin,
-        ReactPlugin
+        ReactPlugin,
+        UncompressJSPlugin
       ],
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
