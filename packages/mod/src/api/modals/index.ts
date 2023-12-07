@@ -5,9 +5,10 @@ import "./index.css";
 
 export * from "./actions";
 export * from "./confirmModal";
-export * from "./image";
+export * from "./media";
 export * from "./alert";
 export * from "./prompt";
+export * from "./code";
 export { default as ModalComponents } from "./components";
 
 const userProfileModalActions = getProxyByKeys<{

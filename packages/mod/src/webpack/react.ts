@@ -38,6 +38,10 @@ export function forwardRef<T, P = {}>(type: React.ForwardRefRenderFunction<T, P>
   return proxyCache(() => React.forwardRef(type), true);
 };
 
+export function startTransition(scope: React.TransitionFunction) {
+  return React.startTransition(scope);
+};
+
 class BaseComponent {
   constructor(...args: Parameters<ReactType["Component"]>) {
     const component = Reflect.construct(React.Component, args);
@@ -70,7 +74,8 @@ let React = {
   isValidElement,
   forwardRef,
   Suspense,
-  Fragment
+  Fragment,
+  startTransition
 } as ReactType;
 
 getLazyByKeys<ReactType>([ "createElement", "memo" ]).then((react) => {

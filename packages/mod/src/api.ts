@@ -42,7 +42,15 @@ export const VX = {
     _onWebpackModule: webpack._onWebpackModule,
     waitForNode,
     _addHomeButton,
-    _settingButtonOnClickWrapper
+    _settingButtonOnClickWrapper,
+    getSrc(getSrc: (...args: any[]) => string) {
+      return (...args: any[]) => {
+        const url = getSrc.call(this, args);
+        if (url.startsWith("blob:")) return url.split("?").at(0);
+        if (url.startsWith("data:")) return url.split("?").at(0);
+        return url;
+      }
+    }
   },
   self
 };

@@ -6,10 +6,10 @@ import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
 import { WindowUtil } from "../../../webpack/common";
 
-// 30 mins
-const DELAY_AUTO = 1e3 * 60 * 30;
 // 3 mins
-const DELAY_MIN = 1e3 * 60 * 3;
+const DELAY_MIN = 1000 * 60 * 3;
+// 30 mins
+const DELAY_AUTO = DELAY_MIN * 10;
 
 const updaterStore = new class extends InternalStore {
   constructor() {
@@ -121,7 +121,7 @@ export function Updater() {
           }} 
           disabled={state.compared === -1 ? false : !state.canCheck}
         >
-          {state.fetching ? "Fetching..." : state.compared === -1 ? "Update" : "Check For Updates"}
+          {state.fetching ? "Fetching..." : state.compared === -1 ? `Update to v${state.release!.tag_name.replace("v", "")}` : "Check For Updates"}
         </Button>
       </Flex>
     </Flex>

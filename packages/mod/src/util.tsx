@@ -323,3 +323,13 @@ export function download(filename: string, part: BlobPart) {
   anchor.remove();
   URL.revokeObjectURL(blobURL);
 };
+
+export function getParents(element: Element | null) {
+  const parents: Element[] = [];
+
+  while (element && (element = element.parentElement)) {
+    parents.push(element);
+  }
+  
+  return parents;
+};

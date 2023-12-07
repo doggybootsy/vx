@@ -1,0 +1,105 @@
+.vx-zip-button {
+  display: flex;
+  padding: 6px;
+  color: var(--interactive-normal);
+}
+.vx-zip-button:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-zip-button:active {
+  background-color: var(--background-modifier-active);
+  color: var(--interactive-active);
+}
+.vx-zip-spinner {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vx-zip-path {
+  flex: 0 1 auto;
+  padding: 6px 6px 0 6px;
+  background: var(--background-secondary);
+  border-radius: 3px;
+  color: var(--interactive-normal);
+  display: flex;
+  gap: 4px;
+  overflow: scroll hidden;
+}
+.vx-zip-selector {
+  padding: 2px 3px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vx-zip-selector:empty {
+  display: none;
+}
+.vx-zip-selector:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-zip-selector:active {
+  background-color: var(--background-modifier-active);
+  color: var(--interactive-active);
+}
+.vx-zip-back {
+  margin: 6px 0;
+  padding: 6px 0;
+  /* border-top: 1px solid var(--background-secondary); */
+  border-bottom: 1px solid var(--background-secondary);
+}
+.vx-zip-content {
+  display: flex;
+  flex-direction: column;
+}
+.vx-zip-body  {
+  flex: 1 0 auto;
+}
+.vx-zip-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+.vx-zip-message {
+  color: var(--text-normal);
+}
+.vx-zip-file {
+  display: flex;
+  gap: 6px;
+  color: var(--interactive-normal);
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.vx-zip-disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+.vx-zip-file:not(.vx-zip-disabled):hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-zip-file:not(.vx-zip-disabled):active {
+  background-color: var(--background-modifier-active);
+  color: var(--interactive-active);
+}
+.vx-zip-type {
+  display: flex;
+}
+.vx-zip-name {
+  flex: 1 1 auto;
+}
+.vx-zip-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.vx-zip-action {
+  display: flex;
+}

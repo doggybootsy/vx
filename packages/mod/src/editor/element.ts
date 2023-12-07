@@ -30,7 +30,8 @@ const cache = new WeakMap<HTMLEditorElement, {
   ready: boolean,
   value: string,
   theme: MonacoThemes,
-  language: string
+  language: string,
+  readonly: boolean
 }>();
 
 export function getCache(editor: HTMLEditorElement) {
@@ -46,12 +47,15 @@ export class HTMLEditorElement extends HTMLElement {
 
     const language = this.getAttribute("language") ?? "txt";
     const value = this.getAttribute("value") ?? "";
+    
+    let readonly = this.hasAttribute("readonly");
 
     this.addEventListener("waiting", () => {
       this.postMessage("set-options", {
         language,
         theme,
-        value
+        value,
+        readonly
       });
     });
 
@@ -77,6 +81,9 @@ export class HTMLEditorElement extends HTMLElement {
             currentTheme = data.theme;
             self.setAttribute("theme", data.theme);
           };
+          if (typeof data.readonly === "boolean") {
+            readonly = data.readonly;
+          }
         };
         
         iframe.contentWindow!.postMessage({
@@ -86,6 +93,7 @@ export class HTMLEditorElement extends HTMLElement {
           data
         }, "*");
       },
+      get readonly() { return readonly },
       get ready() { return ready; },
       get value() { return currentValue; },
       get theme() { return currentTheme; },

@@ -298,3 +298,44 @@ export function Youtube(props: IconProps) {
     </svg>
   );
 };
+
+export function ZIP(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "ZIP");
+
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 16 16" aria-hidden="true" role="img">
+      <path d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243z" fill={color} />
+      <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1z" fill={color} />
+    </svg>
+  );
+};
+
+export function Image(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Image");
+
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 20 20" aria-hidden="true" role="img">
+      <path fillRule="evenodd" clipRule="evenodd" transform="translate(2, 1.5)" d="M3.2 0C1.43269 0 0 1.43269 0 3.2V12.8C0 14.5673 1.43269 16 3.2 16H12.8C14.5673 16 16 14.5673 16 12.8V3.2C16 1.43269 14.5673 0 12.8 0H3.2ZM6.4 4.8C6.4 3.91616 5.68256 3.2 4.8 3.2C3.91552 3.2 3.2 3.91616 3.2 4.8C3.2 5.68448 3.91552 6.4 4.8 6.4C5.68256 6.4 6.4 5.68448 6.4 4.8ZM5.6 9.6L3.2 12.8H12.8L10.4 7.2L7.2 11.2L5.6 9.6Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Movie(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Movie");
+
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 26 28" aria-hidden="true" role="img">
+      <path fillRule="evenodd" clipRule="evenodd" d="M25.4655 8.13686L24.0851 2.98525C23.5134 0.851387 21.32 -0.414947 19.1862 0.156821L3.73134 4.29792C1.59748 4.86969 0.331147 7.06304 0.902914 9.19691L2.01124 13.3332L1.9999 15.9999L1.9999 23.3332C1.9999 25.5424 3.79077 27.3332 5.99991 27.3332L21.9999 27.3332C24.209 27.3332 25.9999 25.5424 25.9999 23.3332V15.3333H5.99991L6.07237 13.3332L25.4655 8.13686ZM14.609 8.28512L10.8245 9.29916L10.7552 5.17663L14.5396 4.1626L14.609 8.28512ZM17.264 7.5737L22.1995 6.25124L21.5093 3.67543C21.3187 2.96415 20.5876 2.54204 19.8763 2.73263L17.1947 3.45117L17.264 7.5737ZM8.10009 5.88806L8.16944 10.0106L4.1689 11.0825L3.47872 8.50672C3.28813 7.79543 3.71024 7.06432 4.42153 6.87373L8.10009 5.88806Z" fill={color} />
+    </svg>
+  );
+};
+
+export function File(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "File");
+
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 16 16" aria-hidden="true" role="img">
+      <path transform="translate(3, 3)" d="M6.11111111,3.88888889 L6.11111111,0.833333333 L9.16666667,3.88888889 L6.11111111,3.88888889 Z M1.11111111,0 C0.494444444,0 0,0.494444444 0,1.11111111 L0,8.88888889 C0,9.50253861 0.497461389,10 1.11111111,10 L8.88888889,10 C9.50253861,10 10,9.50253861 10,8.88888889 L10,3.33333333 L6.66666667,0 L1.11111111,0 Z" fill={color} />
+    </svg>
+  );
+};

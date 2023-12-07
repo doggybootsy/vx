@@ -13,7 +13,6 @@ webpackAppChunk.push([
     
     webpackRequire = wpr;
 
-    // Webpack has modules are ready added?
     for (const key in wpr.m) {
       if (Object.prototype.hasOwnProperty.call(wpr.m, key)) {
         set(wpr.m, key, wpr.m[key]);
