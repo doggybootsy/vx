@@ -1,20 +1,20 @@
 import { definePlugin } from "../";
-import { getProxyStore } from "../../webpack";
 import { Developers } from "../../constants";
-import { UserStore, fluxDispatchEvent } from "../../webpack/common";
-
-const MessageStore = getProxyStore("MessageStore");
+import { MessageStore, UserStore, dirtyDispatch } from "../../webpack/common";
 
 export default definePlugin({
   name: "DoubleClickEdit",
   description: "Double clicking a message will allow you to edit a message",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: {
     match: "getElementFromMessage:",
     find: /"li",{id:.{1,3},/,
-    replace: "$&onClick:$self.onClick,"
+    replace: "$&onClick:$self.onClick.bind(null,()=>$enabled),"
   },
-  onClick(event: React.MouseEvent<HTMLElement>) {
+  onClick(enabled: () => boolean, event: React.MouseEvent<HTMLElement>) {
+    if (!enabled()) return;
+    
     if (event.detail !== 2) return;
 
     const [ channelId, messageId ] = event.currentTarget.id.split("-").slice(-2);
@@ -24,7 +24,7 @@ export default definePlugin({
     const currentUser = UserStore.getCurrentUser();
 
     if (message.author.id === currentUser.id) {
-      fluxDispatchEvent({
+      dirtyDispatch({
         type: "MESSAGE_START_EDIT",
         channelId,
         messageId,

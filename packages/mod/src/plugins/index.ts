@@ -9,52 +9,72 @@ export interface PluginType {
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
   settings?: Record<string, CreatedSetting<any>> | React.FunctionComponent,
+  requiresRestart?: boolean,
   start?(): void,
   stop?(): void
 };
 
-export class Plugin {
-  constructor(public exports: PluginType & Record<string, any>) {
+export type AnyPluginType = PluginType & Record<string, any>;
+
+export class Plugin<T extends AnyPluginType = AnyPluginType> {
+  constructor(public readonly exports: T) {
     this.name = exports.name;
     
     this.originalEnabledState = this.isEnabled();
+    this.requiresRestart = exports.requiresRestart ?? true;
+
+    const match = new Error().stack!.match(/plugins\/(.+?)\//);
+    if (match) this.id = match[1];
+    else this.id = this.name;
   };
 
   type = <const>"plugin";
 
   name: string;
-  public readonly originalEnabledState: boolean;
+  id: string;
 
-  isEnabled() {
-    internalDataStore.ensure("enabled-plugins", []);
+  public readonly originalEnabledState: boolean;
+  public readonly requiresRestart: boolean;
+
+  public getActiveState() {
+    if (this.requiresRestart) return this.originalEnabledState;
+    return this.isEnabled();
+  };
+
+  public isEnabled() {
+    internalDataStore.ensure("enabled-plugins", { });
   
     const enabled = internalDataStore.get("enabled-plugins")!;
     
-    return enabled.includes(this.name);
+    return enabled[this.name] === true;
   };
-  enable() {
+  public enable() {
     if (this.isEnabled()) return false;
 
-    const enabled = internalDataStore.get("enabled-plugins")!.concat();
+    const enabled = structuredClone(internalDataStore.get("enabled-plugins")!);
 
-    enabled.push(this.name);
+    enabled[this.name] = true;
 
     internalDataStore.set("enabled-plugins", enabled);
 
+    if (!this.requiresRestart && typeof this.exports.start === "function") this.exports.start(); 
+
     return true;
   };
-  disable() {
+  public disable() {
     if (!this.isEnabled()) return false;
 
-    const enabled = internalDataStore.get("enabled-plugins")!;
+    const enabled = structuredClone(internalDataStore.get("enabled-plugins")!);
 
-    const filtered = enabled.filter((name) => name !== this.name);    
+    enabled[this.name] = false;
 
-    internalDataStore.set("enabled-plugins", filtered);
+    internalDataStore.set("enabled-plugins", enabled);
+
+    if (!this.requiresRestart && typeof this.exports.stop === "function") this.exports.stop(); 
     
     return true;
   };
-  toggle() {
+  public toggle() {
     if (this.isEnabled()) {
       this.disable();
       return false;
@@ -67,7 +87,15 @@ export class Plugin {
 
 export const plugins: Record<string, Plugin> = {};
 
-export function definePlugin<T extends PluginType & Record<string, any>>(exports: T): T {
+export function getPlugin(nameOrId: string) {
+  for (const plugin of Object.values(plugins)) {
+    if (nameOrId === plugin.id || nameOrId === plugin.name) return plugin;
+  }
+
+  return null;
+};
+
+export function definePlugin<T extends AnyPluginType>(exports: T): T {
   const plugin = new Plugin(exports);
 
   const isEnabled = plugin.isEnabled();
@@ -78,18 +106,31 @@ export function definePlugin<T extends PluginType & Record<string, any>>(exports
     if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
     
     for (const patch of exports.patches) {
-      patch._self = `window.VX.plugins[${JSON.stringify(exports.name)}].exports`;
+      const self = `window.VX._self.getPlugin(${JSON.stringify(plugin.id)})`;
 
-      if (typeof patch.identifier !== "string") patch.identifier = exports.name;
-      else patch.identifier = `${exports.name}(${patch.identifier})`;
+      patch._self = {
+        plugin: self,
+        self: `${self}.exports`,
+        enabled: `${self}.getActiveState()`
+      };
+
+      if (typeof patch.identifier !== "string") patch.identifier = plugin.name;
+      else patch.identifier = `${plugin.name}(${patch.identifier})`;
     };
-
-    if (isEnabled) addPlainTextPatch(...exports.patches);
+    // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
+    if (isEnabled || !plugin.requiresRestart) addPlainTextPatch(...exports.patches);
   };
 
-  if (isEnabled) exports.start?.();
+  if (isEnabled && typeof exports.start === "function") exports.start();
 
   return exports;
+};
+
+// For use inside of plugins
+export function isPluginEnabled(nameOrId: string) {
+  const plugin = getPlugin(nameOrId);
+  if (plugin) return plugin.getActiveState();
+  return false;
 };
 
 require("@plugins");

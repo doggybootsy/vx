@@ -53,16 +53,14 @@ export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
 export function useUser(userId: string): User | null {
   const [ user, setUser ] = useState(() => UserStore.getUser(userId) || null);
 
-  useAbortEffect((signal) => {
+  useAbortEffect(async (signal) => {
     if (user) return;
 
-    const fetched = fetchUser(userId); 
+    const fetched = await fetchUser(userId); 
 
-    fetched.then((user) => {      
-      if (signal.aborted) return;
+    if (signal.aborted) return;
 
-      setUser(user);
-    });
+    setUser(fetched);
   });
   
   return user;

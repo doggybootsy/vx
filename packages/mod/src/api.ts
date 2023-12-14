@@ -12,7 +12,7 @@ import * as storage from "./api/storage";
 import * as webpack from "./webpack";
 import * as popoutWindows from "./api/window";
 
-import { plugins } from "./plugins";
+import { getPlugin, plugins } from "./plugins";
 
 import { waitForNode } from "common/dom";
 
@@ -24,8 +24,9 @@ import { api } from "./webpack/api";
 
 import * as self from "self";
 
+import { Styler } from "@styler";
+
 export const VX = {
-  plugins,
   webpack: api,
   menus,
   notifications,
@@ -38,7 +39,10 @@ export const VX = {
   windows: popoutWindows,
   Editor,
   Injector,
+  Styler,
   _self: {
+    plugins,
+    getPlugin,
     _onWebpackModule: webpack._onWebpackModule,
     waitForNode,
     _addHomeButton,

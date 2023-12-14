@@ -14,11 +14,15 @@ type BeforeCallback<F extends FunctionType> = (that: ThisParameterType<F>, args:
 
 type UndoFunction = () => void;
 
-type Hook<F extends FunctionType> = {
+interface Hook<F extends FunctionType> {
   after: Set<AfterCallback<F>>,
   instead: Set<InsteadCallback<F>>,
   before: Set<BeforeCallback<F>>,
   original: F
+};
+
+function apply<T extends FunctionType>(fn: T, that: ThisParameterType<T>, args: Parameters<T>): ReturnType<T> {
+  return Function.prototype.apply.call(fn, that, args);
 };
 
 const HOOK_SYMBOL = Symbol.for("vx.patcher.hook");
@@ -41,7 +45,7 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 
     let result: ReturnType<F>;
     if (!hook.instead.size) {
-      result = fn.apply(this, args);
+      result = apply(fn, this, args);
     }
     else {
       const insteadHooks = Array.from(hook.instead);
@@ -51,7 +55,7 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
       function goDeeper(this: ThisParameterType<F>, ...args: Parameters<F>): any {
         const hook = insteadHooks.at(depth++);
         if (hook) return hook(this, args, goDeeper.apply(this, args));
-        return fn.apply(this, args);
+        return apply(fn, this, args);
       };
 
       result = instead(this, args, goDeeper as F);

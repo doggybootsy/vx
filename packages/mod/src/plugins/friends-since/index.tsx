@@ -52,16 +52,17 @@ export default definePlugin({
   name: "FriendsSince",
   description: "Shows when you and a friend become friends in the user popout and user modal",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: [
     {
       match: "isUsingGuildBio:null",
       find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{userId:(.{1,3}\.id),guild:.{1,3},guildMember:.{1,3}}\)/,
-      replace: "$&,$react.createElement($self.FriendsSinceSection,{userId:$1})"
+      replace: "$&,$enabled&&$react.createElement($self.FriendsSinceSection,{userId:$1})"
     },
     {
       match: ".ConnectedUserAccounts,",
       find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
-      replace: "$&,$react.createElement($self.FriendsSince,$1)"
+      replace: "$&,$enabled&&$react.createElement($self.FriendsSince,$1)"
     }
   ],
   FriendsSinceSection: ErrorBoundary.wrap(FriendsSinceSection),

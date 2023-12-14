@@ -408,14 +408,14 @@ const uncompressJS = {};
 
 let loaded = false;
 export function archiveOpenFile(file, password, callback) {
-  if (loaded) return uncompressJS.archiveOpenFile(file, password, callback);;
+  if (loaded) return uncompressJS.archiveOpenFile(file, password, callback);
   
   uncompressJS.loadArchiveFormats([ "rar", "zip", "tar" ], () => {
     loaded = true;
     uncompressJS.archiveOpenFile(file, password, callback);
   });
 };
-export function archiveOpenFileAsync(file, password, callback) {
+export function archiveOpenFileAsync(file, password) {
   return new Promise((resolve, reject) => {
     archiveOpenFile(file, password, (archive, err) => {
       if (err) return reject(err);

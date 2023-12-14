@@ -12,13 +12,13 @@ addPlainTextPatch(
     identifier: "VX(home-button)",
     match: ".default.Messages.GUILDS_BAR_A11Y_LABEL",
     find: /\((.{1,3}\.AdvancedScrollerNone)/,
-    replace: "(window.VX._self._addHomeButton()"
+    replace: "($vx._self._addHomeButton()"
   },
   {
     identifier: "VX(settings-button)",
     match: ".Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format({webBuildOverride",
     find: /USER_SETTINGS,onClick:(.{1,3}),/,
-    replace: "USER_SETTINGS,onClick:VX._self._settingButtonOnClickWrapper($1),"
+    replace: "USER_SETTINGS,onClick:$vx._self._settingButtonOnClickWrapper($1),"
   }
 );
 

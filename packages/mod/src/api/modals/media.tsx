@@ -52,7 +52,7 @@ addPlainTextPatch({
   identifier: "VX(image-blob-support)",
   match: "this.unobserveVisibility",
   find: /this\.getSrc/g,
-  replace: "window.VX._self.getSrc.call(this,$&)"
+  replace: "$vx._self.getSrc.call(this,$&)"
 });
 
 export async function openImageModal(src: string | URL) {

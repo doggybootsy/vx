@@ -2,7 +2,7 @@ export type PlainTextPatchType = PlainTextPatch | PlainTextPatchNonArray | Plain
 
 interface PlainTextPatchBase {
   identifier?: string,
-  _self?: string
+  _self?: Record<string, string>
 };
 
 export interface PlainTextPatch extends PlainTextPatchBase {

@@ -5,7 +5,7 @@ import { getLazyByKeys } from "../../webpack";
 import { SettingType, createSettings } from "../settings";
 
 import { KeyboardButton } from "./button";
-import { addStyle } from "./index.css?managed"
+import { addStyle, removeStyle } from "./index.css?managed"
 
 const injector = new Injector();
 
@@ -31,10 +31,13 @@ export const settings = createSettings("SilentTyping", {
   }
 });
 
+let enabled = false;
 async function patchSilentTyping() {
   const typing = await getLazyByKeys<{
     startTyping: (channelId: string) => void
   }>([ "startTyping", "stopTyping" ]);
+
+  if (!enabled) return;
 
   injector.instead(typing, "startTyping", (that, args, startTyping) => {
     if (!settings.button.get()) return;
@@ -49,14 +52,21 @@ export default definePlugin({
   description: "Tricks discord into thinking that you aren't typing",
   authors: [ Developers.doggybootsy ],
   settings,
+  requiresRestart: false,
   patches: {
     match: "ChannelTextAreaButtons",
     find: /return\(!.{1,3}\.isMobile&&.+?&&(.{1,3})\.push.+?{disabled:(.{1,3}),type:(.{1,3})}/,
-    replace: "$self._addButton($1,$2,$3);$&"
+    replace: "if($enabled)$self._addButton($1,$2,$3);$&"
   },
   start() {
+    enabled = true;
     patchSilentTyping();
     addStyle();
+  },
+  stop() {
+    enabled = false;
+    removeStyle();
+    injector.unpatchAll();
   },
   _addButton(buttons: React.ReactNode[], disabled: boolean, type: { analyticsName: string }) {
     const shouldAddButton = settings.button.use();

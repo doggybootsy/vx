@@ -1,6 +1,6 @@
 declare module Webpack {
   interface Require extends Function {
-    (id: PropertyKey): any;
+    <T = any>(id: PropertyKey): T;
     d(target, exports): void;
     c: Record<PropertyKey, Module>;
     m: Record<PropertyKey, RawModule>;
@@ -91,21 +91,28 @@ declare global {
 }
 interface Window extends DiscordWindow {};
 
+type Styler = import("@styler").Styler;
+
 declare module "*.css" {};
 declare module "*.css?managed" {
+  export const id: string;
   export const css: string;
-  export function addStyle(document?: Document): void;
-  export function removeStyle(document?: Document): void;
+  export function addStyle(): void;
+  export function removeStyle(): void;
+  // export const styler: Styler;
 };
 
 declare module "*.html" {
   const type: Document;
   export default type;
 };
-declare module "@plugins" {};
+declare module "@plugins" {
+  const type: Record<string, any>;
+  export = type;
+};
 
 declare module "uncompress.js" {
-  interface Entry {
+  export interface Entry {
     is_file: boolean,
     name: string,
     readData(cb: Callback<ArrayBuffer>): void,
@@ -113,12 +120,12 @@ declare module "uncompress.js" {
     size_uncompressed: number
   };
   
-  interface Archive {
+  export interface Archive {
     archive_type: string,
     entries: Entry[]
   };
 
-  interface Callback<T> extends Function {
+  export interface Callback<T> extends Function {
     (archive: T, err: Error | null): void
   };
 

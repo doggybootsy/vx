@@ -39,10 +39,11 @@ export default definePlugin({
   name: "CopyChannelLink",
   description: "Quickly copy channel links",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: {
     match: "renderAcceptSuggestionButton",
     find: /\[(.{1,3}&&this\.renderAcceptSuggestionButton\(\))/g,
-    replace: "[$react.createElement($self.CopyButton, this.props), $1"
+    replace: "[$enabled&&$react.createElement($self.CopyButton, this.props),$1"
   },
   CopyButton: ErrorBoundary.wrap(CopyButton)
 });

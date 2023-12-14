@@ -6,7 +6,7 @@ addPlainTextPatch({
   identifier: "VX(Minipopover)",
   match: ".Messages.MESSAGE_UTILITIES_A11Y_LABEL",
   find: /(return .{1,3}\.state!==.{1,3}\.MessageStates\.SEND_FAILED\?)(\(0,.{1,3}\.jsx\)\(.{1,3}{\.{3}.{1,3}}\))(:null)/,
-  replace: "$1window.VX.minipopover._patchPopover($2)$3"
+  replace: "$1$vx.minipopover._patchPopover($2)$3"
 });
 
 export interface Props { message: Message, channel: Channel, guild?: Guild, author: User };

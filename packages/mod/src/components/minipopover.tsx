@@ -7,7 +7,8 @@ interface MiniPopoverButtonProps {
   onClick(event: React.MouseEvent): void,
   onContextMenu?(event: React.MouseEvent): void,
   danger?: boolean,
-  className?: string
+  className?: string,
+  disabled?: boolean
 };
 
 export function Button(props: MiniPopoverButtonProps) {
@@ -20,16 +21,21 @@ export function Button(props: MiniPopoverButtonProps) {
         <div 
           {...tprops} 
           onClick={(event) => {
-            props.onClick(event);
             tprops.onClick();
+            if (props.disabled) return;
+          
+            props.onClick(event);
           }}
           onContextMenu={(event) => {
-            if (props.onContextMenu) props.onContextMenu(event);
             tprops.onContextMenu();
+            if (props.disabled) return;
+
+            if (props.onContextMenu) props.onContextMenu(event);
           }}
           className={className([
             "vx-minipopover-button",
             props.danger && "vx-minipopover-danger",
+            props.disabled && "vx-minipopover-disabled",
             props.className
           ])}
         >

@@ -70,11 +70,12 @@ export default definePlugin({
   name: "PIP",
   description: "Adds a PIP button to videos",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: [
     {
       match: "this.renderVideo()",
       find: /this\.renderVideo\(\)/g,
-      replace: "[$react.createElement($self.PIP),$&]"
+      replace: "[$enabled&&$react.createElement($self.PIP),$&]"
     }
   ],
   PIP: ErrorBoundary.wrap(PIP),

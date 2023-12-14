@@ -242,7 +242,12 @@ export function getRandomItem<T extends any[]>(array: T): T[number] {
 const defaultAvatarModule = getProxyByKeys<{
   DEFAULT_AVATARS: string[]
 }>([ "DEFAULT_AVATARS" ]);
-export function getRandomDefaultAvatar() {
+export function getRandomDefaultAvatar(uid?: string) {
+  if (typeof uid === "string") {
+    const number = Number(uid);
+    if (!isNaN(number)) return defaultAvatarModule.DEFAULT_AVATARS[number % 5];
+  };
+
   return getRandomItem(defaultAvatarModule.DEFAULT_AVATARS);
 };
 
@@ -332,4 +337,16 @@ export function getParents(element: Element | null) {
   }
   
   return parents;
+};
+
+export function createAbort() {
+  let controller = new AbortController();
+
+  function abort(reason?: any) {
+    controller.abort(reason);
+
+    controller = new AbortController();
+  };
+
+  return [ abort, () => controller.signal ] as const;
 };

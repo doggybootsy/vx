@@ -57,6 +57,10 @@
   font-size: larger;
   font-weight: 450;
   position: relative;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
 }
 .vx-addon-actions {
   display: flex;
@@ -65,18 +69,12 @@
   align-items: center;
   flex: 1 1 auto;
 }
-.vx-addons-warning {
-  background-color: var(--background-mentioned);
-  border: var(--info-warning-foreground) 1px solid;
-  padding: 8px;
-  margin-bottom: 12px;
-  border-radius: 3px;
-  color: var(--text-normal);
+.vx-addon-restart {
+  color: var(--text-muted);
   display: flex;
-  align-items: center;
-  gap: 6px;
+  transition: color .10s ease-in-out;
 }
-.vx-addons-icon {
+.vx-addon-warn {
   color: var(--text-warning);
 }
 .vx-collapsable-section {
@@ -139,20 +137,20 @@ input.vx-addon-input:not(:focus) {
 .vx-addon-name:hover > .vx-input {
   box-shadow: inset 0 0 0 1px var(--background-tertiary);
 }
-.vx-addons-empty-wrapper {
+.vx-addon-empty-wrapper {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
-.vx-addons-empty-text {
+.vx-addon-empty-text {
   margin: 20px auto 0;
   font-size: 16px;
   font-weight: 500;
   text-align: center;
   color: var(--text-secondary);
 }
-.vx-addons-empty {
+.vx-addon-empty {
   padding-bottom: 40px;
 }
 .vx-home-header {

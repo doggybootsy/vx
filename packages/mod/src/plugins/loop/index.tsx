@@ -53,10 +53,11 @@ export default definePlugin({
   description: "Adds a loop button to videos and audios",
   authors: [ Developers.doggybootsy ],
   settings,
+  requiresRestart: false,
   patches: [
     {
       find: "this.renderPlayIcon()",
-      replace: "$&,$react.createElement($self.Loop)"
+      replace: "$&,$enabled&&$react.createElement($self.Loop)"
     }
   ],
   Loop: ErrorBoundary.wrap(Loop),

@@ -1,3 +1,4 @@
+import { escapeRegex } from "../util";
 import { plainTextPatches } from "./patches";
 
 export const webpackAppChunk = window.webpackChunkdiscord_app ??= [];
@@ -73,8 +74,17 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
       
       if (typeof replace.replace === "string") {
         let replacer = replace.replace
-          .replace(/\$react/g, "window.VX.React");
-        if (typeof patch._self === "string") replacer = replacer.replace(/\$self/g, patch._self);
+          .replace(/\$react/g, "window.VX.React")
+          .replace(/\$vx/g, "window.VX");
+
+        if (patch._self) {
+          for (const key in patch._self) {
+            if (Object.prototype.hasOwnProperty.call(patch._self, key)) {
+              const element = patch._self[key];
+              replacer = replacer.replace(escapeRegex(`$${key}`, "g"), element);
+            }
+          }
+        }
 
         stringedModule = stringedModule.replace(replace.find as any, replacer);
       }

@@ -4,12 +4,15 @@ import { closeWindow } from "../../../../api/window";
 import { waitForNode } from "common/dom";
 import { openNotification } from "../../../../api/notifications";
 import { Icons } from "../../../../components";
+import { addChangeListener, plugins } from "@styler";
 
 const themeHead = document.createElement("vx-themes");
 
 waitForNode(".drag-previewer").then(() => {
-  document.body.append(themeHead, document.createElement("vx-plugins"));
+  document.body.append(themeHead, plugins);
 });
+
+const destroyers = new Map<string, () => void>();
 
 export const themeStore = new class extends InternalStore {
   constructor() {
@@ -38,12 +41,20 @@ export const themeStore = new class extends InternalStore {
     const style = document.createElement("style");
     style.setAttribute("data-vx-theme", id);
 
-    const text = document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/themes/${id}.css */`);
-    style.appendChild(text);
+    style.appendChild(document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/themes/${id}.css */`));
+
+    const undo = addChangeListener(`theme-${id}`, data.css, (css) => {
+      style.innerHTML = "";
+
+      style.appendChild(document.createTextNode(`${css}\n/*# sourceURL=vx://VX/themes/${id}.css */`));
+    });
+    destroyers.set(id, undo);
 
     themeHead.appendChild(style);
   };
   _clearCSS(id: string) {
+    if (destroyers.has(id)) destroyers.get(id)!();
+
     const node = themeHead.querySelector(`[data-vx-theme=${JSON.stringify(id)}]`);
     if (node) node.remove();
   };
@@ -106,6 +117,14 @@ export const themeStore = new class extends InternalStore {
         }, (data) => {
           if (data.status === 1) {
             console.warn("SASS Compiler Error", data);
+            
+            openNotification({
+              title: "Unable To Compile Theme",
+              id: "vx-unable-to-Compile",
+              icon: Icons.Warn,
+              type: "warn"
+            });
+
             return;
           };
   
