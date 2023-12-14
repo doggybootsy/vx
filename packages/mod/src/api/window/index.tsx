@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { getComponentType, cacheComponent } from "../../util";
 import { byStrings, getModule, getProxyStore } from "../../webpack";
-import { fluxDispatchEvent } from "../../webpack/common";
+import { dirtyDispatch } from "../../webpack/common";
 
 const PopoutWindow = cacheComponent(() => {
   const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", "{guestWindow:");
@@ -42,7 +42,7 @@ export function openWindow(opts: {
     );
   };
 
-  fluxDispatchEvent({
+  dirtyDispatch({
     type: "POPOUT_WINDOW_OPEN",
     key: windowKey,
     render: () => <Render />,

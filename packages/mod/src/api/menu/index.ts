@@ -1,5 +1,5 @@
 import { getProxyByStrings } from "../../webpack";
-import { fluxDispatchEvent } from "../../webpack/common";
+import { dirtyDispatch } from "../../webpack/common";
 
 export * from "./patch";
 export { default as MenuComponents } from "./components";
@@ -22,7 +22,7 @@ export interface MenuConfig {
 const openMenuModule = getProxyByStrings<typeof openMenu>([ "new DOMRect", ".enableSpellCheck" ], { searchExports: true });
 
 export function closeMenu() {
-  return fluxDispatchEvent({ type: "CONTEXT_MENU_CLOSE" });
+  return dirtyDispatch({ type: "CONTEXT_MENU_CLOSE" });
 };
 export function openMenu(event: MouseEvent | React.MouseEvent, menu: (props: MenuRenderProps) => React.ReactNode, config: MenuConfig = {}) {
   openMenuModule(event, menu, config);

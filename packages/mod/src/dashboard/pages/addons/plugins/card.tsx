@@ -11,7 +11,7 @@ import { useUser } from "../../../../hooks";
 function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
   const user = useUser(dev.discord);
 
-  const randomDefaultAvatar = useMemo(() => getRandomDefaultAvatar(), [ ]);
+  const randomDefaultAvatar = useMemo(() => getRandomDefaultAvatar(dev.discord), [ ]);
 
   const backgroundImage = useMemo(() => {
     const wrapURL = (url: string) => `url(${JSON.stringify(url)})`;
@@ -50,6 +50,8 @@ function AuthorIcon({ dev, isLast }: { dev: Developer, isLast: boolean }) {
 
 export function PluginCard({ plugin }: { plugin: Plugin }) {
   const [ isEnabled, setEnabled ] = useState(() => plugin.isEnabled());
+
+  const canViewSettings = useMemo(() => plugin.requiresRestart ? plugin.originalEnabledState === isEnabled ? isEnabled : false : isEnabled, [ isEnabled ]);
   
   return (
     <div className="vx-addon-card">
@@ -59,7 +61,18 @@ export function PluginCard({ plugin }: { plugin: Plugin }) {
         </div>
         <div className="vx-addon-details">
           <div className="vx-addon-name">
-            {plugin.name}
+            <span>
+              {plugin.name}
+            </span>
+            {plugin.requiresRestart && (
+              <Tooltip text="Plugin Requires Restart">
+                {(props) => (
+                  <span {...props} className={className([ "vx-addon-restart", isEnabled !== plugin.getActiveState() && "vx-addon-warn"])}>
+                    <Icons.Warn size={16} />
+                  </span>
+                )}
+              </Tooltip>
+            )}
           </div>
           <div className="vx-addon-authors">
             {plugin.exports.authors.map((dev, i) => (
@@ -81,11 +94,11 @@ export function PluginCard({ plugin }: { plugin: Plugin }) {
               {(props) => (
                 <div
                   {...props}
-                  className={className([ "vx-addon-action", !isEnabled && "vx-addon-disabled" ])}
+                  className={className([ "vx-addon-action", !canViewSettings && "vx-addon-disabled" ])}
                   onClick={() => {
                     props.onClick();
 
-                    if (!isEnabled) return;
+                    if (!canViewSettings) return;
                     openPluginSettingsModal(plugin);
                   }}
                 >

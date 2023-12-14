@@ -17,6 +17,9 @@ export const ChannelStore = getProxyStore("ChannelStore");
 export const SelectedChannelStore = getProxyStore("SelectedChannelStore");
 export const GuildStore = getProxyStore("GuildStore");
 export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
+export const PermissionStore = getProxyStore("PermissionStore");
+export const MessageStore = getProxyStore("MessageStore");
+export const GuildMemberStore = getProxyStore("GuildMemberStore");
 
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
 export const Flux = getProxyByKeys<{
@@ -45,43 +48,65 @@ interface NavigationUtil {
 
 export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
 
-export function fluxDispatchEvent(event: DispatchEvent) {
+export function dirtyDispatch(event: DispatchEvent) {
   return Promise.resolve(FluxDispatcher.dispatch(event));
 };
 
 interface i18n {
-  Messages: Record<Capitalize<string>, string>,
-  getLocale(): string
+  Messages: Record<Uppercase<string>, string>,
+  getLocale(): string,
+  on(event: "locale", callback: (newLocale: string, oldLocale: string) => void): void,
+  off(event: string, callback: Function): void,
+  loadPromise: Promise<void>
 };
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
-export const insertText = proxyCache(() => {
-  const ComponentDispatch = proxyCache(() => {
-    const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
-    return webpackRequire!(id).ComponentDispatch;
-  });
-
-  return (content: string) => {
-    ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
-      plainText: content
-    });
-  };
+export const ComponentDispatch = proxyCache(() => {
+  const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
+  return webpackRequire!(id).ComponentDispatch;
 });
 
+const userUploadActions = getProxyByKeys([ "promptToUpload" ]);
+export const TextAreaInput = {
+  clear() {
+    ComponentDispatch.dispatchToLastSubscribed("CLEAR_TEXT");
+  },
+  insert(text: string, files: Iterable<File> = []) {
+    TextAreaInput.insertText(text);
+    TextAreaInput.insertFiles(...files);
+  },
+  insertText(text: string) {
+    ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
+      plainText: text
+    });
+  },
+  insertFiles(...files: File[]) {
+    const channel = ChannelStore.getChannel(SelectedChannelStore.getChannelId());
+
+    userUploadActions.promptToUpload(files, channel, 0);
+  },
+  focus() {
+    ComponentDispatch.dispatchToLastSubscribed("TEXTAREA_FOCUS");
+  },
+  blur() {
+    ComponentDispatch.dispatchToLastSubscribed("TEXTAREA_BLUR");
+  }
+};
+
 export const LayerManager = {
-  pushLayer(component: () => React.ReactNode) {
-    fluxDispatchEvent({
+  push(component: () => React.ReactNode) {
+    dirtyDispatch({
       type: "LAYER_PUSH",
       component
     });
   },
-  popLayer() {
-    fluxDispatchEvent({
+  pop() {
+    dirtyDispatch({
       type: "LAYER_POP"
     });
   },
-  popAllLayers() {
-    fluxDispatchEvent({
+  clear() {
+    dirtyDispatch({
       type: "LAYER_POP_ALL"
     });
   }
@@ -120,3 +145,57 @@ export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
   
   openMenuModule.openUserContextMenu(event, user, dummyChannel);
 };
+
+interface KnownPermssionBits {
+  CREATE_INSTANT_INVITE: 1n,
+  KICK_MEMBERS: 2n,
+  BAN_MEMBERS: 4n,
+  ADMINISTRATOR: 8n,
+  MANAGE_CHANNELS: 16n,
+  MANAGE_GUILD: 32n,
+  CHANGE_NICKNAME: 67108864n,
+  MANAGE_NICKNAMES: 134217728n,
+  MANAGE_ROLES: 268435456n,
+  MANAGE_WEBHOOKS: 536870912n,
+  MANAGE_GUILD_EXPRESSIONS: 1073741824n,
+  CREATE_GUILD_EXPRESSIONS: 8796093022208n,
+  VIEW_AUDIT_LOG: 128n,
+  VIEW_CHANNEL: 1024n,
+  VIEW_GUILD_ANALYTICS: 524288n,
+  VIEW_CREATOR_MONETIZATION_ANALYTICS: 2199023255552n,
+  MODERATE_MEMBERS: 1099511627776n,
+  USE_EMBEDDED_ACTIVITIES: 549755813888n,
+  SEND_MESSAGES: 2048n,
+  SEND_TTS_MESSAGES: 4096n,
+  MANAGE_MESSAGES: 8192n,
+  EMBED_LINKS: 16384n,
+  ATTACH_FILES: 32768n,
+  READ_MESSAGE_HISTORY: 65536n,
+  MENTION_EVERYONE: 131072n,
+  USE_EXTERNAL_EMOJIS: 262144n,
+  ADD_REACTIONS: 64n,
+  USE_APPLICATION_COMMANDS: 2147483648n,
+  MANAGE_THREADS: 17179869184n,
+  CREATE_PUBLIC_THREADS: 34359738368n,
+  CREATE_PRIVATE_THREADS: 68719476736n,
+  USE_EXTERNAL_STICKERS: 137438953472n,
+  SEND_MESSAGES_IN_THREADS: 274877906944n,
+  SEND_VOICE_MESSAGES: 70368744177664n,
+  USE_CLYDE_AI: 140737488355328n,
+  CONNECT: 1048576n,
+  SPEAK: 2097152n,
+  MUTE_MEMBERS: 4194304n,
+  DEAFEN_MEMBERS: 8388608n,
+  MOVE_MEMBERS: 16777216n,
+  USE_VAD: 33554432n,
+  PRIORITY_SPEAKER: 256n,
+  STREAM: 512n,
+  USE_SOUNDBOARD: 4398046511104n,
+  USE_EXTERNAL_SOUNDS: 35184372088832n,
+  SET_VOICE_CHANNEL_STATUS: 281474976710656n,
+  REQUEST_TO_SPEAK: 4294967296n,
+  MANAGE_EVENTS: 8589934592n,
+  CREATE_EVENTS: 17592186044416n
+};
+
+export const PermissionsBits = getProxy<KnownPermssionBits & Record<string, bigint>>((m) => [ "ADMINISTRATOR", "MANAGE_ROLES", "MENTION_EVERYONE" ].every(b => typeof m[b] === "bigint"), { searchExports: true });

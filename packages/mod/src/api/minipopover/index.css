@@ -34,6 +34,10 @@
 .vx-minipopover-danger:hover {
   color: var(--red-400);
 }
+.vx-minipopover-disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
 .vx-minipopover-separator {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 auto;

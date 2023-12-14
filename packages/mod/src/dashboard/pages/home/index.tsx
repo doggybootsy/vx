@@ -11,6 +11,7 @@ import { Updater } from "./updater";
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
   const [ userSettingShortcut, setUserSettingShortcut ] = useState(() => internalDataStore.get("user-setting-shortcut") ?? true);
+  const [ preserveQuery, setPreserveQuery ] = useState(() => internalDataStore.get("preserve-query") ?? true);
 
   return (
     <Panel title="Home">
@@ -98,6 +99,18 @@ export function Home() {
         note="When shift clicking the user settings panel, it'll opens vx dashboard instead of settings"
       >
         User Settings Shortcut
+      </FormSwitch>
+
+      <FormSwitch
+        value={preserveQuery}
+        onChange={(value) => {
+          setPreserveQuery(value);
+          internalDataStore.set("preserve-query", value);
+        }}
+        style={{ marginTop: 20 }}
+        note="When you exit settings with a query it will save it, for when you open it again"
+      >
+        Preserve Addon Query
       </FormSwitch>
     </Panel>
   )

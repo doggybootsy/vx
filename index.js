@@ -115,20 +115,21 @@ const ManagedCSSPlugin = {
 
       return {
         contents: `
-        import { waitForNode } from "common/dom";
-
+        import { Styler } from "@styler";
+        
         export const id = ${JSON.stringify(args.path)};
         export const css = ${JSON.stringify(css)};
-        export function addStyle() {
-          const style = document.createElement("style");
-          style.setAttribute("vx-style-path", id);
-          style.appendChild(document.createTextNode(css));
+        
+        const styler = new Styler(css, id);
 
-          waitForNode("vx-plugins").then((head) => head.appendChild(style));
+        export function addStyle() {
+          styler.add();
         };
         export function removeStyle() {
-          const style = document.querySelector(\`[vx-style-path=\${JSON.stringify(id)}\`);
-          if (style) style.remove();
+          styler.remove();
+        };
+        export function hasStyle() {
+          styler.enabled();
         };
         `,
         resolveDir: "./packages/mod/src"
@@ -226,11 +227,20 @@ const RequireAllPluginsPlugin = (desktop) => ({
 
       return {
         resolveDir: "./packages/mod/src",
-        contents: pluginDirs.map(dir => `require("./plugins/${dir}")`).join(";\n")
+        contents: pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = require("./plugins/${dir}")`).join(";\n")
       }
     });
   }
 });
+
+const plugins = (desktop) => [
+  HTMLPlugin,
+  RequireAllPluginsPlugin(desktop),
+  SelfPlugin(desktop),
+  ManagedCSSPlugin,
+  ReactPlugin,
+  UncompressJSPlugin
+];
 
 (async function() {
   if (argvIncludesArg("d(esktop)?")) {
@@ -247,14 +257,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       platform: "browser",
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
-      plugins: [
-        HTMLPlugin,
-        RequireAllPluginsPlugin(true),
-        SelfPlugin(true),
-        ManagedCSSPlugin,
-        ReactPlugin,
-        UncompressJSPlugin
-      ],
+      plugins: plugins(true),
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"
@@ -332,14 +335,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       platform: "browser",
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
-      plugins: [
-        HTMLPlugin,
-        RequireAllPluginsPlugin(false),
-        SelfPlugin(false),
-        ManagedCSSPlugin,
-        ReactPlugin,
-        UncompressJSPlugin
-      ],
+      plugins: plugins(false),
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"

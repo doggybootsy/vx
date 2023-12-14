@@ -3,26 +3,26 @@ interface waitForNodeOptions {
   signal?: AbortSignal
 };
 
-export function waitForNode(query: string, options: waitForNodeOptions = {}): Promise<Element> {
+export function waitForNode<T extends Element>(query: string, options: waitForNodeOptions = {}): Promise<T> {
   const { target = document, signal } = options;
 
-  const exists = target.querySelector(query);
+  const exists = target.querySelector<T>(query);
   if (exists) return Promise.resolve(exists);
 
-  return new Promise<Element>((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const addedNode of mutation.addedNodes) {
           if (!(addedNode instanceof Element)) continue;
 
           if (addedNode.matches(query)) {
-            resolve(addedNode);
+            resolve(addedNode as T);
   
             observer.disconnect();
             return;
           };
   
-          const element = addedNode.querySelector(query);
+          const element = addedNode.querySelector<T>(query);
           if (element) {
             resolve(element);
 

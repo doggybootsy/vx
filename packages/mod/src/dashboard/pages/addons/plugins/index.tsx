@@ -5,11 +5,13 @@ import { Flex, Icons, FlexChild, Tooltip, Button, SearchBar } from "../../../../
 import { plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
+import { internalDataStore } from "../../../../api/storage";
 
+let search = "";
 export function Plugins() {
   const entries = useMemo(() => Object.entries(plugins), [ ]);
 
-  const [ query, setQuery ] = useState("");
+  const [ query, setQuery ] = useState(() => (internalDataStore.get("preserve-query") ?? true) ? search : "");
   const queredEntries = useMemo(() => entries.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, entries ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
@@ -22,9 +24,13 @@ export function Plugins() {
           <SearchBar 
             query={query}
             size={SearchBar.Sizes.SMALL}
-            onChange={setQuery}
+            onChange={(query) => {
+              setQuery(query);
+              search = query;
+            }}
             onClear={() => {
               setQuery("");
+              search = "";
             }}
             autoFocus
           />
@@ -47,16 +53,6 @@ export function Plugins() {
         </>
       }
     >
-      <div className="vx-addons-warning">
-        <Icons.Warn 
-          width={20} 
-          height={20} 
-          className="vx-addons-icon" 
-        />
-        <span>
-          You need to reload to enable plugins!
-        </span>
-      </div>
       <Flex className="vx-addons" direction={Flex.Direction.VERTICAL} gap={8}>
         {queredEntries.length ? (
           queredEntries.map(([ key, plugin ]) => (

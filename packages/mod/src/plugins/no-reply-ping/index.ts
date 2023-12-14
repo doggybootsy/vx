@@ -5,9 +5,10 @@ export default definePlugin({
   name: "NoReplyPing",
   description: "Automatically tells discord not to ping the user when replying",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: {
     match: 'type:"CREATE_PENDING_REPLY"',
-    find: /(dispatch\({type:"CREATE_PENDING_REPLY",.+?,shouldMention:).+?(,.+?)}\)/,
-    replace: "$1false$2})"
+    find: /(dispatch\({type:"CREATE_PENDING_REPLY",.+?,shouldMention:)(.+?)(,.+?}\))/,
+    replace: "$1$enabled?false:$2$3"
   }
 });

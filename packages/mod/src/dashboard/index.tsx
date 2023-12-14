@@ -117,14 +117,14 @@ function Dashboard(props: { section: string }) {
     <SettingsView 
       sections={sections}
       section={section}
-      onClose={LayerManager.popLayer}
+      onClose={LayerManager.pop}
       onSetSection={setSection}
     />
   )
 };
 
 export function openDashboard(section: string = "home") {
-  LayerManager.pushLayer(() => (
+  LayerManager.push(() => (
     <Dashboard section={section} />
   ));
 };

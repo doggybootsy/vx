@@ -1,13 +1,15 @@
-import { definePlugin } from "../";
+import { definePlugin, isPluginEnabled } from "../";
 import { User } from "discord-types/general";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
-import { getLazyByKeys, getLazyByProtoKeys } from "../../webpack";
+import { getLazyByKeys } from "../../webpack";
 import { GuildMemberStore, UserStore } from "discord-types/stores";
-import { MenuComponents, patch } from "../../api/menu";
+import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
-import { findInReactTree } from "../../util";
+import { createAbort, findInReactTree } from "../../util";
 import { Injector } from "../../patcher";
+
+const [ abort, getCurrentSignal ] = createAbort();
 
 const injector = new Injector();
 
@@ -18,9 +20,13 @@ const dataStore = new DataStore<Record<string, string>>("LocalNicknames", {
 });
 
 async function patchUser() {
-  const GuildMemberStore = await getLazyByKeys<UserStore>([ "getCurrentUser", "getUser" ]);
+  const signal = getCurrentSignal();
+
+  const UserStore = await getLazyByKeys<UserStore>([ "getCurrentUser", "getUser" ]);
+
+  if (signal.aborted) return;
   
-  injector.after(GuildMemberStore, "getUser", (that, [ userId ], res) => {
+  injector.after(UserStore, "getUser", (that, [ userId ], res) => {
     if (!res) return;
     // Is patched
     if ("_globalName" in res) return;
@@ -28,8 +34,8 @@ async function patchUser() {
     let globalName = (res as PatchedUser).globalName;
 
     Object.defineProperty(res, "globalName", {
-      get() {
-        if (userId in dataStore.proxy) {
+      get() {        
+        if (isPluginEnabled("LocalNicknames") && userId in dataStore.proxy) {
           return dataStore.proxy[userId];
         };
   
@@ -49,10 +55,14 @@ async function patchUser() {
   });
 };
 async function patchGuildMember() {
+  const signal = getCurrentSignal();
+
   const GuildMemberStore = await getLazyByKeys<GuildMemberStore>([ "getMember", "getMemberIds" ]);
+
+  if (signal.aborted) return;
   
   injector.after(GuildMemberStore, "getMember", (that, [ guildId, userId ], res) => {
-    if (res && userId in dataStore.proxy) {
+    if (isPluginEnabled("LocalNicknames") && res && userId in dataStore.proxy) {
       res.nick = dataStore.proxy[userId];
     };
   });
@@ -88,6 +98,7 @@ export default definePlugin({
   name: "LocalNicknames",
   description: "Adds custom local nicknames",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   start() {
     patchUser();
     patchGuildMember();
@@ -114,5 +125,10 @@ export default definePlugin({
         </MenuComponents.MenuGroup>
       );
     });
+  },
+  stop() {
+    abort();
+    unpatch("LocalNicknames");
+    injector.unpatchAll();
   }
 });

@@ -44,9 +44,10 @@ export default definePlugin({
   name: "CallDuration",
   description: "Shows how long you have been in call for",
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   patches: {
     find: "this.renderConnectionStatus()",
-    replace: "[$&,$react.createElement($self.CallDuration)]"
+    replace: "[$&,$enabled&&$react.createElement($self.CallDuration)]"
   },
   CallDuration: memo(ErrorBoundary.wrap(CallDuration)),
   start: addStyle

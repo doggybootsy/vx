@@ -24,7 +24,7 @@ function getSettingsView() {
     factory: async () => {
       await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
 
-      return getByProtoKeys<React.ComponentType<SettingsViewProps>>([ "renderSidebar" ])!;
+      return getByProtoKeys<React.ComponentType<SettingsViewProps>>([ "renderSidebar", "getPredicateSections" ])!;
     }
   });
 };

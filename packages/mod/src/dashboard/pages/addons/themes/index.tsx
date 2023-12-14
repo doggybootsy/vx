@@ -6,9 +6,11 @@ import { useInternalStore } from "../../../../hooks";
 import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 import { ThemeCard } from "./card";
 import { themeStore } from "./store";
+import { internalDataStore } from "../../../../api/storage";
 
+let search = "";
 export function Themes() {
-  const [ query, setQuery ] = useState("");
+  const [ query, setQuery ] = useState(() => (internalDataStore.get("preserve-query") ?? true) ? search : "");
 
   const keys = useInternalStore(themeStore, () => {
     const keys = themeStore.keys();
@@ -27,9 +29,13 @@ export function Themes() {
           <SearchBar 
             query={query}
             size={SearchBar.Sizes.SMALL}
-            onChange={setQuery}
+            onChange={(query) => {
+              setQuery(query);
+              search = query;
+            }}
             onClear={() => {
               setQuery("");
+              search = "";
             }}
             autoFocus
           />

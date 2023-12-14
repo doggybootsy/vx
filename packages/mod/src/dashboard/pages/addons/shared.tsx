@@ -4,10 +4,10 @@ export const NO_RESULTS_ALT = "/assets/99d35a435f00582ddf41.svg";
 
 export function NoAddons(props: { message: string, img: string }) {
   return (
-    <div className="vx-addons-empty-wrapper">
-      <div className="vx-addons-empty">
+    <div className="vx-addon-empty-wrapper">
+      <div className="vx-addon-empty">
         <img draggable={false} src={props.img} />
-        <div className="vx-addons-empty-text">
+        <div className="vx-addon-empty-text">
           {props.message}
         </div>
       </div>

@@ -93,6 +93,9 @@
 }
 .vx-zip-name {
   flex: 1 1 auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .vx-zip-actions {
   display: flex;

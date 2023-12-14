@@ -186,23 +186,21 @@ export interface ThemeData {
 };
 
 interface InternalData {
-  "enabled-plugins": string[],
+  "enabled-plugins": Record<string, boolean>,
   "themes": Record<string, ThemeData>,
   "content-protection": boolean,
-  "user-setting-shortcut": boolean
+  "user-setting-shortcut": boolean,
+  "preserve-query": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 5,
+  version: 6,
   upgrader(version, oldData) {
     switch (version) {
-      case 4: {
-        for (const key in oldData.themes) {
-          if (Object.prototype.hasOwnProperty.call(oldData.themes, key)) {
-            const element = oldData.themes[key];
-            delete element.meta;
-          };
-        };
+      case 5: {
+        if ("enabled-plugins" in oldData) {
+          oldData["enabled-plugins"] = Object.fromEntries(oldData["enabled-plugins"].map((plugin: string) => [ plugin, true ]));
+        }
 
         return oldData;
       };

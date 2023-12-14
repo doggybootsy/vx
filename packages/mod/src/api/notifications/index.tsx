@@ -21,7 +21,7 @@ addPlainTextPatch({
   identifier: "VX(notifications)",
   match: "{Shakeable:function",
   find: /let{children:.{1,3},\.{3}t}=this\.props;return\(0,.{1,3}\.jsx\)\("div",{\.{3}.{1,3},ref:this\.ref,children:.{1,3}}\)/,
-  replace: "window.VX.notifications._handleNotifications(this.props);$&"
+  replace: "$vx.notifications._handleNotifications(this.props);$&"
 });
 
 const allowedTypes = new Set([
