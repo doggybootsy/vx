@@ -5,7 +5,7 @@ import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../
 import { useInternalStore } from "../../../../hooks";
 import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 import { ThemeCard } from "./card";
-import { themeStore } from "./store";
+import { themeStore } from "../../../../addons/themes";
 import { internalDataStore } from "../../../../api/storage";
 
 let search = "";
@@ -26,19 +26,6 @@ export function Themes() {
       title="Themes"
       buttons={
         <>
-          <SearchBar 
-            query={query}
-            size={SearchBar.Sizes.SMALL}
-            onChange={(query) => {
-              setQuery(query);
-              search = query;
-            }}
-            onClear={() => {
-              setQuery("");
-              search = "";
-            }}
-            autoFocus
-          />
           <Tooltip text="Upload">
             {(props) => (
               <Button
@@ -73,6 +60,19 @@ export function Themes() {
               </Button>
             )}
           </Tooltip>
+          <SearchBar 
+            query={query}
+            size={SearchBar.Sizes.SMALL}
+            onChange={(query) => {
+              setQuery(query);
+              search = query;
+            }}
+            onClear={() => {
+              setQuery("");
+              search = "";
+            }}
+            autoFocus
+          />
         </>
       }
     >

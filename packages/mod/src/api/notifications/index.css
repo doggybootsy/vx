@@ -70,6 +70,7 @@
 	display: flex;
 	cursor: pointer;
 	color: var(--interactive-normal);
+	margin-left: 8px;
 }
 
 .vx-notification-close:hover {
@@ -97,6 +98,8 @@
 .vx-notification-footer {
 	margin: 6px;
 	color: var(--text-normal);
+	display: flex;
+	flex-direction: column;
 }
 
 .vx-notification-slider {

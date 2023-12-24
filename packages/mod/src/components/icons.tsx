@@ -174,11 +174,11 @@ export function Copy(props: IconProps) {
   );
 };
 
-export function Save(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props, "Save");
+export function FloppyDisk(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "FloppyDisk");
 
   return (
-    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+    <svg aria-hidden="true" role="img" style={{ padding: 2 }} className={className} width={width} height={height} viewBox="0 0 16 16">
       <path fill={color} d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5v-13Z" />
       <path fill={color} d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V16Zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V0ZM9 1h2v4H9V1Z" />
     </svg>
@@ -346,6 +346,51 @@ export function Forward(props: IconProps) {
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 24 24" style={{ transform: "scaleX(-1)" }} aria-hidden="true" role="img">
       <path d="M10 8.26667V4L3 11.4667L10 18.9333V14.56C15 14.56 18.5 16.2667 21 20C20 14.6667 17 9.33333 10 8.26667Z" fill={color} />
+    </svg>
+  );
+};
+
+export function React(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "React");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="-10.5 -9.45 21 18.9" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="0" cy="0" r="2" fill={color} />
+      <g stroke={color} strokeWidth="1" fill="none">
+        <ellipse rx="10" ry="4.5"  />
+        <ellipse rx="10" ry="4.5" transform="rotate(60)"  />
+        <ellipse rx="10" ry="4.5" transform="rotate(120)" />
+      </g>
+    </svg>
+  );
+};
+
+export function Discord(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Discord");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M19.73 4.87a18.2 18.2 0 0 0-4.6-1.44c-.21.4-.4.8-.58 1.21-1.69-.25-3.4-.25-5.1 0-.18-.41-.37-.82-.59-1.2-1.6.27-3.14.75-4.6 1.43A19.04 19.04 0 0 0 .96 17.7a18.43 18.43 0 0 0 5.63 2.87c.46-.62.86-1.28 1.2-1.98-.65-.25-1.29-.55-1.9-.92.17-.12.32-.24.47-.37 3.58 1.7 7.7 1.7 11.28 0l.46.37c-.6.36-1.25.67-1.9.92.35.7.75 1.35 1.2 1.98 2.03-.63 3.94-1.6 5.64-2.87.47-4.87-.78-9.09-3.3-12.83ZM8.3 15.12c-1.1 0-2-1.02-2-2.27 0-1.24.88-2.26 2-2.26s2.02 1.02 2 2.26c0 1.25-.89 2.27-2 2.27Zm7.4 0c-1.1 0-2-1.02-2-2.27 0-1.24.88-2.26 2-2.26s2.02 1.02 2 2.26c0 1.25-.88 2.27-2 2.27Z" />
+    </svg>
+  );
+};
+
+export function Globe(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Globe");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} fillRule="evenodd" clipRule="evenodd" d="M23 12a11 11 0 1 1-22 0 11 11 0 0 1 22 0Zm-4.16 5.85A9 9 0 0 0 15 3.52V4a3 3 0 0 1-3 3h-.77c-.13 0-.23.1-.23.23A2.77 2.77 0 0 1 8.23 10c-.13 0-.23.1-.23.23v1.52c0 .14.11.25.25.25H13a3 3 0 0 1 3 3v.77c0 .13.1.23.23.23 1.2 0 2.23.77 2.61 1.85ZM3.18 10.18A9 9 0 0 0 11 20.94v-2.7c0-.14-.1-.24-.23-.24h-.65A2.12 2.12 0 0 1 8 15.88c0-.56-.22-1.1-.62-1.5l-4.2-4.2Z" />
+    </svg>
+  );
+};
+
+export function Puzzle(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Puzzle");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M451,243.9h-36.8v-97.7c0-26.7-21.7-48.4-48.4-48.4h-97.7V61c0-33.4-27.6-61-61-61 s-61,27.6-61,61v36.8H49.3c-26.7,0-48.4,21.7-48.4,48.4v92.7h35.9c35.9,0,66,29.2,66,66s-29.2,66-66,66H0v92.7 C0,490.3,21.7,512,48.4,512h92.7v-36.8c0-35.9,29.2-66,66-66s66,29.2,66,66V512h92.7c26.7,0,48.4-21.7,48.4-48.4v-97.7H451 c33.4,0,61-27.6,61-61S484.4,243.9,451,243.9z" />
     </svg>
   );
 };

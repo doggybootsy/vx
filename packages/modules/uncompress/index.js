@@ -1,6 +1,8 @@
 /**
  * All rights to https://github.com/workhorsy/uncompress.js
  * This is a altered version of that library. For this use case
+ * 
+ * How do i make this use the already existing JSZip api?
  */
 
 const uncompressJS = {};
@@ -407,7 +409,7 @@ const uncompressJS = {};
 })();
 
 let loaded = false;
-export function archiveOpenFile(file, password, callback) {
+export async function archiveOpenFile(file, password, callback) {
   if (loaded) return uncompressJS.archiveOpenFile(file, password, callback);
   
   uncompressJS.loadArchiveFormats([ "rar", "zip", "tar" ], () => {

@@ -5,7 +5,7 @@ import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
 import { Icons } from "../../../../components";
-import { themeStore } from "./store";
+import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));

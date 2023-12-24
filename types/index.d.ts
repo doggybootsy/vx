@@ -137,7 +137,11 @@ declare module "self" {
   interface Enviroment {
     IS_DEV: boolean,
     VERSION: string,
-    VERSION_HASH: string
+    VERSION_HASH: string,
+    RDT: {
+      DOWNLOAD_URL: string,
+      ID: string
+    }
   };
   interface Browser {
     runtime: { 

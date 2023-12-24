@@ -5,6 +5,8 @@ import { compare } from "./semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
 import { WindowUtil } from "../../../webpack/common";
+import { whenWebpackReady } from "../../../webpack";
+import { openNotification } from "../../../api/notifications";
 
 // 3 mins
 const DELAY_MIN = 1000 * 60 * 3;
@@ -15,7 +17,9 @@ const updaterStore = new class extends InternalStore {
   constructor() {
     super();
 
-    if (!env.IS_DEV && git.exists) this.checkForUpdates();
+    whenWebpackReady().then(() => {
+      if (!env.IS_DEV && git.exists) this.checkForUpdates();
+    });
   };
 
   displayName = "UpdaterStore";
@@ -32,7 +36,7 @@ const updaterStore = new class extends InternalStore {
     if (!git.exists) return;
 
     if (this.#timeoutId) clearTimeout(this.#timeoutId);
-    this.#timeoutId = setTimeout(this.checkForUpdates, DELAY_AUTO);
+    this.#timeoutId = setTimeout(() => this.checkForUpdates(), DELAY_AUTO);
 
     this.#lastFetch = new Date();
     this.#compared = null;
@@ -55,6 +59,24 @@ const updaterStore = new class extends InternalStore {
     this.#latest = version;
 
     this.emit();
+
+    if (compared === -1) {
+      openNotification({
+        title: "Update Available",
+        id: "vx-update-available",
+        icon: Icons.Logo,
+        description: [
+          `VX v${release.tag_name.replace("v", "")} is available to download`
+        ],
+        duration: 15e3,
+        footer: [
+          <Button size={Button.Sizes.SMALL} grow onClick={() => this.download()}>
+            Download Now
+          </Button>
+        ],
+        type: "success"
+      });
+    }
 
     setTimeout(() => {
       this.#canCheck = true;
@@ -88,7 +110,10 @@ export function Updater() {
       <div className="vx-updater-info">
         <div className="vx-updater-notice">
           {
-            typeof state.compared === "number" ? state.compared === -1 ? "Update Available" : state.compared === 0 ? "Up To Date" : "Above Latest Release" : "Unknown"
+            typeof state.compared === "number" ? 
+              state.compared === -1 ? "Update Available" : 
+              state.compared === 0 ? "Up To Date" : "Above Latest Release" : 
+              "Unknown"
           }
         </div>
         <div className="vx-updater-fetch">

@@ -1,5 +1,6 @@
 import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
+import { ThemeObject } from "../../addons/themes";
 
 export const { localStorage, sessionStorage } = window;
 
@@ -72,9 +73,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     Object.defineProperty(this, "proxy", {
       get() { return proxy },
       set(v: Partial<T>) {
-        self.clear();
-
-        self.merge(v);
+        self.replace(v);
 
         return true;
       }
@@ -155,6 +154,25 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 
     this._queueUpdate();
   };
+  replace(data: Partial<T>): void {
+    const clone = structuredClone(data);
+
+    for (const key in this.#raw) {
+      if (Object.prototype.hasOwnProperty.call(this.#raw, key)) {
+        delete this.#raw[key];
+      }
+    }
+    
+    for (const key in clone) {
+      if (Object.prototype.hasOwnProperty.call(clone, key)) {
+        const element = clone[key];
+
+        this.#raw[key] = element;
+      };
+    };
+
+    this._queueUpdate();
+  }
 
   ensure<key extends keyof T>(key: key, value: T[key]) {
     if (this.has(key)) return false;
@@ -179,27 +197,23 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
   };
 };
 
-export interface ThemeData {
-  enabled: boolean,
-  css: string,
-  name: string
-};
-
 interface InternalData {
   "enabled-plugins": Record<string, boolean>,
-  "themes": Record<string, ThemeData>,
   "content-protection": boolean,
   "user-setting-shortcut": boolean,
-  "preserve-query": boolean
+  "preserve-query": boolean,
+  "show-favicon": boolean
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
-  version: 6,
+  version: 7,
   upgrader(version, oldData) {
     switch (version) {
-      case 5: {
-        if ("enabled-plugins" in oldData) {
-          oldData["enabled-plugins"] = Object.fromEntries(oldData["enabled-plugins"].map((plugin: string) => [ plugin, true ]));
+      case 6: {
+        if ("themes" in oldData) {
+          import("../../addons/themes").then(({ themeStore }) => {
+            themeStore.__mergeOldThemes(oldData.themes);
+          });
         }
 
         return oldData;

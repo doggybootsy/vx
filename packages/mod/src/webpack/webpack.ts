@@ -1,4 +1,4 @@
-import { escapeRegex } from "../util";
+import { escapeRegex, isInvalidSyntax } from "../util";
 import { plainTextPatches } from "./patches";
 
 export const webpackAppChunk = window.webpackChunkdiscord_app ??= [];
@@ -94,10 +94,22 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   
   stringedModule = `(()=>\n/*\n Module Id: ${key.toString()}${identifiers.size ? `\n Known string match identifiers '${Array.from(identifiers).join("', '")}'\n This doesn't mean they actually patched anything, just means they matched to it` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${key.toString()}`;
 
-  const moduleFN = (0, eval)(stringedModule);
-  moduleFN.__VXOriginal = module;
+  const error = isInvalidSyntax(stringedModule);
+  if (error) {
+    console.warn(`[VX~Webpack]: Syntax Error on module '${key.toString()}' reverting to original module`, {
+      code: stringedModule,
+      identifiers: identifiers,
+      error
+    });
 
-  modules[key] = moduleFN;
+    modules[key] = module;
+  }
+  else {
+    const moduleFN = (0, eval)(stringedModule);
+    moduleFN.__VXOriginal = module;
+  
+    modules[key] = moduleFN;
+  }
   
   return true;
 };

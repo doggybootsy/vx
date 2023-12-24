@@ -42,7 +42,7 @@ async function openForwardModal(message: Message) {
       })
     );
 
-    TextAreaInput.clear();
+    TextAreaInput.clearText();
 
     TextAreaInput.insert(
       message.content,
@@ -90,7 +90,7 @@ export default definePlugin({
           id="Forward"
           icon={Icons.Forward}
           action={() => openForwardModal(args[0].message)}
-        /> 
+        />
       );
     });
   },

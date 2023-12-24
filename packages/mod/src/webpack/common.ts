@@ -21,7 +21,7 @@ export const PermissionStore = getProxyStore("PermissionStore");
 export const MessageStore = getProxyStore("MessageStore");
 export const GuildMemberStore = getProxyStore("GuildMemberStore");
 
-type useStateFromStores = <T>(stores: FluxStore[], effect: () => T) => T;
+type useStateFromStores = <T>(stores: FluxStore[], effect: () => T, deps?: React.DependencyList) => T;
 export const Flux = getProxyByKeys<{
   useStateFromStores: useStateFromStores
 }>([ "useStateFromStores", "Dispatcher" ]);
@@ -52,9 +52,11 @@ export function dirtyDispatch(event: DispatchEvent) {
   return Promise.resolve(FluxDispatcher.dispatch(event));
 };
 
+export type LocaleCodes = "en-US" | "en-GB" | "zh-CN" | "zh-TW" | "cs" | "da" | "nl" | "fr" | "de" | "el" | "hu" | "it" | "ja" | "ko" | "pl" | "pt-PT" | "pt-BR" | "ru" | "sk" | "es-ES" | "es-419" | "sv-SE" | "tr" | "bg" | "uk" | "fi" | "no" | "hr" | "ro" | "lt" | "th" | "vi" | "hi" | "he" | "ar" | "id";
+
 interface i18n {
   Messages: Record<Uppercase<string>, string>,
-  getLocale(): string,
+  getLocale(): LocaleCodes,
   on(event: "locale", callback: (newLocale: string, oldLocale: string) => void): void,
   off(event: string, callback: Function): void,
   loadPromise: Promise<void>
@@ -68,7 +70,7 @@ export const ComponentDispatch = proxyCache(() => {
 
 const userUploadActions = getProxyByKeys([ "promptToUpload" ]);
 export const TextAreaInput = {
-  clear() {
+  clearText() {
     ComponentDispatch.dispatchToLastSubscribed("CLEAR_TEXT");
   },
   insert(text: string, files: Iterable<File> = []) {
@@ -77,6 +79,7 @@ export const TextAreaInput = {
   },
   insertText(text: string) {
     ComponentDispatch.dispatchToLastSubscribed("INSERT_TEXT", {
+      rawText: text,
       plainText: text
     });
   },
@@ -199,3 +202,30 @@ interface KnownPermssionBits {
 };
 
 export const PermissionsBits = getProxy<KnownPermssionBits & Record<string, bigint>>((m) => [ "ADMINISTRATOR", "MANAGE_ROLES", "MENTION_EVERYONE" ].every(b => typeof m[b] === "bigint"), { searchExports: true });
+
+interface Invite {
+  approximate_member_count: number,
+  approximate_presence_count: number,
+  channel: { id: string, type: number, name: string },
+  code: string,
+  expires_at: string | null,
+  flags: number,
+  guild: {
+    banner: string | null,
+    description: string | null,
+    features: string[],
+    icon: string | null,
+    id: string,
+    name: string,
+    nsfw: boolean,
+    nsfw_level: number,
+    premium_subscription_count: number,
+    splash: string | null,
+    vanity_url_code: string | null,
+    verification_level: number
+  }
+};
+
+export const InviteActions = getProxyByKeys<{
+  resolveInvite: (code: string, analytics?: string) => Promise<{ code: string, invite?: Invite }>
+}>([ "resolveInvite", "createInvite" ]);
