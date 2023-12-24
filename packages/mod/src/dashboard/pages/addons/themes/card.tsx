@@ -1,7 +1,7 @@
 import { useDeferredValue, useLayoutEffect, useState } from "react";
 import { Icons, Button, Tooltip, Switch } from "../../../../components";
 import { openWindow } from "./popout";
-import { themeStore } from "./store";
+import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
 
@@ -18,7 +18,7 @@ export function ThemeCard({ id }: { id: string }) {
   }, [ deferredValue ]);
   
   return (
-    <div className="vx-addon-card">
+    <div className="vx-addon-card" data-vx-type="theme" data-vx-addon-id={id}>
       <div className="vx-addon-top">
         <div className="vx-addon-icon-wrapper">
           <Icons.Palette className="vx-addon-icon" height={32} width={32} />
@@ -52,9 +52,6 @@ export function ThemeCard({ id }: { id: string }) {
               }}
             />
             <div className="vx-addon-input">{name}</div>
-          </div>
-          <div className="vx-addon-authors">
-            
           </div>
         </div>
       </div>
@@ -90,6 +87,20 @@ export function ThemeCard({ id }: { id: string }) {
             </Button>
           )}
         </Tooltip>
+        <Tooltip text="Edit">
+          {(props) => (
+            <Button
+              size={Button.Sizes.ICON}
+              {...props}
+              onClick={() => {
+                props.onClick();
+                openWindow(id);
+              }}
+            >
+              <Icons.Pencil />
+            </Button>
+          )}
+        </Tooltip>
         <Tooltip text="Download">
           {(props) => (
             <Button
@@ -104,20 +115,6 @@ export function ThemeCard({ id }: { id: string }) {
           )}
         </Tooltip>
         <div className="vx-addon-actions">
-          <Tooltip text="Edit">
-            {(props) => (
-              <div
-                {...props}
-                className="vx-addon-action"
-                onClick={() => {
-                  props.onClick();
-                  openWindow(id);
-                }}
-              >
-                <Icons.Pencil />
-              </div>
-            )}
-          </Tooltip>
           <Switch 
             checked={isEnabled}
             onChange={() => {

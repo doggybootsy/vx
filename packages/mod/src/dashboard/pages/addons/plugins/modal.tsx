@@ -1,11 +1,9 @@
 import { ModalComponents, openModal } from "../../../../api/modals";
 import { Flex, FlexChild } from "../../../../components";
-import { Plugin } from "../../../../plugins";
+import { CreatedSetting } from "../../../../plugins/settings";
 
-export function openPluginSettingsModal(plugin: Plugin) {
-  const settings = plugin.exports.settings!;
-
-  let Content: React.FunctionComponent;
+export function openPluginSettingsModal(name: string, settings: Record<string, CreatedSetting<any>> | React.ComponentType) {
+  let Content: React.ComponentType;
   if (typeof settings === "function") Content = settings;
   else {
     const entries = Object.entries(settings);
@@ -29,7 +27,7 @@ export function openPluginSettingsModal(plugin: Plugin) {
       >
         <ModalComponents.ModalHeader separator={false} justify={Flex.Justify.BETWEEN}>
           <div className="vx-modal-title">
-            {plugin.name}
+            {name}
           </div>
           <ModalComponents.ModalCloseButton onClick={props.onClose} />
         </ModalComponents.ModalHeader>

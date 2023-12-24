@@ -23,6 +23,7 @@
   background: var(--background-secondary);
   border-radius: 6px;
   color: var(--text-primary);
+  overflow: hidden;
 }
 .vx-addon-authors {
   display: flex;
@@ -47,6 +48,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: flex-start;
+  flex: 1 0 auto;
 }
 .vx-addon-description {
   color: var(--text-normal);
@@ -194,4 +197,66 @@ input.vx-addon-input:not(:focus) {
   color: var(--text-normal);
   margin-top: 8px;
   border: 1px solid var(--background-secondary-alt);
+}
+
+.vx-addon-icon-wrapper.vx-addon-icon-img {
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0;
+}
+.vx-addon-icon-img .vx-addon-icon {
+  width: 48px;
+  height: 48px;
+}
+.vx-addon-version {
+  color: var(--text-muted);
+}
+
+.vx-addon-warning {
+  background: var(--info-warning-background);
+  border: 1px solid var(--info-warning-foreground);
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--info-warning-text);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.vx-addon-action .vx-icon-github {
+  padding: 1px;
+}
+
+.vx-addon-name .vx-addon-version {
+  font-size: 1rem;
+  align-self: flex-end;
+}
+.vx-addon-website {
+  border-radius: 4px;
+  background-color: var(--background-secondary);
+}
+
+.vx-sidebar-header {
+  padding: 6px 10px;
+  color: var(--channels-default);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.vx-sidebar-text {
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+  flex: 1 0 auto;
+}
+.vx-sidebar-icon {
+  display: flex;
 }

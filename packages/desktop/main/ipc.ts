@@ -88,3 +88,7 @@ type Path = Parameters<electron.App["getPath"]>[0];
 electron.ipcMain.on("@vx/get-path", (event, path: Path) => {
   event.returnValue = electron.app.getPath(path);
 });
+
+electron.ipcMain.on("@vx/extensions/get-all", (event) => {
+  event.returnValue = electron.session.defaultSession.getAllExtensions();
+});

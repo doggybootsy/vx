@@ -5,11 +5,15 @@ import "./index.css";
 import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
-import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
 
 import { VX } from "./api";
 
+import { pluginStore } from "./addons/plugins";
+import { whenWebpackReady } from "./webpack";
+
 window.VX = VX;
+
+whenWebpackReady().then(() => pluginStore.initPlugins());
 
 waitForNode("body").then((body) => {
   const script = document.createElement("script");

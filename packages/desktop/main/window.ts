@@ -26,7 +26,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     const window: BrowserWindow = new electron.BrowserWindow(opts);
 
     window[preloadSymbol] = originalPreload;
-
+    
     return window;
   };
   

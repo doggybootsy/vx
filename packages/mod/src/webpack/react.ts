@@ -79,7 +79,7 @@ let React = {
 } as ReactType;
 
 getLazyByKeys<ReactType>([ "createElement", "memo" ]).then((react) => {
-  React = react as ReactType;
+  React = react;
 });
 
 export default new Proxy(React, {
@@ -87,4 +87,7 @@ export default new Proxy(React, {
     if (p === Symbol.for("vx.react")) return React;
     return React[p as keyof ReactType];
   },
+  ownKeys() {
+    return Array.from(new Set([ ...Reflect.ownKeys(React), "prototype" ]));
+  }
 });

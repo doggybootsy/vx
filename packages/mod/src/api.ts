@@ -25,6 +25,58 @@ import { api } from "./webpack/api";
 import * as self from "self";
 
 import { Styler } from "@styler";
+import { themeStore } from "./addons/themes";
+import { pluginStore } from "./addons/plugins";
+
+class AddonApi {
+  constructor(store: typeof themeStore | typeof pluginStore) {
+    this.#store = store;
+    this.getAll = this.getAll.bind(this);
+    this.isEnabled = this.isEnabled.bind(this);
+    this.has = this.has.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.enable = this.enable.bind(this);
+    this.disable = this.disable.bind(this);
+    this.getName = this.getName.bind(this);
+  }
+  #store: typeof themeStore | typeof pluginStore;
+  getAll() {
+    return this.#store.keys();
+  };
+  isEnabled(id: string) {
+    if (!this.has(id)) return false;
+
+    return this.#store.isEnabled(id);
+  };
+  has(id: string) {
+    return this.#store.keys().includes(id);
+  };
+  toggle(id: string) {
+    if (!this.has(id)) return false;
+
+    this.#store.toggle(id);
+    return this.#store.isEnabled(id);
+  };
+  enable(id: string) {
+    if (!this.has(id)) return false;
+
+    if (this.#store.isEnabled(id)) return false;
+    this.#store.enable(id);
+    return true;
+  };
+  disable(id: string) {
+    if (!this.has(id)) return false;
+
+    if (!this.#store.isEnabled(id)) return false;
+    this.#store.disable(id);
+    return true;
+  };
+  getName(id: string) {
+    if (!this.has(id)) return null;
+
+    return this.#store.getName(id);
+  }
+};
 
 export const VX = {
   webpack: api,
@@ -40,6 +92,8 @@ export const VX = {
   Editor,
   Injector,
   Styler,
+  themes: { ...new AddonApi(themeStore) },
+  plugins: { ...new AddonApi(pluginStore) },
   _self: {
     plugins,
     getPlugin,

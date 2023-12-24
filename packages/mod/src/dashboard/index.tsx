@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { env, git } from "self";
+import { IS_DESKTOP, env, git } from "self";
 
 import { LayerManager, WindowUtil } from "../webpack/common";
 import { Home, Plugins, Themes } from "./pages";
@@ -7,7 +7,9 @@ import { Home, Plugins, Themes } from "./pages";
 import "./index.css";
 import { className } from "../util";
 import { openAlertModal } from "../api/modals";
-import { SettingsView } from "../components";
+import { Icons, SettingsView } from "../components";
+import { Extensions } from "./pages/extension";
+import { Community } from "./pages/community";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -30,6 +32,7 @@ export function Panel(props: {
 };
 
 function Dashboard(props: { section: string }) {
+  const [ SHOW_COMMUNITY ] = useState(() => "$$_VX" in String && Boolean((String as any).$$_VX.SHOW_COMMUNITY_TABS_CONCEPT));
   const [ section, setSection ] = useState(() => props.section);
 
   // Add electron to the list of versions | This is because discord doesn't
@@ -45,72 +48,88 @@ function Dashboard(props: { section: string }) {
   }, [ ]);
 
   const sections = useMemo(() => [
-    {
-      section: "HEADER",
-      label: "VX" 
-    },
-    { 
-      section: "home", 
-      label: "Home", 
+    SettingsView.Sections.Header("VX"),
+    SettingsView.Sections.View({
+      label: "Home",
       element: () => <Home />
-    },
-    { section: "DIVIDER" },
-    {
-      section: "HEADER",
-      label: "Addons" 
-    },
-    {
-      section: "plugins",
+    }),
+    SettingsView.Sections.Divider(),
+    SettingsView.Sections.Header("Addons"),
+    SettingsView.Sections.View({
       label: "Plugins",
       element: () => <Plugins />
-    },
-    { 
-      section: "themes", 
+    }),
+    SettingsView.Sections.View({
       label: "Themes",
       element: () => <Themes />
-    },
-    { section: "DIVIDER" },
-    {
-      section: "CUSTOM", 
-      element: () => (
-        <div className="vx-section-info">
-          <div className="vx-section-version">
-            <span>{`VX ${env.VERSION} `}</span>
-            <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
-          </div>
-          {git.exists ? (
-            <div 
-              className="vx-section-git"
-              onClick={(event) => {
-                // I hate ts so damn much | Like this only exists when 'git.exists'
-                if (!git.exists) return;
-
-                WindowUtil.handleClick({
-                  href: `${git.url}/tree/${git.hash}`
-                }, event);
-              }}
-            >
-              <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
-              <span className="vx-section-hash">({git.hashShort})</span>
-            </div>
-          ) : (
-            <div 
-              className="vx-section-git"
-              onClick={() => {
-                openAlertModal("Github", [
-                  "Current build has no git details!", 
-                  "This is from your local machine (or the local machine that compiled VX) not having git installed when compiling VX"
-                ]);
-              }}
-            >
-              <span>???/???{" "}</span>
-              <span className="vx-section-hash">(???????)</span>
-            </div>
-          )}
-          {electronVersionSection}
+    }),
+    SettingsView.Sections.Divider(),
+    SettingsView.Sections.Header({
+      label: "Community",
+      icon: <Icons.Store size={18} />,
+      predicate: () => SHOW_COMMUNITY
+    }),
+    SettingsView.Sections.View({
+      label: "Plugins",
+      section: "community-plugins",
+      element: () => <Community title="Plugins" />,
+      predicate: () => SHOW_COMMUNITY
+    }),
+    SettingsView.Sections.View({
+      label: "Themes",
+      section: "community-themes",
+      element: () => <Community title="Themes" />,
+      predicate: () => SHOW_COMMUNITY
+    }),
+    SettingsView.Sections.Divider(() => SHOW_COMMUNITY),
+    SettingsView.Sections.Header({
+      label: "Desktop",
+      predicate: () => IS_DESKTOP
+    }),
+    SettingsView.Sections.View({
+      label: "Extensions",
+      element: () => <Extensions />,
+      predicate: () => IS_DESKTOP
+    }),
+    SettingsView.Sections.Divider(() => IS_DESKTOP),
+    SettingsView.Sections.Custom(() => (
+      <div className="vx-section-info">
+        <div className="vx-section-version">
+          <span>{`VX ${env.VERSION} `}</span>
+          <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
         </div>
-      )
-    }
+        {git.exists ? (
+          <div 
+            className="vx-section-git"
+            onClick={(event) => {
+              // I hate ts so damn much | Like this only exists when 'git.exists'
+              if (!git.exists) return;
+
+              WindowUtil.handleClick({
+                href: `${git.url}/tree/${git.hash}`
+              }, event);
+            }}
+          >
+            <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
+            <span className="vx-section-hash">({git.hashShort})</span>
+          </div>
+        ) : (
+          <div 
+            className="vx-section-git"
+            onClick={() => {
+              openAlertModal("Github", [
+                "Current build has no git details!", 
+                "This is from your local machine (or the local machine that compiled VX) not having git installed when compiling VX"
+              ]);
+            }}
+          >
+            <span>???/???{" "}</span>
+            <span className="vx-section-hash">(???????)</span>
+          </div>
+        )}
+        {electronVersionSection}
+      </div>
+    ))
   ], [ ]);
 
   return (

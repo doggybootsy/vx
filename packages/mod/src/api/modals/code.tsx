@@ -19,7 +19,7 @@ function getLanguage(lang: string): string {
   return lang;
 };
 
-export async function openCodeModal(options: CodeModalOptions) {
+export function openCodeModal(options: CodeModalOptions) {
   return openModal((props) => {
     const ref = useRef<HTMLDivElement>(null);
 

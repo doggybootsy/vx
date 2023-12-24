@@ -61,6 +61,16 @@ export const plainTextPatches: PlainTextPatch[] = [
         replace: "function(module,exports,require){require.r(exports);require.d(exports,{default(){return ()=>{}}})}"
       }
     ]
+  },
+  {
+    identifier: "VX(save-localstorage)",
+    match: "delete window.localStorage",
+    replacements: [
+      {
+        find: "delete window.localStorage",
+        replace: ""
+      }
+    ]
   }
 ];
 

@@ -1,7 +1,7 @@
 import { useEffect, useInsertionEffect, useMemo } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
-import { UserStore, fetchUser } from "./webpack/common";
+import { I18n, LocaleCodes, UserStore, fetchUser } from "./webpack/common";
 import { useState } from "react";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
@@ -50,11 +50,11 @@ export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
   }, [ ]);
 };
 
-export function useUser(userId: string): User | null {
-  const [ user, setUser ] = useState(() => UserStore.getUser(userId) || null);
+export function useUser(userId?: string): User | null {
+  const [ user, setUser ] = useState(() => userId ? UserStore.getUser(userId) || null : null);
 
   useAbortEffect(async (signal) => {
-    if (user) return;
+    if (!userId || user) return;
 
     const fetched = await fetchUser(userId); 
 
@@ -64,4 +64,22 @@ export function useUser(userId: string): User | null {
   });
   
   return user;
+};
+
+export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
+  const [ locale, setLocale ] = useState(() => I18n.getLocale());
+
+  useEffect(() => {
+    setLocale(I18n.getLocale());
+
+    async function listener() {
+      if (awaitPromise) await I18n.loadPromise;
+      setLocale(I18n.getLocale());
+    };
+
+    I18n.on("locale", listener);
+    return () => I18n.off("locale", listener);
+  }, [ ]);
+
+  return locale;
 };

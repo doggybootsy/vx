@@ -8,7 +8,8 @@ let i18nLoaded = false;
 queueMicrotask(async () => {
   await window.VX.webpack.getLazy(m => m.Messages && Array.isArray(m._events.locale));
   const I18n = window.VX.webpack.common.I18n;
-  i18nLoaded = true;
+
+  I18n.loadPromise.then(() => { i18nLoaded = true; });
 
   async function changeCSS() {
     await I18n.loadPromise;    

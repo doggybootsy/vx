@@ -8,7 +8,7 @@ export interface PluginType {
   description: string,
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
-  settings?: Record<string, CreatedSetting<any>> | React.FunctionComponent,
+  settings?: Record<string, CreatedSetting<any>> | React.ComponentType,
   requiresRestart?: boolean,
   start?(): void,
   stop?(): void
@@ -28,7 +28,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     else this.id = this.name;
   };
 
-  type = <const>"plugin";
+  type = <const>"internal";
 
   name: string;
   id: string;

@@ -6,6 +6,8 @@ export const notificationStore = new class extends InternalStore {
     super();
   };
 
+  displayName = "NotificationStore";
+
   clear() {
     this.#state.clear();
     this.emit();

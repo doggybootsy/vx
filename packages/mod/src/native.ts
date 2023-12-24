@@ -2,19 +2,27 @@ import { IS_DESKTOP, git } from "self";
 
 export const extensions = {
   open() {
-    if (!window.VXNative) return;
-    window.VXNative.extensions.open();
+    if (!IS_DESKTOP) return;
+    window.VXNative!.extensions.open();
+  },
+  getAll() {
+    if (!IS_DESKTOP) return [];
+    return window.VXNative!.extensions.getAll();
+  },
+  downloadRDT() {
+    if (!IS_DESKTOP) return;
+    window.VXNative!.extensions.downloadRDT();
   }
 };
 
 export const app = {
   quit() {
-    if (!window.VXNative) return;
-    window.VXNative.app.quit();
+    if (!IS_DESKTOP) return;
+    window.VXNative!.app.quit();
   },
   restart() {
-    if (!window.VXNative) return location.reload();
-    window.VXNative.app.restart();
+    if (!IS_DESKTOP) return location.reload();
+    window.VXNative!.app.restart();
   }
 };
 

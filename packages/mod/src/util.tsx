@@ -1,25 +1,34 @@
 import React, { createElement, lazy as $lazy, Suspense, Component } from "react";
 import { getProxyByKeys } from "./webpack";
+import { User } from "discord-types/general";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
 
   const cacheFactory = cache(factory);
   
-  for (const key of Object.getOwnPropertyNames(Reflect)) {
-    const $key = key as keyof typeof Reflect;
-    const handler = Reflect[$key];
+  for (const key of Object.getOwnPropertyNames(Reflect) as Array<keyof typeof Reflect>) {
+    const handler = Reflect[key];
 
     if (key === "get") {
       handlers.get = (target, prop, r) => {
+        if (prop === "prototype") return (cacheFactory() as any).prototype ?? Function.prototype;
         if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
         return Reflect.get(cacheFactory(), prop, r);
       };
       continue;
     }
+    if (key === "ownKeys") {
+      handlers.ownKeys = () => {
+        const keys = Reflect.ownKeys(cacheFactory());
+        if (!typeofIsObject && !keys.includes("prototype")) keys.push("prototype");
+        return keys; 
+      };
+      continue;
+    }
 
     // @ts-expect-error
-    handlers[$key] = function(target, ...args) {
+    handlers[key] = function(target, ...args) {
       // @ts-expect-error
       return handler.call(this, cacheFactory(), ...args);
     };
@@ -32,15 +41,15 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
   return proxy;
 };
 export function cache<T>(factory: () => T): () => T {
-  const cache = { ref: null, hasValue: false } as { ref: null | T, hasValue: boolean };
+  const cache = { } as { current: T } | { };
 
   return () => {
-    if (cache.hasValue) return cache.ref!;
+    if ("current" in cache) return cache.current;
     
-    cache.ref = factory();
-    cache.hasValue = true;
+    const current = factory();
+    (cache as { current: T }).current = factory();
 
-    return cache.ref;
+    return current;
   }
 };
 
@@ -221,6 +230,15 @@ export const clipboard = {
   }
 };
 
+export const base64 = {
+  decode(base64: string) {
+    return new TextDecoder().decode(Uint8Array.from(atob(base64), (m) => m.codePointAt(0)!));
+  },
+  encode(text: string) {
+    return btoa(String.fromCodePoint(...new TextEncoder().encode(text)));
+  }
+};
+
 export function getComponentType<P>(component: string | React.ComponentType<P> | React.MemoExoticComponent<React.ComponentType<P>> | React.ForwardRefExoticComponent<P>): React.ComponentType<P> | string {
   if (component instanceof Object && "$$typeof" in component) {
     if (component.$$typeof === Symbol.for("react.memo")) return getComponentType<P>((component as any).type);
@@ -231,7 +249,7 @@ export function getComponentType<P>(component: string | React.ComponentType<P> |
 };
 
 export function escapeRegex(text: string, flags?: string): RegExp {
-  text = text.replace(/[\.\[\]\(\)\\\$\^\|\?\*]/g, "\\$&");
+  text = text.replace(/[\.\[\]\(\)\\\$\^\|\?\*\+]/g, "\\$&");
   return new RegExp(text, flags);
 };
 
@@ -239,13 +257,26 @@ export function getRandomItem<T extends any[]>(array: T): T[number] {
   return array.at(Math.floor(Math.random() * array.length))!;
 };
 
+// Not a secure hash
+export function hashCode(str: string) {
+  let hash = 0;
+  for (let i = 0, len = str.length; i < len; i++) {
+    let chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
+
 const defaultAvatarModule = getProxyByKeys<{
   DEFAULT_AVATARS: string[]
 }>([ "DEFAULT_AVATARS" ]);
-export function getRandomDefaultAvatar(uid?: string) {
-  if (typeof uid === "string") {
-    const number = Number(uid);
-    if (!isNaN(number)) return defaultAvatarModule.DEFAULT_AVATARS[number % 5];
+export function getDefaultAvatar(id?: string) {
+  if (typeof id === "string") {
+    let number = Number(id);
+    if (isNaN(number)) number = hashCode(id);
+
+    return defaultAvatarModule.DEFAULT_AVATARS[number % 5];
   };
 
   return getRandomItem(defaultAvatarModule.DEFAULT_AVATARS);
@@ -339,7 +370,7 @@ export function getParents(element: Element | null) {
   return parents;
 };
 
-export function createAbort() {
+export function createAbort(): readonly [ (reason?: any) => void, () => AbortSignal ] {
   let controller = new AbortController();
 
   function abort(reason?: any) {
@@ -348,5 +379,56 @@ export function createAbort() {
     controller = new AbortController();
   };
 
-  return [ abort, () => controller.signal ] as const;
+  return [ abort, () => controller.signal ];
+};
+
+export function isInvalidSyntax(code: string): false | SyntaxError {
+  try {
+    new Function(code);
+    return false;
+  } 
+  catch (error) {
+    // IDK what other kind of errors i can get but better safe than sry
+    if (error instanceof SyntaxError) return error;
+    return false;
+  }
+};
+
+export function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+};
+
+type NotFunction<T> = Exclude<T, Function>
+export function memorize<T extends { [key in string]: () => any }>(instance: T & NotFunction<T>): { [key in keyof T]: ReturnType<T[key]> } {
+  const clone = {} as { [key in keyof T]: ReturnType<T[key]> };
+
+  for (const key in instance) {
+    if (Object.prototype.hasOwnProperty.call(instance, key)) {
+      const element = instance[key as keyof T];
+      
+      Object.defineProperty(clone, key, {
+        get: cache(element)
+      });
+    };
+  };
+
+  return clone;
+};
+
+export function getDiscordTag(user: User) {
+  const isPomelo = (user as any).isPomelo() || (user.discriminator === "0000");
+  return [
+    // isPomelo ? "@" : false,
+    (user as any).globalName || user.username,
+    !isPomelo ? `#${user.discriminator}` : false
+  ].filter((m) => m).join("");
+};
+
+export function generateFaviconURL(website: string): string {
+  const url = new URL("https://www.google.com/s2/favicons");
+  url.searchParams.set("sz", "64");
+  url.searchParams.set("domain", website);
+  return url.href;
 };
