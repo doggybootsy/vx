@@ -152,16 +152,17 @@ export const pluginStore = new class PluginStore extends InternalStore {
       if (!file) return;
 
       const text = await file.text();
+      const id = Date.now().toString(36).toUpperCase();
 
       this._updateData((clone) => {
-        const id = Date.now().toString(36).toUpperCase();
-
         clone[id] = {
           js: text,
           enabled: false
         };
       });
-    })
+
+      this.evalPlugin(id);
+    }, "js");
   };
   public new() {
     const id = Date.now().toString(36).toUpperCase();
