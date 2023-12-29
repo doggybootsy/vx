@@ -7,6 +7,7 @@ import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 import { ThemeCard } from "./card";
 import { themeStore } from "../../../../addons/themes";
 import { internalDataStore } from "../../../../api/storage";
+import { Messages } from "@i18n";
 
 let search = "";
 export function Themes() {
@@ -23,10 +24,10 @@ export function Themes() {
 
   return (
     <Panel
-      title="Themes"
+      title={Messages.THEMES}
       buttons={
         <>
-          <Tooltip text="Upload">
+          <Tooltip text={Messages.UPLOAD}>
             {(props) => (
               <Button
                 {...props}
@@ -43,7 +44,7 @@ export function Themes() {
               </Button>
             )}
           </Tooltip>
-          <Tooltip text="New">
+          <Tooltip text={Messages.NEW_ADDON}>
             {(props) => (
               <Button
                 {...props}
@@ -85,10 +86,10 @@ export function Themes() {
               </FlexChild>
             ))
           ) : (
-            <NoAddons message="No Results Found" img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
+            <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
           )
         ) : (
-          <NoAddons message="No Themes Found" img={NO_ADDONS} />
+          <NoAddons message={Messages.NO_ADDONS_FOUND.format({ type: Messages.THEMES }) as string} img={NO_ADDONS} />
         )}
       </Flex>
     </Panel>

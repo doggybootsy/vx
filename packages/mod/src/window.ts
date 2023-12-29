@@ -25,6 +25,7 @@ import { api } from "./webpack/api";
 import * as self from "self";
 
 import { Styler } from "@styler";
+import * as I18n from "@i18n";
 import { themeStore } from "./addons/themes";
 import { pluginStore } from "./addons/plugins";
 
@@ -110,5 +111,11 @@ export const VX = {
       }
     }
   },
-  self
+  self,
+  I18n: {
+    Messages: I18n.Messages,
+    onLocaleChange: I18n.onLocaleChange,
+    getLocale: I18n.getLocale,
+    getLoadPromise: I18n.getLoadPromise
+  }
 };

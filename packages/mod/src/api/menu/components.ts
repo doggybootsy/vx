@@ -1,11 +1,16 @@
-import { MenuRenderProps } from ".";
 import { IconProps } from "../../components/icons";
 import { getProxyByKeys } from "../../webpack";
 
-interface MenuProps extends MenuRenderProps {
+interface MenuProps {
   navId: string,
   onClose(): void,
-  children: React.ReactNode
+  children: React.ReactNode,
+  className?: string,
+  context?: "APP",
+  onHeightUpdate?: () => void,
+  position?: "right" | "left",
+  target?: Element,
+  theme?: string
 };
 
 type MenuItemColor = "default" | "danger" | "premium-gradient";

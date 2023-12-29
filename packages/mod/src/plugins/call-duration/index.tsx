@@ -4,15 +4,21 @@ import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys } from "../../webpack";
-import { FluxDispatcher } from "../../webpack/common";
+import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } from "../../webpack/common";
 
 import { addStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 
 function CallDuration() {
   const [ then, setThen ] = useState(Date.now);
   const [ elapsed, setElapsed ] = useState(0);
+  const [ url, setURL ] = useState(() => {
+    const channelId = SelectedChannelStore.getVoiceChannelId()!;
+    const channel = ChannelStore.getChannel(channelId);
+    return (new URL(`/${channel.guild_id}/${channel.id}`, location.origin)).href;
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -34,15 +40,25 @@ function CallDuration() {
   }, [ ]);
 
   return (
-    <Components.Text variant="text-xs/normal" color="none" className="vx-call-duration">
-      {`Call Duration: ${new Date(elapsed).toUTCString().split(" ").at(-2)}`}
+    <Components.Text 
+      variant="text-xs/normal" 
+      color="none" 
+      className="vx-call-duration" 
+      onClick={() => {
+        const channelId = SelectedChannelStore.getVoiceChannelId()!;
+        const channel = ChannelStore.getChannel(channelId);
+
+        NavigationUtils.transitionTo(`/channels/${channel.guild_id || "@me"}/${channel.id}`);
+      }}
+    >
+      {Messages.CALL_DURATION.format({ time: new Date(elapsed).toUTCString().split(" ").at(-2) })}
     </Components.Text>
   )
 };
 
 export default definePlugin({
-  name: "CallDuration",
-  description: "Shows how long you have been in call for",
+  name: () => Messages.CALL_DURATION_NAME,
+  description: () => Messages.CALL_DURATION_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

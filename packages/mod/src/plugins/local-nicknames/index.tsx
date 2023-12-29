@@ -8,6 +8,7 @@ import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
 import { createAbort, findInReactTree } from "../../util";
 import { Injector } from "../../patcher";
+import { Messages } from "@i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 
@@ -71,7 +72,7 @@ async function patchGuildMember() {
 function useMenu(user?: PatchedUser) {
   if (!user) return null;
   
-  const label = user.id in dataStore.proxy ? "Edit Local Nickname" : "Add Local Nickname";
+  const label = user.id in dataStore.proxy ? Messages.EDIT_LOCAL_NICKNAME : Messages.ADD_LOCAL_NICKNAME;
 
   return (
     <MenuComponents.MenuItem 
@@ -95,8 +96,8 @@ function useMenu(user?: PatchedUser) {
 };
 
 export default definePlugin({
-  name: "LocalNicknames",
-  description: "Adds custom local nicknames",
+  name: () => Messages.LOCAL_NICKNAMES_NAME,
+  description: () => Messages.LOCAL_NICKNAMES_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {

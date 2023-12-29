@@ -1,9 +1,10 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: "DoubleClickToCall",
-  description: "You need to double click to start a call instead of a single click",
+  name: () => Messages.DOUBLE_CLICK_CALL_NAME,
+  description: () => Messages.DOUBLE_CLICK_CALL_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [

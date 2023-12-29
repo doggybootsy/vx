@@ -57,7 +57,7 @@ export type LocaleCodes = "en-US" | "en-GB" | "zh-CN" | "zh-TW" | "cs" | "da" | 
 interface i18n {
   Messages: Record<Uppercase<string>, string>,
   getLocale(): LocaleCodes,
-  on(event: "locale", callback: (newLocale: string, oldLocale: string) => void): void,
+  on(event: "locale", callback: (newLocale: LocaleCodes, oldLocale: LocaleCodes) => void): void,
   off(event: string, callback: Function): void,
   loadPromise: Promise<void>
 };

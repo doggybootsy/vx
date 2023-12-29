@@ -7,6 +7,7 @@ import { useInternalStore } from "../../../hooks";
 import { WindowUtil } from "../../../webpack/common";
 import { whenWebpackReady } from "../../../webpack";
 import { openNotification } from "../../../api/notifications";
+import { Messages } from "@i18n";
 
 // 3 mins
 const DELAY_MIN = 1000 * 60 * 3;
@@ -62,16 +63,16 @@ const updaterStore = new class extends InternalStore {
 
     if (compared === -1) {
       openNotification({
-        title: "Update Available",
+        title: Messages.VX_UPDATE_AVAILABLE,
         id: "vx-update-available",
         icon: Icons.Logo,
         description: [
-          `VX v${release.tag_name.replace("v", "")} is available to download`
+          Messages.DOWNLOAD_READY.format({ version: release.tag_name.replace("v", "") })
         ],
         duration: 15e3,
         footer: [
           <Button size={Button.Sizes.SMALL} grow onClick={() => this.download()}>
-            Download Now
+            {Messages.DOWNLOAD_NOW}
           </Button>
         ],
         type: "success"
@@ -111,13 +112,13 @@ export function Updater() {
         <div className="vx-updater-notice">
           {
             typeof state.compared === "number" ? 
-              state.compared === -1 ? "Update Available" : 
-              state.compared === 0 ? "Up To Date" : "Above Latest Release" : 
-              "Unknown"
+              state.compared === -1 ? Messages.VX_UPDATE_AVAILABLE : 
+              state.compared === 0 ? Messages.UP_TO_DATE : Messages.ABOVE_LATEST_RELEASE : 
+              Messages.UNKNOWN
           }
         </div>
         <div className="vx-updater-fetch">
-          Last checked: {state.lastFetch ? state.lastFetch.toLocaleString() : "???"}
+          {Messages.LAST_CHECKED.format({ date: state.lastFetch ? state.lastFetch.toLocaleString() : "???" })}
         </div>
       </div>
       <Flex className="vx-updater-buttonrow" gap={6} align={Flex.Align.CENTER} justify={Flex.Justify.END}>
@@ -146,7 +147,7 @@ export function Updater() {
           }} 
           disabled={state.compared === -1 ? false : !state.canCheck}
         >
-          {state.fetching ? "Fetching..." : state.compared === -1 ? `Update to v${state.release!.tag_name.replace("v", "")}` : "Check For Updates"}
+          {state.fetching ? Messages.FETCHING : state.compared === -1 ? Messages.UPDATE_TO.format({ version: state.release!.tag_name.replace("v", "") }) : Messages.CHECK_FOR_UPDATES}
         </Button>
       </Flex>
     </Flex>

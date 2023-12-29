@@ -7,6 +7,7 @@ import { className } from "../../util";
 import { SettingType, createSettings } from "../settings";
 
 import { addStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 const settings = createSettings("loop", {
   autoLoop: {
@@ -49,8 +50,8 @@ function Loop() {
 };
 
 export default definePlugin({
-  name: "Loop",
-  description: "Adds a loop button to videos and audios",
+  name: () => Messages.LOOP_NAME,
+  description: () => Messages.LOOP_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,

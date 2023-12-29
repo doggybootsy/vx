@@ -6,12 +6,13 @@ import { Message, User } from "discord-types/general";
 import { ErrorBoundary } from "../../components";
 
 import { addStyle, removeStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 type TypedUser = User & { isPomelo(): boolean, globalName: string | null };
 
 export default definePlugin({
-  name: "DisplayUsername",
-  description: "Shows the users username in chat next to their name if the have a global name or a nickname",
+  name: () => Messages.DISPLAY_USERNAME_NAME,
+  description: () => Messages.DISPLAY_USERNAME_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

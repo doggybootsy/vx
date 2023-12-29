@@ -1,6 +1,7 @@
 import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { ThemeObject } from "../../addons/themes";
+import { LocaleCodes } from "../../webpack/common";
 
 export const { localStorage, sessionStorage } = window;
 
@@ -202,7 +203,8 @@ interface InternalData {
   "content-protection": boolean,
   "user-setting-shortcut": boolean,
   "preserve-query": boolean,
-  "show-favicon": boolean
+  "show-favicon": boolean,
+  "last-loaded-locale": LocaleCodes
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {
@@ -211,7 +213,7 @@ export const internalDataStore = new DataStore<InternalData>("Internal", {
     switch (version) {
       case 6: {
         if ("themes" in oldData) {
-          import("../../addons/themes").then(({ themeStore }) => {
+          import("../../addons/themes/index.js").then(({ themeStore }) => {
             themeStore.__mergeOldThemes(oldData.themes);
           });
         }

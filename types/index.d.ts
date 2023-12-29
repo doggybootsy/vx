@@ -82,7 +82,7 @@ interface DiscordWindow {
   VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative,
   Sass?: Sass,
-  VX: typeof import("../packages/mod/src/api")["VX"]
+  VX: typeof import("../packages/mod/src/window")["VX"]
 };
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;

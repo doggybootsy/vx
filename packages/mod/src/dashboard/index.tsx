@@ -10,6 +10,7 @@ import { openAlertModal } from "../api/modals";
 import { Icons, SettingsView } from "../components";
 import { Extensions } from "./pages/extension";
 import { Community } from "./pages/community";
+import { Messages } from "@i18n";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -48,46 +49,50 @@ function Dashboard(props: { section: string }) {
   }, [ ]);
 
   const sections = useMemo(() => [
-    SettingsView.Sections.Header("VX"),
+    SettingsView.Sections.Header(Messages.VX),
     SettingsView.Sections.View({
-      label: "Home",
+      label: Messages.HOME,
+      section: "home",
       element: () => <Home />
     }),
     SettingsView.Sections.Divider(),
-    SettingsView.Sections.Header("Addons"),
+    SettingsView.Sections.Header(Messages.ADDONS),
     SettingsView.Sections.View({
-      label: "Plugins",
+      label: Messages.PLUGINS,
+      section: "plugins",
       element: () => <Plugins />
     }),
     SettingsView.Sections.View({
-      label: "Themes",
+      label: Messages.THEMES,
+      section: "themes",
       element: () => <Themes />
     }),
     SettingsView.Sections.Divider(),
     SettingsView.Sections.Header({
       label: "Community",
-      icon: <Icons.Store size={18} />,
+      icon: Icons.Store,
       predicate: () => SHOW_COMMUNITY
     }),
     SettingsView.Sections.View({
-      label: "Plugins",
+      label: Messages.PLUGINS,
       section: "community-plugins",
-      element: () => <Community title="Plugins" />,
+      element: () => <Community title={Messages.PLUGINS} />,
       predicate: () => SHOW_COMMUNITY
     }),
     SettingsView.Sections.View({
-      label: "Themes",
+      label: Messages.THEMES,
       section: "community-themes",
-      element: () => <Community title="Themes" />,
+      element: () => <Community title={Messages.THEMES} />,
       predicate: () => SHOW_COMMUNITY
     }),
     SettingsView.Sections.Divider(() => SHOW_COMMUNITY),
     SettingsView.Sections.Header({
-      label: "Desktop",
+      label: Messages.DESKTOP,
       predicate: () => IS_DESKTOP
     }),
     SettingsView.Sections.View({
-      label: "Extensions",
+      label: Messages.EXTENSIONS,
+      section: "extensions",
       element: () => <Extensions />,
       predicate: () => IS_DESKTOP
     }),
@@ -95,7 +100,7 @@ function Dashboard(props: { section: string }) {
     SettingsView.Sections.Custom(() => (
       <div className="vx-section-info">
         <div className="vx-section-version">
-          <span>{`VX ${env.VERSION} `}</span>
+          <span>{`${Messages.VX} ${env.VERSION} `}</span>
           <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
         </div>
         {git.exists ? (

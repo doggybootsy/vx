@@ -6,6 +6,7 @@ import { Developers } from "../../constants";
 import { className } from "../../util";
 
 import { addStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 function PIP() {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,8 +68,8 @@ function PIP() {
 };
 
 export default definePlugin({
-  name: "PIP",
-  description: "Adds a PIP button to videos",
+  name: () => Messages.PIP_NAME,
+  description: () => Messages.PIP_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [

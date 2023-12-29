@@ -4,6 +4,7 @@ import { ErrorBoundary, Icons, Tooltip } from "../../components";
 import { getProxyByKeys } from "../../webpack";
 import { className, clipboard } from "../../util";
 import { Developers } from "../../constants";
+import { Messages } from "@i18n";
 
 const classes = getProxyByKeys<Record<string, string>>([ "iconItem", "summary" ]);
 
@@ -14,7 +15,7 @@ function CopyButton(props: {
 }) {  
   return (
     <Tooltip
-      text="Copy Link"
+      text={Messages.COPY_LINK}
     >
       {(ttProps) => (
         <div
@@ -36,8 +37,8 @@ function CopyButton(props: {
 };
 
 export default definePlugin({
-  name: "CopyChannelLink",
-  description: "Quickly copy channel links",
+  name: () => Messages.COPY_CHANNEL_LINK_NAME,
+  description: () => Messages.COPY_CHANNEL_LINK_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

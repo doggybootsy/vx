@@ -4,8 +4,8 @@ import { PlainTextPatchType, addPlainTextPatch } from "../webpack";
 import { CreatedSetting } from "./settings";
 
 export interface PluginType {
-  name: string,
-  description: string,
+  name(): string,
+  description(): string,
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
   settings?: Record<string, CreatedSetting<any>> | React.ComponentType,
@@ -18,19 +18,18 @@ export type AnyPluginType = PluginType & Record<string, any>;
 
 export class Plugin<T extends AnyPluginType = AnyPluginType> {
   constructor(public readonly exports: T) {
-    this.name = exports.name;
+    this.name = () => exports.name();
     
-    this.originalEnabledState = this.isEnabled();
-    this.requiresRestart = exports.requiresRestart ?? true;
+    const match = new Error().stack!.match(/plugins\/(.+?)\//)!;
+    this.id = match[1];
 
-    const match = new Error().stack!.match(/plugins\/(.+?)\//);
-    if (match) this.id = match[1];
-    else this.id = this.name;
+    this.requiresRestart = exports.requiresRestart ?? true;
+    this.originalEnabledState = this.isEnabled();
   };
 
   type = <const>"internal";
 
-  name: string;
+  name: () => string;
   id: string;
 
   public readonly originalEnabledState: boolean;
@@ -46,14 +45,14 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
   
     const enabled = internalDataStore.get("enabled-plugins")!;
     
-    return enabled[this.name] === true;
+    return enabled[this.id] === true;
   };
   public enable() {
     if (this.isEnabled()) return false;
 
     const enabled = structuredClone(internalDataStore.get("enabled-plugins")!);
 
-    enabled[this.name] = true;
+    enabled[this.id] = true;
 
     internalDataStore.set("enabled-plugins", enabled);
 
@@ -66,7 +65,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
     const enabled = structuredClone(internalDataStore.get("enabled-plugins")!);
 
-    enabled[this.name] = false;
+    enabled[this.id] = false;
 
     internalDataStore.set("enabled-plugins", enabled);
 
@@ -89,7 +88,7 @@ export const plugins: Record<string, Plugin> = {};
 
 export function getPlugin(nameOrId: string) {
   for (const plugin of Object.values(plugins)) {
-    if (nameOrId === plugin.id || nameOrId === plugin.name) return plugin;
+    if (nameOrId === plugin.id || nameOrId === plugin.name()) return plugin;
   }
 
   return null;
@@ -100,7 +99,7 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
 
   const isEnabled = plugin.isEnabled();
 
-  plugins[plugin.name] = plugin;
+  plugins[plugin.id] = plugin;
 
   if (exports.patches) {
     if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
@@ -114,7 +113,7 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
         enabled: `${self}.getActiveState()`
       };
 
-      if (typeof patch.identifier !== "string") patch.identifier = plugin.name;
+      if (typeof patch.identifier !== "string") patch.identifier = plugin.id;
       else patch.identifier = `${plugin.name}(${patch.identifier})`;
     };
     // if 'requiresRestart' is false then we can add them, because the plugin will have something incase

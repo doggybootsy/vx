@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
 import { SettingType, createSettings } from "../settings";
+import { Messages } from "@i18n";
 
 const settings = createSettings("CustomSwitchColors", {
   on: {
@@ -26,8 +27,8 @@ const settings = createSettings("CustomSwitchColors", {
 });
 
 export default definePlugin({
-  name: "CustomSwitchColors",
-  description: "Change the color of switches to any hexadecimal color you want",
+  name: () => Messages.CUSTOM_SWITCH_COLORS_NAME,
+  description: () => Messages.CUSTOM_SWITCH_COLORS_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   settings,
   patches: {

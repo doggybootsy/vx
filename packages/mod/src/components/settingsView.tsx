@@ -2,6 +2,8 @@ import { getModuleIdBySource, webpackRequire, getByKeys, getByProtoKeys } from "
 
 import { makeLazy, proxyCache } from "../util";
 import ErrorBoundary from "./boundary";
+import { IconProps } from "./icons";
+import { Tooltip } from "./tooltip";
 
 const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"UserSettings"}\)/;
 
@@ -73,30 +75,36 @@ const sections = {
       predicate
     }
   },
-  Header(options: string | { predicate?: Predicate, label: string, icon?: React.ReactElement }): CustomSection {
+  Header(options: string | { predicate?: Predicate, label: string, icon?: React.FunctionComponent<IconProps>, iconTooltip?: string }): CustomSection {
     let predicate: Predicate;
     let label: string;
-    let icon: React.ReactElement | null;
+    let iconTooltip: string | null = null;
+    let Icon: React.FunctionComponent<IconProps>;
 
     if (typeof options === "string") {
       label = options;
       predicate = () => true;
-      icon = null;
+      Icon = () => null;
     }
     else {
       label = options.label;
       predicate = options.predicate ?? (() => true);
-      icon = options.icon ?? null;
+      Icon = (props) => options.icon ? <options.icon {...props} /> : null;
+      iconTooltip = options.iconTooltip ?? null;
     }
 
     return SettingsView.Sections.Custom({
       element: () => (
         <div className="vx-sidebar-header">
           <div className="vx-sidebar-text">{label}</div>
-          {icon && (
-            <div className="vx-sidebar-icon">
-              {icon}
-            </div>
+          {Icon && (
+            <Tooltip text={iconTooltip} shouldShow={typeof iconTooltip === "string"}>
+              {(props) => (
+                <div {...props} className="vx-sidebar-icon">
+                  <Icon width={18} height={18} />
+                </div>
+              )}
+            </Tooltip>
           )}
         </div>
       )

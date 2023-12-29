@@ -1,3 +1,4 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
@@ -29,7 +30,7 @@ function FriendsSince({ userId, headingClassName, textClassName }: { userId: str
   return (
     <>
       <Components.Heading variant="eyebrow" className={headingClassName}>
-        Friends Since
+        {Messages.FRIENDS_SINCE}
       </Components.Heading>
       <div className={classes.memberSinceContainer}>
         <Components.Text variant="text-sm/normal" className={textClassName}>
@@ -49,8 +50,8 @@ function FriendsSinceSection({ userId }: { userId: string }) {
 };
 
 export default definePlugin({
-  name: "FriendsSince",
-  description: "Shows when you and a friend become friends in the user popout and user modal",
+  name: () => Messages.FRIENDS_SINCE_NAME,
+  description: () => Messages.FRIENDS_SINCE_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [

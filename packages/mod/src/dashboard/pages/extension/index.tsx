@@ -6,6 +6,7 @@ import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../addons/share
 import { openImageModal } from "../../../api/modals";
 import { getDefaultAvatar } from "../../../util";
 import { extensions } from "../../../native";
+import { Messages } from "@i18n";
 
 function Extension({ extension }: { extension: Electron.Extension }) {
   const random = useMemo(() => getDefaultAvatar(extension.id), [ ]);
@@ -47,9 +48,11 @@ function Extension({ extension }: { extension: Electron.Extension }) {
           </div>
         </div>
       </div>
-      <div className="vx-addon-description">
-        {extension.manifest.description || "No description provided"}
-      </div>
+      {extension.manifest.description && (
+        <div className="vx-addon-description">
+          {extension.manifest.description}
+        </div>
+      )}
     </div>
   )
 };
@@ -84,7 +87,7 @@ export function Extensions() {
               </Button>
             )}
           </Tooltip> */}
-          <Tooltip text="Download React Devtools">
+          <Tooltip text={Messages.DOWNLOAD_RDT}>
             {(props) => (
               <Button
                 {...props}
@@ -98,7 +101,7 @@ export function Extensions() {
               </Button>
             )}
           </Tooltip>
-          <Tooltip text="Open Folder">
+          <Tooltip text={Messages.OPEN_FOLDER}>
             {(props) => (
               <Button
                 {...props}
@@ -145,10 +148,10 @@ export function Extensions() {
               </FlexChild>
             ))
           ) : (
-            <NoAddons message="No Results Found" img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
+            <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
           )
         ) : (
-          <NoAddons message="No Extensions Found" img={NO_ADDONS} />
+          <NoAddons message={Messages.NO_ADDONS_FOUND.format({ type: Messages.EXTENSIONS }) as string} img={NO_ADDONS} />
         )}
       </Flex>
     </Panel>

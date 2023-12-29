@@ -1,4 +1,4 @@
-import { Channel, Message } from "discord-types/general";
+import { Message } from "discord-types/general";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { createAbort, findInReactTree } from "../../util";
@@ -7,8 +7,9 @@ import { getLazyByKeys, getProxyByKeys } from "../../webpack";
 import { isValidElement } from "react";
 import { MenuComponents } from "../../api/menu";
 import { Icons } from "../../components";
-import { FluxDispatcher, I18n, TextAreaInput } from "../../webpack/common";
+import { FluxDispatcher, TextAreaInput } from "../../webpack/common";
 import { waitForNode } from "common/dom";
+import { Messages } from "@i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 const injector = new Injector();
@@ -55,16 +56,16 @@ async function openForwardModal(message: Message) {
 
   QuickSwitcher.show();
 
-  const input = await waitForNode<HTMLInputElement>(`input[placeholder=${JSON.stringify(I18n.Messages.QUICKSWITCHER_PLACEHOLDER)}]`);
+  const input = await waitForNode<HTMLInputElement>(`input[placeholder=${JSON.stringify(Messages.QUICKSWITCHER_PLACEHOLDER)}]`);
 
-  input.placeholder = "Where would you like to forward?";
+  input.placeholder = Messages.WHERE_TO_FORWARD;
 };
 
 type useMessageMenu = (props: { message: Message }) => React.ReactNode;
 
 export default definePlugin({
-  name: "Forward",
-  description: "Shows when you and a friend become friends in the user popout and user modal",
+  name: () => Messages.FORWARD_NAME,
+  description: () => Messages.FORWARD_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   async start() {
@@ -86,8 +87,8 @@ export default definePlugin({
         index + 1, 
         0,
         <MenuComponents.MenuItem 
-          label="Forward"
-          id="Forward"
+          label={Messages.FORWARD}
+          id="vx-forward"
           icon={Icons.Forward}
           action={() => openForwardModal(args[0].message)}
         />

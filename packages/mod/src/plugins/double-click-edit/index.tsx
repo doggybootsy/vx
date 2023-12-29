@@ -1,10 +1,11 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
 import { MessageStore, UserStore, dirtyDispatch } from "../../webpack/common";
 
 export default definePlugin({
-  name: "DoubleClickEdit",
-  description: "Double clicking a message will allow you to edit a message",
+  name: () => Messages.DOUBLE_CLICK_EDIT_NAME,
+  description: () => Messages.DOUBLE_CLICK_EDIT_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

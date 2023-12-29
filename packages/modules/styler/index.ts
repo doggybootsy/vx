@@ -1,30 +1,29 @@
+import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "@i18n";
+
 export const plugins = document.createElement("vx-plugins");
 
 const all = new Map<string, Styler>();
 const listeners = new Map<any, Readonly<[ string, (css: string) => void ]>>();
 
 let i18nLoaded = false;
-// VX global doesn't exist when Styler is created so
-queueMicrotask(async () => {
-  await window.VX.webpack.getLazy(m => m.Messages && Array.isArray(m._events.locale));
-  const I18n = window.VX.webpack.common.I18n;
-
-  I18n.loadPromise.then(() => { i18nLoaded = true; });
+onI18nLoaded(() => {
+  getLoadPromise().then(() => { i18nLoaded = true; });
 
   async function changeCSS() {
-    await I18n.loadPromise;    
+    await getLoadPromise();
     for (const [ css, setCSS ] of listeners.values()) {      
-      setCSS(css.replace(/{{(\w+?)}}/g, (match, message) => I18n.Messages[message]));
+      setCSS(css.replace(/{{(\w+?)}}/g, (match, message) => Messages[message]));
     }
   };
 
-  I18n.on("locale", changeCSS);
+  onLocaleChange(changeCSS);
+
   changeCSS();
 });
 
 export function addChangeListener(id: any, css: string, callback: (css: string) => void) {
   if (i18nLoaded) {
-    callback(css.replace(/{{(\w+?)}}/g, (match, message) => window.VX.webpack.common.I18n.Messages[message]));
+    callback(css.replace(/{{(\w+?)}}/g, (match, message) => Messages[message]));
   };
 
   listeners.set(id, [ css, callback ]);

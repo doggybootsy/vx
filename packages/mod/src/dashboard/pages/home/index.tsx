@@ -6,6 +6,7 @@ import { Button, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
 import { app } from "../../../native";
 import { Updater } from "./updater";
+import { Messages } from "@i18n";
 
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
@@ -22,21 +23,21 @@ export function Home() {
         </div>
         <Flex className="vx-home-body" justify={Flex.Justify.BETWEEN} direction={Flex.Direction.VERTICAL}>
           <div className="vx-home-welcome">
-            Welcome To VX
+            {Messages.WELCOME}
           </div>
           <Flex justify={Flex.Justify.START} gap={6} grow={0}>
             <Button onClick={() => location.reload()}>
-              Reload Discord
+              {Messages.RELOAD_DISCORD}
             </Button>
             {IS_DESKTOP && (
               <Button onClick={() => app.restart()}>
-                Restart Discord
+                {Messages.RESTART_DISCORD}
               </Button>
             )}
             {IS_DESKTOP && (
               // Web api prevents you from closing current window
               <Button onClick={() => app.quit()}>
-                Quit Discord
+                {Messages.QUIT_DISCORD}
               </Button>
             )}
           </Flex>
@@ -56,9 +57,9 @@ export function Home() {
             window.DiscordNative!.window.setContentProtection!(value);
           }}
           style={{ marginTop: 20 }}
-          note="When enabled you cannot take screenshots or screen recordings of Discord"
+          note={Messages.CONTENT_PROTECTION_NOTE}
         >
-          Content Protection
+          {Messages.CONTENT_PROTECTION}
         </FormSwitch>
       )}
 
@@ -69,9 +70,9 @@ export function Home() {
           internalDataStore.set("user-setting-shortcut", value);
         }}
         style={{ marginTop: 20 }}
-        note="When shift clicking the user settings panel, it'll opens vx dashboard instead of settings"
+        note={Messages.USER_SETTINGS_SHORTCUT_NOTE}
       >
-        User Settings Shortcut
+        {Messages.USER_SETTINGS_SHORTCUT}
       </FormSwitch>
 
       <FormSwitch
@@ -81,9 +82,9 @@ export function Home() {
           internalDataStore.set("preserve-query", value);
         }}
         style={{ marginTop: 20 }}
-        note="When you exit settings with a query it will save it, for when you open it again"
+        note={Messages.PRESERVE_ADDON_QUERY_NOTE}
       >
-        Preserve Addon Query
+        {Messages.PRESERVE_ADDON_QUERY}
       </FormSwitch>
 
       <FormSwitch
@@ -93,9 +94,9 @@ export function Home() {
           internalDataStore.set("show-favicon", value);
         }}
         style={{ marginTop: 20 }}
-        note="Shows the websites favicon instead of globe on addon cards"
+        note={Messages.SHOW_FAVICON_NOTE}
       >
-        Show Favicon
+        {Messages.SHOW_FAVICON}
       </FormSwitch>
     </Panel>
   )
