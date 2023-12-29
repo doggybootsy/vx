@@ -9,6 +9,7 @@ import { internalDataStore } from "../../../../api/storage";
 import { pluginStore } from "../../../../addons/plugins";
 import { useInternalStore } from "../../../../hooks";
 import { openPluginSettingsModal } from "./modal";
+import { Messages } from "@i18n";
 
 export interface SafePlugin {
   type: "internal" | "custom",
@@ -27,7 +28,7 @@ export interface SafePlugin {
 function getCustomPlugin(id: string): SafePlugin {
   const Settings = pluginStore.getSettings(id);
 
-  const name = pluginStore.getMetaProperty(id, "name", "Unknown Plugin");
+  const name = pluginStore.getName(id);
 
   return {
     type: "custom",
@@ -49,7 +50,7 @@ function getCustomPlugin(id: string): SafePlugin {
     getActiveState() { return this.isEnabled(); },
     originalEnabledState: false,
     name,
-    description: pluginStore.getMetaProperty(id, "description", "No Description Provided"),
+    description: pluginStore.getMetaProperty(id, "description", Messages.NO_DESCRIPTION_PROVIDED),
     authors: pluginStore.getMeta(id).authors ?? [],
     settings: Settings ? (() => openPluginSettingsModal(name, Settings!)) : null
   }
@@ -63,10 +64,10 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     isEnabled: () => plugin.isEnabled(),
     getActiveState: () => plugin.getActiveState(),
     originalEnabledState: plugin.originalEnabledState,
-    name: plugin.name,
-    description: plugin.exports.description,
+    name: plugin.name(),
+    description: plugin.exports.description(),
     authors: plugin.exports.authors,
-    settings: plugin.exports.settings ? (() => openPluginSettingsModal(plugin.name, plugin.exports.settings!)) : null
+    settings: plugin.exports.settings ? (() => openPluginSettingsModal(plugin.name(), plugin.exports.settings!)) : null
   }
 }
 
@@ -97,10 +98,10 @@ export function Plugins() {
   
   return (
     <Panel 
-      title="Plugins"
-      buttons={
+    title={Messages.PLUGINS}
+    buttons={
         <>
-          <Tooltip text="Upload">
+          <Tooltip text={Messages.UPLOAD}>
             {(props) => (
               <Button
                 {...props}
@@ -117,7 +118,7 @@ export function Plugins() {
               </Button>
             )}
           </Tooltip>
-          <Tooltip text="New">
+          <Tooltip text={Messages.NEW_ADDON}>
             {(props) => (
               <Button
                 {...props}
@@ -158,8 +159,8 @@ export function Plugins() {
             </FlexChild>
           ))
         ) : (
-          <NoAddons message="No Results Found" img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
-        )}
+          <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
+          )}
       </Flex>
     </Panel>
   )

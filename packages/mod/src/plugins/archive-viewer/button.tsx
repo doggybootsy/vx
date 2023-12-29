@@ -1,3 +1,4 @@
+import { Messages } from "@i18n";
 import { isZIP } from ".";
 import { Tooltip } from "../../components";
 import { ZIP } from "../../components/icons";
@@ -12,7 +13,7 @@ export function ZipButton(props: ButtonProps) {
   if (!isZIP(props.downloadURL)) return null;
   
   return (
-    <Tooltip text="View Zip">
+    <Tooltip text={Messages.VIEW_ZIP}>
       {(ttProps) => (
         <div 
           {...ttProps} 

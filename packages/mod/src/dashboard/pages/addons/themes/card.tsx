@@ -4,6 +4,7 @@ import { openWindow } from "./popout";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
+import { Messages } from "@i18n";
 
 export function ThemeCard({ id }: { id: string }) {
   const [ name, setName ] = useState(() => themeStore.getName(id));
@@ -57,7 +58,7 @@ export function ThemeCard({ id }: { id: string }) {
       </div>
       <div className="vx-addon-divider" />
       <div className="vx-addon-footer">
-        <Tooltip text="Delete">
+        <Tooltip text={Messages.DELETE}>
           {(props) => (
             <Button
               size={Button.Sizes.ICON}
@@ -87,7 +88,7 @@ export function ThemeCard({ id }: { id: string }) {
             </Button>
           )}
         </Tooltip>
-        <Tooltip text="Edit">
+        <Tooltip text={Messages.EDIT}>
           {(props) => (
             <Button
               size={Button.Sizes.ICON}
@@ -101,7 +102,7 @@ export function ThemeCard({ id }: { id: string }) {
             </Button>
           )}
         </Tooltip>
-        <Tooltip text="Download">
+        <Tooltip text={Messages.DOWNLOAD}>
           {(props) => (
             <Button
               size={Button.Sizes.ICON}

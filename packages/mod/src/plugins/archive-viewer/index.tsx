@@ -4,14 +4,15 @@ import { Developers } from "../../constants";
 import { ZipButton } from "./button";
 
 import { addStyle, removeStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 export function isZIP(filename: string) {
   return /\.(zip|rar|tar)($|\?|#)/.test(filename);
 };
 
 export default definePlugin({
-  name: "ArchiveViewer",
-  description: "Allows you to view the contents of archives",
+  name: () => Messages.ARCHIVE_VIEWER_NAME,
+  description: () => Messages.ARCHIVE_VIEWER_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

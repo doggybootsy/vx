@@ -123,20 +123,24 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
   return Array.from(new Set(flattenedString)).join(" ");
 };
 
-export function findInTree<T>(tree: any, searchFilter: (item: any) => any, options: {
+export function findInTree<T extends Object>(tree: any, searchFilter: (item: any) => any, options: {
   walkable?: string[] | null,
-  ignore?: string[]
+  ignore?: string[],
+  _hasSeen?: WeakSet<any>
 } = {}): T | void {
-  const { walkable = null, ignore = [] } = options;
-
+  const { walkable = null, ignore = [], _hasSeen = new WeakSet() } = options;
+  
+  if (!(tree instanceof Object)) return undefined;
+  
+  if (_hasSeen.has(tree)) return;
   if (searchFilter(tree)) return tree as T;
 
-  if (typeof tree !== "object" || tree == null) return undefined;
+  _hasSeen.add(tree);
 
   let tempReturn: any;
   if (tree instanceof Array) {
     for (const value of tree) {
-      tempReturn = findInTree(value, searchFilter, { walkable, ignore });
+      tempReturn = findInTree(value, searchFilter, { walkable, ignore, _hasSeen });
       if (typeof tempReturn != "undefined") return tempReturn;
     }
   }
@@ -147,14 +151,15 @@ export function findInTree<T>(tree: any, searchFilter: (item: any) => any, optio
 
       if (typeof(value) === "undefined" || ignore.includes(key)) continue;
 
-      tempReturn = findInTree(value, searchFilter, { walkable, ignore });
+      tempReturn = findInTree(value, searchFilter, { walkable, ignore, _hasSeen });
       if (typeof tempReturn !== "undefined") return tempReturn;
     }
   }
+
   return tempReturn;
 };
 
-export function findInReactTree<T>(tree: any, searchFilter: (item: any) => any): T | void {
+export function findInReactTree<T extends Object>(tree: any, searchFilter: (item: any) => any): T | void {
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
 };
 

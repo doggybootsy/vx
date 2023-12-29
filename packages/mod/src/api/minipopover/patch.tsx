@@ -12,7 +12,10 @@ addPlainTextPatch({
 export interface Props { message: Message, channel: Channel, guild?: Guild, author: User };
 export const menuPatches = new Map<string, Set<(props: Props) => React.ReactNode>>();
 
-type MinipopoverType = (props: any) => React.ReactElement<any, React.FunctionComponent>;
+interface MinipopoverType {
+  (props: any): React.ReactElement<any, React.FunctionComponent>,
+  __VX?: MinipopoverType
+};
 const cached = new WeakMap<MinipopoverType, MinipopoverType>();
 
 function Minipopover(Original: MinipopoverType, props: Props) {  
@@ -40,9 +43,11 @@ function Minipopover(Original: MinipopoverType, props: Props) {
 export function _patchPopover(minipopover: React.ReactElement) {
   const { type } = minipopover as { type: MinipopoverType };
 
+  if (type.__VX) return minipopover;
   if (cached.has(type)) minipopover.type = cached.get(type)!;
 
-  const newType = (props: any) => Minipopover(type, props);
+  const newType = Minipopover.bind(window, type);
+  (newType as MinipopoverType).__VX = type;
 
   cached.set(type, newType);
 

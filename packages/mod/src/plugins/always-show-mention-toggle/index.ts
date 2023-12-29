@@ -1,9 +1,10 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: "AlwaysShowMentionToggle",
-  description: "Always show the mention toggle when replying to messages",
+  name: () => Messages.ALWAYS_SHOW_MENTION_TOGGLE_NAME,
+  description: () => Messages.ALWAYS_SHOW_MENTION_TOGGLE_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

@@ -394,3 +394,13 @@ export function Puzzle(props: IconProps) {
     </svg>
   );
 };
+
+export function MDN(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "MDN");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M9.53846 1L2.76923 23H0L6.74556 1H9.53846ZM12 1V23H9.53846V1H12ZM21.5385 1L14.7929 23H12.0237L18.7692 1H21.5385ZM24 1V23H21.5385V1H24Z" />
+    </svg>
+  );
+};

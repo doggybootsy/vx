@@ -2,10 +2,11 @@ import { definePlugin } from "../";
 import { Guild, GuildMember, User } from "discord-types/general";
 import { Developers } from "../../constants";
 import { PermissionStore, PermissionsBits } from "../../webpack/common";
+import { Messages } from "@i18n";
 
 export default definePlugin({
-  name: "RemoveNoRoles",
-  description: "Removes the 'NO ROLES' section from user popouts",
+  name: () => Messages.REMOVE_NO_ROLES_NAME,
+  description: () => Messages.REMOVE_NO_ROLES_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   
   requiresRestart: false,

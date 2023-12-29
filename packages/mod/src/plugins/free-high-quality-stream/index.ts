@@ -1,9 +1,10 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: "FreeHighQualityStream",
-  description: "Allows you to stream at higher quality stream",
+  name: () => Messages.FREE_HIGH_QUALITY_STREAM_NAME,
+  description: () => Messages.FREE_HIGH_QUALITY_STREAM_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [

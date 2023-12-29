@@ -7,6 +7,7 @@ import { getProxyByKeys } from "../../webpack";
 import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "uncompress.js";
 import { isZIP } from ".";
+import { Messages } from "@i18n";
 
 interface ZipModalProps extends ModalProps {
   src: string | File
@@ -208,7 +209,7 @@ function ZipModal(props: ZipModalProps) {
     >
       <ModalComponents.ModalHeader separator={false} justify={Flex.Justify.BETWEEN}>
         <div className="vx-modal-title">
-          Zip Viewer
+          {Messages.ZIP_VIEWER}
         </div>
         <ModalComponents.ModalCloseButton onClick={props.onClose} />
       </ModalComponents.ModalHeader>
@@ -264,7 +265,7 @@ function ZipModal(props: ZipModalProps) {
                 !Object.keys(viewingFiles).length ? (
                   <div className="vx-zip-wrapper">
                     <img className="vx-zip-empty" src="/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg" draggable={false} />
-                    <div className="vx-zip-message">Folder Is Empty</div>
+                    <div className="vx-zip-message">{Messages.FOLDER_IS_EMPTY}</div>
                   </div>
                 ) : Object.values(viewingFiles).sort(sort).map((file: FileType) => (
                   <ZipFile
@@ -384,7 +385,7 @@ function ZipModal(props: ZipModalProps) {
             const data = await zip.generateAsync({ type: "uint8array" });
             if (data) download(`zip-viewer-${Date.now().toString(36)}.zip`, data);
           }}
-        >Download Selected</Button>
+        >{Messages.DOWNLOAD_SELECTED}</Button>
       </ModalComponents.ModalFooter>
     </ModalComponents.ModalRoot>
   )

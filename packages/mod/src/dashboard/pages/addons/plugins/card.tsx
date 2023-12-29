@@ -8,6 +8,7 @@ import { SafePlugin } from ".";
 import { pluginStore } from "../../../../addons/plugins";
 import { openWindow } from "./popout";
 import { internalDataStore } from "../../../../api/storage";
+import { Messages } from "@i18n";
 
 function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
@@ -120,7 +121,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
               {plugin.name}
             </span>
             {plugin.requiresRestart && (
-              <Tooltip text="Plugin Requires Restart">
+              <Tooltip text={Messages.PLUGIN_REQUIRES_RESTART}>
                 {(props) => (
                   <span {...props} className={className([ "vx-addon-restart", isEnabled !== plugin.getActiveState() && "vx-addon-warn"])}>
                     <Icons.Warn size={16} />
@@ -150,7 +151,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
       <div className="vx-addon-footer">
         {plugin.type === "custom" && (
           <>
-            <Tooltip text="Delete">
+            <Tooltip text={Messages.DELETE}>
               {(props) => (
                 <Button
                   size={Button.Sizes.ICON}
@@ -180,7 +181,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                 </Button>
               )}
             </Tooltip>
-            <Tooltip text="Edit">
+            <Tooltip text={Messages.EDIT}>
               {(props) => (
                 <Button
                   size={Button.Sizes.ICON}
@@ -194,7 +195,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                 </Button>
               )}
             </Tooltip>
-            <Tooltip text="Download">
+            <Tooltip text={Messages.DOWNLOAD}>
               {(props) => (
                 <Button
                   size={Button.Sizes.ICON}
@@ -212,7 +213,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
         )}
         <div className="vx-addon-actions">
           {typeof website === "string" && (
-            <Tooltip text="Visit Website">
+            <Tooltip text={Messages.VISIT_WEBSITE}>
               {(props) => (
                 <div
                   {...props}
@@ -232,7 +233,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
             </Tooltip>
           )}
           {typeof invite === "string" && (
-            <Tooltip text="Join Discord">
+            <Tooltip text={Messages.JOIN_SUPPORT_SERVER}>
               {(props) => (
                 <div
                   {...props}
@@ -249,7 +250,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
             </Tooltip>
           )}
           {typeof source === "string" && (
-            <Tooltip text="Go To Source">
+            <Tooltip text={Messages.GO_TO_SOURCE}>
               {(props) => (
                 <div
                   {...props}
@@ -265,7 +266,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
             </Tooltip>
           )}
           {plugin.settings && (
-            <Tooltip text="Open Settings">
+            <Tooltip text={Messages.OPEN_SETTINGS}>
               {(props) => (
                 <div
                   {...props}

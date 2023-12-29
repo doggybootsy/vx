@@ -12,3 +12,6 @@ export type FunctionReturnType<T extends FunctionType> = T extends (this: any, .
 export type ReturnType<T extends ClassType | FunctionType> = T extends ClassType ? ClassReturnType<T> : T extends FunctionType ? FunctionReturnType<T> : never;
 
 export type ThisParameterType<T extends FunctionType> = T extends (this: infer P, ...args: any) => any ? P : never;
+
+// Object Typings
+export type KeysMatching<T, V> = {[K in keyof T]-?: T[K] extends V ? K : never}[keyof T];

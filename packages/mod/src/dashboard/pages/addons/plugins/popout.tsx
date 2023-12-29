@@ -3,36 +3,61 @@ import { WindowUtil } from "../../../../webpack/common";
 import * as windowApi from "../../../../api/window";
 import { Editor } from "../../../../editor";
 import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
-import { Icons } from "../../../../components";
+import { Icons, Popout } from "../../../../components";
 import { pluginStore } from "../../../../addons/plugins";
 import { openNotification } from "../../../../api/notifications";
 import { isInvalidSyntax } from "../../../../util";
 import { useDiscordLocale } from "../../../../hooks";
 import { IconFullProps } from "../../../../components/icons";
-import { openAlertModal, openImageModal } from "../../../../api/modals";
+import { openAlertModal } from "../../../../api/modals";
 import { getMeta, replaceMeta, replaceMetaValue } from "../../../../addons/meta";
+import { MenuComponents } from "../../../../api/menu";
+import { Messages } from "@i18n";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
+function MenuPopout({ closePopout }: { closePopout: () => void }) {
+  return (
+    <MenuComponents.Menu navId="vx-help-menu" onClose={closePopout}>
+      <MenuComponents.MenuItem 
+        label="JavaScript Help"
+        id="js-help"
+        action={(event) => {
+          WindowUtil.handleClick({ href: "https://developer.mozilla.org/docs/Web/JavaScript" }, event);
+        }}
+        icon={Icons.MDN}
+      />
+      <MenuComponents.MenuItem 
+        label="VX Documentation"
+        id="vx-help"
+        action={() => {}}
+        icon={Icons.Logo}
+        disabled
+      />
+    </MenuComponents.Menu>
+  )
+};
+
 export function openWindow(id: string) {  
-  const name = pluginStore.getMetaProperty(id, "name", "Unknown Plugin");
+  const name = pluginStore.getName(id);
   const js = pluginStore.getJS(id);
 
   windowApi.openWindow({
-    title: `Plugins - ${name}`,
+    title: Messages.EDITOR_TITLE.format({ type: Messages.PLUGINS, name }) as string,
     id: `PLUGIN_${id}`,
     render({ window }) {
       const ref = useRef<HTMLDivElement>(null);
       const lastSavedValue = useRef(js);
       const valueRef = useRef(js);
       const [ hasChanges, setHasChanges ] = useState(false);
-      const [ name, setName ] = useState(() => pluginStore.getMetaProperty(id, "name", "Unknown Plugin"));
+      const [ name, setName ] = useState(() => pluginStore.getName(id));
       const [ version, setVersion ] = useState(() => pluginStore.getVersionName(id));
       const locale = useDiscordLocale(false);
       const [ showCustomIcon, setShowCustomIcon ] = useState(true);
       const [ icon, setIcon ] = useState(() => pluginStore.getMeta(id).icon ?? null);
       const [ title, setTitle ] = useState(() => name);
       const editorRef = useRef<Editor>(null);
+      const [ show, setShow ] = useState(false);
 
       useLayoutEffect(() => {
         if (!ref.current) return;
@@ -143,15 +168,6 @@ export function openWindow(id: string) {
           openAlertModal("Syntax Error", [
             `\`\`\`js\n${String(error).replace("SyntaxError: ", "")}\n\`\`\``
           ]);
-          // openNotification({
-          //   title: `Unable to update '${pluginStore.getName(id)}'`,
-          //   id: `update-p-${id}`,
-          //   icon: Icons.Code,
-          //   type: "danger",
-          //   description: [
-          //     "Code isn't valid JavaScript Syntax"
-          //   ]
-          // });
           return;
         }
 
@@ -183,21 +199,30 @@ export function openWindow(id: string) {
             onClick={() => updateCode()}
             tooltip="Save"
           />
-          <HeaderBar.Icon
-            icon={Icons.Help}
-            onClick={(event: React.MouseEvent) => {
-              WindowUtil.handleClick({
-                href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-              }, event);
-            }}
-            tooltip="Help"
-          />
+          <Popout 
+            renderPopout={(props) => (
+              <MenuPopout closePopout={() => props.closePopout()} />
+            )}
+            position="bottom"
+            shouldShow={show}
+            onRequestClose={() => setShow(false)}
+          >
+            {(props, state) => (
+              <HeaderBar.Icon
+                {...props}
+                onClick={() => setShow(!show)}
+                icon={Icons.Help}
+                tooltip={Messages.HELP}
+                selected={state.isShown}
+              />
+            )}
+          </Popout>
         </>
       );
 
       useEffect(() => {
-        window.document.title = `Plugins - ${title}`;
-      }, [ name ]);
+        window.document.title = Messages.EDITOR_TITLE.format({ type: Messages.PLUGINS, name: title }) as string;
+      }, [ title ]);
 
       useEffect(() => {
         setName(pluginStore.getName(id));

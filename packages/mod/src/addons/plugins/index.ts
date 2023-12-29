@@ -1,3 +1,4 @@
+import { Messages } from "@i18n";
 import { DataStore } from "../../api/storage";
 import { InternalStore, download, getDiscordTag, isInvalidSyntax, showFilePicker } from "../../util";
 import { UserStore } from "../../webpack/common";
@@ -136,7 +137,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     return getMeta(id).authors ?? [];
   };
   public getName(id: string) {
-    return this.getMetaProperty(id, "name", "Unknown Name");
+    return this.getMetaProperty(id, "name", Messages.UNKNOWN_NAME);
   };
   public getVersionName(id: string) {
     const version = this.getMetaProperty(id, "version", "?.?.?");

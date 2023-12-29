@@ -1,9 +1,10 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: "Experiments",
-  description: "Enables experiments",
+  name: () => Messages.EXPERIMENTS_NAME,
+  description: () => Messages.EXPERIMENTS_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   patches: [
     {

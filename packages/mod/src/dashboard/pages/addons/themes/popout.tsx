@@ -7,6 +7,7 @@ import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
 import { Icons } from "../../../../components";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
+import { Messages } from "@i18n";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
@@ -14,7 +15,7 @@ export function openWindow(id: string) {
   const name = themeStore.getName(id);
   
   windowApi.openWindow({
-    title: `Themes - ${name}`,
+    title: Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name }) as string,
     id: `THEME_${id}`,
     render({ window }) {
       const ref = useRef<HTMLDivElement>(null);
@@ -103,10 +104,10 @@ export function openWindow(id: string) {
             icon={Icons.Help}
             onClick={(event: React.MouseEvent) => {
               WindowUtil.handleClick({
-                href: "https://developer.mozilla.org/en-US/docs/Web/CSS"
+                href: "https://developer.mozilla.org/docs/Web/CSS"
               }, event);
             }}
-            tooltip="Help"
+            tooltip={Messages.HELP}
           />
         </>
       );
@@ -118,7 +119,7 @@ export function openWindow(id: string) {
       useLayoutEffect(() => {
         setName(deferredValue);
         
-        window.document.title = `Themes - ${storedName}`;
+        window.document.title = Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name: storedName }) as string;
       }, [ deferredValue ]);
 
       return (

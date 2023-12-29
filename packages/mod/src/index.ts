@@ -6,7 +6,7 @@ import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
 
-import { VX } from "./api";
+import { VX } from "./window";
 
 import { pluginStore } from "./addons/plugins";
 import { whenWebpackReady } from "./webpack";

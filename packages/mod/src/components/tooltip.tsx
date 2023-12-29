@@ -2,6 +2,7 @@ import { Children, cloneElement } from "react";
 
 import { getProxyByProtoKeys } from "../webpack";
 import ErrorBoundary from "./boundary";
+import { PopoutAlign, PopoutPosition } from "./popout";
 
 interface TooltipColors {
   PRIMARY: string,
@@ -32,12 +33,12 @@ interface TooltipProps {
   hide?: boolean,
   hideOnClick?: boolean,
   /** @note maybe? */
-  position?: "top" | "bottom" | "left" | "right" | "center",
+  position?: PopoutPosition,
   /** @note maybe? */
-  align?: "top" | "bottom" | "left" | "right" | "center",
+  align?: PopoutAlign,
   shouldShow?: boolean
   spacing?: number,
-  text: string,
+  text: React.ReactElement | string | null,
   children: (props: PassedChildrenProps) => React.ReactNode
 };
 

@@ -4,4 +4,8 @@
   overflow: hidden;
   color: var(--header-secondary);
   line-height: 13px;
+  cursor: pointer;
+}
+.vx-call-duration:hover {
+  text-decoration: underline;
 }

@@ -10,6 +10,7 @@ import { byStrings, getProxy, getProxyByKeys } from "../../webpack";
 import { WindowUtil } from "../../webpack/common";
 
 import { addStyle, removeStyle } from "./index.css?managed";
+import { Messages } from "@i18n";
 
 function getID(embedLink: string) {
   return embedLink.split("/").at(-1)!.split("?").at(0)!;
@@ -208,8 +209,8 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
 };
 
 export default definePlugin({
-  name: "DiscordYoutubePlayer",
-  description: "Makes Youtube use the standard discord mediaplayer, it can lag. Caching does take a super long time",
+  name: () => Messages.DISCORD_YOUTUBE_PLAYER_NAME,
+  description: () => Messages.DISCORD_YOUTUBE_PLAYER_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

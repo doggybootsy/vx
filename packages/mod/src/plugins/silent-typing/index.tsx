@@ -1,3 +1,4 @@
+import { Messages } from "@i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
@@ -26,6 +27,7 @@ export const settings = createSettings("SilentTyping", {
     default: false,
     title: "Always Show Button",
     description: "Shows the button even when you can't type",
+    onChange() {},
     disabled(settings) { return !settings.button.use(); },
     props: { hideBorder: true, style: { margin: 0 } }
   }
@@ -48,15 +50,15 @@ async function patchSilentTyping() {
 };
 
 export default definePlugin({
-  name: "SilentTyping",
-  description: "Tricks discord into thinking that you aren't typing",
+  name: () => Messages.SILENT_TYPING_NAME,
+  description: () => Messages.SILENT_TYPING_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
   patches: {
     match: "ChannelTextAreaButtons",
     find: /return\(!.{1,3}\.isMobile&&.+?&&(.{1,3})\.push.+?{disabled:(.{1,3}),type:(.{1,3})}/,
-    replace: "if($enabled)$self._addButton($1,$2,$3);$&"
+    replace: "$self._addButton($1,$2,$3,$enabled);$&"
   },
   start() {
     enabled = true;
@@ -68,12 +70,13 @@ export default definePlugin({
     removeStyle();
     injector.unpatchAll();
   },
-  _addButton(buttons: React.ReactNode[], disabled: boolean, type: { analyticsName: string }) {
+  _addButton(buttons: React.ReactNode[], disabled: boolean, type: { analyticsName: string }, enabled: boolean) {
     const shouldAddButton = settings.button.use();
     const alwaysShowButton = settings.alwaysShowButton.use();
     
     if (type.analyticsName !== "normal") return;
     if (!shouldAddButton || (disabled && !alwaysShowButton)) return;
+    if (!enabled) return;
 
     buttons.push(
       <KeyboardButton key="silent-typing-keyboard-button" />

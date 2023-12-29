@@ -8,31 +8,32 @@ export const enum SettingType {
   CUSTOM
 };
 
-interface SettingsCommon {
+interface SettingsCommon<T> {
   title: string,
   description?: string,
+  default: T,
   // How does one type this, so it shows all of the settings? Because SettingTypes can't be used in itself
-  disabled?(settings: CreatedSettings<Record<string, SettingTypes>>): boolean
+  disabled?(settings: CreatedSettings<Record<string, SettingTypes>>): boolean,
+  onChange?(state: T): void
 };
 
-interface SwitchSettingType extends SettingsCommon {
+interface SwitchSettingType extends SettingsCommon<boolean> {
   type: SettingType.SWITCH,
-  props?: Omit<FormSwitchProps, "disabled" | "value" | "onChange" | "children" | "note">,
-  default: boolean
+  props?: Omit<FormSwitchProps, "disabled" | "value" | "onChange" | "children" | "note">
 };
-interface ColorSettingType extends SettingsCommon {
-  type: SettingType.COLOR,
-  default: number
+interface ColorSettingType extends SettingsCommon<number> {
+  type: SettingType.COLOR
 };
-interface InputSettingType extends SettingsCommon {
+interface InputSettingType extends SettingsCommon<string> {
   type: SettingType.INPUT,
-  default: string,
   placeholder: string
 };
+
 export interface CustomSettingType<V> {
   type: SettingType.CUSTOM,
   default: V,
-  render?(props: { setState(state: V): void, state: V }): React.ReactNode
+  render?(props: { setState(state: V): void, state: V }): React.ReactNode,
+  onChange?(settings: V): void
 };
 
 type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | CustomSettingType<any>;
@@ -51,12 +52,20 @@ export interface CreatedSetting<T extends SettingTypes> {
 };
 
 function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>, settings: CreatedSettings<Record<string, SettingTypes>>) {
+  function set(value: any) {
+    setting.set(value);
+    if (typeof element.onChange === "function") element.onChange(value as never);
+  };
+
   if (element.type === SettingType.CUSTOM) {
     if (!element.render) return () => null;
 
     const Render = element.render;
     return () => (
-      <Render state={setting.use()} setState={setting.set} />
+      <Render 
+        state={setting.use()} 
+        setState={set} 
+      />
     )
   };
 
@@ -71,7 +80,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
       return (
         <FormSwitch
           value={value}
-          onChange={(value) => setting.set(value)}
+          onChange={set}
           disabled={isDisabled}
           note={$setting.description}
           {...props}
@@ -89,7 +98,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
       return (
         <FormBody title={element.title} description={element.description}>
           <ColorPicker
-            onChange={(color) => setting.set(color)}
+            onChange={set}
             value={value}
             disabled={isDisabled}
             defaultColor={$setting.default}
