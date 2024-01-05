@@ -1,6 +1,6 @@
 import { settings } from ".";
 import { Button, ErrorBoundary } from "../../components";
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
 
 function KeyboardSlash() {
   return (

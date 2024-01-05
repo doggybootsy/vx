@@ -9,11 +9,27 @@ import masks from "./masks.html";
 import { VX } from "./window";
 
 import { pluginStore } from "./addons/plugins";
-import { whenWebpackReady } from "./webpack";
+import { whenWebpackReady } from "@webpack";
 
 window.VX = VX;
 
-whenWebpackReady().then(() => pluginStore.initPlugins());
+function runPlugins() {
+  switch (document.readyState) {
+    case "complete":
+      pluginStore.initPlugins("document-idle");
+      break;
+    case "interactive":
+      pluginStore.initPlugins("document-end");
+      break;
+    case "loading":
+      pluginStore.initPlugins("document-start");
+      break;
+  }
+};
+
+document.addEventListener("readystatechange", runPlugins);
+
+whenWebpackReady().then(() => pluginStore.initPlugins("webpack-ready"));
 
 waitForNode("body").then((body) => {
   const script = document.createElement("script");

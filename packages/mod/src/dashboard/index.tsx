@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { IS_DESKTOP, env, git } from "self";
 
-import { LayerManager, WindowUtil } from "../webpack/common";
+import { LayerManager, WindowUtil } from "@webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
@@ -10,7 +10,7 @@ import { openAlertModal } from "../api/modals";
 import { Icons, SettingsView } from "../components";
 import { Extensions } from "./pages/extension";
 import { Community } from "./pages/community";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 export function Panel(props: {
   title: React.ReactNode,

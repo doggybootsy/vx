@@ -1,5 +1,5 @@
+import { MegaModule } from "../../components";
 import { IconProps } from "../../components/icons";
-import { getProxyByKeys } from "../../webpack";
 
 interface MenuProps {
   navId: string,
@@ -91,37 +91,35 @@ interface MenuRadioItemProps extends MenuCheckboxItemProps {
   group: string
 };
 
-const components = getProxyByKeys<any>([ "MenuItem", "Menu" ]);
-
 export default {
   get Menu(): React.FunctionComponent<MenuProps> { 
-    return components.Menu;
+    return MegaModule.Menu;
   },
   get MenuCheckboxItem(): React.FunctionComponent<MenuCheckboxItemProps> { 
-    return components.MenuCheckboxItem;
+    return MegaModule.MenuCheckboxItem;
   },
   get MenuControlItem(): React.FunctionComponent<MenuControlItemProps> { 
-    return components.MenuControlItem;
+    return MegaModule.MenuControlItem;
   },
   get MenuGroup(): React.FunctionComponent<MenuGroupProps> { 
-    return components.MenuGroup;
+    return MegaModule.MenuGroup;
   },
   get MenuItem(): React.FunctionComponent<MenuItemProps> { 
-    return components.MenuItem;
+    return MegaModule.MenuItem;
   },
   get MenuRadioItem(): React.FunctionComponent<MenuRadioItemProps> { 
-    return components.MenuRadioItem;
+    return MegaModule.MenuRadioItem;
   },
   get MenuSearchControl(): React.FunctionComponent<MenuSearchControlProps> { 
-    return components.MenuSearchControl;
+    return MegaModule.MenuSearchControl;
   },
   get MenuSeparator(): React.FunctionComponent { 
-    return components.MenuSeparator;
+    return MegaModule.MenuSeparator;
   },
   get MenuSliderControl(): React.FunctionComponent<MenuSliderControlProps> { 
-    return components.MenuSliderControl;
+    return MegaModule.MenuSliderControl;
   },
   get MenuSpinner(): React.FunctionComponent { 
-    return components.MenuSpinner;
+    return MegaModule.MenuSpinner;
   }
 };

@@ -1,7 +1,7 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
-import { MessageStore, UserStore, dirtyDispatch } from "../../webpack/common";
+import { MessageStore, UserStore, dirtyDispatch } from "@webpack/common";
 
 export default definePlugin({
   name: () => Messages.DOUBLE_CLICK_EDIT_NAME,

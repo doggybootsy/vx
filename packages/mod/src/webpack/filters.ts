@@ -1,7 +1,7 @@
 import { getLazy } from "./lazy";
 import { getModule } from "./searching";
 import { getProxy } from "./util";
-import { webpackRequire } from "./webpack";
+import { webpackRequire } from "@webpack";
 
 export function bySource(...sources: string[]): Webpack.Filter {
   const filter = byStrings(...sources);

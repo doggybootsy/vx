@@ -18,7 +18,7 @@ waitForNode("head").then((head) => {
   style.appendChild(document.createTextNode(`#vx-logo {
     position: fixed;
     bottom: 4px;
-    right: 4px;
+    left: 4px;
     color: rgb(148, 155, 164);
     z-index: 3000;
   }`));

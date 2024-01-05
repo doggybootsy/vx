@@ -4,7 +4,7 @@ import { Developers } from "../../constants";
 import { ZipButton } from "./button";
 
 import { addStyle, removeStyle } from "./index.css?managed";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 export function isZIP(filename: string) {
   return /\.(zip|rar|tar)($|\?|#)/.test(filename);

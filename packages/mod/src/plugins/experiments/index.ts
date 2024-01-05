@@ -1,4 +1,4 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 

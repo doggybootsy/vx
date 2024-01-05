@@ -1,4 +1,4 @@
-import { getProxyByKeys } from "../../webpack";
+import { MegaModule } from "../../components";
 
 interface ModalCloseButtonProps {
   className?: string,
@@ -38,31 +38,29 @@ interface ModalRootProps {
   transitionState?: 0 | 1 | 2 | 3 | 4 | null
 };
 
-const components = getProxyByKeys<any>([ "ModalCloseButton", "ModalContent" ]);
-
 export default {
   get ModalCloseButton(): React.FunctionComponent<ModalCloseButtonProps> { 
-    return components.ModalCloseButton;
+    return MegaModule.ModalCloseButton;
   },
   get ModalContent(): React.FunctionComponent<ModalContentProps> { 
-    return components.ModalContent;
+    return MegaModule.ModalContent;
   },
   get ModalFooter(): React.FunctionComponent<ModalFooterProps> { 
-    return components.ModalFooter;
+    return MegaModule.ModalFooter;
   },
   get ModalHeader(): React.FunctionComponent<ModalHeaderProps> { 
-    return components.ModalHeader;
+    return MegaModule.ModalHeader;
   },
   get ModalListContent(): React.FunctionComponent<any> { 
-    return components.ModalListContent;
+    return MegaModule.ModalListContent;
   },
   get ModalRoot(): React.FunctionComponent<ModalRootProps> { 
-    return components.ModalRoot;
+    return MegaModule.ModalRoot;
   },
   get ModalSize(): Record<"SMALL" | "MEDIUM" | "LARGE" | "DYNAMIC", string> { 
-    return components.ModalSize;
+    return MegaModule.ModalSize;
   },
   get ModalTransitionState(): Record<"ENTERING" | "ENTERED" | "EXITING" | "EXITED" | "HIDDEN", 0 | 1 | 2 | 3 | 4> { 
-    return components.ModalTransitionState;
+    return MegaModule.ModalTransitionState;
   }
 };

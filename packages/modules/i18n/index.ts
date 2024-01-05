@@ -1,5 +1,5 @@
-import { getLazy } from "../../mod/src/webpack";
-import { I18n, LocaleCodes } from "../../mod/src/webpack/common";
+import { getLazy } from "@webpack";
+import { I18n, LocaleCodes } from "@webpack/common";
 import { internalDataStore } from "../../mod/src/api/storage";
 import { getMessage } from "./locales";
 import { FormattedMessage } from "./locales/formattedMessage";
@@ -17,7 +17,7 @@ getLazy<typeof I18n>(m => m.Messages && Array.isArray(m._events.locale)).then(()
   }
   onI18nListeners.clear();
 
-  internalDataStore.ensure("last-loaded-locale", I18n.getLocale());
+  internalDataStore.set("last-loaded-locale", I18n.getLocale());
 });
 
 export function getLoadPromise(): Promise<void> {

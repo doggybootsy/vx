@@ -1,4 +1,4 @@
-import { addChangeListener, plugins } from "@styler";
+import { addChangeListener, plugins } from "styler";
 import { InternalStore, download, showFilePicker } from "../../util";
 import { waitForNode } from "common/dom";
 import { closeWindow } from "../../api/window";

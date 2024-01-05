@@ -39,9 +39,11 @@ export function getLazy<T>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptio
 
     listeners.add(listener);
 
-    if (signal) signal.addEventListener("abort", () => {
-      reject(new Error("User aborted lazy module search"));
-      undoListener();
-    });
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        reject(new Error("User aborted lazy module search"));
+        undoListener();
+      })
+    };
   });
 };

@@ -2,13 +2,13 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { openConfirmModal, openImageModal, openInviteModal, openUserModal } from "../../../../api/modals";
 import { Icons, Mask, Tooltip, Switch, Button } from "../../../../components";
 import { className, getDefaultAvatar, generateFaviconURL } from "../../../../util";
-import { LayerManager, WindowUtil, openUserContextMenu } from "../../../../webpack/common";
+import { LayerManager, WindowUtil, openUserContextMenu } from "@webpack/common";
 import { useInternalStore, useUser } from "../../../../hooks";
 import { SafePlugin } from ".";
 import { pluginStore } from "../../../../addons/plugins";
 import { openWindow } from "./popout";
 import { internalDataStore } from "../../../../api/storage";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
   const user = useUser(dev.discord);

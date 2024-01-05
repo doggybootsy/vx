@@ -12,7 +12,7 @@ import { IconFullProps } from "../../../../components/icons";
 import { openAlertModal } from "../../../../api/modals";
 import { getMeta, replaceMeta, replaceMetaValue } from "../../../../addons/meta";
 import { MenuComponents } from "../../../../api/menu";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 

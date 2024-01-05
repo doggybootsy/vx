@@ -1,5 +1,5 @@
 import { User } from "discord-types/general";
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
 
 const userProfileModalActions = getProxyByKeys<{
   openUserProfileModal(data: { userId: string }): void,

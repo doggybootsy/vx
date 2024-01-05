@@ -1,6 +1,7 @@
 import { ModalComponents } from ".";
-import { addPlainTextPatch, getProxyByKeys } from "../../webpack";
+import { addPlainTextPatch, getProxyByKeys } from "@webpack";
 import { openModal } from "./actions";
+import { MegaModule } from "../../components";
 
 function getImageSize(src: string) {  
   return new Promise<{ height: number, width: number }>((resolve, reject) => {
@@ -45,7 +46,6 @@ function getVideoDetails(src: string){
   });
 }
 
-const Components = getProxyByKeys<any>([ "Anchor", "ModalRoot" ]);
 const mediaModal = getProxyByKeys([ "ImageModal", "VideoModal" ]);
 
 addPlainTextPatch({
@@ -78,7 +78,7 @@ export async function openImageModal(src: string | URL) {
           shouldAnimate={true}
           shouldHideMediaOptions={false}
           src={src}
-          renderLinkComponent={Components.Anchor}
+          renderLinkComponent={MegaModule.Anchor}
         />
       </ModalComponents.ModalRoot>
     )

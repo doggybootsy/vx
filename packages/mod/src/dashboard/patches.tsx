@@ -4,8 +4,8 @@ import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { cache } from "../util";
-import { byStrings, getByKeys } from "../webpack";
-import { addPlainTextPatch } from "../webpack";
+import { byStrings, getByKeys } from "@webpack";
+import { addPlainTextPatch } from "@webpack";
 
 addPlainTextPatch(
   {

@@ -1,3 +1,5 @@
+import { env } from "self";
+
 export type PlainTextPatchType = PlainTextPatch | PlainTextPatchNonArray | PlainTextPatchReplacer;
 
 interface PlainTextPatchBase {
@@ -39,40 +41,37 @@ interface PlainTextReplacerSymbolString {
 
 export type PlainTextReplacer = PlainTextReplacerFunction | PlainTextReplacerSymbolString | PlainTextReplacerString;
 
-export const plainTextPatches: PlainTextPatch[] = [
+export const plainTextPatches: PlainTextPatch[] = [];
+
+addPlainTextPatch(
   // Remove the hash thats appended to react element keys, ex 'Element.__reactFiber$'
   {
-    identifier: "VX(react-reconciler)",
+    identifier: "VX(no-react-reconciler-hash)",
     match: "__reactFiber$",
-    replacements: [
-      {
-        find: /(var (.{1,3}))=Math.random\(\).toString\(36\).slice\(2\)/,
-        replace: "$1=''"
-      }
-    ]
-  },
-  // No more "HOLD UP!"
+    find: /(var (.{1,3}))=Math.random\(\).toString\(36\).slice\(2\)/,
+    replace: "$1=''"
+  }, 
+  // Removes the 'HOLD UP' logs in console and prevents token hiding
   {
     identifier: "VX(no-hold-up)",
     match: ".window.setDevtoolsCallbacks",
-    replacements: [
-      {
-        find: /.+/,
-        replace: "function(module,exports,require){require.r(exports);require.d(exports,{default(){return ()=>{}}})}"
-      }
-    ]
+    find: /.+/,
+    replace: "function(module,exports,require){require.r(exports);require.d(exports,{default(){return ()=>{}}})}"
   },
+  // Little loader icon in bottom left
   {
-    identifier: "VX(save-localstorage)",
-    match: "delete window.localStorage",
-    replacements: [
-      {
-        find: "delete window.localStorage",
-        replace: ""
-      }
-    ]
-  }
-];
+    identifier: "VX(loading-logo)",
+    match: "opacity:this.state.opacity},children:[",
+    find: /opacity:this\.state\.opacity},children:\[/,
+    replace: `$&$react.createElement("div",{className:"vx-loader-icon",title:"VX v${env.VERSION}",children:$react.createElement($vx.components.Icons.Logo)}),`
+  },
+  // Prevents localStorage and sessionStorage from getting deleted
+  ...[ "localStorage", "sessionStorage" ].map((type) => ({
+    identifier: `VX(save-${type})`,
+    find: `delete window.${type}`,
+    replace: ""
+  }))
+);
 
 export function addPlainTextPatch(...patches: PlainTextPatchType[]) {
   for (const patch of patches) {

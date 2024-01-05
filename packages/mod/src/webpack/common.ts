@@ -2,13 +2,13 @@ export { default as React } from "./react";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { getProxyByKeys, getProxyByStrings } from "./filters"
+import { getProxyByKeys } from "./filters"
 import { getProxyStore } from "./stores";
 import { getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { proxyCache } from "../util";
-import { webpackRequire } from "./webpack";
+import { webpackRequire } from "@webpack";
 
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
@@ -116,11 +116,14 @@ export const LayerManager = {
 };
 
 const cachedUserFetches = new Map<string, Promise<User>>();
-const fetchUserModule = getProxyByStrings<(uid: string) => Promise<User>>([ "USER_UPDATE", "getUser", "USER(" ], { searchExports: true });
+const fetchUserModule = getProxyByKeys<{
+  getUser: (userId: string) => Promise<User>
+}>([ "fetchCurrentUser", "getUser" ]);
+
 export function fetchUser(userId: string): Promise<User> {
   if (cachedUserFetches.has(userId)) return cachedUserFetches.get(userId)!;
 
-  const request = fetchUserModule(userId);
+  const request = fetchUserModule.getUser(userId);
   request.catch(() => {
     // To attempt the fetch again later
     cachedUserFetches.delete(userId);
@@ -201,7 +204,11 @@ interface KnownPermssionBits {
   CREATE_EVENTS: 17592186044416n
 };
 
-export const PermissionsBits = getProxy<KnownPermssionBits & Record<string, bigint>>((m) => [ "ADMINISTRATOR", "MANAGE_ROLES", "MENTION_EVERYONE" ].every(b => typeof m[b] === "bigint"), { searchExports: true });
+interface Constants {
+  Permissions: KnownPermssionBits & Record<string, bigint>
+};
+
+export const Constants = getProxyByKeys<Omit<Record<string, any>, keyof Constants> & Constants>([ "Accessibility", "AVATAR_SIZE", "Permissions" ]);
 
 interface Invite {
   approximate_member_count: number,

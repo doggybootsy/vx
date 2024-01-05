@@ -1,5 +1,5 @@
-import { getLazyByKeys } from "../../../mod/src/webpack";
-import { LocaleCodes } from "../../../mod/src/webpack/common";
+import { getLazyByKeys } from "@webpack";
+import { LocaleCodes } from "@webpack/common";
 
 let FormatableMessageApi: any;
 getLazyByKeys([ "FormattedMessage" ]).then(api => FormatableMessageApi = api);

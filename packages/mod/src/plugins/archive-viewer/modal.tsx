@@ -3,11 +3,11 @@ import JSZip from "jszip";
 import { useAbortEffect } from "../../hooks";
 import { Fragment, useMemo, useRef, useState } from "react";
 import { Button, Flex, Icons, Spinner, Tooltip } from "../../components";
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
 import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "uncompress.js";
 import { isZIP } from ".";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 interface ZipModalProps extends ModalProps {
   src: string | File
@@ -30,16 +30,17 @@ const scrollerClasses = getProxyByKeys([ "thin", "customTheme" ]);
 const Components = getProxyByKeys([ "FormSwitch", "Button" ]);
 
 function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { file: FileType, onClick(): void, disabled?: boolean, selected?: boolean, onSelect?(state: boolean): void, onDownload?(): void }) {
-  const ref = useRef<HTMLDivElement>(null);
-
   return (
-    <div className={className([ "vx-zip-file", disabled && "vx-zip-disabled" ])} onClick={(event) => {
-      if (disabled) return;
-      if (!(event.target instanceof Element)) return;
-      if (getParents(event.target).includes(ref.current!)) return;
+    <div 
+      className={className([ "vx-zip-file", disabled && "vx-zip-disabled" ])} 
+      onClick={(event) => {
+        if (disabled) return;
+        if (!(event.target instanceof Element)) return;
+        if (event.target.matches(".vx-zip-actions") || getParents(event.target).query(".vx-zip-actions")) return;
 
-      onClick();
-    }}>
+        onClick();
+      }}
+    >
       <div className="vx-zip-type">
         {file.dir ? (
           <Icons.Folder />
@@ -54,10 +55,7 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
         )}
       </div>
       <div className="vx-zip-name">{file.name}</div>
-      <div
-        className="vx-zip-actions"
-        ref={ref}
-      >
+      <div className="vx-zip-actions">
         {file.name !== ".." && (
           <>
             <Tooltip text="Download">

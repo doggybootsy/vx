@@ -6,7 +6,7 @@ import { Developers } from "../../constants";
 import { className } from "../../util";
 
 import { addStyle } from "./index.css?managed";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 function PIP() {
   const ref = useRef<HTMLDivElement>(null);

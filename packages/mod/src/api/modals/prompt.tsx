@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 
-import { Button } from "../../components";
-import { getProxyByKeys } from "../../webpack";
-import { I18n } from "../../webpack/common";
+import { Button, MegaModule } from "../../components";
+import { getProxyByKeys } from "@webpack";
+import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 import { ConfirmModalOptions } from "./confirmModal";
 
@@ -14,8 +14,6 @@ type PromptOptions = {
   placeholder?: string
 };
 type PromptModalOptions = Omit<ConfirmModalOptions, "onCloseRequest" | "onConfirm" | "onCancel"> & PromptOptions;
-
-const components = getProxyByKeys<any>([ "ConfirmModal", "TextInput" ]);
 
 export function openPromptModal(title: React.ReactNode, options: PromptModalOptions = { }): Promise<string | null> {
   let input = options.value ?? "";
@@ -45,10 +43,10 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
       const [ hasError, setHasError ] = useState(() => !match.test(input));
       
       return (
-        <components.Shakeable
+        <MegaModule.Shakeable
           ref={ref}
         >
-          <components.ConfirmModal
+          <MegaModule.ConfirmModal
             header={title}
             className="vx-modals-confirm-modal"
             confirmText={confirmText}
@@ -70,7 +68,7 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
             transitionState={props.transitionState}
             onClose={() => {}}
           >
-            <components.TextInput 
+            <MegaModule.TextInput 
               value={state}
               placeholder={options.placeholder}
               style={{
@@ -100,8 +98,8 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
               maxLength={maxLength}
               autoFocus
             />
-          </components.ConfirmModal>
-        </components.Shakeable>
+          </MegaModule.ConfirmModal>
+        </MegaModule.Shakeable>
       )
     }, {
       onCloseCallback,

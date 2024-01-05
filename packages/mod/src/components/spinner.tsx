@@ -1,6 +1,6 @@
 import { className } from "../util";
-import { getProxyByKeys } from "../webpack";
 import ErrorBoundary from "./boundary";
+import { MegaModule } from "./util";
 
 type HTMLDivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
@@ -10,8 +10,6 @@ interface SpinnerProps extends Omit<HTMLDivProps, "children"> {
   className?: string, 
   itemClassName?: string
 };
-
-const Components = getProxyByKeys([ "Spinner", "Button" ]);
 
 const Type = {
   WANDERING_CUBES: "wanderingCubes",
@@ -27,7 +25,7 @@ export function Spinner(props: SpinnerProps) {
 
   return (
     <ErrorBoundary>
-      <Components.Spinner {...props} className={cn} />
+      <MegaModule.Spinner {...props} className={cn} />
     </ErrorBoundary>
   );
 };

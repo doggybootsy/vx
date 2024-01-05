@@ -1,6 +1,6 @@
 import { Children, useMemo } from "react";
 
-import { getProxyByKeys } from "../webpack";
+import { getProxyByKeys } from "@webpack";
 import ErrorBoundary from "./boundary";
 
 const markdownWrapper = getProxyByKeys<{

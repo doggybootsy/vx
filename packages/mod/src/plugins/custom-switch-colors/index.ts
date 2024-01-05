@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
 import { SettingType, createSettings } from "../settings";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const settings = createSettings("CustomSwitchColors", {
   on: {

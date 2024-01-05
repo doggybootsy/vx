@@ -1,8 +1,8 @@
 import { definePlugin } from "../";
 import { Guild, GuildMember, User } from "discord-types/general";
 import { Developers } from "../../constants";
-import { PermissionStore, PermissionsBits } from "../../webpack/common";
-import { Messages } from "@i18n";
+import { Constants, PermissionStore } from "@webpack/common";
+import { Messages } from "i18n";
 
 export default definePlugin({
   name: () => Messages.REMOVE_NO_ROLES_NAME,
@@ -20,7 +20,7 @@ export default definePlugin({
   shouldHide(props: { user: User, guild: Guild, guildMember: GuildMember }) {    
     if (!props.guild || !props.guildMember) return false;
 
-    const canManageUser = PermissionStore.canManageUser(PermissionsBits.MANAGE_ROLES, props.user, props.guild);
+    const canManageUser = PermissionStore.canManageUser(Constants.Permissions.MANAGE_ROLES, props.user, props.guild);
     if (canManageUser) return false;
 
     return props.guildMember.roles.length === 0;

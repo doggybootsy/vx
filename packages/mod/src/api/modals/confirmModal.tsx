@@ -1,6 +1,6 @@
-import { Button, transformContent } from "../../components";
-import { getProxyByKeys } from "../../webpack";
-import { I18n } from "../../webpack/common";
+import { Button, MegaModule, transformContent } from "../../components";
+import { getProxyByKeys } from "@webpack";
+import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 
 export type ConfirmModalOptions = {
@@ -12,8 +12,6 @@ export type ConfirmModalOptions = {
   onCloseRequest?(closedFromButton: boolean): boolean,
   danger?: boolean
 };
-
-const components = getProxyByKeys<{ ConfirmModal: any }>([ "ConfirmModal" ]);
 
 export function openConfirmModal(title: React.ReactNode, content: React.ReactNode | React.ReactNode[], options: ConfirmModalOptions = {}) {
   function dummy() { };
@@ -30,7 +28,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
   let closedFromButton = false;
   
   const modal = openModal((props) => (
-    <components.ConfirmModal
+    <MegaModule.ConfirmModal
       header={title}
       className="vx-modals-confirm-modal"
       confirmText={confirmText}
@@ -52,7 +50,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
       onClose={() => {}}
     >
       {transformContent(content, "vx-modal-line")}
-    </components.ConfirmModal>
+    </MegaModule.ConfirmModal>
   ), {
     onCloseCallback() {
       if (!closedFromButton) onCloseCallback();

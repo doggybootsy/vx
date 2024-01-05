@@ -2,13 +2,13 @@ import { definePlugin, isPluginEnabled } from "../";
 import { User } from "discord-types/general";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
-import { getLazyByKeys } from "../../webpack";
+import { getLazyByKeys } from "@webpack";
 import { GuildMemberStore, UserStore } from "discord-types/stores";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
 import { createAbort, findInReactTree } from "../../util";
 import { Injector } from "../../patcher";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 

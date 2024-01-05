@@ -7,7 +7,7 @@ import { className } from "../../util";
 import { SettingType, createSettings } from "../settings";
 
 import { addStyle } from "./index.css?managed";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const settings = createSettings("loop", {
   autoLoop: {

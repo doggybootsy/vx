@@ -1,6 +1,6 @@
 import { Button, transformContent } from "../../components";
-import { getProxyByStrings } from "../../webpack";
-import { I18n } from "../../webpack/common";
+import { getProxyByStrings } from "@webpack";
+import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 
 interface AlertModalProps {

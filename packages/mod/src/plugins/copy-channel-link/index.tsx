@@ -1,10 +1,10 @@
 import { Channel, Guild } from "discord-types/general";
 import { definePlugin } from "..";
 import { ErrorBoundary, Icons, Tooltip } from "../../components";
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
 import { className, clipboard } from "../../util";
 import { Developers } from "../../constants";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const classes = getProxyByKeys<Record<string, string>>([ "iconItem", "summary" ]);
 

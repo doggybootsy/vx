@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { getComponentType, cacheComponent } from "../../util";
-import { byStrings, getModule, getProxyStore } from "../../webpack";
-import { dirtyDispatch } from "../../webpack/common";
+import { byStrings, getModule, getProxyStore } from "@webpack";
+import { dirtyDispatch } from "@webpack/common";
 
 const PopoutWindow = cacheComponent(() => {
   const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", "{guestWindow:");

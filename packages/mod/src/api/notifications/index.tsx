@@ -1,4 +1,4 @@
-import { addPlainTextPatch } from "../../webpack/patches";
+import { addPlainTextPatch } from "@webpack/patches";
 import { Notifications } from "./notification";
 import { notificationStore } from "./store";
 

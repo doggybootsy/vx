@@ -1,5 +1,5 @@
-import { getProxyByKeys } from "../../webpack";
-import { FluxDispatcher, GuildStore, InviteActions, dirtyDispatch } from "../../webpack/common";
+import { getProxyByKeys } from "@webpack";
+import { FluxDispatcher, GuildStore, InviteActions, dirtyDispatch } from "@webpack/common";
 
 const native = getProxyByKeys([ "close", "focus" ]);
 

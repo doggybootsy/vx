@@ -1,9 +1,9 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Developers } from "../../constants";
-import { getProxyByKeys } from "../../webpack";
-import { GuildMemberStore, GuildStore } from "../../webpack/common";
+import { getProxyByKeys } from "@webpack";
+import { GuildMemberStore, GuildStore } from "@webpack/common";
 
 const impersonationModule = getProxyByKeys([ "startImpersonating", "stopImpersonating" ]);
 

@@ -1,13 +1,13 @@
 import { useDeferredValue, useInsertionEffect, useLayoutEffect, useRef, useState } from "react";
-import { WindowUtil } from "../../../../webpack/common";
+import { WindowUtil } from "@webpack/common";
 import * as windowApi from "../../../../api/window";
 import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
-import { byKeys, byStrings, combine, getProxy, not } from "../../../../webpack";
+import { byKeys, byStrings, combine, getProxy, not } from "@webpack";
 import { Icons } from "../../../../components";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 

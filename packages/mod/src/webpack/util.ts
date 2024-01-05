@@ -1,7 +1,7 @@
 import { proxyCache } from "../util";
 import { byStrings } from "./filters";
 import { getModule } from "./searching";
-import { webpackRequire } from "./webpack";
+import { webpackRequire } from "@webpack";
 
 export function getProxy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter, opts?: Webpack.FilterOptions): T {
   return proxyCache(() => getModule(filter, opts)!);
