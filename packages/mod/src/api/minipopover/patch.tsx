@@ -1,6 +1,6 @@
 import { Channel, Message, Guild, User } from "discord-types/general";
-import { addPlainTextPatch } from "../../webpack";
-import { GuildStore, useStateFromStores } from "../../webpack/common";
+import { addPlainTextPatch } from "@webpack";
+import { GuildStore, useStateFromStores } from "@webpack/common";
 
 addPlainTextPatch({
   identifier: "VX(Minipopover)",

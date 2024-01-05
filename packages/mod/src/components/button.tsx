@@ -1,6 +1,6 @@
 import { className } from "../util"
-import { getProxyByKeys } from "../webpack"
 import ErrorBoundary from "./boundary"
+import { MegaModule } from "./util"
 
 interface ButtonSizes {
   ICON: string,
@@ -92,10 +92,6 @@ type Button = React.FunctionComponent<ButtonProps> & {
   Sizes: ButtonSizes
 };
 
-const ButtonModule = getProxyByKeys<{
-  Button: any
-}>([ "Button", "Tooltip" ]);
-
 function WrappedButton(props: ButtonProps) {
   props.innerClassName = className([
     props.innerClassName,
@@ -104,25 +100,25 @@ function WrappedButton(props: ButtonProps) {
 
   return (
     <ErrorBoundary>
-      <ButtonModule.Button {...props} />
+      <MegaModule.Button {...props} />
     </ErrorBoundary>
   );
 };
 Object.defineProperties(WrappedButton, {
   BorderColors: {
-    get: () => ButtonModule.Button.BorderColors
+    get: () => MegaModule.Button.BorderColors
   },
   Colors: {
-    get: () => ButtonModule.Button.Colors
+    get: () => MegaModule.Button.Colors
   },
   Hovers: {
-    get: () => ButtonModule.Button.Hovers
+    get: () => MegaModule.Button.Hovers
   },
   Looks: {
-    get: () => ButtonModule.Button.Looks
+    get: () => MegaModule.Button.Looks
   },
   Sizes: {
-    get: () => ButtonModule.Button.Sizes
+    get: () => MegaModule.Button.Sizes
   }
 });
 

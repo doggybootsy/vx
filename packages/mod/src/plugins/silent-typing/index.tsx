@@ -1,8 +1,8 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
-import { getLazyByKeys } from "../../webpack";
+import { getLazyByKeys } from "@webpack";
 import { SettingType, createSettings } from "../settings";
 
 import { KeyboardButton } from "./button";

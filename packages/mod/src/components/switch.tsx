@@ -1,10 +1,5 @@
-import { getProxyByKeys } from "../webpack";
 import ErrorBoundary from "./boundary";
-
-const components = getProxyByKeys<{
-  Switch: React.FunctionComponent<SwitchProps>,
-  FormSwitch: React.FunctionComponent<FormSwitchProps>
-}>([ "Switch", "FormSwitch" ]);
+import { MegaModule } from "./util";
 
 interface SwitchProps {
   id?: string,
@@ -17,7 +12,7 @@ interface SwitchProps {
 export function Switch(props: SwitchProps) {
   return (
     <ErrorBoundary>
-      <components.Switch {...props} />
+      <MegaModule.Switch {...props} />
     </ErrorBoundary>
   );
 };
@@ -37,7 +32,7 @@ export interface FormSwitchProps {
 export function FormSwitch(props: FormSwitchProps) {
   return (
     <ErrorBoundary>
-      <components.FormSwitch {...props} />
+      <MegaModule.FormSwitch {...props} />
     </ErrorBoundary>
   );
 };

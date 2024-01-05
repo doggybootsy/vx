@@ -3,11 +3,11 @@ import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
-import { getProxyByKeys } from "../../webpack";
-import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } from "../../webpack/common";
+import { getProxyByKeys } from "@webpack";
+import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } from "@webpack/common";
 
 import { addStyle } from "./index.css?managed";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 

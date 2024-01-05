@@ -1,7 +1,7 @@
 import { useEffect, useInsertionEffect, useMemo } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
-import { I18n, LocaleCodes, UserStore, fetchUser } from "./webpack/common";
+import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
 import { useState } from "react";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {

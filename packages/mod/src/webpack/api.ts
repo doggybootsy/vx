@@ -3,7 +3,7 @@ import { byKeys, byProtoKeys, byRegex, bySource, byStrings, combine, getByKeys, 
 import { getLazy } from "./lazy";
 import { getBulk, getModule, getAllModules } from "./searching";
 import { getProxy } from "./util";
-import { webpackAppChunk, webpackRequire } from "./webpack";
+import { webpackAppChunk, webpackRequire } from "@webpack";
 
 import * as webpack from "./";
 import * as common from "./common";

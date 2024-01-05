@@ -48,7 +48,7 @@ export function waitForNode<T extends Element>(query: string, options: waitForNo
 };
 
 interface waitForElementRemovedOptions {
-  target?: Node,
+  target?: Node | Document,
   signal?: AbortSignal
 };
 

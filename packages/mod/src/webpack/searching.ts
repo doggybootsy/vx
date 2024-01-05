@@ -1,5 +1,5 @@
 import { shouldSearchDefault, shouldSkipModule, wrapFilter } from "./shared";
-import { webpackRequire } from "./webpack";
+import { webpackRequire } from "@webpack";
 
 export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}): T | void {
   filter = wrapFilter(filter);
@@ -104,7 +104,7 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
   
         for (const key of keys) {
           if (!Reflect.has(module.exports, key)) continue;
-          if (modules[i].hasValue) continue;
+          if (chunk.hasValue) continue;
 
           const exported = module.exports[key];
   

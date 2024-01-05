@@ -3,13 +3,13 @@ import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { createAbort, findInReactTree } from "../../util";
 import { Injector } from "../../patcher";
-import { getLazyByKeys, getProxyByKeys } from "../../webpack";
+import { getLazyByKeys, getProxyByKeys } from "@webpack";
 import { isValidElement } from "react";
 import { MenuComponents } from "../../api/menu";
 import { Icons } from "../../components";
-import { FluxDispatcher, TextAreaInput } from "../../webpack/common";
+import { FluxDispatcher, TextAreaInput } from "@webpack/common";
 import { waitForNode } from "common/dom";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 const injector = new Injector();

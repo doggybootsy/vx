@@ -1,7 +1,7 @@
 import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { ThemeObject } from "../../addons/themes";
-import { LocaleCodes } from "../../webpack/common";
+import { LocaleCodes } from "@webpack/common";
 
 export const { localStorage, sessionStorage } = window;
 
@@ -14,11 +14,10 @@ interface DataStoreOptions<T extends Record<string, any>> {
   upgrader?(version: number, oldData: any): Partial<T> | void
 };
 
-const cache = new Map<string, DataStore>();
+const cache = new Map<string, DataStore<any>>();
 
 export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
   constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
-    // @ts-expect-error TS doesnt like return in constructors
     if (cache.has(name)) return cache.get(name)!;
 
     super();
@@ -85,6 +84,8 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
     this.version = version;
 
     this.displayName = this.toString();
+
+    cache.set(name, this);
   };
 
   _queueUpdate() {

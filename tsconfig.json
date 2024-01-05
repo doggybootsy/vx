@@ -35,9 +35,11 @@
     "paths": {
       "common": [ "./packages/common" ],
       "common/*": [ "./packages/common/*" ],
-      "@styler": [ "./packages/modules/styler" ],
-      "@i18n": [ "./packages/modules/i18n" ],
-      "typings": [ "./types/typings.ts" ]
+      "styler": [ "./packages/modules/styler" ],
+      "i18n": [ "./packages/modules/i18n" ],
+      "typings": [ "./types/typings.ts" ],
+      "@webpack": [ "./packages/mod/src/webpack" ],
+      "@webpack/*": [ "./packages/mod/src/webpack/*" ]
     },                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */

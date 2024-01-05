@@ -49,7 +49,7 @@ const ReactPlugin = {
     }, (args) => {
       return {
         resolveDir: "./packages/mod/src",
-        contents: `export * from "./webpack/react.ts";export { default } from "./webpack/react.ts";`
+        contents: `export * from "@webpack/react.ts";export { default } from "@webpack/react.ts";`
       }
     });
   }
@@ -115,7 +115,7 @@ const ManagedCSSPlugin = {
 
       return {
         contents: `
-        import { Styler } from "@styler";
+        import { Styler } from "styler";
         
         export const id = ${JSON.stringify(args.path)};
         export const css = ${JSON.stringify(css)};

@@ -1,4 +1,5 @@
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
+import { MegaModule } from "../../components";
 
 export interface ModalProps {
   transitionState: 0 | 1 | 2 | 3 | 4 | null,
@@ -14,20 +15,13 @@ export type ModalOptions = {
   onCloseCallback?: Function
 };
 
-const ModalActions = getProxyByKeys<{
-  openModal(component: ModalComponent, options: ModalOptions): string,
-  closeModal(id: string): void,
-  closeAllModals(): void,
-  hasModalOpen(id: string): boolean
-}>([ "openModal", "closeModal" ]);
-
 let counter = 0;
 export function openModal(Component: ModalComponent, options: ModalOptions = {}) {
   options.modalKey ??= `vx-${counter++}`;
 
   if (typeof Component !== "function") () => Component;
 
-  ModalActions.openModal((props) => (
+  MegaModule.openModal((props: ModalProps) => (
     <Component {...props} />
   ), options);
 
@@ -37,11 +31,11 @@ export function openModal(Component: ModalComponent, options: ModalOptions = {})
   };
 };
 export function closeModal(id: string) {  
-  ModalActions.closeModal(id);
+  MegaModule.closeModal(id);
 };
 export function closeAllModals() {
-  ModalActions.closeAllModals();
+  MegaModule.closeAllModals();
 };
 export function hasModalOpen(id: string) {
-  return ModalActions.hasModalOpen(id);
+  return MegaModule.hasModalOpen(id);
 };

@@ -91,7 +91,7 @@ declare global {
 }
 interface Window extends DiscordWindow {};
 
-type Styler = import("@styler").Styler;
+type Styler = import("styler").Styler;
 
 declare module "*.css" {};
 declare module "*.css?managed" {

@@ -1,9 +1,9 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
-import { getProxyByKeys, getProxyByStrings, getProxyStore } from "../../webpack";
-import { useStateFromStores } from "../../webpack/common";
+import { getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
+import { useStateFromStores } from "@webpack/common";
 
 const Components = getProxyByKeys([ "Heading", "Text" ]);
 const Section = getProxyByStrings<React.FunctionComponent<{ children: React.ReactNode }>>([ ",lastSection:", ".lastSection]:" ]);

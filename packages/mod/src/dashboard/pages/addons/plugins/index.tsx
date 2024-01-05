@@ -9,7 +9,7 @@ import { internalDataStore } from "../../../../api/storage";
 import { pluginStore } from "../../../../addons/plugins";
 import { useInternalStore } from "../../../../hooks";
 import { openPluginSettingsModal } from "./modal";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 export interface SafePlugin {
   type: "internal" | "custom",

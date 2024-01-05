@@ -33,3 +33,12 @@
   color: var(--text-normal);
   cursor: pointer;
 }
+
+.vx-loader-icon {
+  position: fixed;
+  bottom: 4px;
+  left: 4px;
+  display: flex;
+  color: var(--interactive-normal);
+  z-index: 3000;
+}

@@ -1,4 +1,4 @@
-import { getModuleIdBySource, webpackRequire, getByKeys, getByProtoKeys } from "../webpack";
+import { getModuleIdBySource, webpackRequire, getByKeys, getByProtoKeys } from "@webpack";
 
 import { makeLazy, proxyCache } from "../util";
 import ErrorBoundary from "./boundary";

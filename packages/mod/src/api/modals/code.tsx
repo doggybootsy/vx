@@ -3,7 +3,7 @@ import { ModalComponents } from ".";
 import { openModal } from "./actions";
 import { Flex } from "../../components";
 import { Editor } from "../../editor";
-import { getProxyByKeys } from "../../webpack";
+import { getProxyByKeys } from "@webpack";
 
 interface CodeModalOptions {
   code: string,

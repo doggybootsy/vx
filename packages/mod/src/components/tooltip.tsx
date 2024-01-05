@@ -1,8 +1,9 @@
 import { Children, cloneElement } from "react";
 
-import { getProxyByProtoKeys } from "../webpack";
+import { getProxyByProtoKeys } from "@webpack";
 import ErrorBoundary from "./boundary";
 import { PopoutAlign, PopoutPosition } from "./popout";
+import { MegaModule } from "./util";
 
 interface TooltipColors {
   PRIMARY: string,
@@ -42,12 +43,10 @@ interface TooltipProps {
   children: (props: PassedChildrenProps) => React.ReactNode
 };
 
-const RawTooltip = getProxyByProtoKeys<React.FunctionComponent<TooltipProps> & { Colors: TooltipColors }>([ "renderTooltip", "shouldShowTooltip" ], { searchExports: true });
-
 export function Tooltip(props: TooltipProps) {
   return (
     <ErrorBoundary>
-      <RawTooltip {...props} />
+      <MegaModule.Tooltip {...props} />
     </ErrorBoundary>
   );
 };

@@ -1,6 +1,7 @@
 import React, { createElement, lazy as $lazy, Suspense, Component } from "react";
-import { getProxyByKeys } from "./webpack";
+import { getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
+import { FluxStore } from "discord-types/stores";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -365,14 +366,117 @@ export function download(filename: string, part: BlobPart) {
   URL.revokeObjectURL(blobURL);
 };
 
-export function getParents(element: Element | null) {
-  const parents: Element[] = [];
+export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
+  if (typeof (window as any).Iterator === "function") {
+    return (window as any).Iterator.from(iterator);
+  };
 
-  while (element && (element = element.parentElement)) {
-    parents.push(element);
-  }
+  const generator = iterator[Symbol.iterator]();
   
-  return parents;
+  const data = {};
+  Object.defineProperty(data, "next", {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: generator.next.bind(generator)
+  });
+  Object.defineProperty(data, Symbol.toStringTag, {
+    enumerable: false,
+    writable: false,
+    configurable: true,
+    value: "Array Iterator"
+  });
+
+  const proto = {};
+  Object.defineProperty(proto, Symbol.iterator, {
+    enumerable: false,
+    writable: true,
+    configurable: true,
+    value: iterator[Symbol.iterator].bind(generator)
+  });
+
+  Object.setPrototypeOf(data, proto);
+
+  return data as IterableIterator<T>;
+};
+
+export class VXNodeList<T extends Node> {
+  constructor(nodes: Iterable<T> = []) {
+    this.#array = Array.from(nodes).filter((node) => node instanceof Node);
+  };
+
+  #array: T[];
+
+  query(selectors: string): T | null {
+    for (const node of this) {
+      if (!(node instanceof Element)) continue;
+      if (node.matches(selectors)) return node;
+    };
+
+    return null;
+  };
+  includes(node: T | null): boolean {
+    if (node === null) return false;
+    return this.#array.includes(node);
+  };
+
+  get length() { return this.#array.length; };
+
+  entries() {
+    const gen = this.values();
+    let result: IteratorResult<T, void>;
+    let counter = 0;
+    const entries: [ number, T ][] = [];
+
+    while ((result = gen.next(), !result.done)) {
+      entries.push([ counter++, result.value ]);
+    };
+
+    return iteratorFrom(entries);
+  };
+
+  keys() {
+    const gen = this.values();
+    let result: IteratorResult<T, void>;
+    let counter = 0;
+    const keys: [ number, T ][] = [];
+
+    while ((result = gen.next(), !result.done)) {
+      keys.push([ counter++, result.value ]);
+    };
+
+    return iteratorFrom(keys);
+  };
+
+  values(): IterableIterator<T> {
+    return iteratorFrom(this.#array); 
+  };
+
+  item(index: number): T | null {
+    return this.#array.at(index) ?? null;
+  };
+
+  forEach(callbackfn: (value: T, key: number, parent: VXNodeList<T>) => void, thisArg: any = this) {
+    for (const [ key, node ] of this.entries()) {
+      callbackfn.apply(thisArg, [ node, key, this ]);
+    };
+  };
+
+  [Symbol.iterator]() {
+    return iteratorFrom(this.#array); 
+  };
+};
+
+export function getParents(element: Element | null): VXNodeList<Element> {
+  if (!element) return new VXNodeList();
+
+  const parents = [];
+
+  while (element = element.parentElement) {
+    parents.push(element);
+  };
+  
+  return new VXNodeList(parents);
 };
 
 export function createAbort(): readonly [ (reason?: any) => void, () => AbortSignal ] {
@@ -436,4 +540,63 @@ export function generateFaviconURL(website: string): string {
   url.searchParams.set("sz", "64");
   url.searchParams.set("domain", website);
   return url.href;
+};
+
+export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory: () => T) {
+  const sym = Symbol("vx.flux.component");
+
+  const $stores = Array.isArray(stores) ? stores : [ stores ];
+
+  class FluxComponent<P = {}, S = {},  SS = {}> extends React.Component<P, S, SS> {
+    constructor(props: P) {
+      super(props);
+
+      this.forceUpdateFluxState = this.forceUpdateFluxState.bind(this);
+      
+      const { componentWillUnmount, componentDidMount } = this;
+
+      this.componentDidMount = function() {
+        componentDidMount.call(this);
+
+        if (!this[sym].componentDidMount) {
+          console.warn("[VX~FluxComponent]: Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
+          FluxComponent.prototype.componentDidMount.call(this);
+        }
+      };
+      this.componentWillUnmount = function() {
+        componentWillUnmount.call(this);
+
+        if (!this[sym].componentWillUnmount) {
+          console.warn("[VX~FluxComponent]: Original 'componentWillUnmount' wasn't ran! Make sure to do 'super.componentWillUnmount()'!");
+          FluxComponent.prototype.componentWillUnmount.call(this);
+        }
+      };
+    };
+
+    public readonly fluxState: T = factory();
+    private readonly [sym] = {
+      componentDidMount: false,
+      componentWillUnmount: false
+    };
+    
+    protected forceUpdateFluxState(callback?: () => void) {
+      (this as any).fluxState = factory();
+      this.forceUpdate(callback);
+    };
+
+    public componentDidMount(): void {
+      for (const store of $stores) {
+        store.addChangeListener(this.forceUpdateFluxState);
+      }
+      this[sym].componentDidMount = true;
+    };
+    public componentWillUnmount(): void {
+      for (const store of $stores) {
+        store.removeChangeListener(this.forceUpdateFluxState);
+      }
+      this[sym].componentWillUnmount = true;
+    };
+  };
+
+  return FluxComponent;
 };

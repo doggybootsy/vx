@@ -1,7 +1,7 @@
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 import { DataStore } from "../../api/storage";
 import { InternalStore, download, getDiscordTag, isInvalidSyntax, showFilePicker } from "../../util";
-import { UserStore } from "../../webpack/common";
+import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";
 
 export interface PluginObject {
@@ -66,8 +66,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   private evalPlugin(id: string) {
     const code = this.getJS(id);
 
-    if (isInvalidSyntax(code)) {}; // TODO
-    const rawModule = new Function("module", "exports", `"use strict";\ntry {\n${code}\n}\ncatch(e) {}\n//# sourceURL=vx://VX/plugins/${id}.js`);
+    const rawModule = new Function("module", "exports", `"use strict";\n${code}\n//# sourceURL=vx://VX/plugins/${id}.js`);
 
     let loaded = false;
 
@@ -79,7 +78,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       get enabled() { return self.isEnabled(id); },
       meta: new Proxy({}, {
         get(target, key) {
-          return self.getMetaProperty(id, key as string, null as unknown as string);
+          return (target as any)[key] = self.getMetaProperty(id, key as string, null as unknown as string);
         },
         set() { return false },
         deleteProperty() { return false },
@@ -87,7 +86,12 @@ export const pluginStore = new class PluginStore extends InternalStore {
       })
     };
 
-    rawModule.call(window, module, module.exports);
+    try {
+      rawModule.call(window, module, module.exports);
+    } 
+    catch (error) {
+      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), while VX was trying to start it`, error);
+    }
 
     this.#evaledPlugins[id] = module.exports;
 
@@ -237,13 +241,17 @@ export const pluginStore = new class PluginStore extends InternalStore {
         if (typeof method === "function") method();
       }
     } 
-    catch (error) { }
+    catch (error) {
+      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
+    }
 
     try {
       const method = module[name];
       if (typeof method === "function") method();
     } 
-    catch (error) { }
+    catch (error) {
+      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), errored while running 'module.${name}'`, error);
+    }
   };
   getSettings(id: string): React.ComponentType | null {
     const module = this.#evaledPlugins[id];
@@ -259,12 +267,22 @@ export const pluginStore = new class PluginStore extends InternalStore {
     return null;
   }
 
-  initPlugins() {
-    console.log(`[VX~Plugins]: Initializing ${Object.keys(this.#plugins).length} Plugin(s)!`);
+  initPlugins(timing: "document-start" | "document-idle" | "document-end" | "webpack-ready") {
+    let counter = 0;
+    const regex = new RegExp(`^${timing.replace("-", "(-|_)")}$`, "i");
+    
     for (const key in this.#plugins) {
-      if (Object.prototype.hasOwnProperty.call(this.#plugins, key)) {
-        this.evalPlugin(key);
-      }
-    }
+      if (!Object.prototype.hasOwnProperty.call(this.#plugins, key)) continue;
+      
+      let whenToRun = this.getMetaProperty(key, "run_at", "webpack-ready");
+      if (whenToRun.toLowerCase() === "betterdiscord") whenToRun = "webpack-ready";
+
+      if (!regex.test(whenToRun)) continue;
+
+      this.evalPlugin(key);
+      counter++;
+    };
+
+    console.log(`[VX~Plugins]: Initializing ${counter} Plugin(s) for state '${timing}'!`);
   };
 }

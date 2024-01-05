@@ -1,4 +1,4 @@
-import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "@i18n";
+import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "i18n";
 
 export const plugins = document.createElement("vx-plugins");
 

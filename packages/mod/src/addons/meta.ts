@@ -1,4 +1,4 @@
-import { I18n, LocaleCodes } from "../webpack/common";
+import { I18n, LocaleCodes } from "@webpack/common";
 
 const META_REGEX = /^\/\*\*([\s\S]+?)\*\//;
 const META_TAG_REGEX = /\*\s*@(?<key>\w+)(?::(?<lang>(\w|-)+))?\s+(?<body>.+)/g;
@@ -44,6 +44,8 @@ export function getMetaUsagePropertyKey(meta: Meta, key: SupportsI18n) {
 export function replaceMetaValue(meta: Meta, key: string, value: string | AuthorValue) {
   const clone = structuredClone(meta);
 
+  key = key.replace(/-/g, "_");
+
   if (supportsI18nKeys.has(key)) {
     const cValue = clone[key as SupportsI18n] ??= { default: null, i18n: {} };
 
@@ -61,7 +63,7 @@ export function replaceMetaValue(meta: Meta, key: string, value: string | Author
   }
   else {
     meta[key] = value as string;
-  }
+  };
 
   return clone;
 };

@@ -20,3 +20,4 @@ export * from "./settingsView";
 export * from "./spinner";
 export * from "./searchBar";
 export * from "./popout";
+export * from "./util";

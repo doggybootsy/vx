@@ -1,5 +1,5 @@
 import { waitForElementRemoved } from "common/dom";
-import { getProxyStore } from "../webpack";
+import { getProxyStore } from "@webpack";
 import { HTMLEditorElement, EDITOR_TAGNAME, getCache } from "./element";
 
 customElements.define(EDITOR_TAGNAME, HTMLEditorElement);

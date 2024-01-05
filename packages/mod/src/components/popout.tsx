@@ -1,9 +1,5 @@
-import { getProxyByKeys } from "../webpack";
 import ErrorBoundary from "./boundary";
-
-const PopoutModule = getProxyByKeys<{
-  Popout: any
-}>([ "Button", "Tooltip" ]);
+import { MegaModule } from "./util";
 
 interface Animation {
   NONE: string,
@@ -47,13 +43,13 @@ interface PopoutProps {
 function PopoutComponent(props: PopoutProps): React.ReactElement {
   return (
     <ErrorBoundary>
-      <PopoutModule.Popout {...props} />
+      <MegaModule.Popout {...props} />
     </ErrorBoundary>
   )
 };
 
 Object.defineProperty(PopoutComponent, "Animation", {
-  get: () => PopoutModule.Popout.Animation
+  get: () => MegaModule.Popout.Animation
 });
 
 export const Popout = PopoutComponent as React.FunctionComponent<PopoutProps> & { Animation: Animation };

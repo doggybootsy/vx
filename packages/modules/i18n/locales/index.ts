@@ -1,4 +1,4 @@
-import { LocaleCodes } from "../../../mod/src/webpack/common";
+import { LocaleCodes } from "@webpack/common";
 import enUS, { ALL_KNOWN_MESSAGES } from "./en-us";
 
 const locales: Partial<Record<LocaleCodes, Partial<ALL_KNOWN_MESSAGES>>> = {

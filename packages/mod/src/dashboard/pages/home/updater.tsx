@@ -4,10 +4,10 @@ import { updater } from "../../../native";
 import { compare } from "./semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
-import { WindowUtil } from "../../../webpack/common";
-import { whenWebpackReady } from "../../../webpack";
+import { WindowUtil } from "@webpack/common";
+import { whenWebpackReady } from "@webpack";
 import { openNotification } from "../../../api/notifications";
-import { Messages } from "@i18n";
+import { Messages } from "i18n";
 
 // 3 mins
 const DELAY_MIN = 1000 * 60 * 3;

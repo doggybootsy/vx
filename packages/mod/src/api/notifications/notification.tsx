@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef } from "react";
 import { Notification } from ".";
 import { transformContent } from "../../components";
 import { useInternalStore } from "../../hooks";
-import { ReactSpring } from "../../webpack/common"
+import { ReactSpring } from "@webpack/common"
 import { notificationStore } from "./store"
 
 export function Notifications() {

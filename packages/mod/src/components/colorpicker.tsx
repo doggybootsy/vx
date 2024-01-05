@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { className, makeLazy, proxyCache } from "../util";
-import { getProxyStore, getModuleIdBySource, webpackRequire } from "../webpack";
-import { useStateFromStores } from "../webpack/common";
+import { getProxyStore, getModuleIdBySource, webpackRequire } from "@webpack";
+import { useStateFromStores } from "@webpack/common";
 import ErrorBoundary from "./boundary";
 
 import "./colorpicker.css";

@@ -1,4 +1,4 @@
-import { getProxyByKeys } from "../webpack";
+import { getProxyByKeys } from "@webpack";
 import ErrorBoundary from "./boundary";
 
 interface Flex extends React.FunctionComponent<FlexProps> {

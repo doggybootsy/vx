@@ -9,7 +9,7 @@ import * as modals from "./api/modals";
 import * as menus from "./api/menu";
 import * as storage from "./api/storage";
 
-import * as webpack from "./webpack";
+import * as webpack from "@webpack";
 import * as popoutWindows from "./api/window";
 
 import { getPlugin, plugins } from "./plugins";
@@ -20,14 +20,16 @@ import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patche
 
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
-import { api } from "./webpack/api";
+import { api } from "@webpack/api";
 
 import * as self from "self";
 
-import { Styler } from "@styler";
-import * as I18n from "@i18n";
+import { Styler } from "styler";
+import * as I18n from "i18n";
 import { themeStore } from "./addons/themes";
 import { pluginStore } from "./addons/plugins";
+
+import * as hooks from "./hooks";
 
 class AddonApi {
   constructor(store: typeof themeStore | typeof pluginStore) {
@@ -95,6 +97,7 @@ export const VX = {
   Styler,
   themes: { ...new AddonApi(themeStore) },
   plugins: { ...new AddonApi(pluginStore) },
+  hooks,
   _self: {
     plugins,
     getPlugin,
