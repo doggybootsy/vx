@@ -9,7 +9,7 @@ import { internalDataStore } from "../../../../api/storage";
 import { pluginStore } from "../../../../addons/plugins";
 import { useInternalStore } from "../../../../hooks";
 import { openPluginSettingsModal } from "./modal";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 export interface SafePlugin {
   type: "internal" | "custom",
@@ -56,6 +56,8 @@ function getCustomPlugin(id: string): SafePlugin {
   }
 }
 function convertToSafePlugin(plugin: Plugin): SafePlugin {
+  const id = plugin.id.replace(".app", "").replace(".web", "").replace(/-/g, "_").toUpperCase() as Uppercase<string>;
+
   return {
     type: "internal",
     id: plugin.id,
@@ -64,10 +66,10 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     isEnabled: () => plugin.isEnabled(),
     getActiveState: () => plugin.getActiveState(),
     originalEnabledState: plugin.originalEnabledState,
-    name: plugin.name(),
-    description: plugin.exports.description(),
+    name: Messages[`${id}_NAME`],
+    description: Messages[`${id}_DESCRIPTION`],
     authors: plugin.exports.authors,
-    settings: plugin.exports.settings ? (() => openPluginSettingsModal(plugin.name(), plugin.exports.settings!)) : null
+    settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null
   }
 }
 

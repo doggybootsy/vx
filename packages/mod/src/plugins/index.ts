@@ -1,36 +1,58 @@
 import { internalDataStore } from "../api/storage";
 import { Developer } from "../constants";
-import { PlainTextPatchType, addPlainTextPatch } from "@webpack";
+import { PlainTextPatchType, addPlainTextPatch, getLazyByKeys } from "@webpack";
 import { CreatedSetting } from "./settings";
+import { FluxDispatcher } from "@webpack/common";
 
 export interface PluginType {
-  name(): string,
-  description(): string,
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
   settings?: Record<string, CreatedSetting<any>> | React.ComponentType,
   requiresRestart?: boolean,
   start?(): void,
-  stop?(): void
+  stop?(): void,
+  fluxEvents?: Record<string, (data: Record<PropertyKey, any>) => void>,
+  styler?: ManagedCSS
 };
 
 export type AnyPluginType = PluginType & Record<string, any>;
 
+const dispatcher = getLazyByKeys([ "subscribe", "dispatch" ]);
+
 export class Plugin<T extends AnyPluginType = AnyPluginType> {
-  constructor(public readonly exports: T) {
-    this.name = () => exports.name();
-    
+  constructor(public readonly exports: T) {    
     const match = new Error().stack!.match(/plugins\/(.+?)\//)!;
     this.id = match[1];
 
     this.requiresRestart = exports.requiresRestart ?? true;
     this.originalEnabledState = this.isEnabled();
+
+    dispatcher.then(() => {
+      if (!exports.fluxEvents) return;
+
+      for (const eventName in exports.fluxEvents) {
+        if (!Object.prototype.hasOwnProperty.call(exports.fluxEvents, eventName)) continue;
+
+        const handler = exports.fluxEvents[eventName];
+        FluxDispatcher.subscribe(eventName, (event: any) => {
+          if (!this.isEnabled()) return;
+
+          try {
+            handler(event);
+          } 
+          catch (error) {
+            console.warn(`[VX~Plugins~Flux]: Plugin '${this.id}' errored when running Flux event '${eventName}'`, { error, handler });
+          }
+        });
+      }
+    });
   };
 
   type = <const>"internal";
 
-  name: () => string;
   id: string;
+
+  public readonly styler?: ManagedCSS;
 
   public readonly originalEnabledState: boolean;
   public readonly requiresRestart: boolean;
@@ -56,7 +78,10 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
     internalDataStore.set("enabled-plugins", enabled);
 
-    if (!this.requiresRestart && typeof this.exports.start === "function") this.exports.start(); 
+    if (!this.requiresRestart) {
+      if (typeof this.exports.start === "function") this.exports.start();
+      if (this.styler) this.styler.addStyle();
+    }
 
     return true;
   };
@@ -69,7 +94,10 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
     internalDataStore.set("enabled-plugins", enabled);
 
-    if (!this.requiresRestart && typeof this.exports.stop === "function") this.exports.stop(); 
+    if (!this.requiresRestart) {
+      if (typeof this.exports.stop === "function") this.exports.stop();
+      if (this.styler) this.styler.removeStyle();
+    }
     
     return true;
   };
@@ -86,9 +114,9 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
 export const plugins: Record<string, Plugin> = {};
 
-export function getPlugin(nameOrId: string) {
+export function getPlugin(id: string) {
   for (const plugin of Object.values(plugins)) {
-    if (nameOrId === plugin.id || nameOrId === plugin.name()) return plugin;
+    if (id === plugin.id) return plugin;
   }
 
   return null;
@@ -114,13 +142,16 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
       };
 
       if (typeof patch.identifier !== "string") patch.identifier = plugin.id;
-      else patch.identifier = `${plugin.name}(${patch.identifier})`;
+      else patch.identifier = `${plugin.id}(${patch.identifier})`;
     };
     // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
     if (isEnabled || !plugin.requiresRestart) addPlainTextPatch(...exports.patches);
   };
 
-  if (isEnabled && typeof exports.start === "function") exports.start();
+  if (isEnabled) {
+    if (typeof exports.start === "function") exports.start();
+    if (exports.styler) exports.styler.addStyle();
+  }
 
   return exports;
 };

@@ -3,7 +3,8 @@ import electron from "electron";
 import JSZip from "jszip";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { env } from "self";
+import { env } from "vx:self";
+import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
 
 const native = {
   app: {
@@ -12,6 +13,50 @@ const native = {
     },
     restart() {
       electron.ipcRenderer.invoke("@vx/restart");
+    }
+  },
+  devtools: {
+    toggle(options?: OpenDevToolsOptions) {
+      const isOpen = native.devtools.isOpen();
+      electron.ipcRenderer.invoke("@vx/devtools/toggle", options);
+      return !isOpen;
+    },
+    open(options?: OpenDevToolsOptions) {
+      if (native.devtools.isOpen()) return false;
+      native.devtools.toggle(options);
+      return true;
+    },
+    close() {
+      if (!native.devtools.isOpen()) return false;
+      native.devtools.toggle();
+      return true;
+    },
+    isOpen() {
+      return electron.ipcRenderer.sendSync("@vx/devtools/is-open");
+    },
+    inspectCoordinates(x: number, y: number) {
+      if (native.devtools.isOpen()) {
+        electron.ipcRenderer.invoke("@vx/devtools/inspect-coordinates", x, y);
+        return;
+      };
+
+      native.devtools.open({ x, y });
+    },
+    showPage(page: KnownDevToolsPages) {
+      if (native.devtools.isOpen()) {
+        electron.ipcRenderer.invoke("@vx/devtools/show-page", page);
+        return;
+      };
+
+      native.devtools.open({ page });
+    },
+    enterInspectMode() {
+      if (native.devtools.isOpen()) {
+        electron.ipcRenderer.invoke("@vx/devtools/enter-inspect-mode");
+        return;
+      };
+
+      native.devtools.open({ enterInspectElementMode: true, page: "elements" });
     }
   },
   extensions: {

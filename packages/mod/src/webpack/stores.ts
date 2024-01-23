@@ -57,8 +57,27 @@ export function getStore(store: string): GenericStore | void  {
 
   return Store.getAll().find((str) => str.getName() === store);
 };
+
 export function getProxyStore<S extends keyof KnownStores>(store: S): KnownStores[S]
 export function getProxyStore<S extends keyof KnownStores>(store: S | string): GenericStore
 export function getProxyStore(store: string): GenericStore {
   return proxyCache(() => getStore(store)!);
+};
+
+const listeners = new Set<[ string, (store: GenericStore) => void ]>();
+export function _lazyStore(store: GenericStore) {
+  for (const [ name, resolve ] of listeners) {
+    if (name === store.getName()) resolve(store);
+  }
+}
+
+export function getLazyStore<S extends keyof KnownStores>(store: S): Promise<KnownStores[S]>
+export function getLazyStore<S extends keyof KnownStores>(store: S | string): Promise<GenericStore>
+export function getLazyStore(store: string): Promise<GenericStore> {
+  const cache = getStore(store);
+  if (cache) return Promise.resolve(cache);
+
+  return new Promise((resolve) => {
+    listeners.add([ store, resolve ]);
+  });
 };

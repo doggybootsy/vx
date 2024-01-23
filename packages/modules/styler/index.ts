@@ -1,4 +1,4 @@
-import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "i18n";
+import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "vx:i18n";
 
 export const plugins = document.createElement("vx-plugins");
 
@@ -70,4 +70,8 @@ export class Styler {
     if (this.#element) return true;
     return false;
   };
+
+  static getAll() {
+    return all
+  }
 };

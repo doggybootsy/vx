@@ -7,7 +7,7 @@ import { getProxyByKeys } from "@webpack";
 import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "uncompress.js";
 import { isZIP } from ".";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 interface ZipModalProps extends ModalProps {
   src: string | File
@@ -36,7 +36,7 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
       onClick={(event) => {
         if (disabled) return;
         if (!(event.target instanceof Element)) return;
-        if (event.target.matches(".vx-zip-actions") || getParents(event.target).query(".vx-zip-actions")) return;
+        if (event.target.matches(".vx-zip-actions") || getParents(event.target).querySelector(".vx-zip-actions")) return;
 
         onClick();
       }}

@@ -1,4 +1,4 @@
-import React, { createElement, lazy as $lazy, Suspense, Component } from "react";
+import React, { createElement, lazy as $lazy, Suspense, Component, useSyncExternalStore } from "react";
 import { getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
@@ -122,6 +122,60 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
   };
 
   return Array.from(new Set(flattenedString)).join(" ");
+};
+
+type ClassNameType = classNameValueTypes["array"] | classNameValueTypes["object"] | void | false | ClassName;
+
+export class ClassName {
+  constructor(...classNames: ClassNameType[]) {
+    const classes: string[] = [];
+
+    for (const cn of classNames) {
+      if (!cn) continue;
+      if (cn instanceof ClassName) {
+        classes.push(...cn.list());
+        continue;
+      }
+      classes.push(...className(cn).split(" "));
+    };
+
+    this.#classes = className(classes).split(" ");
+  };
+
+  #classes: string[];
+
+  add(...classNames: ClassNameType[]) {
+    const cn = new ClassName(...classNames).list();
+
+    this.#classes = className([ ...this.#classes, ...cn ]).split(" ");
+  };
+  remove(...classNames: ClassNameType[]) {
+    const cn = new ClassName(...classNames).list();
+
+    this.#classes = this.#classes.filter((className) => !cn.includes(className));
+  };
+  has(className: string) {
+    return this.#classes.includes(className);
+  };
+  
+  clear() {
+    this.#classes = [];
+  };
+
+  list() {
+    return this.#classes.splice(0);
+  };
+
+  toString() {
+    return this.#classes.join(" ");
+  };
+
+  toJSON() {
+    return this.list();
+  };
+  [Symbol.iterator]() {
+    return iteratorFrom(this.#classes);
+  };
 };
 
 export function findInTree<T extends Object>(tree: any, searchFilter: (item: any) => any, options: {
@@ -366,6 +420,19 @@ export function download(filename: string, part: BlobPart) {
   URL.revokeObjectURL(blobURL);
 };
 
+export function createNullObject<T extends Record<PropertyKey, any> = Record<PropertyKey, any>>(properties?: T, name?: string): T {
+  let descriptors: { [key: PropertyKey]: PropertyDescriptor } = {};
+  if (properties) {
+    descriptors = Object.getOwnPropertyDescriptors(properties);
+  }
+
+  if (typeof name === "string") {
+    descriptors[Symbol.toStringTag] = { value: name };
+  }
+
+  return Object.create(null, descriptors);
+};
+// 'Iterator.from' prolly fill like thing
 export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
   if (typeof (window as any).Iterator === "function") {
     return (window as any).Iterator.from(iterator);
@@ -392,35 +459,66 @@ export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
     enumerable: false,
     writable: true,
     configurable: true,
-    value: iterator[Symbol.iterator].bind(generator)
+    value: function*() {
+      let result: IteratorResult<T, any>;
+      while ((result = generator.next(), !result.done)) {
+        yield result.value;
+      };
+    }
   });
 
   Object.setPrototypeOf(data, proto);
 
-  return data as IterableIterator<T>;
+  return Object.setPrototypeOf({}, data);
 };
 
+const VXNodeListPrivate = new WeakMap<VXNodeList<Node>, Node[]>();
 export class VXNodeList<T extends Node> {
-  constructor(nodes: Iterable<T> = []) {
-    this.#array = Array.from(nodes).filter((node) => node instanceof Node);
+  constructor(nodes: T[] = [ ]) {
+    const nodesList = Array.from(nodes).filter((node) => node instanceof Node);
+    VXNodeListPrivate.set(this, nodesList);
+
+    let counter = 0;
+    for (const node of nodesList) {
+      this[counter++] = node;
+    }
   };
 
-  #array: T[];
+  [key: number]: T;
 
-  query(selectors: string): T | null {
+  querySelector(selectors: string): T | null {
     for (const node of this) {
       if (!(node instanceof Element)) continue;
       if (node.matches(selectors)) return node;
     };
 
     return null;
-  };
+  }
+  querySelectorAll(selectors: string): VXNodeList<T> {
+    const matches = [];
+
+    for (const node of this) {
+      if (!(node instanceof Element)) continue;
+      if (node.matches(selectors)) matches.push(node);
+    };
+
+    return new VXNodeList(matches);
+  }
+  getElementById(id: string): T | null {
+    for (const node of this) {
+      if (!(node instanceof Element)) continue;
+      if (node.id === id) return node;
+    };
+
+    return null;
+  }
+
   includes(node: T | null): boolean {
     if (node === null) return false;
-    return this.#array.includes(node);
-  };
+    return VXNodeListPrivate.get(this)!.includes(node);
+  }
 
-  get length() { return this.#array.length; };
+  get length() { return VXNodeListPrivate.get(this)!.length; }
 
   entries() {
     const gen = this.values();
@@ -433,38 +531,38 @@ export class VXNodeList<T extends Node> {
     };
 
     return iteratorFrom(entries);
-  };
+  }
 
   keys() {
     const gen = this.values();
     let result: IteratorResult<T, void>;
     let counter = 0;
-    const keys: [ number, T ][] = [];
+    const keys: number[] = [];
 
     while ((result = gen.next(), !result.done)) {
-      keys.push([ counter++, result.value ]);
-    };
+      keys.push(counter++);
+    }
 
     return iteratorFrom(keys);
-  };
+  }
 
   values(): IterableIterator<T> {
-    return iteratorFrom(this.#array); 
-  };
+    return iteratorFrom(VXNodeListPrivate.get(this)! as T[]); 
+  }
 
   item(index: number): T | null {
-    return this.#array.at(index) ?? null;
-  };
+    return VXNodeListPrivate.get(this)!.at(index) as T | undefined ?? null;
+  }
 
   forEach(callbackfn: (value: T, key: number, parent: VXNodeList<T>) => void, thisArg: any = this) {
     for (const [ key, node ] of this.entries()) {
       callbackfn.apply(thisArg, [ node, key, this ]);
-    };
-  };
+    }
+  }
 
   [Symbol.iterator]() {
-    return iteratorFrom(this.#array); 
-  };
+    return iteratorFrom(VXNodeListPrivate.get(this)! as T[]); 
+  }
 };
 
 export function getParents(element: Element | null): VXNodeList<Element> {
@@ -599,4 +697,60 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
   };
 
   return FluxComponent;
+};
+
+type Accessor<T> = () => T;
+type SetterArg<T> = ((prev: T) => T) | T;
+type Setter<T> = (value: SetterArg<T>) => T;
+type State<T> = Readonly<[ Accessor<T>, Setter<T> ]>;
+
+const stateValues = new WeakMap<Accessor<any> | Setter<any>, { listeners: Set<() => void>, accessor: Accessor<any> }>();
+// SolidJS like thing
+export function createState<T>(initialState: T): State<T> {
+  let state = initialState;
+  const listeners = new Set<() => void>();
+
+  function accessor(forceNoUseHook = false) {
+    const dispatcher = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
+
+    if (forceNoUseHook || String(dispatcher.useSyncExternalStore).includes("321")) {
+      return state;
+    }
+
+    return useSyncExternalStore((onChange) => {
+      listeners.add(onChange);
+      return () => listeners.delete(onChange)
+    }, () => state);
+  };
+
+  function setter(value: SetterArg<T>) {
+    if (typeof value === "function") value = (value as (pref?: T) => T)(state);
+    state = value;
+    
+    for (const listener of listeners) listener();
+
+    return state;
+  };
+  
+  stateValues.set(accessor, { listeners, accessor });
+  stateValues.set(setter, { listeners, accessor });
+
+  return [
+    accessor,
+    setter
+  ] as const;
+};
+
+export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | State<T>, onChange: (state: T) => void): () => void {
+  if (typeof stateOrChild !== "function") stateOrChild = stateOrChild[0];
+  
+  const value = stateValues.get(stateOrChild);
+  if (!value) throw new Error("State has no listeners!");
+
+  function listener() {
+    onChange(value!.accessor());
+  };
+
+  value.listeners.add(listener);
+  return () => void value.listeners.delete(listener);
 };

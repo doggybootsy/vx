@@ -47,7 +47,8 @@ export function closeNotification(id: string) {
   notificationStore.delete(id);
 };
 
-const appClassNameRegex = /^app_.{6}$/;
+// CSS ClassName normalizing breaks this so, add a check for a normalized name
+const appClassNameRegex = /^app_.{6}( app)?$/;
 export function _handleNotifications(props: any) {
   if (!appClassNameRegex.test(String(props.className))) return;
   

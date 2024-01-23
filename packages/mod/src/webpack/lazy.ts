@@ -1,7 +1,7 @@
 import { getModule, listeners } from ".";
 import { shouldSearchDefault, shouldSkipModule, wrapFilter } from "./shared";
 
-export function getLazy<T>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptions = {}): Promise<T> {
+export function getLazy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter, opts: Webpack.LazyFilterOptions = {}): Promise<T> {
   filter = wrapFilter(filter);
 
   const cached = getModule<T>(filter, opts);  

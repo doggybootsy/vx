@@ -1,6 +1,5 @@
 import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
-import { ThemeObject } from "../../addons/themes";
 import { LocaleCodes } from "@webpack/common";
 
 export const { localStorage, sessionStorage } = window;
@@ -205,7 +204,8 @@ interface InternalData {
   "user-setting-shortcut": boolean,
   "preserve-query": boolean,
   "show-favicon": boolean,
-  "last-loaded-locale": LocaleCodes
+  "last-loaded-locale": LocaleCodes,
+  "trusted-domains": string[]
 };
 
 export const internalDataStore = new DataStore<InternalData>("Internal", {

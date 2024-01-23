@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 
 import { Notification } from ".";
 import { transformContent } from "../../components";
@@ -6,7 +6,7 @@ import { useInternalStore } from "../../hooks";
 import { ReactSpring } from "@webpack/common"
 import { notificationStore } from "./store"
 
-export function Notifications() {
+export const Notifications = memo(function Notifications() {
   const state = useInternalStore(notificationStore, () => notificationStore.getState());
 
   return (
@@ -19,7 +19,7 @@ export function Notifications() {
       ))}
     </div>
   )
-};
+});
 
 function shouldDisplaySlider(notification: Notification) {
   return !isNaN(notification.duration!) && isFinite(notification.duration!);

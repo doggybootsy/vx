@@ -5,8 +5,7 @@ import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { className } from "../../util";
 
-import { addStyle } from "./index.css?managed";
-import { Messages } from "i18n";
+import * as styler from "./index.css?managed";
 
 function PIP() {
   const ref = useRef<HTMLDivElement>(null);
@@ -68,8 +67,6 @@ function PIP() {
 };
 
 export default definePlugin({
-  name: () => Messages.PIP_NAME,
-  description: () => Messages.PIP_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [
@@ -80,7 +77,5 @@ export default definePlugin({
     }
   ],
   PIP: ErrorBoundary.wrap(PIP),
-  start() {
-    addStyle();
-  }
+  styler
 });

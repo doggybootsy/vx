@@ -1,4 +1,4 @@
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 import { DataStore } from "../../api/storage";
 import { InternalStore, download, getDiscordTag, isInvalidSyntax, showFilePicker } from "../../util";
 import { UserStore } from "@webpack/common";
@@ -45,10 +45,18 @@ const defaultPlugin = (id: string) => {
  * @author ${getDiscordTag(user)}
  * @authorId ${user.id}
  * @version 1.0.0
+ * @run_at webpack_ready
  */
 
 exports.start = () => console.log("Started");
 exports.stop = () => console.log("Stopped");`;
+};
+
+const hasInitedFor = {
+  "webpack-ready": false,
+  "document-idle": false,
+  "document-end": false,
+  "document-start": false
 };
 
 export const pluginStore = new class PluginStore extends InternalStore {
@@ -132,7 +140,11 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
   public getMeta(id: string) {
     if (metaCache.has(id)) return metaCache.get(id)!;
-    return getMeta(this.getJS(id));
+
+    const meta = getMeta(this.getJS(id));
+    metaCache.set(id, meta);
+
+    return meta;
   };
   public getMetaProperty(id: string, key: string, defaultValue: string) {
     return getMetaProperty(this.getMeta(id), key, defaultValue);
@@ -196,7 +208,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   };
 
   public getExports(id: string) {
-    return this.#evaledPlugins[id];
+    return this.#evaledPlugins[id] ?? { };
   };
 
   public isEnabled(id: string) {
@@ -231,13 +243,16 @@ export const pluginStore = new class PluginStore extends InternalStore {
     if (this.isEnabled(id)) return this.disable(id);
     this.enable(id);
   };
+  public hasInitializedPlugin(id: string) {
+    return id in this.#evaledPlugins;
+  }
 
   public runMethod(id: string, name: "stop" | "start" | "delete") {
-    const module = this.#evaledPlugins[id];
+    const exports = this.getExports(id);
 
     try {
-      if ("__esModule" in module && module.default) {
-        const method = module.default[name];
+      if ("__esModule" in exports && exports.default) {
+        const method = exports.default[name];
         if (typeof method === "function") method();
       }
     } 
@@ -246,7 +261,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     }
 
     try {
-      const method = module[name];
+      const method = exports[name];
       if (typeof method === "function") method();
     } 
     catch (error) {
@@ -254,35 +269,48 @@ export const pluginStore = new class PluginStore extends InternalStore {
     }
   };
   getSettings(id: string): React.ComponentType | null {
-    const module = this.#evaledPlugins[id];
+    const exports = this.getExports(id);
 
-    if ("__esModule" in module && module.default) {
-      const Settings = module.default.Settings;
+    if ("__esModule" in exports && exports.default) {
+      const Settings = exports.default.Settings;
       if (typeof Settings === "function") return Settings;
     }
 
-    const Settings = module.Settings;
+    const Settings = exports.Settings;
     if (typeof Settings === "function") return Settings;
 
     return null;
   }
 
   initPlugins(timing: "document-start" | "document-idle" | "document-end" | "webpack-ready") {
-    let counter = 0;
+    // Was getting weird issues where this would run multiple times?
+    if (hasInitedFor[timing]) return;
+    hasInitedFor[timing] = true;
+
+    const ids: string[] = [];
     const regex = new RegExp(`^${timing.replace("-", "(-|_)")}$`, "i");
     
     for (const key in this.#plugins) {
       if (!Object.prototype.hasOwnProperty.call(this.#plugins, key)) continue;
       
-      let whenToRun = this.getMetaProperty(key, "run_at", "webpack-ready");
-      if (whenToRun.toLowerCase() === "betterdiscord") whenToRun = "webpack-ready";
+      const whenToRun = this.getMetaProperty(key, "run_at", "webpack-ready");
 
       if (!regex.test(whenToRun)) continue;
 
-      this.evalPlugin(key);
-      counter++;
+      ids.push(key);
     };
 
-    console.log(`[VX~Plugins]: Initializing ${counter} Plugin(s) for state '${timing}'!`);
+    if (!ids.length) return;
+    
+    console.log(`[VX~Plugins]: Initializing ${ids.length} Plugin(s) for state '${timing}'!`);
+
+    const then = performance.now();
+    for (const id of ids) {
+      this.evalPlugin(id);
+    };
+
+    // Only allow 2 decimal places back
+    const dur = (performance.now() - then).toFixed(2);
+    console.log("[VX~Plugins]: Initializing took", Number(dur), "ms");
   };
 }

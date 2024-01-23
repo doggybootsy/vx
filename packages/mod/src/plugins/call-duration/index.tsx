@@ -6,19 +6,14 @@ import { Developers } from "../../constants";
 import { getProxyByKeys } from "@webpack";
 import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } from "@webpack/common";
 
-import { addStyle } from "./index.css?managed";
-import { Messages } from "i18n";
+import * as styler from "./index.css?managed";
+import { Messages } from "vx:i18n";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 
 function CallDuration() {
   const [ then, setThen ] = useState(Date.now);
   const [ elapsed, setElapsed ] = useState(0);
-  const [ url, setURL ] = useState(() => {
-    const channelId = SelectedChannelStore.getVoiceChannelId()!;
-    const channel = ChannelStore.getChannel(channelId);
-    return (new URL(`/${channel.guild_id}/${channel.id}`, location.origin)).href;
-  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,8 +52,6 @@ function CallDuration() {
 };
 
 export default definePlugin({
-  name: () => Messages.CALL_DURATION_NAME,
-  description: () => Messages.CALL_DURATION_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
@@ -66,5 +59,5 @@ export default definePlugin({
     replace: "[$&,$enabled&&$react.createElement($self.CallDuration)]"
   },
   CallDuration: memo(ErrorBoundary.wrap(CallDuration)),
-  start: addStyle
+  styler
 });

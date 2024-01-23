@@ -19,3 +19,14 @@ export function debounce<F extends anyFN>(handler: F, timeout?: number | undefin
   
   return debouncer;
 };
+
+export function waitFor(condition: () => any, ms?: number): Promise<void> {
+  return new Promise((resolve) => {
+    const id = setInterval(() => {
+      if (!condition()) return;
+
+      clearInterval(id);
+      resolve();
+    }, ms);
+  });
+};

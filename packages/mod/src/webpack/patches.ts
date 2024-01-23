@@ -1,4 +1,4 @@
-import { env } from "self";
+import { env } from "vx:self";
 
 export type PlainTextPatchType = PlainTextPatch | PlainTextPatchNonArray | PlainTextPatchReplacer;
 
@@ -70,7 +70,13 @@ addPlainTextPatch(
     identifier: `VX(save-${type})`,
     find: `delete window.${type}`,
     replace: ""
-  }))
+  })),
+  {
+    identifier: "VX(lazy-store)",
+    match: "Store.waitFor(...)",
+    find: /,.{1,3}\.push\(this\),/,
+    replace: "$&$vx.webpack.__raw._lazyStore(this),"
+  }
 );
 
 export function addPlainTextPatch(...patches: PlainTextPatchType[]) {
@@ -107,5 +113,5 @@ export function addPlainTextPatch(...patches: PlainTextPatchType[]) {
     };
     
     plainTextPatches.push(newPatch);
-  };
-};
+  }
+}

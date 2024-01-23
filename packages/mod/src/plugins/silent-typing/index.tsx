@@ -1,4 +1,3 @@
-import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
@@ -6,7 +5,7 @@ import { getLazyByKeys } from "@webpack";
 import { SettingType, createSettings } from "../settings";
 
 import { KeyboardButton } from "./button";
-import { addStyle, removeStyle } from "./index.css?managed"
+import * as styler from "./index.css?managed"
 
 const injector = new Injector();
 
@@ -50,8 +49,6 @@ async function patchSilentTyping() {
 };
 
 export default definePlugin({
-  name: () => Messages.SILENT_TYPING_NAME,
-  description: () => Messages.SILENT_TYPING_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
@@ -63,13 +60,12 @@ export default definePlugin({
   start() {
     enabled = true;
     patchSilentTyping();
-    addStyle();
   },
   stop() {
     enabled = false;
-    removeStyle();
     injector.unpatchAll();
   },
+  styler,
   _addButton(buttons: React.ReactNode[], disabled: boolean, type: { analyticsName: string }, enabled: boolean) {
     const shouldAddButton = settings.button.use();
     const alwaysShowButton = settings.alwaysShowButton.use();

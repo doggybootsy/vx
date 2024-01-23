@@ -1,14 +1,14 @@
 import { useLayoutEffect, useMemo, useState } from "react";
-import { openConfirmModal, openImageModal, openInviteModal, openUserModal } from "../../../../api/modals";
+import { openConfirmModal, openImageModal, openInviteModal, openUserModal, openExternalWindowModal } from "../../../../api/modals";
 import { Icons, Mask, Tooltip, Switch, Button } from "../../../../components";
 import { className, getDefaultAvatar, generateFaviconURL } from "../../../../util";
-import { LayerManager, WindowUtil, openUserContextMenu } from "@webpack/common";
+import { LayerManager, openUserContextMenu } from "@webpack/common";
 import { useInternalStore, useUser } from "../../../../hooks";
 import { SafePlugin } from ".";
 import { pluginStore } from "../../../../addons/plugins";
 import { openWindow } from "./popout";
 import { internalDataStore } from "../../../../api/storage";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
@@ -58,13 +58,14 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
 
   const canViewSettings = useMemo(() => plugin.requiresRestart ? plugin.originalEnabledState === isEnabled ? isEnabled : false : isEnabled, [ isEnabled ]);
   
-  const { source, invite, version, website, icon } = useInternalStore(pluginStore, () => {
-    const data: Record<"source" | "invite" | "version" | "website" | "icon", string | null> = {
+  const { source, invite, version, website, icon, license } = useInternalStore(pluginStore, () => {
+    const data: Record<"source" | "invite" | "version" | "website" | "icon" | "license", string | null> = {
       source: null,
       invite: null,
       version: null,
       website: null,
-      icon: null
+      icon: null,
+      license: null
     };
 
     if (plugin.type === "internal") return data;
@@ -76,6 +77,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
     data.website = meta.website ?? null;
     data.version = pluginStore.getVersionName(plugin.id);
     data.icon = meta.icon ?? null;
+    data.license = meta.license ?? null;
     
     return data;
   });
@@ -123,8 +125,26 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
             {plugin.requiresRestart && (
               <Tooltip text={Messages.PLUGIN_REQUIRES_RESTART}>
                 {(props) => (
-                  <span {...props} className={className([ "vx-addon-restart", isEnabled !== plugin.getActiveState() && "vx-addon-warn"])}>
+                  <span {...props} className={className([ "vx-addon-header-icon", isEnabled !== plugin.getActiveState() && "vx-addon-warn"])}>
                     <Icons.Warn size={16} />
+                  </span>
+                )}
+              </Tooltip>
+            )}
+            {plugin.id.endsWith(".web") && (
+              <Tooltip text={Messages.WEB_ONLY}>
+                {(props) => (
+                  <span {...props} className="vx-addon-header-icon">
+                    <Icons.Globe size={16} />
+                  </span>
+                )}
+              </Tooltip>
+            )}
+            {plugin.id.endsWith(".app") && (
+              <Tooltip text={Messages.APP_ONLY}>
+                {(props) => (
+                  <span {...props} className="vx-addon-header-icon">
+                    <Icons.Desktop size={16} />
                   </span>
                 )}
               </Tooltip>
@@ -212,15 +232,38 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
           </>
         )}
         <div className="vx-addon-actions">
-          {typeof website === "string" && (
-            <Tooltip text={Messages.VISIT_WEBSITE}>
+          {typeof license === "string" && (
+            <Tooltip text={Messages.VIEW_LICENSE}>
               {(props) => (
                 <div
                   {...props}
                   className="vx-addon-action"
                   onClick={(event) => {
                     props.onClick();
-                    WindowUtil.handleClick({ href: website }, event);
+
+                    let href = `https://choosealicense.com/licenses/${license.toLowerCase()}`;
+                    try {
+                      href = new URL(license).href;
+                    } 
+                    catch (error) {}
+
+                    openExternalWindowModal(href);
+                  }}
+                >
+                  <Icons.Balance />
+                </div>
+              )}
+            </Tooltip>
+          )}
+          {typeof website === "string" && (
+            <Tooltip text={Messages.VISIT_WEBSITE}>
+              {(props) => (
+                <div
+                  {...props}
+                  className="vx-addon-action"
+                  onClick={() => {
+                    props.onClick();
+                    openExternalWindowModal(website);
                   }}
                 >
                   {showFavicon ? (
@@ -255,9 +298,9 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                 <div
                   {...props}
                   className="vx-addon-action"
-                  onClick={(event) => {
+                  onClick={() => {
                     props.onClick();
-                    WindowUtil.handleClick({ href: source }, event);
+                    openExternalWindowModal(source);
                   }}
                 >
                   <Icons.Github />

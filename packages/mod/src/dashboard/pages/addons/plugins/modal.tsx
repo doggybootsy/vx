@@ -1,5 +1,5 @@
 import { ModalComponents, openModal } from "../../../../api/modals";
-import { Flex, FlexChild } from "../../../../components";
+import { ErrorBoundary, Flex, FlexChild } from "../../../../components";
 import { CreatedSetting } from "../../../../plugins/settings";
 
 export function openPluginSettingsModal(name: string, settings: Record<string, CreatedSetting<any>> | React.ComponentType) {
@@ -32,7 +32,9 @@ export function openPluginSettingsModal(name: string, settings: Record<string, C
           <ModalComponents.ModalCloseButton onClick={props.onClose} />
         </ModalComponents.ModalHeader>
         <ModalComponents.ModalContent>
-          <Content />
+          <ErrorBoundary>
+            <Content />
+          </ErrorBoundary>
         </ModalComponents.ModalContent>
       </ModalComponents.ModalRoot>
     );

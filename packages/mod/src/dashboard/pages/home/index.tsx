@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { IS_DESKTOP } from "self";
+import { IS_DESKTOP } from "vx:self";
 import { Panel } from "../..";
 import { internalDataStore } from "../../../api/storage";
 import { Button, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
 import { app } from "../../../native";
 import { Updater } from "./updater";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);

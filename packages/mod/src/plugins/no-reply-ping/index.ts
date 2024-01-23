@@ -1,10 +1,7 @@
-import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: () => Messages.NO_REPLY_PING_NAME,
-  description: () => Messages.NO_REPLY_PING_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {

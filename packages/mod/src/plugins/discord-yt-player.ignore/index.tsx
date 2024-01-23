@@ -1,16 +1,14 @@
 import { useState } from "react";
 
 import { definePlugin } from "..";
-import { openImageModal } from "../../api/modals";
+import { openImageModal, openExternalWindowModal } from "../../api/modals";
 import { ErrorBoundary, Icons, Spinner } from "../../components";
 import { Developers } from "../../constants";
 import { useAbortEffect } from "../../hooks";
 import { download } from "../../util";
 import { byStrings, getProxy, getProxyByKeys } from "@webpack";
-import { WindowUtil } from "@webpack/common";
 
-import { addStyle, removeStyle } from "./index.css?managed";
-import { Messages } from "i18n";
+import * as styler from "./index.css?managed";
 
 function getID(embedLink: string) {
   return embedLink.split("/").at(-1)!.split("?").at(0)!;
@@ -149,14 +147,14 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
         <div className="vx-yt-info">
           <div
             className="vx-yt-title"
-            onClick={(event) => {
-              WindowUtil.handleClick({ href: url }, event);
+            onClick={() => {
+              openExternalWindowModal(url);
             }}
           >{title}</div>
           <div
             className="vx-yt-author"
-            onClick={(event) => {
-              WindowUtil.handleClick({ href: authorURL }, event);
+            onClick={() => {
+              openExternalWindowModal(authorURL);
             }}
           >
             <Icons.Youtube height="1rem" width="1rem" />
@@ -209,8 +207,6 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
 };
 
 export default definePlugin({
-  name: () => Messages.DISCORD_YOUTUBE_PLAYER_NAME,
-  description: () => Messages.DISCORD_YOUTUBE_PLAYER_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
@@ -218,12 +214,7 @@ export default definePlugin({
     replace: "$enabled&&$self.shouldReplaceContent(this.props)?$react.createElement($self.YoutubePlayer,{embed:this.props.embed,renderEmbedContent:()=>this.renderEmbedContent()}):$&"
   },
 
-  start() {
-    addStyle();
-  },
-  stop() {
-    removeStyle();
-  },
+  styler,
 
   shouldReplaceContent(props: any) {
     try {      

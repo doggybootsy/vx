@@ -72,7 +72,7 @@
   align-items: center;
   flex: 1 1 auto;
 }
-.vx-addon-restart {
+.vx-addon-header-icon {
   color: var(--text-muted);
   display: flex;
   transition: color .10s ease-in-out;

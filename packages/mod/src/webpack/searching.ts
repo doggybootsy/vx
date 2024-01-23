@@ -1,7 +1,7 @@
 import { shouldSearchDefault, shouldSkipModule, wrapFilter } from "./shared";
 import { webpackRequire } from "@webpack";
 
-export function getModule<T extends any>(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}): T | void {
+export function getModule<T extends Object>(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}): T | void {
   filter = wrapFilter(filter);
   if (!webpackRequire) return;
   

@@ -1,0 +1,10 @@
+.vx-bv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+}
+.vx-bv-input {
+  flex: 1 0 auto;
+}

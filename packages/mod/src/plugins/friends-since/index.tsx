@@ -1,4 +1,4 @@
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
@@ -50,8 +50,6 @@ function FriendsSinceSection({ userId }: { userId: string }) {
 };
 
 export default definePlugin({
-  name: () => Messages.FRIENDS_SINCE_NAME,
-  description: () => Messages.FRIENDS_SINCE_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [
