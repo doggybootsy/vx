@@ -15,3 +15,27 @@ export type ThisParameterType<T extends FunctionType> = T extends (this: infer P
 
 // Object Typings
 export type KeysMatching<T, V> = {[K in keyof T]-?: T[K] extends V ? K : never}[keyof T];
+
+// Devtools
+
+export type KnownDevToolsPages = "elements" | "console";
+
+interface OpenDevToolsOptionsBase {
+  mode?: 'left' | 'right' | 'bottom' | 'undocked' | 'detach',
+  activate?: boolean,
+  enterInspectElementMode?: boolean
+};
+
+interface OpenDevToolsOptionsNormal extends OpenDevToolsOptionsBase {
+  page?: KnownDevToolsPages,
+  x?: void, 
+  y?: void
+};
+
+interface OpenDevToolsOptionsCoordinates extends OpenDevToolsOptionsBase {
+  x: number, 
+  y: number,
+  page?: void | "elements"
+};
+
+export type OpenDevToolsOptions = OpenDevToolsOptionsCoordinates | OpenDevToolsOptionsNormal;

@@ -1,13 +1,13 @@
-import { env, git } from "self";
+import { env, git } from "vx:self";
 import { InternalStore } from "../../../util";
 import { updater } from "../../../native";
 import { compare } from "./semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
-import { WindowUtil } from "@webpack/common";
 import { whenWebpackReady } from "@webpack";
 import { openNotification } from "../../../api/notifications";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
+import { openExternalWindowModal } from "../../../api/modals";
 
 // 3 mins
 const DELAY_MIN = 1000 * 60 * 3;
@@ -129,9 +129,7 @@ export function Updater() {
           onClick={(event) => {
             if (!state.release) return;
 
-            WindowUtil.handleClick({
-              href: state.release.html_url
-            }, event);
+            openExternalWindowModal(state.release.html_url);
           }}
         >
           <Icons.Github />

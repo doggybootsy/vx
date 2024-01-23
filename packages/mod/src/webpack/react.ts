@@ -42,6 +42,10 @@ export function startTransition(scope: React.TransitionFunction) {
   return React.startTransition(scope);
 };
 
+export function useSyncExternalStore(subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => unknown, getServerSnapshot?: (() => unknown) | undefined) {
+  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+};
+
 class BaseComponent {
   constructor(...args: Parameters<ReactType["Component"]>) {
     const component = Reflect.construct(React.Component, args);

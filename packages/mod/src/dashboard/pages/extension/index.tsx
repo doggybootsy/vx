@@ -6,7 +6,7 @@ import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../addons/share
 import { openImageModal } from "../../../api/modals";
 import { getDefaultAvatar } from "../../../util";
 import { extensions } from "../../../native";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 function Extension({ extension }: { extension: Electron.Extension }) {
   const random = useMemo(() => getDefaultAvatar(extension.id), [ ]);

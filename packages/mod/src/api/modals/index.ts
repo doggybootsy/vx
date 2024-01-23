@@ -8,4 +8,5 @@ export * from "./prompt";
 export * from "./code";
 export * from "./user";
 export * from "./invite";
+export * from "./window";
 export { default as ModalComponents } from "./components";

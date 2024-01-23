@@ -102,9 +102,9 @@ const ManagedCSSPlugin = {
   name: "managed-css-plugin",
   setup(build) {
     build.onResolve({
-      filter: /\.css\?managed$/
+      filter: /\.css\?(managed|m)$/
     }, (args) => ({
-      path: path.resolve(args.resolveDir, args.path).replace(__dirname, ".").replaceAll(path.sep, "/").replace(/\?managed$/, ""),
+      path: path.resolve(args.resolveDir, args.path).replace(__dirname, ".").replaceAll(path.sep, "/").replace(/\?(managed|m)$/, ""),
       namespace: "managed-css-plugin"
     }));
 
@@ -115,7 +115,7 @@ const ManagedCSSPlugin = {
 
       return {
         contents: `
-        import { Styler } from "styler";
+        import { Styler } from "vx:styler";
         
         export const id = ${JSON.stringify(args.path)};
         export const css = ${JSON.stringify(css)};
@@ -129,7 +129,7 @@ const ManagedCSSPlugin = {
           styler.remove();
         };
         export function hasStyle() {
-          styler.enabled();
+          return styler.enabled();
         };
         `,
         resolveDir: "./packages/mod/src"
@@ -190,9 +190,9 @@ const SelfPlugin = (desktop) => ({
     };
 
     build.onResolve({
-      filter: /^self$/
+      filter: /^vx:self$/
     }, () => ({
-      path: "self",
+      path: "vx:self",
       namespace: "self-plugin"
     }));
 
@@ -200,10 +200,12 @@ const SelfPlugin = (desktop) => ({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
       contents: `
-      export const env = ${JSON.stringify(env)};
-      export const git = ${JSON.stringify(git())};
-      export const browser = typeof globalThis.chrome === "object" ? globalThis.chrome : globalThis.browser;
-      export const IS_DESKTOP = ${desktop};
+      const env = ${JSON.stringify(env)};
+      const git = ${JSON.stringify(git())};
+      const $browser = typeof chrome === "object" ? chrome : typeof browser === "object" ? browser : null;
+      const IS_DESKTOP = ${desktop};
+
+      export { env, git, $browser as browser, IS_DESKTOP };
       `
     }));
   }

@@ -8,7 +8,7 @@ import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
 import { createAbort, findInReactTree } from "../../util";
 import { Injector } from "../../patcher";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 
@@ -96,8 +96,6 @@ function useMenu(user?: PatchedUser) {
 };
 
 export default definePlugin({
-  name: () => Messages.LOCAL_NICKNAMES_NAME,
-  description: () => Messages.LOCAL_NICKNAMES_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {

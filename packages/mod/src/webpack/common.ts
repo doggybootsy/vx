@@ -7,8 +7,9 @@ import { getProxyStore } from "./stores";
 import { getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
-import { proxyCache } from "../util";
+import { createNullObject, proxyCache } from "../util";
 import { webpackRequire } from "@webpack";
+import { ErrorBoundary } from "../components";
 
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
@@ -34,11 +35,11 @@ interface NavigationUtil {
   transitionTo(path: string): void,
 
   // DM
-  transtionToGuild(guildId: null, channelId: string, messageId?: string): void,
+  transitionToGuild(guildId: null, channelId: string, messageId?: string): void,
   // Guild
-  transtionToGuild(guildId: string, channelId?: string, messageId?: string): void,
+  transitionToGuild(guildId: string, channelId?: string, messageId?: string): void,
   // Guild Thread
-  transtionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
+  transitionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
 
   replace(path: string): void,
 
@@ -69,7 +70,7 @@ export const ComponentDispatch = proxyCache(() => {
 });
 
 const userUploadActions = getProxyByKeys([ "promptToUpload" ]);
-export const TextAreaInput = {
+export const TextAreaInput = createNullObject({
   clearText() {
     ComponentDispatch.dispatchToLastSubscribed("CLEAR_TEXT");
   },
@@ -94,13 +95,13 @@ export const TextAreaInput = {
   blur() {
     ComponentDispatch.dispatchToLastSubscribed("TEXTAREA_BLUR");
   }
-};
+}, "TextAreaInput");
 
-export const LayerManager = {
-  push(component: () => React.ReactNode) {
+export const LayerManager = createNullObject({
+  push(component: React.ComponentType) {
     dirtyDispatch({
       type: "LAYER_PUSH",
-      component
+      component: ErrorBoundary.wrap(component)
     });
   },
   pop() {
@@ -113,7 +114,7 @@ export const LayerManager = {
       type: "LAYER_POP_ALL"
     });
   }
-};
+}, "LayerManager");
 
 const cachedUserFetches = new Map<string, Promise<User>>();
 const fetchUserModule = getProxyByKeys<{
@@ -134,8 +135,8 @@ export function fetchUser(userId: string): Promise<User> {
   return request;
 };
 
-export const WindowUtil = getProxyByKeys<{
-  handleClick(options: { href: string }, event?: React.MouseEvent): Promise<void>,
+export const ExternalWindow = getProxyByKeys<{
+  handleClick(options: { href: string, trusted?: boolean, shouldConfirm?: boolean, onConfirm?(): void }, event?: React.MouseEvent, analyticsLocations?: string): Promise<void>,
   isLinkTrusted(link: string): boolean
 }>([ "isLinkTrusted" , "handleClick" ]);
 

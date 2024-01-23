@@ -2,11 +2,9 @@ import { definePlugin } from "../";
 import { Guild, GuildMember, User } from "discord-types/general";
 import { Developers } from "../../constants";
 import { Constants, PermissionStore } from "@webpack/common";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 export default definePlugin({
-  name: () => Messages.REMOVE_NO_ROLES_NAME,
-  description: () => Messages.REMOVE_NO_ROLES_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   
   requiresRestart: false,

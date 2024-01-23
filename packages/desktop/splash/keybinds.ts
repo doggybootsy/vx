@@ -14,7 +14,7 @@ document.addEventListener("keydown", (event) => {
     event.stopImmediatePropagation();
     event.stopPropagation();
 
-    electron.ipcRenderer.invoke("@vx/splash/devtools");
+    electron.ipcRenderer.invoke("@vx/devtools/toggle", { mode: "detach" });
     return;
   };
 

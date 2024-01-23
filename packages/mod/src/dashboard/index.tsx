@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
-import { IS_DESKTOP, env, git } from "self";
+import { IS_DESKTOP, env, git } from "vx:self";
 
-import { LayerManager, WindowUtil } from "@webpack/common";
+import { LayerManager } from "@webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
 import { className } from "../util";
-import { openAlertModal } from "../api/modals";
+import { openAlertModal, openExternalWindowModal } from "../api/modals";
 import { Icons, SettingsView } from "../components";
 import { Extensions } from "./pages/extension";
 import { Community } from "./pages/community";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -110,9 +110,7 @@ function Dashboard(props: { section: string }) {
               // I hate ts so damn much | Like this only exists when 'git.exists'
               if (!git.exists) return;
 
-              WindowUtil.handleClick({
-                href: `${git.url}/tree/${git.hash}`
-              }, event);
+              openExternalWindowModal(`${git.url}/tree/${git.hash}`);
             }}
           >
             <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>

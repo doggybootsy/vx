@@ -7,7 +7,7 @@ import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
 import { ThemeCard } from "./card";
 import { themeStore } from "../../../../addons/themes";
 import { internalDataStore } from "../../../../api/storage";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 let search = "";
 export function Themes() {

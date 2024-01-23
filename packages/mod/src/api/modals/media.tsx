@@ -109,7 +109,7 @@ export async function openVideoModal(src: string | URL) {
           fileName={"No File Name"}
           src={src}
           poster={poster}
-          renderLinkComponent={Components.Anchor}
+          renderLinkComponent={MegaModule.Anchor}
         />
       </ModalComponents.ModalRoot>
     )

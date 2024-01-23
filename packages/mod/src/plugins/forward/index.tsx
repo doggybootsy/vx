@@ -9,7 +9,7 @@ import { MenuComponents } from "../../api/menu";
 import { Icons } from "../../components";
 import { FluxDispatcher, TextAreaInput } from "@webpack/common";
 import { waitForNode } from "common/dom";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 const [ abort, getCurrentSignal ] = createAbort();
 const injector = new Injector();
@@ -64,8 +64,6 @@ async function openForwardModal(message: Message) {
 type useMessageMenu = (props: { message: Message }) => React.ReactNode;
 
 export default definePlugin({
-  name: () => Messages.FORWARD_NAME,
-  description: () => Messages.FORWARD_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   async start() {

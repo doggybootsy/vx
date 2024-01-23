@@ -60,8 +60,7 @@ interface DiscordNative {
 
 interface ExtensionNative {
   id: string,
-  update(release: Git.Release): void,
-  fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+  update(release: Git.Release): void
 };
 
 type sassCompilerData = {
@@ -91,15 +90,25 @@ declare global {
 }
 interface Window extends DiscordWindow {};
 
-type Styler = import("styler").Styler;
+type Styler = import("vx:styler").Styler;
 
 declare module "*.css" {};
-declare module "*.css?managed" {
+
+declare module "*.css?managed"
+declare module "*.css?m" {
   export const id: string;
   export const css: string;
   export function addStyle(): void;
   export function removeStyle(): void;
-  // export const styler: Styler;
+  export function hasStyle(): boolean;
+};
+
+declare interface ManagedCSS {
+  id: string,
+  css: string,
+  addStyle(): void,
+  removeStyle(): void,
+  hasStyle(): boolean
 };
 
 declare module "*.html" {
@@ -133,7 +142,7 @@ declare module "uncompress.js" {
   export function archiveOpenFileAsync(file: File, password: string): Promise<Archive>;
 }
 
-declare module "self" {
+declare module "vx:self" {
   interface Enviroment {
     IS_DEV: boolean,
     VERSION: string,
@@ -162,3 +171,11 @@ declare module "self" {
   export const git: Git;
   export const IS_DESKTOP: boolean;
 };
+
+type CSSVariable = `--${string}`;
+declare namespace React {
+  // Add CSS Variables to 'React.CSSProperties'
+  interface CSSProperties {
+    [key: CSSVariable]: string | number
+  }
+}

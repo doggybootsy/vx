@@ -6,8 +6,7 @@ import { Developers } from "../../constants";
 import { className } from "../../util";
 import { SettingType, createSettings } from "../settings";
 
-import { addStyle } from "./index.css?managed";
-import { Messages } from "i18n";
+import * as styler from "./index.css?managed";
 
 const settings = createSettings("loop", {
   autoLoop: {
@@ -50,8 +49,6 @@ function Loop() {
 };
 
 export default definePlugin({
-  name: () => Messages.LOOP_NAME,
-  description: () => Messages.LOOP_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
@@ -62,7 +59,5 @@ export default definePlugin({
     }
   ],
   Loop: ErrorBoundary.wrap(Loop),
-  start() {
-    addStyle();
-  }
+  styler
 });

@@ -14,7 +14,6 @@ const supportsI18nKeys = new Set([
   "version_name", "description", "name"
 ]);
 
-
 export type Meta = Record<string, string> & Partial<Record<SupportsI18n, I18nSupportedValue>> & { authors?: AuthorValue };
 
 export function getMetaProperty(meta: Meta, key: keyof Meta, defaultValue: string) {
@@ -43,8 +42,6 @@ export function getMetaUsagePropertyKey(meta: Meta, key: SupportsI18n) {
 
 export function replaceMetaValue(meta: Meta, key: string, value: string | AuthorValue) {
   const clone = structuredClone(meta);
-
-  key = key.replace(/-/g, "_");
 
   if (supportsI18nKeys.has(key)) {
     const cValue = clone[key as SupportsI18n] ??= { default: null, i18n: {} };
@@ -83,7 +80,7 @@ export function getMeta(code: string): Meta {
 
     body = body.trimEnd();
 
-    key = key.toLowerCase();
+    key = key.replace(/-/g, "_").toLowerCase();
     if (typeof lang === "string") lang = lang.toLowerCase();
 
     if (supportsI18nKeys.has(key)) {
@@ -103,6 +100,11 @@ export function getMeta(code: string): Meta {
       else uids.push(body);
       
       continue;
+    }
+
+    // Body can only be these 5 values so ya
+    if (key === "run_at" && !/^((webpack(_|-)ready)|document(-|_)(start|end|idle))$/i.test(body)) {
+      body = "webpack-ready";
     }
 
     meta[key] = body;

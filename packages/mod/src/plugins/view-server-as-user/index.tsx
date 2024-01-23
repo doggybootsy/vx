@@ -1,4 +1,3 @@
-import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Developers } from "../../constants";
@@ -8,8 +7,6 @@ import { GuildMemberStore, GuildStore } from "@webpack/common";
 const impersonationModule = getProxyByKeys([ "startImpersonating", "stopImpersonating" ]);
 
 export default definePlugin({
-  name: () => Messages.VIEW_SERVER_AS_USER_NAME,
-  description: () => Messages.VIEW_SERVER_AS_USER_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {

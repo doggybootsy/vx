@@ -3,6 +3,8 @@ import { BrowserWindow } from "./window";
 import { request } from "https";
 import fs from "original-fs";
 import path from "node:path";
+import { waitFor } from "common/util";
+import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -74,13 +76,43 @@ electron.ipcMain.handle("@vx/splash/no-close", (event) => {
   window.hide = () => {};
 });
 
-electron.ipcMain.handle("@vx/splash/devtools", (event) => {
+electron.ipcMain.handle("@vx/devtools/toggle", async (event, options: OpenDevToolsOptions = { }) => {
   if (event.sender.isDevToolsOpened()) {
     event.sender.closeDevTools();
     return;
   };
 
-  event.sender.openDevTools({ mode: "detach" });
+  event.sender.openDevTools(options as Electron.OpenDevToolsOptions);
+  
+  await waitFor(() => event.sender.devToolsWebContents);
+  const devToolsWebContents = event.sender.devToolsWebContents!;
+
+  if (typeof options.x === "number" && typeof options.y === "number") {
+    event.sender.inspectElement(options.x, options.y);
+  }
+  else if (typeof options.page === "string") {
+    devToolsWebContents.executeJavaScript(`try { DevToolsAPI.showPanel(${JSON.stringify(options.page)}); } catch(e) { };`);
+  };
+  if (typeof options.enterInspectElementMode === "boolean" && options.enterInspectElementMode) {
+    devToolsWebContents.executeJavaScript("DevToolsAPI.enterInspectElementMode();");
+  }
+});
+electron.ipcMain.handle("@vx/devtools/enter-inspect-mode", (event) => {
+  if (!event.sender.isDevToolsOpened()) return;
+
+  event.sender.devToolsWebContents!.executeJavaScript("DevToolsAPI.enterInspectElementMode();");
+});
+electron.ipcMain.handle("@vx/devtools/show-page", (event, page: KnownDevToolsPages) => {
+  if (!event.sender.isDevToolsOpened()) return;
+
+  event.sender.devToolsWebContents!.executeJavaScript(`try { DevToolsAPI.showPanel(${JSON.stringify(page)}); } catch(e) { };`);
+});
+electron.ipcMain.handle("@vx/devtools/inspect-coordinates", (event, x, y) => {
+  if (!event.sender.isDevToolsOpened()) return;
+  event.sender.inspectElement(x, y);
+});
+electron.ipcMain.on("@vx/devtools/is-open", (event) => {
+  event.returnValue = event.sender.isDevToolsOpened();
 });
 
 type Path = Parameters<electron.App["getPath"]>[0];

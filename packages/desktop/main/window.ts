@@ -27,6 +27,10 @@ export class BrowserWindow extends electron.BrowserWindow {
 
     window[preloadSymbol] = originalPreload;
     
+    // window.webContents.on("devtools-open-url", (event, url) => {
+    //   electron.shell.openExternal(url);
+    // });
+
     return window;
   };
   

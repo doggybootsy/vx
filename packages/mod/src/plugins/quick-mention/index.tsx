@@ -1,4 +1,4 @@
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 import { definePlugin } from "..";
 import { addItem, removeItem } from "../../api/minipopover";
 import { Icons, MiniPopover } from "../../components";
@@ -6,8 +6,6 @@ import { Developers } from "../../constants";
 import { PermissionStore, Constants, TextAreaInput, useStateFromStores } from "@webpack/common";
 
 export default definePlugin({
-  name: () => Messages.QUICK_MENTION_NAME,
-  description: () => Messages.QUICK_MENTION_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {

@@ -1,4 +1,4 @@
-import { IS_DESKTOP, git } from "self";
+import { IS_DESKTOP, git } from "vx:self";
 
 export const extensions = {
   open() {

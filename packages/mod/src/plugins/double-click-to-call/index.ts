@@ -1,10 +1,7 @@
-import { Messages } from "i18n";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 
 export default definePlugin({
-  name: () => Messages.DOUBLE_CLICK_CALL_NAME,
-  description: () => Messages.DOUBLE_CLICK_CALL_DESCRIPTION,
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: [

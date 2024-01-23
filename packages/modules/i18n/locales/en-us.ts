@@ -42,6 +42,9 @@ const messages = {
   QUIT_DISCORD: "Quit Discord",
   RESTART_DISCORD: "Restart Discord",
   RELOAD_DISCORD: "Reload Discord",
+  VIEW_LICENSE: "View License",
+
+  TRUST_AND_VISIT_SITE: new FormattedMessage("Visit and trust **!!{domain}!!** links from now on", "en-US", true),
   
   ALWAYS_SHOW_MENTION_TOGGLE_NAME: "Always Show Mention Toggle",
   ALWAYS_SHOW_MENTION_TOGGLE_DESCRIPTION: "Always show the mention toggle when replying to messages",
@@ -50,7 +53,7 @@ const messages = {
   CALL_DURATION_NAME: "Call Duration",
   CALL_DURATION_DESCRIPTION: "Shows how long you have been in call for",
   COPY_CHANNEL_LINK_NAME: "Copy Channel Link",
-  COPY_CHANNEL_LINK_DESCRIPTION: "Quickly copy channel linksfor",
+  COPY_CHANNEL_LINK_DESCRIPTION: "Quickly copy channel links",
   CUSTOM_SWITCH_COLORS_NAME: "Custom Switch Colors",
   CUSTOM_SWITCH_COLORS_DESCRIPTION: "Change the color of switches to any hexadecimal color you want",
   DISCORD_YOUTUBE_PLAYER_NAME: "Discord Youtube Player",
@@ -61,8 +64,8 @@ const messages = {
   DOUBLE_CLICK_CLOSE_MODAL_DESCRIPTION: "Makes it where you have to double the backdrop to close the modal",
   DOUBLE_CLICK_EDIT_NAME: "Double Click Edit",
   DOUBLE_CLICK_EDIT_DESCRIPTION: "Double clicking a message will allow you to edit a message",
-  DOUBLE_CLICK_CALL_NAME: "Double Click Call",
-  DOUBLE_CLICK_CALL_DESCRIPTION: "You need to double click to start a call instead of a single click",
+  DOUBLE_CLICK_TO_CALL_NAME: "Double Click Call",
+  DOUBLE_CLICK_TO_CALL_DESCRIPTION: "You need to double click to start a call instead of a single click",
   EXPAND_COLLAPSED_MESSAGES_NAME: "Expand Collapsed Messages",
   EXPAND_COLLAPSED_MESSAGES_DESCRIPTION: "Automatically expands collapsed messages",
   EXPERIMENTS_NAME: "Experiments",
@@ -89,6 +92,14 @@ const messages = {
   SILENT_TYPING_DESCRIPTION: "Tricks discord into thinking that you aren't typing",
   VIEW_SERVER_AS_USER_NAME: "View Server As User",
   VIEW_SERVER_AS_USER_DESCRIPTION: "Allows you to impersonate as another user in a guild",
+  ALWAYS_SHOW_CROWN_NAME: "Always Show Crown",
+  ALWAYS_SHOW_CROWN_DESCRIPTION: "Always shows the server owners crown",
+  BETTER_VOLUME_NAME: "Better Volume",
+  BETTER_VOLUME_DESCRIPTION: "Increases the amount you increase a persons volume and allows for more precise adjustments",
+  GIF_IMAGE_MENU_NAME: "Gif Image Menu",
+  GIF_IMAGE_MENU_DESCRIPTION: "Adds the image action menu to the GIF picker",
+  SUGGEST_MORE_REACTIONS_NAME: "Suggest More Reactions",
+  SUGGEST_MORE_REACTIONS_DESCRIPTION: "Suggest More Reactions In The Message Context Menu",
 
   EDIT_LOCAL_NICKNAME: "Edit Local Nickname",
   ADD_LOCAL_NICKNAME: "Add Local Nickname",
@@ -99,7 +110,10 @@ const messages = {
   ZIP_VIEWER: "Zip Viewer",
   VIEW_ZIP: "View Zip",
   FOLDER_IS_EMPTY: "Folder Is Empty",
-  DOWNLOAD_SELECTED: "Download Selected"
+  DOWNLOAD_SELECTED: "Download Selected",
+
+  WEB_ONLY: "Only Available On Web App",
+  APP_ONLY: "Only Available On Desktop App"
 } satisfies Record<Uppercase<string>, string | FormattedMessage>;
 
 export type ALL_KNOWN_MESSAGES = typeof messages;

@@ -22,10 +22,10 @@ import { Editor } from "./editor";
 import { Injector } from "./patcher";
 import { api } from "@webpack/api";
 
-import * as self from "self";
+import * as self from "vx:self";
 
-import { Styler } from "styler";
-import * as I18n from "i18n";
+import { Styler } from "vx:styler";
+import * as I18n from "vx:i18n";
 import { themeStore } from "./addons/themes";
 import { pluginStore } from "./addons/plugins";
 

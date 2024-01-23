@@ -1,5 +1,4 @@
 import { useDeferredValue, useInsertionEffect, useLayoutEffect, useRef, useState } from "react";
-import { WindowUtil } from "@webpack/common";
 import * as windowApi from "../../../../api/window";
 import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
@@ -7,7 +6,8 @@ import { byKeys, byStrings, combine, getProxy, not } from "@webpack";
 import { Icons } from "../../../../components";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
+import { openExternalWindowModal } from "../../../../api/modals";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
@@ -77,6 +77,27 @@ export function openWindow(id: string) {
         [data-popout-root] {
           background: var(--background-tertiary);
         }
+        .vx-external-window-modal {
+          border-radius: 8px;
+          border: 1px solid var(--background-modifier-accent);
+          padding: 8px;
+          max-height: 144px;
+          max-width: 498px;
+          word-wrap: anywhere;
+          font-family: var(--font-primary);
+          font-size: 16px;
+          line-height: 20px;
+          font-weight: 400;
+          color: var(--text-muted);
+          user-select: text;
+        }
+        .vx-external-window-modal-host {
+          color: var(--text-normal);
+          font-family: var(--font-primary);
+          font-size: 16px;
+          line-height: 20px;
+          font-weight: 600;
+        }
         `));
         window.document.head.appendChild(style);
       }, [ ]);
@@ -103,9 +124,7 @@ export function openWindow(id: string) {
           <HeaderBar.Icon
             icon={Icons.Help}
             onClick={(event: React.MouseEvent) => {
-              WindowUtil.handleClick({
-                href: "https://developer.mozilla.org/docs/Web/CSS"
-              }, event);
+              openExternalWindowModal("https://developer.mozilla.org/docs/Web/CSS");
             }}
             tooltip={Messages.HELP}
           />

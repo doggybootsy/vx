@@ -8,11 +8,11 @@ interface AlertModalProps {
   title: React.ReactNode,
   className: string,
   confirmColor: string,
-  confirmText: string,
+  confirmText: React.ReactNode,
   onConfirm(): void,
-  secondaryConfirmText?: string,
+  secondaryConfirmText?: React.ReactNode,
   onConfirmSecondary(): void,
-  cancelText?: string,
+  cancelText?: React.ReactNode,
   onCancel(): void,
   transitionState: 0 | 1 | 2 | 3 | 4 | null,
   onClose(): void
@@ -22,9 +22,9 @@ const Alert = getProxyByStrings<React.FunctionComponent<AlertModalProps>>([ ".Si
 
 interface AlertModalOptions {
   danger?: boolean,
-  confirmText?: string,
-  secondaryConfirmText?: string,
-  cancelText?: string,
+  confirmText?: React.ReactNode,
+  secondaryConfirmText?: React.ReactNode,
+  cancelText?: React.ReactNode,
   onConfirm?(): void,
   onConfirmSecondary?(): void,
   onCancel?(): void,

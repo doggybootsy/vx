@@ -94,6 +94,7 @@ const sections = {
     }
 
     return SettingsView.Sections.Custom({
+      predicate,
       element: () => (
         <div className="vx-sidebar-header">
           <div className="vx-sidebar-text">{label}</div>

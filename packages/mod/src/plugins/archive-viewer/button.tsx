@@ -1,4 +1,4 @@
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 import { isZIP } from ".";
 import { Tooltip } from "../../components";
 import { ZIP } from "../../components/icons";

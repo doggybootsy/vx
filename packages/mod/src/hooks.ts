@@ -21,6 +21,12 @@ export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   return state;
 };
 
+export function useForceUpdate() {
+  const [ state, setState ] = useState(0);
+
+  return setState.bind(null, state + 1);
+};
+
 export function useSignal() {
   const controller = useMemo(() => new AbortController(), [ ]);
 
@@ -40,12 +46,12 @@ export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
       const ret = effect(signal);
 
       return () => {
-        abort();
+        abort("End Of React Life Cycle");
         if (typeof ret === "function") ret();
       };
     } 
     catch (error) {
-      return () => abort();
+      return () => abort("End Of React Life Cycle");
     }
   }, [ ]);
 };

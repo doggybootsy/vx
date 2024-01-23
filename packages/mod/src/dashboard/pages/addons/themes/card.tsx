@@ -4,7 +4,7 @@ import { openWindow } from "./popout";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
 import { openConfirmModal } from "../../../../api/modals";
-import { Messages } from "i18n";
+import { Messages } from "vx:i18n";
 
 export function ThemeCard({ id }: { id: string }) {
   const [ name, setName ] = useState(() => themeStore.getName(id));
