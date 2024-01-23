@@ -98,6 +98,8 @@ const messages = {
   BETTER_VOLUME_DESCRIPTION: "Increases the amount you increase a persons volume and allows for more precise adjustments",
   GIF_IMAGE_MENU_NAME: "Gif Image Menu",
   GIF_IMAGE_MENU_DESCRIPTION: "Adds the image action menu to the GIF picker",
+  SUGGEST_MORE_REACTIONS_NAME: "Suggest More Reactions",
+  SUGGEST_MORE_REACTIONS_DESCRIPTION: "Suggest More Reactions In The Message Context Menu",
 
   EDIT_LOCAL_NICKNAME: "Edit Local Nickname",
   ADD_LOCAL_NICKNAME: "Add Local Nickname",
