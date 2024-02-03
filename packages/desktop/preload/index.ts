@@ -7,6 +7,7 @@ import { customJS } from "./js";
 
 import "./native";
 import "./discordnative";
+import { logger } from "vx:logger";
 
 waitForNode("head").then(() => {
   const script = document.createElement("script");
@@ -23,5 +24,5 @@ waitForNode("head").then(() => {
 try {
   require(electron.ipcRenderer.sendSync("@vx/preload"));
 } catch (error) {
-  console.error(error);
+  logger.createChild("preload").error(error);
 }

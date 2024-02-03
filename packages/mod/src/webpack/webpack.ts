@@ -1,3 +1,4 @@
+import { logger } from "vx:logger";
 import { escapeRegex, isInvalidSyntax } from "../util";
 import { plainTextPatches } from "./patches";
 
@@ -96,7 +97,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
 
   const error = isInvalidSyntax(stringedModule);
   if (error) {
-    console.warn(`[VX~Webpack]: Syntax Error on module '${key.toString()}' reverting to original module`, {
+    logger.createChild("Webpack").warn(`Syntax Error on module '${key.toString()}' reverting to original module`, {
       code: stringedModule,
       identifiers: identifiers,
       error

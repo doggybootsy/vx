@@ -1,6 +1,7 @@
 import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { LocaleCodes } from "@webpack/common";
+import { logger } from "vx:logger";
 
 export const { localStorage, sessionStorage } = window;
 
@@ -41,7 +42,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
         };
       } 
       catch (error) {
-        console.error(`[vx] Error reading data for '${name}'`, error);
+        logger.createChild("DataStore").error(`Error reading data for '${name}'`, error);
         setItem(name, { data: {}, version: $version ?? 1 });
       };
     };
@@ -223,7 +224,7 @@ export const internalDataStore = new DataStore<InternalData>("Internal", {
       };
     
       default:
-        console.log("[VX~DataStore~internal]: Unknown Version handler for version:", version);
+        logger.createChild("DataStore", "internal").log("Unknown Version handler for version:", version);
     };
   },
 });

@@ -25,6 +25,7 @@ import { api } from "@webpack/api";
 import * as self from "vx:self";
 
 import { Styler } from "vx:styler";
+import { Logger } from "vx:logger";
 import * as I18n from "vx:i18n";
 import { themeStore } from "./addons/themes";
 import { pluginStore } from "./addons/plugins";
@@ -95,6 +96,7 @@ export const VX = {
   Editor,
   Injector,
   Styler,
+  Logger,
   themes: { ...new AddonApi(themeStore) },
   plugins: { ...new AddonApi(pluginStore) },
   hooks,

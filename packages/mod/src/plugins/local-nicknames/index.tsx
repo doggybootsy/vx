@@ -2,8 +2,7 @@ import { definePlugin, isPluginEnabled } from "../";
 import { User } from "discord-types/general";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
-import { getLazyByKeys } from "@webpack";
-import { GuildMemberStore, UserStore } from "discord-types/stores";
+import { getLazyStore } from "@webpack";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openPromptModal } from "../../api/modals";
 import { createAbort, findInReactTree } from "../../util";
@@ -23,7 +22,7 @@ const dataStore = new DataStore<Record<string, string>>("LocalNicknames", {
 async function patchUser() {
   const signal = getCurrentSignal();
 
-  const UserStore = await getLazyByKeys<UserStore>([ "getCurrentUser", "getUser" ]);
+  const UserStore = await getLazyStore("UserStore");
 
   if (signal.aborted) return;
   
@@ -35,8 +34,8 @@ async function patchUser() {
     let globalName = (res as PatchedUser).globalName;
 
     Object.defineProperty(res, "globalName", {
-      get() {        
-        if (isPluginEnabled("LocalNicknames") && userId in dataStore.proxy) {
+      get() {
+        if (isPluginEnabled("local-nicknames") && userId in dataStore.proxy) {
           return dataStore.proxy[userId];
         };
   
@@ -58,22 +57,21 @@ async function patchUser() {
 async function patchGuildMember() {
   const signal = getCurrentSignal();
 
-  const GuildMemberStore = await getLazyByKeys<GuildMemberStore>([ "getMember", "getMemberIds" ]);
+  const GuildMemberStore = await getLazyStore("GuildMemberStore");
 
   if (signal.aborted) return;
   
   injector.after(GuildMemberStore, "getMember", (that, [ guildId, userId ], res) => {
-    if (isPluginEnabled("LocalNicknames") && res && userId in dataStore.proxy) {
+    if (isPluginEnabled("local-nicknames") && res && userId in dataStore.proxy) {
       res.nick = dataStore.proxy[userId];
     };
   });
-};
-
+};  
 function useMenu(user?: PatchedUser) {
   if (!user) return null;
   
   const label = user.id in dataStore.proxy ? Messages.EDIT_LOCAL_NICKNAME : Messages.ADD_LOCAL_NICKNAME;
-
+  
   return (
     <MenuComponents.MenuItem 
       label={label}

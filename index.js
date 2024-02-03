@@ -137,7 +137,7 @@ const ManagedCSSPlugin = {
     });
   }
 };
-
+/** @type {<T>(factory: () => T): () => T} */
 function cache(factory) {
   const cache = { ref: null, hasValue: false };
 
@@ -239,6 +239,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
   }
 });
 
+/** @type {(desktop: boolean) => esbuild.Plugin[]} */
 const plugins = (desktop) => [
   HTMLPlugin,
   RequireAllPluginsPlugin(desktop),

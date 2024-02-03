@@ -3,6 +3,7 @@ import { Developer } from "../constants";
 import { PlainTextPatchType, addPlainTextPatch, getLazyByKeys } from "@webpack";
 import { CreatedSetting } from "./settings";
 import { FluxDispatcher } from "@webpack/common";
+import { logger } from "vx:logger";
 
 export interface PluginType {
   authors: Developer[],
@@ -15,7 +16,7 @@ export interface PluginType {
   styler?: ManagedCSS
 };
 
-export type AnyPluginType = PluginType & Record<string, any>;
+export type AnyPluginType = PluginType & Omit<Record<string, any>, keyof PluginType>;
 
 const dispatcher = getLazyByKeys([ "subscribe", "dispatch" ]);
 
@@ -41,7 +42,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
             handler(event);
           } 
           catch (error) {
-            console.warn(`[VX~Plugins~Flux]: Plugin '${this.id}' errored when running Flux event '${eventName}'`, { error, handler });
+            logger.createChild("Plugins", "Flux").warn(`[VX~Plugins~Flux]: Plugin '${this.id}' errored when running Flux event '${eventName}'`, { error, handler });
           }
         });
       }
@@ -157,8 +158,8 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
 };
 
 // For use inside of plugins
-export function isPluginEnabled(nameOrId: string) {
-  const plugin = getPlugin(nameOrId);
+export function isPluginEnabled(id: string) {
+  const plugin = getPlugin(id);  
   if (plugin) return plugin.getActiveState();
   return false;
 };

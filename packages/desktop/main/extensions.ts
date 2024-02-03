@@ -1,6 +1,7 @@
 import electron from "electron";
 import path from "node:path";
 import { existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { logger } from "vx:logger";
 
 export function loadExtensions() {
   const appData = electron.app.getPath("appData");
@@ -18,7 +19,7 @@ export function loadExtensions() {
     const stats = statSync(extensionPath);
 
     if (!stats.isDirectory()) {
-      console.warn(`[VX~Extensions]: File '${id}' is not a directory and will not be loaded`);
+      logger.createChild("Extensions").warn(`File '${id}' is not a directory and will not be loaded`);
       continue;
     };
 
@@ -26,7 +27,7 @@ export function loadExtensions() {
       extensionPath,
       { allowFileAccess: true }
     ).then((extension) => {
-      console.log(`Loaded extension ${extension.name} v${extension.version} (${id})`);
+      logger.log(`Loaded extension ${extension.name} v${extension.version} (${id})`);
     });
   };
 };
