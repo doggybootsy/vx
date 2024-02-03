@@ -1,5 +1,3 @@
-console.log("Welcome to VX 2.0");
-
 import "./dashboard";
 import "./index.css";
 import { waitForNode } from "common/dom";
@@ -10,7 +8,24 @@ import { VX } from "./window";
 
 import { pluginStore } from "./addons/plugins";
 import { whenWebpackReady } from "@webpack";
-import { IS_DESKTOP } from "vx:self";
+import { IS_DESKTOP, env } from "vx:self";
+
+console.log(`Welcome to VX v${env.VERSION}`);
+
+// fetch('https://media0.giphy.com/media/3og0IFrHkIglEOg8Ba/giphy.gif', {
+//   cache: "force-cache"
+// }).then(async response =>{
+//   var reader = new FileReader() ;
+//   reader.onload = () => {
+//     console.log(
+//       "%c %cvx", 
+//       `background-image: url("${reader.result}");background-size: 44px; background-repeat: no-repeat;background-size:fill;padding:14px 18px;border-radius:8px;`,
+//       `background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='white' d='M51.4697 27.0801L38.96 74.6582L22.0068 75.6152L6.62598 27.5586L22.8271 26.0547L29.3896 54.082L35.7471 26.0547L51.4697 27.0801ZM93.75 27.0801L80.4199 50.2539L91.7676 70.4199L77.4805 74.8633L71.3281 60.918L64.082 74.9316L49.3164 69.5996L61.8945 49.7754L50.4102 28.9258L66.0645 25.166L71.6699 38.9062L77.6172 25.166L93.75 27.0801Z'%3E%3C/path%3E%3C/svg%3E");background-size: 30px; background-repeat: no-repeat;padding:7px 12px 7px 7px;color:transparent;margin-left:-36px`, 
+//       `Welcome To VX ${env.VERSION}`
+//     );
+//   } ;
+//   reader.readAsDataURL(await response.blob()) ;
+// });
 
 window.VX = VX;
 

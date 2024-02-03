@@ -2,6 +2,7 @@ import React, { createElement, lazy as $lazy, Suspense, Component, useSyncExtern
 import { getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
+import { logger } from "vx:logger";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -638,12 +639,16 @@ export function generateFaviconURL(website: string): string {
   url.searchParams.set("sz", "64");
   url.searchParams.set("domain", website);
   return url.href;
-};
+}
+
+export function toArray<T>(itemOrItems: T | T[]): T[] {
+  return Array.isArray(itemOrItems) ? itemOrItems : [ itemOrItems ];
+}
 
 export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory: () => T) {
   const sym = Symbol("vx.flux.component");
 
-  const $stores = Array.isArray(stores) ? stores : [ stores ];
+  const $stores = toArray(stores);
 
   class FluxComponent<P = {}, S = {},  SS = {}> extends React.Component<P, S, SS> {
     constructor(props: P) {
@@ -657,7 +662,7 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
         componentDidMount.call(this);
 
         if (!this[sym].componentDidMount) {
-          console.warn("[VX~FluxComponent]: Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
+          logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
           FluxComponent.prototype.componentDidMount.call(this);
         }
       };
@@ -665,7 +670,7 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
         componentWillUnmount.call(this);
 
         if (!this[sym].componentWillUnmount) {
-          console.warn("[VX~FluxComponent]: Original 'componentWillUnmount' wasn't ran! Make sure to do 'super.componentWillUnmount()'!");
+          logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
           FluxComponent.prototype.componentWillUnmount.call(this);
         }
       };

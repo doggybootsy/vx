@@ -25,6 +25,4 @@ Object.defineProperty(global, "appSettings", {
   enumerable: true
 });
 
-electron.webContents
-
 electron.app.whenReady().then(loadExtensions);

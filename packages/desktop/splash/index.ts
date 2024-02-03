@@ -5,6 +5,7 @@ import logo from "./logo.html";
 import { customCSS } from "./css";
 
 import "./keybinds";
+import { logger } from "vx:logger";
 
 waitForNode("body").then((body) => {
   const clone = logo.querySelector("svg")!.cloneNode(true);
@@ -30,5 +31,5 @@ waitForNode("head").then((head) => {
 try {
   require(electron.ipcRenderer.sendSync("@vx/preload"));
 } catch (error) {
-  console.error(error);
+  logger.createChild("preload").error(error);
 }

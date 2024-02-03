@@ -54,7 +54,7 @@ export default definePlugin({
   requiresRestart: false,
   patches: {
     match: "ChannelTextAreaButtons",
-    find: /return\(!.{1,3}\.isMobile&&.+?&&(.{1,3})\.push.+?{disabled:(.{1,3}),type:(.{1,3})}/,
+    find: /\(null===\(.{1,3}=.{1,3}\.gifs\).+?&&(.{1,3})\.push.+?{disabled:(.{1,3}),type:(.{1,3})}/,
     replace: "$self._addButton($1,$2,$3,$enabled);$&"
   },
   start() {

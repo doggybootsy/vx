@@ -6,6 +6,7 @@ import { openNotification } from "../../api/notifications";
 import { Icons } from "../../components";
 import { DataStore } from "../../api/storage";
 import { getMeta, getMetaProperty } from "../meta";
+import { logger } from "vx:logger";
 
 export interface ThemeObject {
   css: string,
@@ -164,7 +165,7 @@ export const themeStore = new class ThemeStore extends InternalStore {
           indentedSyntax: file.name.endsWith(".sass")
         }, (data) => {
           if (data.status === 1) {
-            console.warn("SASS Compiler Error", data);
+            logger.warn("SASS Compiler Error", data);
             
             openNotification({
               title: "Unable To Compile Theme",

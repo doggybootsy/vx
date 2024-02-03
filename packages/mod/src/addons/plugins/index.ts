@@ -3,6 +3,7 @@ import { DataStore } from "../../api/storage";
 import { InternalStore, download, getDiscordTag, isInvalidSyntax, showFilePicker } from "../../util";
 import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";
+import { logger } from "vx:logger";
 
 export interface PluginObject {
   js: string,
@@ -98,7 +99,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       rawModule.call(window, module, module.exports);
     } 
     catch (error) {
-      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), while VX was trying to start it`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), while VX was trying to start it`, error);
     }
 
     this.#evaledPlugins[id] = module.exports;
@@ -257,7 +258,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       }
     } 
     catch (error) {
-      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
     }
 
     try {
@@ -265,7 +266,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       if (typeof method === "function") method();
     } 
     catch (error) {
-      console.warn(`[VX~Plugins]: Plugin '${this.getName(id)}' (${id}), errored while running 'module.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), errored while running 'module.${name}'`, error);
     }
   };
   getSettings(id: string): React.ComponentType | null {
@@ -302,7 +303,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
     if (!ids.length) return;
     
-    console.log(`[VX~Plugins]: Initializing ${ids.length} Plugin(s) for state '${timing}'!`);
+    logger.createChild("Plugins").log(`Initializing ${ids.length} Plugin(s) for state '${timing}'!`);
 
     const then = performance.now();
     for (const id of ids) {
@@ -311,6 +312,6 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
     // Only allow 2 decimal places back
     const dur = (performance.now() - then).toFixed(2);
-    console.log("[VX~Plugins]: Initializing took", Number(dur), "ms");
+    logger.createChild("Plugins").log("Initializing took", Number(dur), "ms");
   };
 }
