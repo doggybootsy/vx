@@ -48,6 +48,8 @@ waitForNode("body").then((body) => {
 
   const svg = masks.querySelector("svg")!.cloneNode(true);
   body.append(script, svg);
+
+  body.classList.add("vx");
 });
 
 const debug = new Function("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js");
