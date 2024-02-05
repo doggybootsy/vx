@@ -100,7 +100,9 @@ const messages = {
   GIF_IMAGE_MENU_DESCRIPTION: "Adds the image action menu to the GIF picker",
   SUGGEST_MORE_REACTIONS_NAME: "Suggest More Reactions",
   SUGGEST_MORE_REACTIONS_DESCRIPTION: "Suggest More Reactions In The Message Context Menu",
-
+  USER_AVATAR_MENU_NAME: "User Avatar Menu",
+  USER_AVATAR_MENU_DESCRIPTION: "Show's the user context menu when alternate click the user section panel",
+  
   EDIT_LOCAL_NICKNAME: "Edit Local Nickname",
   ADD_LOCAL_NICKNAME: "Add Local Nickname",
   FRIENDS_SINCE: "Friends Since",

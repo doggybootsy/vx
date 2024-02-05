@@ -64,7 +64,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   const identifiers = new Set<string>();
 
   for (const patch of plainTextPatches) {
-    if (typeof patch.match === "string" ? !stringedModule.includes(patch.match) : !patch.match.test(stringedModule)) continue;
+    if (typeof patch.match === "string" ? !stringedModule.includes(patch.match) : typeof patch.match === "function" ? patch.match(stringedModule) : !patch.match.test(stringedModule)) continue;
 
     if (patch.identifier) identifiers.add(patch.identifier);
 

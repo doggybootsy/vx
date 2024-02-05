@@ -58,7 +58,7 @@ electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
         const data = Buffer.concat(chunks, size);
 
         const version = release.tag_name.replace(/v/i, "");
-        const asar = path.join(__dirname, "..", `${version}.asar`)
+        const asar = path.join(__dirname, "..", `${version}.asar`);
         
         fs.writeFileSync(asar, data, { encoding: "binary" });
 

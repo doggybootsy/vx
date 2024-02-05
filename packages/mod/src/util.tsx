@@ -125,7 +125,7 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
   return Array.from(new Set(flattenedString)).join(" ");
 };
 
-type ClassNameType = classNameValueTypes["array"] | classNameValueTypes["object"] | void | false | ClassName;
+type ClassNameType = classNameValueTypes["array"] | classNameValueTypes["object"] | string | void | false | ClassName;
 
 export class ClassName {
   constructor(...classNames: ClassNameType[]) {
@@ -137,10 +137,11 @@ export class ClassName {
         classes.push(...cn.list());
         continue;
       }
-      classes.push(...className(cn).split(" "));
+      classes.push(...className(Array.isArray(cn) ? cn : [ cn ]).split(" "));
     };
 
-    this.#classes = className(classes).split(" ");
+    if (classes) this.#classes = className(classes).split(" ");
+    else this.#classes = [];
   };
 
   #classes: string[];
@@ -186,7 +187,7 @@ export function findInTree<T extends Object>(tree: any, searchFilter: (item: any
 } = {}): T | void {
   const { walkable = null, ignore = [], _hasSeen = new WeakSet() } = options;
   
-  if (!(tree instanceof Object)) return undefined;
+  if (!(tree instanceof Object)) return;
   
   if (_hasSeen.has(tree)) return;
   if (searchFilter(tree)) return tree as T;
