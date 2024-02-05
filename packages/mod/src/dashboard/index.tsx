@@ -107,7 +107,6 @@ function Dashboard(props: { section: string }) {
           <div 
             className="vx-section-git"
             onClick={(event) => {
-              // I hate ts so damn much | Like this only exists when 'git.exists'
               if (!git.exists) return;
 
               openExternalWindowModal(`${git.url}/tree/${git.hash}`);

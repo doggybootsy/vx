@@ -8,16 +8,16 @@ interface PlainTextPatchBase {
 };
 
 export interface PlainTextPatch extends PlainTextPatchBase {
-  match: string | RegExp,
+  match: string | RegExp | ((module: string) => boolean),
   replacements: PlainTextReplacer[]
 };
 interface PlainTextPatchNonArray extends PlainTextPatchBase {
-  match: string | RegExp,
+  match: string | RegExp | ((module: string) => boolean),
   replacements: PlainTextReplacer
 };
 
 type PlainTextPatchReplacer = PlainTextReplacer & PlainTextPatchBase & {
-  match?: string | RegExp,
+  match?: string | RegExp | ((module: string) => boolean),
   find: string | RegExp
 };
 

@@ -143,14 +143,16 @@ export const ExternalWindow = getProxyByKeys<{
 const openMenuModule = getProxyByKeys<{
   openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
 }>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
-export const openUserContextMenu = (event: React.MouseEvent, user: User) => {
-  const dummyChannel = {
+export const openUserContextMenu = (event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) => {
+  if (typeof user === "string") user = UserStore.getUser(user);
+  
+  const channel = !useCurrentChannel ? {
     isGroupDM() { return false; },
     isDM() { return false; },
     guild_id: null
-  } as unknown as Channel;
-  
-  openMenuModule.openUserContextMenu(event, user, dummyChannel);
+  } as unknown as Channel : ChannelStore.getChannel(SelectedChannelStore.getChannelId());
+
+  openMenuModule.openUserContextMenu(event, user, channel);
 };
 
 interface KnownPermssionBits {
