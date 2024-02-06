@@ -6,7 +6,8 @@ document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "f8") {
     debugger;
     return;
-  };
+  }
+
   const ctrl = event.metaKey || event.ctrlKey;
 
   if (event.key.toLowerCase() === "f12" || (event.key.toLowerCase() === "i" && event.shiftKey && ctrl)) {
@@ -16,15 +17,15 @@ document.addEventListener("keydown", (event) => {
 
     electron.ipcRenderer.invoke("@vx/devtools/toggle", { mode: "detach" });
     return;
-  };
+  }
 
   if (event.key.toLowerCase() === "s" && event.shiftKey && ctrl) {
     electron.ipcRenderer.invoke("@vx/splash/no-close");
     return;
-  };
+  }
   if (event.key.toLowerCase() === "o" && event.shiftKey && ctrl) {
     const path = getAndEnsureVXPath("splash.css", (path) => writeFileSync(path, ""));
 
     electron.shell.openPath(path);
-  };
+  }
 });

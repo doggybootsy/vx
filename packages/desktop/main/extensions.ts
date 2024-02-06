@@ -30,4 +30,4 @@ export function loadExtensions() {
       logger.log(`Loaded extension ${extension.name} v${extension.version} (${id})`);
     });
   };
-};
+}

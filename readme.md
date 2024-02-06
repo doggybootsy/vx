@@ -11,6 +11,15 @@ VX is currently not fully out, there's no official way to install it that works 
 ## VX
 VX is a client mod for [@discord](https://discord.com/)
 
+## Installation
+### Desktop
+Currently there's no good way to install VX on the desktop app. 
+
+### Browsers
+[<img src="https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/29bfeef37eef4ca3bcf962274c1c7766.png" width="40" alt="Microsft Edge Logo" title="Install On Microsft Edge">](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
+
+${\textsf{\color{red}Notice}}$: Weird Memory / CPU usage happens and can cause discord to crash / reload (Most likely a issue with edge itself, as just opening devtools can cause edge to use a lot a cpu / memory)
+
 ## Features
 VX has 26 plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
 
@@ -20,11 +29,6 @@ And the ability to enable electrons content protection mode (OSX and Windows onl
 
 ## Why?
 VX is a light weight client mod that works both on the desktop app and in the browser
-
-## Installation
-Currently there's no good way to install VX on the desktop app. 
-
-But there is a Microsoft Edge extension but it's currently broken
 
 ## Suggesting
 To suggest plugins create a [new issue](https://github.com/doggybootsy/vx/issues/new?assignees=&labels=enhancement&projects=&template=plugin-request--%23name-.md&title=Plugin%20Request%20%5B%23name%5D) with the plugin, but check if the plugin already exists

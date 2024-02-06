@@ -24,12 +24,12 @@ onI18nLoaded(() => {
 export function addChangeListener(id: any, css: string, callback: (css: string) => void) {
   if (i18nLoaded) {
     callback(css.replace(/{{(\w+?)}}/g, (match, message) => Messages[message]));
-  };
+  }
 
   listeners.set(id, [ css, callback ]);
 
   return () => void listeners.delete(id);
-};
+}
 
 export class Styler {  
   constructor(css: string, public readonly id: string = `Styler-${all.size}-vx`) {
@@ -44,12 +44,12 @@ export class Styler {
         this.#element.appendChild(document.createTextNode(css));
       }
     });
-  };
+  }
 
   #element: null | HTMLStyleElement = null;
   
   #css: string;
-  public get css() { return this.#css; };
+  public get css() { return this.#css; }
 
   public add() {
     this.remove();
@@ -60,16 +60,16 @@ export class Styler {
 
     this.#element = style;
     plugins.append(style);
-  };
+  }
   public remove() {
     if (!this.#element) return;
     this.#element.remove();
     this.#element = null;
-  };
+  }
   public enabled() {
     if (this.#element) return true;
     return false;
-  };
+  }
 
   static getAll() {
     return all

@@ -12,7 +12,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     if (!opts || !opts.webPreferences || !opts.webPreferences.preload) {
       super(opts);
       return;
-    };
+    }
 
     const originalPreload = opts.webPreferences.preload;
 
@@ -21,7 +21,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     }
     else if (originalPreload.includes("main")) {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
-    };
+    }
 
     const window: BrowserWindow = new electron.BrowserWindow(opts);
 
@@ -32,7 +32,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     // });
 
     return window;
-  };
+  }
   
   [preloadSymbol]?: string;
 };

@@ -18,7 +18,7 @@ export function debounce<F extends anyFN>(handler: F, timeout?: number | undefin
   };
   
   return debouncer;
-};
+}
 
 export function waitFor(condition: () => any, ms?: number): Promise<void> {
   return new Promise((resolve) => {
@@ -29,4 +29,4 @@ export function waitFor(condition: () => any, ms?: number): Promise<void> {
       resolve();
     }, ms);
   });
-};
+}

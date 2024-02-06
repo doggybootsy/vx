@@ -39,7 +39,8 @@ declare module Git {
   interface Asset {
     name: string,
     url: string,
-    content_type: string
+    content_type: string,
+    browser_download_url: string
   };
 
   interface Release {
@@ -153,9 +154,7 @@ declare module "vx:self" {
     }
   };
   interface Browser {
-    runtime: { 
-      getURL(path: string): string 
-    }
+    [key: string]: any
   };
   interface GitDetails {
     branch: string, 

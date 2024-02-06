@@ -32,7 +32,7 @@ export function getLoadPromise(): Promise<void> {
 export function onI18nLoaded(listener: () => void) {
   onI18nListeners.add(listener);
   return () => void onI18nListeners.delete(listener);
-};
+}
 
 export function onLocaleChange(listener: (newLocale: LocaleCodes, oldLocale: LocaleCodes) => void) {
   if (!i18nModuleLoaded) {
@@ -44,11 +44,11 @@ export function onLocaleChange(listener: (newLocale: LocaleCodes, oldLocale: Loc
 
     onI18nListeners.add(onI18n);
     return () => undo();
-  };
+  }
 
   I18n.on("locale", listener);
   return () => void I18n.off("locale", listener);
-};
+}
 
 onLocaleChange((newLocale) => {
   internalDataStore.set("last-loaded-locale", newLocale);
@@ -57,7 +57,7 @@ onLocaleChange((newLocale) => {
 export function getLocale(): LocaleCodes {
   if (i18nModuleLoaded) return I18n.getLocale();
   return internalDataStore.get("last-loaded-locale") ?? "en-US";
-};
+}
 
 type KnownFormmatableStrings = KeysMatching<ALL_KNOWN_MESSAGES, FormattedMessage>;
 type KnownStrings = "DOWNLOAD" | "EDIT" | "DELETE" | "HELP" | KeysMatching<ALL_KNOWN_MESSAGES, string>;

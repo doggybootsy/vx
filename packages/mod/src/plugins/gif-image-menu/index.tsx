@@ -21,7 +21,7 @@ function Menu({ src }: { src: string }) {
       {items}
     </MenuComponents.Menu>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

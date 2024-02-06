@@ -38,7 +38,7 @@ const native = {
       if (native.devtools.isOpen()) {
         electron.ipcRenderer.invoke("@vx/devtools/inspect-coordinates", x, y);
         return;
-      };
+      }
 
       native.devtools.open({ x, y });
     },
@@ -46,7 +46,7 @@ const native = {
       if (native.devtools.isOpen()) {
         electron.ipcRenderer.invoke("@vx/devtools/show-page", page);
         return;
-      };
+      }
 
       native.devtools.open({ page });
     },
