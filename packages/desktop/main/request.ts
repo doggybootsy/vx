@@ -12,7 +12,7 @@ function normalizeHeaders(responseHeaders: Record<string, string[]> = { }) {
   };
 
   return headers;
-};
+}
 
 electron.app.whenReady().then(() => {
   electron.session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -26,11 +26,11 @@ electron.app.whenReady().then(() => {
       headers["Access-Control-Allow-Origin"] = [
         new URL(frame.url).origin
       ];
-    };
+    }
 
     if (resourceType === "stylesheet") {
       headers["Content-Type"] = [ "text/css" ];
-    };
+    }
 
     callback({ 
       cancel: false, 

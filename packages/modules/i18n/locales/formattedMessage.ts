@@ -9,7 +9,7 @@ export class FormattedMessage {
     this.message = hasMarkdown ? message : message.replace(/!!/g, "");
     this.hasMarkdown = hasMarkdown;
     this.#locale = locale;
-  };
+  }
 
   #locale: string;
   #formattedMessage?: FormattedMessage;
@@ -17,13 +17,13 @@ export class FormattedMessage {
     if (!FormatableMessageApi) return;
     this.#formattedMessage = new FormatableMessageApi.FormattedMessage(this.message, this.#locale, this.hasMarkdown);
     return this.#formattedMessage!;
-  };
+  }
 
   message: string;
   hasMarkdown: boolean;
   intlMessage: any;
 
-  format(formatters: Record<string, any>): string | React.ReactNode[] {
-    return this.#ensure() ? this.#formattedMessage!.format(formatters) : this.message;
+  format<T extends string | React.ReactNode | string[] | React.ReactNode[]>(formatters: Record<string, any>): T {
+    return (this.#ensure() ? this.#formattedMessage!.format(formatters) : this.message) as T;
   }
 };

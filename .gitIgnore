@@ -3,3 +3,5 @@ dist
 app
 app.asar
 web
+!packages/web
+extension

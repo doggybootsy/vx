@@ -1,11 +1,12 @@
 const esbuild = require("esbuild");
-const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync } = require("fs");
+const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync, readdirSync, readFileSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");
 const path = require("path");
 const asar = require("asar")
 const cp = require("child_process");
 
 const { version } = require("./package.json");
+const JSZip = require("jszip");
 
 function argvIncludesMatch(regex) {
   for (const arg of process.argv) {
@@ -323,11 +324,11 @@ const plugins = (desktop) => [
       main: "index.js",
       author: "doggybootsy"
     }));
-  };
+  }
   if (argvIncludesArg("a(sar)?")) {
     await asar.createPackage("./app", "app.asar");
     console.log("Made asar");
-  };
+  }
   if (argvIncludesArg("w(eb)?")) {
     console.log("Building Web Files!");
     
@@ -348,5 +349,72 @@ const plugins = (desktop) => [
         js: "//# sourceURL=vx://VX/app/build.js"
       }
     });
-  };
+  }
+  if (argvIncludesArg("e(xtension)?")) {
+    console.log("Building Extension!");
+
+    const dir = path.join(__dirname, "extension");
+    if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
+    mkdirSync(dir);
+
+    mkdirSync(path.join(dir, "mv3"));
+    
+    const manifest = require(path.join(__dirname, "packages", "web", "mv3", "manifest.json"));
+    
+    manifest.version_name = `${manifest.version} (${new Date().toLocaleDateString()})`;
+
+    writeFileSync(path.join(dir, "mv3", "manifest.json"), JSON.stringify(manifest, null, "\t"));
+    copyFileSync(path.join(__dirname, "packages", "web", "mv3", "modifyResponseHeaders.json"), path.join(dir, "mv3", "modifyResponseHeaders.json"));
+
+    mkdirSync(path.join(dir, "mv3", "icons"));
+    for (const size of [ 256, 128, 48, 16 ]) {
+      copyFileSync(path.join(__dirname, "assets", `${size}.png`), path.join(dir, "mv3", "icons", `${size}.png`));
+    }
+
+    await esbuild.build({
+      entryPoints: [ "packages/web/mv3/src/service-worker/index.ts" ],
+      outfile: "extension/mv3/scripts/service-worker.js",
+      bundle: true,
+      platform: "browser",
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      jsx: "transform",
+      plugins: plugins(false),
+      footer: {
+        css: "/*# sourceURL=vx://VX/app/build.css */",
+        js: "//# sourceURL=vx://VX/app/build.js"
+      }
+    });
+    await esbuild.build({
+      entryPoints: [ "packages/web/mv3/src/content.ts" ],
+      outfile: "extension/mv3/scripts/content.js",
+      bundle: true,
+      platform: "browser",
+      tsconfig: path.join(__dirname, "tsconfig.json"),
+      jsx: "transform",
+      plugins: plugins(false),
+      footer: {
+        css: "/*# sourceURL=vx://VX/app/build.css */",
+        js: "//# sourceURL=vx://VX/app/build.js"
+      }
+    });
+
+    console.log("Zipping Extension!");
+    const zip = new JSZip();
+
+    zip.file("manifest.json", JSON.stringify(manifest, null, "\t"));
+    zip.file("modifyResponseHeaders.json", readFileSync(path.join(dir, "mv3", "modifyResponseHeaders.json"), "binary"));
+
+    const scripts = zip.folder("scripts");
+    scripts.file("content.js", readFileSync(path.join(dir, "mv3", "scripts", "content.js"), "binary"));
+    scripts.file("service-worker.js", readFileSync(path.join(dir, "mv3", "scripts", "service-worker.js"), "binary"));
+
+    const icons = zip.folder("icons");
+    icons.file("16.png", readFileSync(path.join(dir, "mv3", "icons", "16.png"), "binary"));
+    icons.file("48.png", readFileSync(path.join(dir, "mv3", "icons", "48.png"), "binary"));
+    icons.file("128.png", readFileSync(path.join(dir, "mv3", "icons", "128.png"), "binary"));
+    icons.file("256.png", readFileSync(path.join(dir, "mv3", "icons", "256.png"), "binary"));
+
+    const buffer = await zip.generateAsync({ type: "nodebuffer" });
+    writeFileSync(path.join(dir, "mw3.zip"), buffer);
+  }
 })();

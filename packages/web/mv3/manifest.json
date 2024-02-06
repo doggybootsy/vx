@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "VX",
+  "version": "1.0.3",
+  "description": "A Discord mod that provides Plugins and a easy way to load Themes",
+  "icons": {
+    "256": "icons/256.png",
+    "128": "icons/128.png",
+    "48": "icons/48.png",
+    "16": "icons/16.png"
+  },
+  "host_permissions": [
+    "*://*.discord.com/*",
+    "*://github.com/*",
+    "https://objects.githubusercontent.com/*"
+  ],
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "matches": [
+        "*://*.discord.com/*"
+      ],
+      "js": [
+        "scripts/content.js"
+      ],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "build.js"
+      ],
+      "matches": [
+        "*://*.discord.com/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "declarativeNetRequest",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "scripts/service-worker.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "VX-modifyResponseHeaders",
+        "enabled": true,
+        "path": "modifyResponseHeaders.json"
+      }
+    ]
+  }
+}

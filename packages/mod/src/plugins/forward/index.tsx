@@ -25,7 +25,7 @@ async function openForwardModal(message: Message) {
       FluxDispatcher.unsubscribe("QUICKSWITCHER_SWITCH_TO", onUserSelect);
       FluxDispatcher.unsubscribe("QUICKSWITCHER_HIDE", deleteListeners);
     });
-  };
+  }
 
   async function onUserSelect() {
     deleteListeners();
@@ -49,7 +49,7 @@ async function openForwardModal(message: Message) {
       message.content,
       await attachments
     );
-  };
+  }
 
   FluxDispatcher.subscribe("QUICKSWITCHER_SWITCH_TO", onUserSelect);
   FluxDispatcher.subscribe("QUICKSWITCHER_HIDE", deleteListeners);

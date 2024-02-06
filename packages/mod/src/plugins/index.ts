@@ -53,8 +53,6 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
   id: string;
 
-  public readonly styler?: ManagedCSS;
-
   public readonly originalEnabledState: boolean;
   public readonly requiresRestart: boolean;
 
@@ -81,7 +79,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
     if (!this.requiresRestart) {
       if (typeof this.exports.start === "function") this.exports.start();
-      if (this.styler) this.styler.addStyle();
+      if (this.exports.styler) this.exports.styler.addStyle();
     }
 
     return true;
@@ -97,7 +95,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
     if (!this.requiresRestart) {
       if (typeof this.exports.stop === "function") this.exports.stop();
-      if (this.styler) this.styler.removeStyle();
+      if (this.exports.styler) this.exports.styler.removeStyle();
     }
     
     return true;
@@ -136,11 +134,11 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
     for (const patch of exports.patches) {
       const self = `window.VX._self.getPlugin(${JSON.stringify(plugin.id)})`;
 
-      patch._self = {
+      patch._self = Object.assign({}, patch._self, {
         plugin: self,
         self: `${self}.exports`,
         enabled: `${self}.getActiveState()`
-      };
+      });
 
       if (typeof patch.identifier !== "string") patch.identifier = plugin.id;
       else patch.identifier = `${plugin.id}(${patch.identifier})`;

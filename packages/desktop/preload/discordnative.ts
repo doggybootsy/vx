@@ -9,7 +9,7 @@ const contextBridge: ContextBridge = {
 
       // Make it where osx has old titlebar
       // DiscordNative.window.USE_OSX_NATIVE_TRAFFIC_LIGHTS = true;
-    };
+    }
 
     electron.contextBridge.exposeInMainWorld(apiKey, api);
   }

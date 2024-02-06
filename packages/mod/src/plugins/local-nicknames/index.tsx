@@ -37,7 +37,7 @@ async function patchUser() {
       get() {
         if (isPluginEnabled("local-nicknames") && userId in dataStore.proxy) {
           return dataStore.proxy[userId];
-        };
+        }
   
         return globalName;
       },
@@ -64,7 +64,7 @@ async function patchGuildMember() {
   injector.after(GuildMemberStore, "getMember", (that, [ guildId, userId ], res) => {
     if (isPluginEnabled("local-nicknames") && res && userId in dataStore.proxy) {
       res.nick = dataStore.proxy[userId];
-    };
+    }
   });
 };  
 function useMenu(user?: PatchedUser) {
@@ -86,7 +86,7 @@ function useMenu(user?: PatchedUser) {
         if (value === "") {
           delete dataStore.proxy[user.id];
           return;
-        };
+        }
         dataStore.proxy[user.id] = value;
       }}
     />
@@ -112,7 +112,7 @@ export default definePlugin({
       if (innerProps) {
         innerProps.children.push(menu);
         return;
-      };
+      }
 
       // Fallback
       res.props.children.push(

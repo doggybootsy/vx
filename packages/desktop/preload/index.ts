@@ -3,8 +3,6 @@ import path from "node:path";
 import { readFileSync } from "node:fs";
 import { waitForNode } from "common/dom";
 
-import { customJS } from "./js";
-
 import "./native";
 import "./discordnative";
 import { logger } from "vx:logger";
@@ -18,7 +16,7 @@ waitForNode("head").then(() => {
   style.innerHTML = readFileSync(path.join(__dirname, "build.css"), { encoding: "binary" });
   style.id = "vx-style";
 
-  document.head.append(script, style, customJS);
+  document.head.append(script, style);
 });
 
 try {

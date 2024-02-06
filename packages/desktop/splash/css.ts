@@ -6,7 +6,7 @@ const filepath = getAndEnsureVXPath("splash.css", (path) => writeFileSync(path, 
 
 function getCustomCSS() {
   return readFileSync(filepath, "binary");
-};
+}
 
 const style = document.createElement("style");
 

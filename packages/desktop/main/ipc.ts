@@ -92,7 +92,7 @@ electron.ipcMain.handle("@vx/devtools/toggle", async (event, options: OpenDevToo
   }
   else if (typeof options.page === "string") {
     devToolsWebContents.executeJavaScript(`try { DevToolsAPI.showPanel(${JSON.stringify(options.page)}); } catch(e) { };`);
-  };
+  }
   if (typeof options.enterInspectElementMode === "boolean" && options.enterInspectElementMode) {
     devToolsWebContents.executeJavaScript("DevToolsAPI.enterInspectElementMode();");
   }

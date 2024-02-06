@@ -1,5 +1,5 @@
 import React, { createElement, lazy as $lazy, Suspense, Component, useSyncExternalStore } from "react";
-import { getProxyByKeys } from "@webpack";
+import { getLazyByKeys, getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
 import { logger } from "vx:logger";
@@ -705,6 +705,9 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
   return FluxComponent;
 };
 
+export let reactExists = false;
+getLazyByKeys([ "memo", "createElement" ]).then(() => { reactExists = true; });
+
 type Accessor<T> = () => T;
 type SetterArg<T> = ((prev: T) => T) | T;
 type Setter<T> = (value: SetterArg<T>) => T;
@@ -717,6 +720,8 @@ export function createState<T>(initialState: T): State<T> {
   const listeners = new Set<() => void>();
 
   function accessor(forceNoUseHook = false) {
+    if (!reactExists) return state;
+    
     const dispatcher = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
 
     if (forceNoUseHook || String(dispatcher.useSyncExternalStore).includes("321")) {

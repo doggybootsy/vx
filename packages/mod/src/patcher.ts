@@ -23,7 +23,7 @@ interface Hook<F extends FunctionType> {
 
 function apply<T extends FunctionType>(fn: T, that: ThisParameterType<T>, args: Parameters<T>): ReturnType<T> {
   return Function.prototype.apply.call(fn, that, args);
-};
+}
 
 const HOOK_SYMBOL = Symbol.for("vx.patcher.hook");
 function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K): Hook<F> {
@@ -64,10 +64,10 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
     for (const after of hook.after) {
       const res = after(this, args, result);
       if (res && SET_VALUE in res) result = res[SET_VALUE];
-    };
+    }
 
     return result;
-  };
+  }
 
   Object.defineProperties(hookedFunction, Object.getOwnPropertyDescriptors(fn));
   
@@ -91,15 +91,15 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 const patches = new WeakMap<Injector, Set<UndoFunction>>();
 
 export class Injector {
-  static afterReturn<T extends any>(value: T): AfterCallbackSetReturn<T> {
+  public static afterReturn<T extends any>(value: T): AfterCallbackSetReturn<T> {
     return { [SET_VALUE]: value };
-  };
-  static getOriginal<T extends FunctionType>(hooked: T): T {
+  }
+  public static getOriginal<T extends FunctionType>(hooked: T): T {
     if (HOOK_SYMBOL in hooked) (hooked[HOOK_SYMBOL] as Hook<T>).original;
     return hooked;
-  };
+  }
 
-  after<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: AfterCallback<F>) {
+  public after<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: AfterCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.after.add(callback);
@@ -110,12 +110,12 @@ export class Injector {
     function undo() {
       $patches.delete(undo);
       hook.after.delete(callback);
-    };
+    }
 
     $patches.add(undo);
     return undo;
-  };
-  instead<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: InsteadCallback<F>) {
+  }
+  public instead<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: InsteadCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.instead.add(callback);
@@ -126,12 +126,12 @@ export class Injector {
     function undo() {
       $patches.delete(undo);
       hook.instead.delete(callback);
-    };
+    }
 
     $patches.add(undo);
     return undo;
-  };
-  before<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: BeforeCallback<F>) {
+  }
+  public before<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: BeforeCallback<F>) {
     const hook = hookFunction(module, key);
 
     hook.before.add(callback);
@@ -142,13 +142,13 @@ export class Injector {
     function undo() {
       $patches.delete(undo);
       hook.before.delete(callback);
-    };
+    }
 
     $patches.add(undo);
     return undo;
-  };
-  unpatchAll() {
+  }
+  public unpatchAll() {
     if (!patches.has(this)) return;
     for (const undo of patches.get(this)!) undo();
-  };
+  }
 };
