@@ -150,11 +150,11 @@ function cache(factory) {
 
     return cache.ref;
   }
-};
+}
 
 function exec(cmd) {
   return cp.execSync(cmd, { cwd: process.cwd() }).toString("binary").trim();
-};
+}
 
 const git = cache(() => {
   try {
@@ -231,10 +231,14 @@ const RequireAllPluginsPlugin = (desktop) => ({
         .filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory())
         .filter(dir => !dir.endsWith(".ignore"))
         .filter(dir => !dir.endsWith(desktop ? ".web" : ".app"));
-
+        
       return {
         resolveDir: "./packages/mod/src",
-        contents: pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = require("./plugins/${dir}")`).join(";\n")
+        contents: `function esModuleInteropDefault(exports) {
+          if (typeof exports === "object" && exports.__esModule && exports.default) return exports.default;
+          return exports;
+        }
+        ${pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = esModuleInteropDefault(require("./plugins/${dir}"));`).join("\n")}`
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, createElement } from "react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode,
@@ -9,48 +9,48 @@ interface ErrorBoundaryState {
   hasError: boolean
 };
 
-const NoFallback = () => (
-  <div className="vx-react-error">React Error</div>
-);
-
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  static Fallback() {
+    return <div className="vx-react-error">React Error</div>
+  }
+
+  static wrap<P extends {}>(ComponentToWrap: React.ComponentType<P>, Fallback: React.ComponentType<P> = ErrorBoundary.Fallback): React.ComponentType<P> {
+    class WrappedErrorBoundary extends Component<P> {
+      static displayName: string;
+      static {
+        const name = ComponentToWrap.name || "anonymous";
+        this.displayName = `VXErrorBoundary(${ComponentToWrap.displayName ? ComponentToWrap.displayName : name})`;
+
+        Object.defineProperty(this, "name", {
+          value: name
+        });
+      }
+
+      render() {
+        return (
+          <ErrorBoundary fallback={<Fallback {...this.props} />}>
+            <ComponentToWrap {...this.props} />
+          </ErrorBoundary>
+        )
+      }
+    }
+
+    return WrappedErrorBoundary;
+  }
+
   state = { hasError: false };
 
   componentDidCatch() {
     this.setState({
       hasError: true
     });
-  };
+  }
 
   render() {
     if (!this.state.hasError) return this.props.children;
     if (this.props.fallback) return this.props.fallback;
-    return <NoFallback />;
-  };
-
-  static wrap = wrap;
-};
-
-function wrap<P extends {}>(Component: React.JSXElementConstructor<P>, Fallback: React.FunctionComponent<P> = NoFallback): React.FunctionComponent<P> {
-  function Wrapped(props: P) {
-    return (
-      <ErrorBoundary fallback={<Fallback {...props} />}>
-        <Component {...props} />
-      </ErrorBoundary>
-    );
-  };
-
-  const name = Component.name ? Component.name : "anonymous";
-
-  // @ts-expect-error
-  Wrapped.displayName = Component.displayName ? `VX(ErrorBoundary(${Component.displayName}))` : `VX(ErrorBoundary(${name}))`;
-  
-  Object.defineProperty(Wrapped, "name", {
-    value: name,
-    configurable: true
-  });
-
-  return Wrapped;
-};
+    return <ErrorBoundary.Fallback />;
+  }
+}
 
 export default ErrorBoundary;

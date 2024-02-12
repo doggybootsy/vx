@@ -16,7 +16,7 @@ import { getPlugin, plugins } from "./plugins";
 
 import { waitForNode } from "common/dom";
 
-import { _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
+import { TitlebarButton, _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
 
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
@@ -78,7 +78,7 @@ class AddonApi {
   getName(id: string) {
     if (!this.has(id)) return null;
 
-    return this.#store.getName(id);
+    return this.#store.getAddonName(id);
   }
 };
 
@@ -107,6 +107,7 @@ export const VX = {
     waitForNode,
     _addHomeButton,
     _settingButtonOnClickWrapper,
+    TitlebarButton,
     getSrc(getSrc: (...args: any[]) => string) {
       return (...args: any[]) => {
         const url = getSrc.call(this, args);
@@ -121,6 +122,7 @@ export const VX = {
     Messages: I18n.Messages,
     onLocaleChange: I18n.onLocaleChange,
     getLocale: I18n.getLocale,
-    getLoadPromise: I18n.getLoadPromise
+    getLoadPromise: I18n.getLoadPromise,
+    FormattedMessage: I18n.FormattedMessage
   }
 };

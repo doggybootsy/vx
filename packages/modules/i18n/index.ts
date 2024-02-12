@@ -6,6 +6,8 @@ import { FormattedMessage } from "./locales/formattedMessage";
 import { ALL_KNOWN_MESSAGES } from "./locales/en-us";
 import { KeysMatching } from "typings";
 
+export { FormattedMessage };
+
 export let i18nModuleLoaded = false;
 
 const onI18nListeners = new Set<() => void>();

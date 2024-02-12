@@ -33,7 +33,14 @@ export async function install() {
 
   if (didChangeAnything) await browser.storage.local.set(data);
 
-  ipc.dispatchEvent(new VXMessageEvent("ready", data));
+  ipc.dispatchEvent(new VXMessageEvent("code-ready", data));
+  
+  browser.tabs.query({ url: "*://*.discord.com/*" }, (tabs: { id: number }[]) => {
+    for (const tab of tabs) {
+      if (Connection.conections.has(tab.id)) continue;
+      browser.tabs.reload(tab.id);
+    }
+  });
 }
 
 export async function update(release: Git.Release) {
@@ -43,6 +50,8 @@ export async function update(release: Git.Release) {
   };
 
   await browser.storage.local.set(data);
+
+  ipc.dispatchEvent(new VXMessageEvent("code-ready", data));
 
   Connection.reloadAll();
 }

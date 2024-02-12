@@ -38,7 +38,7 @@ function MenuPopout({ closePopout }: { closePopout: () => void }) {
 };
 
 export function openWindow(id: string) {  
-  const name = pluginStore.getName(id);
+  const name = pluginStore.getAddonName(id);
   const js = pluginStore.getJS(id);
 
   windowApi.openWindow({
@@ -49,7 +49,7 @@ export function openWindow(id: string) {
       const lastSavedValue = useRef(js);
       const valueRef = useRef(js);
       const [ hasChanges, setHasChanges ] = useState(false);
-      const [ name, setName ] = useState(() => pluginStore.getName(id));
+      const [ name, setName ] = useState(() => pluginStore.getAddonName(id));
       const [ version, setVersion ] = useState(() => pluginStore.getVersionName(id));
       const locale = useDiscordLocale(false);
       const [ showCustomIcon, setShowCustomIcon ] = useState(true);
@@ -194,7 +194,7 @@ export function openWindow(id: string) {
         pluginStore.updateJS(id, valueRef.current);
         lastSavedValue.current = valueRef.current;
         
-        const name = pluginStore.getName(id);
+        const name = pluginStore.getAddonName(id);
 
         setHasChanges(false);
 
@@ -245,8 +245,8 @@ export function openWindow(id: string) {
       }, [ title ]);
 
       useEffect(() => {
-        setName(pluginStore.getName(id));
-        setTitle(pluginStore.getName(id));
+        setName(pluginStore.getAddonName(id));
+        setTitle(pluginStore.getAddonName(id));
 
         setVersion(pluginStore.getVersionName(id));
       }, [ locale ]);

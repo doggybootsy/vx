@@ -34,17 +34,20 @@ function Minipopover(Original: MinipopoverType, props: Props) {
           key={`vx-mp-${props.message.id}-${props.channel.id}-${id}-${index}`}
         />
       );
-    };
-  };
+    }
+  }
   
   return returnValue;
-};
+}
 
-export function _patchPopover(minipopover: React.ReactElement) {
+export function _patchPopover(minipopover: React.ReactElement) {  
   const { type } = minipopover as { type: MinipopoverType };
 
   if (type.__VX) return minipopover;
-  if (cached.has(type)) minipopover.type = cached.get(type)!;
+  if (cached.has(type)) {
+    minipopover.type = cached.get(type)!;
+    return minipopover;
+  }
 
   const newType = Minipopover.bind(window, type);
   (newType as MinipopoverType).__VX = type;
@@ -54,4 +57,4 @@ export function _patchPopover(minipopover: React.ReactElement) {
   minipopover.type = newType;
 
   return minipopover;
-};
+}

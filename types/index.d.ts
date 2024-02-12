@@ -22,7 +22,8 @@ declare module Webpack {
   type BulkFilter = FilterOptions & {
     filter: Filter
   };
-  type LazyFilterOptions = FilterOptions & { signal?: AbortSignal };
+  type SignalOption = { signal?: AbortSignal };
+  type LazyFilterOptions = FilterOptions & SignalOption;
 
   type ModuleWithEffect = [
     Array<any>,
@@ -49,6 +50,70 @@ declare module Git {
     tag_name: string,
     assets: Asset[]
   };
+}
+
+declare module Spotify {
+  interface Image {
+    height: number,
+    width: number,
+    url: string
+  }
+
+  interface Artist {
+    external_urls: {
+      spotify: string
+    },
+    href: string,
+    id: string,
+    name: string,
+    type: "artist",
+    uri: string
+  }
+  interface Album {
+    id: string,
+    name: string,
+    image: Image
+  }
+  interface Track {
+    name: string,
+    album: Album,
+    artists: Artist[],
+    id: string,
+    duration: number,
+    isLocal: boolean,
+  }
+  
+  interface Device {
+    id: string,
+    is_active: boolean,
+    is_private_session: false,
+    is_restricted: false,
+    name: string,
+    supports_volume: boolean,
+    type: string,
+    volume_percent: number
+  }
+
+  interface ArtistFull {
+    external_urls: {
+      spotify: string
+    },
+    followers: {
+      href: null,
+      total: number
+    },
+    genres: string[],
+    href: string,
+    id: string,
+    images: Image[],
+    name: string,
+    popularity: number,
+    type: string,
+    uri: string
+  }
+  
+  type ShuffleState = "off" | "context" | "track";
+  type PageType = "artist" | "album" | "track";
 }
 
 interface DiscordNative {

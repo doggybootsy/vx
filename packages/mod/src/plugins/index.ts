@@ -36,18 +36,18 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
 
         const handler = exports.fluxEvents[eventName];
         FluxDispatcher.subscribe(eventName, (event: any) => {
-          if (!this.isEnabled()) return;
+          if (!this.getActiveState()) return;
 
           try {
             handler(event);
           } 
           catch (error) {
-            logger.createChild("Plugins", "Flux").warn(`[VX~Plugins~Flux]: Plugin '${this.id}' errored when running Flux event '${eventName}'`, { error, handler });
+            logger.createChild("Plugins", "Flux").warn(`Plugin '${this.id}' errored when running Flux event '${eventName}'`, { error, handler });
           }
         });
       }
     });
-  };
+  }
 
   type = <const>"internal";
 
@@ -59,7 +59,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
   public getActiveState() {
     if (this.requiresRestart) return this.originalEnabledState;
     return this.isEnabled();
-  };
+  }
 
   public isEnabled() {
     internalDataStore.ensure("enabled-plugins", { });
@@ -67,7 +67,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     const enabled = internalDataStore.get("enabled-plugins")!;
     
     return enabled[this.id] === true;
-  };
+  }
   public enable() {
     if (this.isEnabled()) return false;
 
@@ -83,7 +83,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     }
 
     return true;
-  };
+  }
   public disable() {
     if (!this.isEnabled()) return false;
 
@@ -99,17 +99,17 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     }
     
     return true;
-  };
+  }
   public toggle() {
     if (this.isEnabled()) {
       this.disable();
       return false;
-    };
+    }
 
     this.enable();
     return true;
-  };
-};
+  }
+}
 
 export const plugins: Record<string, Plugin> = {};
 
@@ -121,7 +121,7 @@ export function getPlugin(id: string) {
   return null;
 };
 
-export function definePlugin<T extends AnyPluginType>(exports: T): T {
+export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {  
   const plugin = new Plugin(exports);
 
   const isEnabled = plugin.isEnabled();
@@ -142,24 +142,24 @@ export function definePlugin<T extends AnyPluginType>(exports: T): T {
 
       if (typeof patch.identifier !== "string") patch.identifier = plugin.id;
       else patch.identifier = `${plugin.id}(${patch.identifier})`;
-    };
+    }
     // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
     if (isEnabled || !plugin.requiresRestart) addPlainTextPatch(...exports.patches);
-  };
+  }
 
   if (isEnabled) {
     if (typeof exports.start === "function") exports.start();
     if (exports.styler) exports.styler.addStyle();
   }
 
-  return exports;
-};
+  return plugin;
+}
 
 // For use inside of plugins
 export function isPluginEnabled(id: string) {
   const plugin = getPlugin(id);  
   if (plugin) return plugin.getActiveState();
   return false;
-};
+}
 
-require("@plugins");
+logger.debug(require("@plugins"));

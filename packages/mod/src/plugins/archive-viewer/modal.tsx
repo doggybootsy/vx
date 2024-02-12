@@ -193,7 +193,7 @@ function ZipModal(props: ZipModalProps) {
 
     setFiles(files);
     setViewingFiles(files);
-  });
+  }, [ ]);
 
   const name = useMemo(() => {
     if (typeof props.src === "string") return props.src.split("/").at(-1)!.split("?").at(0)!;

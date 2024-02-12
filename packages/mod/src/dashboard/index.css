@@ -76,3 +76,48 @@
   color: var(--white-500);
   background-color: var(--brand-experiment);
 }
+
+.vx-titlebar-button {
+  color: var(--interactive-normal);
+  position: relative;
+  top: -4px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 28px;
+  height: 22px;
+  pointer-events: auto;
+  -webkit-app-region: no-drag;
+  /* Currently disable it */
+  display: none;
+}
+.vx-titlebar-button:not(.vx-titlebar-disabled):hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-titlebar-button:not(.vx-titlebar-disabled):active {
+  background-color: var(--background-modifier-active);
+  color: var(--interactive-active);
+}
+.vx-titlebar-disabled {
+  color: var(--interactive-muted);
+  cursor: not-allowed;
+}
+.vx-titlebar-loading {
+  color: var(--brand-experiment);
+  animation: fadeInOut 2s infinite;
+  cursor: unset;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .75;
+  }
+  100% {
+    opacity: 1;
+  }
+}

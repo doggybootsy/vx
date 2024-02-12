@@ -3,7 +3,7 @@ export { default as React } from "./react";
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
 import { getProxyByKeys } from "./filters"
-import { getProxyStore } from "./stores";
+import { GenericStore, getProxyStore } from "./stores";
 import { getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
@@ -22,9 +22,16 @@ export const PermissionStore = getProxyStore("PermissionStore");
 export const MessageStore = getProxyStore("MessageStore");
 export const GuildMemberStore = getProxyStore("GuildMemberStore");
 
+export interface Store {
+  new (dispatcher: FluxDispatcherType, handlers: Record<string, Function>, somethingIDK?: unknown): GenericStore,
+  getAll(): GenericStore[],
+  prototype: GenericStore
+}
+
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T, deps?: React.DependencyList) => T;
 export const Flux = getProxyByKeys<{
-  useStateFromStores: useStateFromStores
+  useStateFromStores: useStateFromStores,
+  Store: Store
 }>([ "useStateFromStores", "Dispatcher" ]);
 
 export const useStateFromStores = proxyCache(() => Flux.useStateFromStores);
@@ -49,9 +56,13 @@ interface NavigationUtil {
 
 export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
 
-export function dirtyDispatch(event: DispatchEvent) {
-  return Promise.resolve(FluxDispatcher.dispatch(event));
-};
+export function dirtyDispatch(event: DispatchEvent): Promise<void> {
+  return new Promise((resolve) => {
+    FluxDispatcher.wait(() => {
+      resolve(FluxDispatcher.dispatch(event));
+    });
+  });
+}
 
 export type LocaleCodes = "en-US" | "en-GB" | "zh-CN" | "zh-TW" | "cs" | "da" | "nl" | "fr" | "de" | "el" | "hu" | "it" | "ja" | "ko" | "pl" | "pt-PT" | "pt-BR" | "ru" | "sk" | "es-ES" | "es-419" | "sv-SE" | "tr" | "bg" | "uk" | "fi" | "no" | "hr" | "ro" | "lt" | "th" | "vi" | "hi" | "he" | "ar" | "id";
 
@@ -133,7 +144,7 @@ export function fetchUser(userId: string): Promise<User> {
   cachedUserFetches.set(userId, request);
 
   return request;
-};
+}
 
 export const ExternalWindow = getProxyByKeys<{
   handleClick(options: { href: string, trusted?: boolean, shouldConfirm?: boolean, onConfirm?(): void }, event?: React.MouseEvent, analyticsLocations?: string): Promise<void>,
@@ -143,17 +154,20 @@ export const ExternalWindow = getProxyByKeys<{
 const openMenuModule = getProxyByKeys<{
   openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
 }>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
-export const openUserContextMenu = (event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) => {
+export function openUserContextMenu(event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) {
   if (typeof user === "string") user = UserStore.getUser(user);
   
-  const channel = !useCurrentChannel ? {
+  const dummyChannel = {
     isGroupDM() { return false; },
     isDM() { return false; },
     guild_id: null
-  } as unknown as Channel : ChannelStore.getChannel(SelectedChannelStore.getChannelId());
+  } as unknown as Channel;
+  const currentChannel = ChannelStore.getChannel(SelectedChannelStore.getChannelId());
+
+  const channel = !useCurrentChannel ? dummyChannel : currentChannel || dummyChannel;
 
   openMenuModule.openUserContextMenu(event, user, channel);
-};
+}
 
 interface KnownPermssionBits {
   CREATE_INSTANT_INVITE: 1n,

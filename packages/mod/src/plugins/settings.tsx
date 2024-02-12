@@ -67,7 +67,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
         setState={set} 
       />
     )
-  };
+  }
 
   if (element.type === SettingType.SWITCH) {
     const $setting = element as SwitchSettingType;
@@ -87,7 +87,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
         >{element.title}</FormSwitch>
       );
     }
-  };
+  }
   if (element.type === SettingType.COLOR) {
     const $setting = element as ColorSettingType;
 
@@ -106,7 +106,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
         </FormBody>
       )
     };
-  };
+  }
 
   return () => (
     <div>

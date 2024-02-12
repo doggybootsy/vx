@@ -33,15 +33,15 @@ export async function openInviteModal(code: string) {
       if (data.code !== code) return;
 
       resolve(true);
-    };
+    }
     function onClose() {
       FluxDispatcher.unsubscribe("INVITE_ACCEPT", onAccept);
       FluxDispatcher.unsubscribe("INVITE_MODAL_CLOSE", onClose);
 
       resolve(false);
-    };
+    }
 
     FluxDispatcher.subscribe("INVITE_ACCEPT", onAccept);
     FluxDispatcher.subscribe("INVITE_MODAL_CLOSE", onClose);
   });
-};
+}

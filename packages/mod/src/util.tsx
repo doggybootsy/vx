@@ -41,7 +41,8 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
   }) as T, handlers);
 
   return proxy;
-};
+}
+
 export function cache<T>(factory: () => T): () => T {
   const cache = { } as { current: T } | { };
 
@@ -53,13 +54,14 @@ export function cache<T>(factory: () => T): () => T {
 
     return current;
   }
-};
+}
 
 export function cacheComponent<P extends {}>(factory: () => React.FunctionComponent<P>) {
   const cacheFactory = cache(factory);
 
   return (props: P) => createElement(cacheFactory(), props);
-};
+}
+
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<T | { default: T }>): React.LazyExoticComponent<T> {
   return $lazy(async () => {
     const result = await factory();
@@ -67,7 +69,7 @@ export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<
     if (result instanceof Object && "default" in result) return result;
     return { default: result };
   });
-};
+}
 
 export function makeLazy<T extends React.ComponentType<any>>(opts: {
   factory: () => Promise<T>,
@@ -87,12 +89,12 @@ export function makeLazy<T extends React.ComponentType<any>>(opts: {
         <Suspense fallback={<Fallback />}>
           {createElement(Lazy, this.props as React.ComponentPropsWithRef<T>)}
         </Suspense>
-      );
-    };
-  };
+      )
+    }
+  }
 
   return LazyComponent;
-};
+}
 
 interface classNameValueTypes {
   array: Array<string | void | false | classNameValueTypes["object"]>
@@ -104,7 +106,7 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
   
   function parseString(className: string) {
     return className.split(" ").filter(Boolean).join(" ");
-  };
+  }
 
   const flattenedString: string[] = [];
   for (const className of classNames) {
@@ -118,9 +120,9 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
     for (const key in className) {
       if (Object.prototype.hasOwnProperty.call(className, key)) {
         if (className[key]) flattenedString.push(parseString(key));
-      };
-    };
-  };
+      }
+    }
+  }
 
   return Array.from(new Set(flattenedString)).join(" ");
 };
@@ -142,7 +144,7 @@ export class ClassName {
 
     if (classes) this.#classes = className(classes).split(" ");
     else this.#classes = [];
-  };
+  }
 
   #classes: string[];
 
@@ -150,55 +152,60 @@ export class ClassName {
     const cn = new ClassName(...classNames).list();
 
     this.#classes = className([ ...this.#classes, ...cn ]).split(" ");
-  };
+  }
   remove(...classNames: ClassNameType[]) {
     const cn = new ClassName(...classNames).list();
 
     this.#classes = this.#classes.filter((className) => !cn.includes(className));
-  };
+  }
   has(className: string) {
     return this.#classes.includes(className);
-  };
+  }
   
   clear() {
     this.#classes = [];
-  };
+  }
 
   list() {
     return this.#classes.splice(0);
-  };
+  }
 
   toString() {
     return this.#classes.join(" ");
-  };
+  }
 
   toJSON() {
     return this.list();
-  };
+  }
   [Symbol.iterator]() {
     return iteratorFrom(this.#classes);
-  };
+  }
 };
 
+let hasSeen: WeakSet<any> | null = null;
 export function findInTree<T extends Object>(tree: any, searchFilter: (item: any) => any, options: {
   walkable?: string[] | null,
-  ignore?: string[],
-  _hasSeen?: WeakSet<any>
+  ignore?: string[]
 } = {}): T | void {
-  const { walkable = null, ignore = [], _hasSeen = new WeakSet() } = options;
+  hasSeen ??= new WeakSet();
+
+  const { walkable = null, ignore = [] } = options;
   
   if (!(tree instanceof Object)) return;
   
-  if (_hasSeen.has(tree)) return;
+  if (hasSeen.has(tree)) return;
   if (searchFilter(tree)) return tree as T;
 
-  _hasSeen.add(tree);
+  hasSeen.add(tree);
 
   let tempReturn: any;
   if (tree instanceof Array) {
     for (const value of tree) {
-      tempReturn = findInTree(value, searchFilter, { walkable, ignore, _hasSeen });
-      if (typeof tempReturn != "undefined") return tempReturn;
+      tempReturn = findInTree(value, searchFilter, { walkable, ignore });
+      if (typeof tempReturn != "undefined") {
+        hasSeen = null;
+        return tempReturn;
+      }
     }
   }
   else {
@@ -208,41 +215,61 @@ export function findInTree<T extends Object>(tree: any, searchFilter: (item: any
 
       if (typeof(value) === "undefined" || ignore.includes(key)) continue;
 
-      tempReturn = findInTree(value, searchFilter, { walkable, ignore, _hasSeen });
-      if (typeof tempReturn !== "undefined") return tempReturn;
+      tempReturn = findInTree(value, searchFilter, { walkable, ignore });
+      if (typeof tempReturn !== "undefined") {
+        hasSeen = null;
+        return tempReturn;
+      }
     }
   }
 
+  hasSeen = null;
   return tempReturn;
 };
 
 export function findInReactTree<T extends Object>(tree: any, searchFilter: (item: any) => any): T | void {
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
-};
+}
 
 export class InternalStore {
-  static stores = new Set();
+  public static stores = new Set<InternalStore>();
+  public static getStore(name: string) {
+    for (const store of InternalStore.stores) {
+      if (InternalStore.prototype.getName.call(store) === name) return store;
+    }
+  }
+
   constructor() {
     InternalStore.stores.add(this);
-  };
+  }
 
-  displayName?: string;
+  public static displayName?: string;
+  public displayName?: string;
+
+  public getName() {
+    if (this.displayName) return this.displayName;
+
+    const constructor = this.constructor as typeof InternalStore;
+    if (constructor.displayName) return constructor.displayName;
+
+    return constructor.name;
+  }
 
   #listeners = new Set<() => void>();
   
-  addChangeListener(callback: () => void) {
+  public addChangeListener(callback: () => void) {
     this.#listeners.add(callback);
-  };
-  removeChangeListener(callback: () => void) {
+  }
+  public removeChangeListener(callback: () => void) {
     this.#listeners.delete(callback);
-  };
+  }
 
-  emit() {
+  public emit() {
     for (const listener of this.#listeners) {
       listener();
-    };
-  };
-};
+    }
+  }
+}
 
 const copyCommandSupported = document.queryCommandEnabled("copy") || document.queryCommandSupported("copy");
 export const clipboard = {
@@ -276,7 +303,7 @@ export const clipboard = {
       if (selection) {
         selection.removeAllRanges();
         selection.addRange(range);
-      };
+      }
 
       textarea.focus();
       textarea.setSelectionRange(0, text.length);
@@ -286,7 +313,7 @@ export const clipboard = {
       document.body.removeChild(textarea);
 
       return true;
-    };
+    }
 
     throw new Error("Clipboard action isn't supported!");
   }
@@ -305,44 +332,47 @@ export function getComponentType<P>(component: string | React.ComponentType<P> |
   if (component instanceof Object && "$$typeof" in component) {
     if (component.$$typeof === Symbol.for("react.memo")) return getComponentType<P>((component as any).type);
     if (component.$$typeof === Symbol.for("react.forward_ref")) return getComponentType<P>((component as any).render);
-  };
+  }
 
   return component as React.ComponentType<P> | string;
-};
+}
 
 export function escapeRegex(text: string, flags?: string): RegExp {
   text = text.replace(/[\.\[\]\(\)\\\$\^\|\?\*\+]/g, "\\$&");
   return new RegExp(text, flags);
-};
+}
 
 export function getRandomItem<T extends any[]>(array: T): T[number] {
   return array.at(Math.floor(Math.random() * array.length))!;
-};
+}
 
 // Not a secure hash
 export function hashCode(str: string) {
   let hash = 0;
+
   for (let i = 0, len = str.length; i < len; i++) {
     let chr = str.charCodeAt(i);
     hash = (hash << 5) - hash + chr;
     hash |= 0; // Convert to 32bit integer
   }
+
   return hash;
-};
+}
 
 const defaultAvatarModule = getProxyByKeys<{
   DEFAULT_AVATARS: string[]
 }>([ "DEFAULT_AVATARS" ]);
+
 export function getDefaultAvatar(id?: string) {
   if (typeof id === "string") {
     let number = Number(id);
     if (isNaN(number)) number = hashCode(id);
 
     return defaultAvatarModule.DEFAULT_AVATARS[number % 5];
-  };
+  }
 
   return getRandomItem(defaultAvatarModule.DEFAULT_AVATARS);
-};
+}
 
 const patchedReactHooks = {
   useMemo(factory: () => any) {
@@ -434,11 +464,11 @@ export function createNullObject<T extends Record<PropertyKey, any> = Record<Pro
 
   return Object.create(null, descriptors);
 };
-// 'Iterator.from' prolly fill like thing
+// 'Iterator.from' polyfill like thing
 export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
   if (typeof (window as any).Iterator === "function") {
     return (window as any).Iterator.from(iterator);
-  };
+  }
 
   const generator = iterator[Symbol.iterator]();
   
@@ -484,7 +514,7 @@ export class VXNodeList<T extends Node> {
     for (const node of nodesList) {
       this[counter++] = node;
     }
-  };
+  }
 
   [key: number]: T;
 
@@ -492,7 +522,7 @@ export class VXNodeList<T extends Node> {
     for (const node of this) {
       if (!(node instanceof Element)) continue;
       if (node.matches(selectors)) return node;
-    };
+    }
 
     return null;
   }
@@ -502,7 +532,7 @@ export class VXNodeList<T extends Node> {
     for (const node of this) {
       if (!(node instanceof Element)) continue;
       if (node.matches(selectors)) matches.push(node);
-    };
+    }
 
     return new VXNodeList(matches);
   }
@@ -510,7 +540,7 @@ export class VXNodeList<T extends Node> {
     for (const node of this) {
       if (!(node instanceof Element)) continue;
       if (node.id === id) return node;
-    };
+    }
 
     return null;
   }
@@ -530,7 +560,7 @@ export class VXNodeList<T extends Node> {
 
     while ((result = gen.next(), !result.done)) {
       entries.push([ counter++, result.value ]);
-    };
+    }
 
     return iteratorFrom(entries);
   }
@@ -574,10 +604,10 @@ export function getParents(element: Element | null): VXNodeList<Element> {
 
   while (element = element.parentElement) {
     parents.push(element);
-  };
+  }
   
   return new VXNodeList(parents);
-};
+}
 
 export function createAbort(): readonly [ (reason?: any) => void, () => AbortSignal ] {
   let controller = new AbortController();
@@ -586,10 +616,10 @@ export function createAbort(): readonly [ (reason?: any) => void, () => AbortSig
     controller.abort(reason);
 
     controller = new AbortController();
-  };
+  }
 
   return [ abort, () => controller.signal ];
-};
+}
 
 export function isInvalidSyntax(code: string): false | SyntaxError {
   try {
@@ -601,13 +631,13 @@ export function isInvalidSyntax(code: string): false | SyntaxError {
     if (error instanceof SyntaxError) return error;
     return false;
   }
-};
+}
 
 export function sleep(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(() => resolve(), ms);
   });
-};
+}
 
 type NotFunction<T> = Exclude<T, Function>
 export function memorize<T extends { [key in string]: () => any }>(instance: T & NotFunction<T>): { [key in keyof T]: ReturnType<T[key]> } {
@@ -620,11 +650,11 @@ export function memorize<T extends { [key in string]: () => any }>(instance: T &
       Object.defineProperty(clone, key, {
         get: cache(element)
       });
-    };
-  };
+    }
+  }
 
   return clone;
-};
+}
 
 export function getDiscordTag(user: User) {
   const isPomelo = (user as any).isPomelo() || (user.discriminator === "0000");
@@ -633,7 +663,7 @@ export function getDiscordTag(user: User) {
     (user as any).globalName || user.username,
     !isPomelo ? `#${user.discriminator}` : false
   ].filter((m) => m).join("");
-};
+}
 
 export function generateFaviconURL(website: string): string {
   const url = new URL("https://www.google.com/s2/favicons");
@@ -666,7 +696,7 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
           logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
           FluxComponent.prototype.componentDidMount.call(this);
         }
-      };
+      }
       this.componentWillUnmount = function() {
         componentWillUnmount.call(this);
 
@@ -674,41 +704,41 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
           logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
           FluxComponent.prototype.componentWillUnmount.call(this);
         }
-      };
-    };
+      }
+    }
 
     public readonly fluxState: T = factory();
     private readonly [sym] = {
       componentDidMount: false,
       componentWillUnmount: false
-    };
+    }
     
     protected forceUpdateFluxState(callback?: () => void) {
       (this as any).fluxState = factory();
       this.forceUpdate(callback);
-    };
+    }
 
     public componentDidMount(): void {
       for (const store of $stores) {
         store.addChangeListener(this.forceUpdateFluxState);
       }
       this[sym].componentDidMount = true;
-    };
+    }
     public componentWillUnmount(): void {
       for (const store of $stores) {
         store.removeChangeListener(this.forceUpdateFluxState);
       }
       this[sym].componentWillUnmount = true;
-    };
-  };
+    }
+  }
 
   return FluxComponent;
-};
+}
 
 export let reactExists = false;
 getLazyByKeys([ "memo", "createElement" ]).then(() => { reactExists = true; });
 
-type Accessor<T> = () => T;
+type Accessor<T> = (forceNoUseHook?: boolean) => T;
 type SetterArg<T> = ((prev: T) => T) | T;
 type Setter<T> = (value: SetterArg<T>) => T;
 type State<T> = Readonly<[ Accessor<T>, Setter<T> ]>;
@@ -716,40 +746,42 @@ type State<T> = Readonly<[ Accessor<T>, Setter<T> ]>;
 const stateValues = new WeakMap<Accessor<any> | Setter<any>, { listeners: Set<() => void>, accessor: Accessor<any> }>();
 // SolidJS like thing
 export function createState<T>(initialState: T): State<T> {
-  let state = initialState;
+  let currentState = initialState;
   const listeners = new Set<() => void>();
 
   function accessor(forceNoUseHook = false) {
-    if (!reactExists) return state;
+    if (!reactExists) return currentState;
     
     const dispatcher = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
-
-    if (forceNoUseHook || String(dispatcher.useSyncExternalStore).includes("321")) {
-      return state;
-    }
+    
+    if (forceNoUseHook || !String(dispatcher.useSyncExternalStore).includes("349")) {
+      return currentState;
+    }    
 
     return useSyncExternalStore((onChange) => {
       listeners.add(onChange);
       return () => listeners.delete(onChange)
-    }, () => state);
-  };
+    }, () => currentState);
+  }
 
   function setter(value: SetterArg<T>) {
-    if (typeof value === "function") value = (value as (pref?: T) => T)(state);
-    state = value;
+    if (typeof value === "function") value = (value as (pref?: T) => T)(currentState);
+    currentState = value;
     
     for (const listener of listeners) listener();
 
-    return state;
-  };
+    return currentState;
+  }
   
   stateValues.set(accessor, { listeners, accessor });
   stateValues.set(setter, { listeners, accessor });
 
-  return [
+  const state: State<T> = [
     accessor,
     setter
-  ] as const;
+  ];
+
+  return state;
 };
 
 export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | State<T>, onChange: (state: T) => void): () => void {
@@ -760,8 +792,8 @@ export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | St
 
   function listener() {
     onChange(value!.accessor());
-  };
+  }
 
   value.listeners.add(listener);
   return () => void value.listeners.delete(listener);
-};
+}

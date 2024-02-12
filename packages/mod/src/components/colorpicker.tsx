@@ -88,14 +88,10 @@ const roleColors = [
   0x546E7A
 ] as const;
 
-const ThemeStore = getProxyStore("ThemeStore");
-
 export function ColorPicker({ className: cn, ...props }: ColorPickerProps & { className?: string }) {
-  const isLightTheme = useStateFromStores([ ThemeStore ], () => ThemeStore.theme === "light");
-
-  const colors = useMemo(() => props.colors ?? roleColors, [ props.colors ]);
-  const defaultColor = useMemo(() => props.defaultColor ?? isLightTheme ? 0xE3E5E8 : 0x202225, [ props.defaultColor ]);
-
+  const colors = useMemo(() => Array.isArray(props.colors) ? props.colors : roleColors, [ props.colors ]);
+  const defaultColor = useMemo(() => typeof props.defaultColor === "number" ? props.defaultColor : 0x99AAB5, [ props.defaultColor ]);
+  
   return (
     <ErrorBoundary>
       <div className={className([ "vx-colorpicker", cn ])}>

@@ -102,7 +102,17 @@ const messages = {
   SUGGEST_MORE_REACTIONS_DESCRIPTION: "Suggest More Reactions In The Message Context Menu",
   USER_AVATAR_MENU_NAME: "User Avatar Menu",
   USER_AVATAR_MENU_DESCRIPTION: "Show's the user context menu when alternate click the user section panel",
+  GUILD_CLOCK_NAME: "Guild Clock",
+  GUILD_CLOCK_DESCRIPTION: "Add's a small clock underneath the VX button",
+  SPOTIFY_CONTROLS_NAME: "Spotify Controls",
+  SPOTIFY_CONTROLS_DESCRIPTION: "Add's a Spotify control panel to the user panels area. You cannot be a in a private session for this to work",
+  SPOTIFY_CRACK_NAME: "Spotify++",
+  SPOTIFY_CRACK_DESCRIPTION: "Tricks Discord into thinking you have Spotify premium",
   
+  SPOTIFY_OPEN_TRACK: "Open Track",
+  SPOTIFY_OPEN_ALBUM: "Open Album",
+  SPOTIFY_PREVIEW_ALBUM_COVER: "Preview Album Cover",
+  SPOTIFY_ARTISTS: "Artists",
   EDIT_LOCAL_NICKNAME: "Edit Local Nickname",
   ADD_LOCAL_NICKNAME: "Add Local Nickname",
   FRIENDS_SINCE: "Friends Since",
@@ -113,6 +123,7 @@ const messages = {
   VIEW_ZIP: "View Zip",
   FOLDER_IS_EMPTY: "Folder Is Empty",
   DOWNLOAD_SELECTED: "Download Selected",
+  FOLLOWERS: new FormattedMessage("{followers, plural, one {1 Follower} other {{followers} Followers}}", "en-US", false),
 
   WEB_ONLY: "Only Available On Web App",
   APP_ONLY: "Only Available On Desktop App"

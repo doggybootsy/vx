@@ -1,16 +1,20 @@
-import { useEffect, useInsertionEffect, useMemo } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
 import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
 import { useState } from "react";
 
-export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
+export function useInternalStore<T>(store: InternalStore, factory: () => T, isSame: (a: T, b: T) => boolean = Object.is): T {
+  const [, forceUpdate] = useForceUpdate();
   const [ state, setState ] = useState(factory);
 
-  useInsertionEffect(() => {
+  useEffect(() => {
+    setState(factory);
+    
     function listener() {
       setState(factory);
-    };
+      forceUpdate();
+    }
 
     store.addChangeListener(listener);
     return () => {
@@ -19,42 +23,31 @@ export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   }, [ ]);
 
   return state;
-};
+}
 
 export function useForceUpdate() {
-  const [ state, setState ] = useState(0);
-
-  return setState.bind(null, state + 1);
-};
-
-export function useSignal() {
-  const controller = useMemo(() => new AbortController(), [ ]);
-
-  return <const>[
-    controller.signal, 
-    (reason?: any) => controller.abort(reason)
-  ];
-};
+  return useReducer((num) => num + 1, 0);
+}
 
 type ReactEffectWithArg<T> = (value: T) => (void | (() => void) | Promise<void>);
 
-export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>) {
-  const [ signal, abort ] = useSignal();
-
+export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>, deps?: React.DependencyList) {
   useEffect(() => {
+    const controller = new AbortController();
+
     try {
-      const ret = effect(signal);
+      const ret = effect(controller.signal);
 
       return () => {
-        abort("End Of React Life Cycle");
+        controller.abort("End Of React Life Cycle");
         if (typeof ret === "function") ret();
       };
     } 
     catch (error) {
-      return () => abort("End Of React Life Cycle");
+      return () => controller.abort("End Of React Life Cycle");
     }
-  }, [ ]);
-};
+  }, deps);
+}
 
 export function useUser(userId?: string): User | null {
   const [ user, setUser ] = useState(() => userId ? UserStore.getUser(userId) || null : null);
@@ -67,10 +60,10 @@ export function useUser(userId?: string): User | null {
     if (signal.aborted) return;
 
     setUser(fetched);
-  });
+  }, [ userId ]);
   
   return user;
-};
+}
 
 export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
   const [ locale, setLocale ] = useState(() => I18n.getLocale());
@@ -81,11 +74,11 @@ export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
     async function listener() {
       if (awaitPromise) await I18n.loadPromise;
       setLocale(I18n.getLocale());
-    };
+    }
 
     I18n.on("locale", listener);
     return () => I18n.off("locale", listener);
   }, [ ]);
 
   return locale;
-};
+}

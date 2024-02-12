@@ -1,6 +1,5 @@
 import { browser } from "vx:self";
 import { Connection } from "./connection";
-import { logger } from "vx:logger";
 import { install, update } from "./assets";
 
 browser.runtime.onConnect.addListener((_connection: any) => {
@@ -11,20 +10,8 @@ browser.runtime.onConnect.addListener((_connection: any) => {
       case "update":
         update(msg.release);
         break;
-    
-      default:
-        logger.log(`Unknown message type '${msg.type}'`);
-        break;
     }
   });
 });
 
-browser.runtime.onInstalled.addListener(() => {
-  install();  
-
-  browser.tabs.query({ url: "*://*.discord.com/*" }, (tabs: any[]) => {
-    for (const tab of tabs) {
-      browser.tabs.reload(tab.id);
-    }
-  });
-})
+browser.runtime.onInstalled.addListener(install);

@@ -102,7 +102,7 @@ export const themeStore = new class ThemeStore extends InternalStore {
     if (this.isEnabled(id)) this._insertCSS(id);
   };
   
-  public getName(id: string) {
+  public getAddonName(id: string) {
     return this.#themes[id].name;
   };
   public setName(id: string, name: string) {

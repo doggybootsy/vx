@@ -40,7 +40,7 @@ export const updater = {
     if (!IS_DESKTOP) {
       window.VXExtension!.update(release);
       return;
-    };
+    }
 
     window.VXNative!.updater.update(release);
   }

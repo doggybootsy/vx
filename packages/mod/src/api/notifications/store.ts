@@ -2,16 +2,12 @@ import { Notification } from ".";
 import { InternalStore } from "../../util";
 
 export const notificationStore = new class extends InternalStore {
-  constructor() {
-    super();
-  };
-
   displayName = "NotificationStore";
 
   clear() {
     this.#state.clear();
     this.emit();
-  };
+  }
 
   #order = 0;
   #state = new Map<string, Notification & { order: number }>();
@@ -19,7 +15,7 @@ export const notificationStore = new class extends InternalStore {
     const state = Array.from(this.#state.values());
 
     return state.sort((a, b) => a.order - b.order);
-  };
+  }
 
   add(id: string, notification: Notification) {
     this.#state.set(id, {
@@ -29,9 +25,9 @@ export const notificationStore = new class extends InternalStore {
     this.emit();
 
     return () => this.delete(id);
-  };
+  }
   delete(id: string) {    
     this.#state.delete(id);
     this.emit();
-  };
+  }
 };
