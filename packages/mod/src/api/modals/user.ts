@@ -9,4 +9,4 @@ const userProfileModalActions = getProxyByKeys<{
 export function openUserModal(user: User | string) {
   if (typeof user === "string") return userProfileModalActions.openUserProfileModal({ userId: user });
   userProfileModalActions.openUserProfileModal({ userId: user.id });
-};
+}

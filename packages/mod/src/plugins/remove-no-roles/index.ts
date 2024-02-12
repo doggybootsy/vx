@@ -2,7 +2,6 @@ import { definePlugin } from "../";
 import { Guild, GuildMember, User } from "discord-types/general";
 import { Developers } from "../../constants";
 import { Constants, PermissionStore } from "@webpack/common";
-import { Messages } from "vx:i18n";
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

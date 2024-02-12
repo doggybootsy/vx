@@ -28,7 +28,7 @@ export interface SafePlugin {
 function getCustomPlugin(id: string): SafePlugin {
   const Settings = pluginStore.getSettings(id);
 
-  const name = pluginStore.getName(id);
+  const name = pluginStore.getAddonName(id);
 
   return {
     type: "custom",
@@ -36,13 +36,9 @@ function getCustomPlugin(id: string): SafePlugin {
     id,
     toggle() {
       const isEnabled = pluginStore.isEnabled(id);
-      if (isEnabled) {
-        pluginStore.disable(id);
-        return false;
-      };
-
-      pluginStore.enable(id);
-      return true;
+      pluginStore.toggle(id);
+      
+      return !isEnabled;
     },
     isEnabled() {
       return pluginStore.isEnabled(id);

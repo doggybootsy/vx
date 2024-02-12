@@ -1,4 +1,3 @@
-import { Messages } from "vx:i18n";
 import { definePlugin } from "../";
 import { Developers } from "../../constants";
 import { MessageStore, UserStore, dirtyDispatch } from "@webpack/common";

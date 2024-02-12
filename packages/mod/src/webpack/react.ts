@@ -8,6 +8,7 @@ export const Suspense = Symbol.for("react.suspense") as unknown as ReactType["Su
 export const Fragment = Symbol.for("react.fragment") as unknown as ReactType["Fragment"];
 
 export const useState = proxyCache(() => React.useState);
+export const useReducer = proxyCache(() => React.useReducer);
 export const useMemo = proxyCache(() => React.useMemo);
 export const useEffect = proxyCache(() => React.useEffect);
 export const useRef = proxyCache(() => React.useRef);
@@ -87,9 +88,9 @@ getLazyByKeys<ReactType>([ "createElement", "memo" ]).then((react) => {
 });
 
 export default new Proxy(React, {
-  get(target, p, receiver) {
-    if (p === Symbol.for("vx.react")) return React;
-    return React[p as keyof ReactType];
+  get(target, prop, receiver) {
+    if (prop === Symbol.for("vx.react")) return React;
+    return React[prop as keyof ReactType];
   },
   ownKeys() {
     return Array.from(new Set([ ...Reflect.ownKeys(React), "prototype" ]));

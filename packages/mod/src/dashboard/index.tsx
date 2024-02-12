@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IS_DESKTOP, env, git } from "vx:self";
 
 import { LayerManager } from "@webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
-import { className } from "../util";
+import { className, createState } from "../util";
 import { openAlertModal, openExternalWindowModal } from "../api/modals";
 import { Icons, SettingsView } from "../components";
 import { Extensions } from "./pages/extension";
@@ -30,7 +30,11 @@ export function Panel(props: {
       {props.children}
     </div>
   )
-};
+}
+
+const [ isDashboardOpen, setDashboardState ] = createState(false);
+
+export { isDashboardOpen };
 
 function Dashboard(props: { section: string }) {
   const [ SHOW_COMMUNITY ] = useState(() => "$$_VX" in String && Boolean((String as any).$$_VX.SHOW_COMMUNITY_TABS_CONCEPT));
@@ -46,6 +50,10 @@ function Dashboard(props: { section: string }) {
         <span>{`Electron ${match.at(1)}`}</span>
       </div>
     )
+  }, [ ]);
+
+  useEffect(() => {
+    return () => void setDashboardState(false);
   }, [ ]);
 
   const sections = useMemo(() => [
@@ -142,10 +150,13 @@ function Dashboard(props: { section: string }) {
       onSetSection={setSection}
     />
   )
-};
+}
 
 export function openDashboard(section: string = "home") {
+  if (isDashboardOpen()) return;
+  setDashboardState(true);
+
   LayerManager.push(() => (
     <Dashboard section={section} />
   ));
-};
+}

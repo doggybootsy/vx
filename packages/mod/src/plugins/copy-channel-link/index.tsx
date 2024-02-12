@@ -22,7 +22,7 @@ function CopyButton(props: {
           onClick={() => {
             if (clipboard.SUPPORTS_COPY) {
               clipboard.copy(new URL(`/channels/${props.guild.id}/${props.channel.id}`, location.href).href);
-            };
+            }
             
             ttProps.onClick();
           }}

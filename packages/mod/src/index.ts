@@ -63,7 +63,7 @@ document.addEventListener("keydown", (event) => {
     if (key === "f12") {
       window.VXNative!.devtools.toggle();
     }
-    if (IS_DESKTOP && ctrl && event.shiftKey && key === "c") {
+    if (ctrl && event.shiftKey && key === "c") {
       window.VXNative!.devtools.enterInspectMode();
     }
   }

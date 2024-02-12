@@ -251,9 +251,29 @@ export function Loop(props: IconProps) {
   const { color, height, width, className } = ensureProps(props, "Loop");
 
   return (
-    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="-5 0 459 459.648">
-      <path fillRule="evenodd" clipRule="evenOdd" d="m416.324219 293.824219c0 26.507812-21.492188 48-48 48h-313.375l63.199219-63.199219-22.625-22.625-90.511719 90.511719c-6.246094 6.25-6.246094 16.375 0 22.625l90.511719 90.511719 22.625-22.625-63.199219-63.199219h313.375c44.160156-.054688 79.945312-35.839844 80-80v-64h-32zm0 0" fill={color} />
-      <path fillRule="evenodd" clipRule="evenOdd" d="m32.324219 165.824219c0-26.511719 21.488281-48 48-48h313.375l-63.199219 63.199219 22.625 22.625 90.511719-90.511719c6.246093-6.25 6.246093-16.375 0-22.625l-90.511719-90.511719-22.625 22.625 63.199219 63.199219h-313.375c-44.160157.050781-79.949219 35.839843-80 80v64h32zm0 0" fill={color} />
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" fill={color} />
+    </svg>
+  );
+};
+
+export function Repeat(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Repeat");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path d="M0 4.75A3.75 3.75 0 0 1 3.75 1h8.5A3.75 3.75 0 0 1 16 4.75v5a3.75 3.75 0 0 1-3.75 3.75H9.81l1.018 1.018a.75.75 0 1 1-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 1 1 1.06 1.06L9.811 12h2.439a2.25 2.25 0 0 0 2.25-2.25v-5a2.25 2.25 0 0 0-2.25-2.25h-8.5A2.25 2.25 0 0 0 1.5 4.75v5A2.25 2.25 0 0 0 3.75 12H5v1.5H3.75A3.75 3.75 0 0 1 0 9.75v-5z" fill={color} />
+    </svg>
+  );
+};
+
+export function Repeat1(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Repeat1");
+
+  return (
+    <svg aria-hidden="true" role="img" className={className} width={width} height={height} viewBox="0 0 16 16">
+      <path d="M0 4.75A3.75 3.75 0 0 1 3.75 1h.75v1.5h-.75A2.25 2.25 0 0 0 1.5 4.75v5A2.25 2.25 0 0 0 3.75 12H5v1.5H3.75A3.75 3.75 0 0 1 0 9.75v-5zM12.25 2.5h-.75V1h.75A3.75 3.75 0 0 1 16 4.75v5a3.75 3.75 0 0 1-3.75 3.75H9.81l1.018 1.018a.75.75 0 1 1-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 1 1 1.06 1.06L9.811 12h2.439a2.25 2.25 0 0 0 2.25-2.25v-5a2.25 2.25 0 0 0-2.25-2.25z" fill={color} />
+      <path d="M9.12 8V1H7.787c-.128.72-.76 1.293-1.787 1.313V3.36h1.57V8h1.55z" fill={color} />
     </svg>
   );
 };
@@ -406,7 +426,7 @@ export function MDN(props: IconProps) {
 };
 
 export function Balance(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props, "MDN");
+  const { color, height, width, className } = ensureProps(props, "Balance");
 
   return (
     <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -416,7 +436,7 @@ export function Balance(props: IconProps) {
 };
 
 export function Desktop(props: IconProps) {
-  const { color, height, width, className } = ensureProps(props, "MDN");
+  const { color, height, width, className } = ensureProps(props, "Desktop");
 
   return (
     <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -424,3 +444,64 @@ export function Desktop(props: IconProps) {
     </svg>
   );
 };
+
+export function Play(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Play");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M9.25 3.35C7.87 2.45 6 3.38 6 4.96v14.08c0 1.58 1.87 2.5 3.25 1.61l10.85-7.04a1.9 1.9 0 0 0 0-3.22L9.25 3.35Z" />
+    </svg>
+  );
+}
+
+export function Pause(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Pause");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M6 4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H6ZM15 4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3Z" />
+    </svg>
+  );
+}
+
+export function SkipForward(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "SkipForward");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5" />
+    </svg>
+  );
+}
+
+export function SkipBackwards(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "SkipBackwards");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5" />
+    </svg>
+  );
+}
+
+export function Shuffle(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Shuffle");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M13.151.922a.75.75 0 1 0-1.06 1.06L13.109 3H11.16a3.75 3.75 0 0 0-2.873 1.34l-6.173 7.356A2.25 2.25 0 0 1 .39 12.5H0V14h.391a3.75 3.75 0 0 0 2.873-1.34l6.173-7.356a2.25 2.25 0 0 1 1.724-.804h1.947l-1.017 1.018a.75.75 0 0 0 1.06 1.06L15.98 3.75 13.15.922zM.391 3.5H0V2h.391c1.109 0 2.16.49 2.873 1.34L4.89 5.277l-.979 1.167-1.796-2.14A2.25 2.25 0 0 0 .39 3.5z" />
+      <path fill={color} d="m7.5 10.723.98-1.167.957 1.14a2.25 2.25 0 0 0 1.724.804h1.947l-1.017-1.018a.75.75 0 1 1 1.06-1.06l2.829 2.828-2.829 2.828a.75.75 0 1 1-1.06-1.06L13.109 13H11.16a3.75 3.75 0 0 1-2.873-1.34l-.787-.938z" />
+    </svg>
+  );
+}
+
+export function Spotify(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Spotify");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} fillRule="evenodd" clipRule="evenodd" d="M41.329 23.646C32.952 18.481 19.133 18.006 11.136 20.526C9.852 20.93 8.494 20.178 8.106 18.845C7.716 17.511 8.44 16.102 9.726 15.697C18.906 12.804 34.166 13.362 43.81 19.306C44.965 20.017 45.344 21.566 44.659 22.763C43.974 23.963 42.481 24.358 41.329 23.646ZM41.697 30.109C41.102 30.988 39.839 31.263 38.874 30.724C31.801 26.768 21.016 25.621 12.649 27.933C11.564 28.231 10.417 27.674 10.088 26.689C9.761 25.701 10.373 24.66 11.456 24.36C21.016 21.72 32.898 22.999 41.022 27.542C41.986 28.082 42.29 29.232 41.697 30.109ZM37.764 38.233C37.5421 38.5957 37.1854 38.8554 36.7721 38.9552C36.3588 39.0549 35.9229 38.9865 35.56 38.765C29.519 35.082 21.915 34.25 12.96 36.29C12.546 36.3851 12.1112 36.312 11.7511 36.0866C11.3911 35.8611 11.1353 35.502 11.04 35.088C10.993 34.883 10.987 34.6707 11.0223 34.4633C11.0576 34.256 11.1335 34.0577 11.2456 33.8797C11.3578 33.7018 11.504 33.5477 11.6758 33.4265C11.8477 33.3052 12.0418 33.2191 12.247 33.173C22.047 30.938 30.452 31.9 37.232 36.033C37.988 36.493 38.226 37.479 37.764 38.233ZM26 0C11.64 0 0 11.64 0 26C0 40.36 11.64 52 26 52C40.36 52 52 40.36 52 26C52 11.64 40.36 0 26 0Z" />
+    </svg>
+  );
+}

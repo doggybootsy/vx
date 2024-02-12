@@ -10,8 +10,8 @@ type PromptOptions = {
   minLength?: number,
   maxLength?: number,
   value?: string,
-  match?: RegExp,
-  placeholder?: string
+  placeholder?: string,
+  validate?: ((text: string) => boolean) | RegExp
 };
 type PromptModalOptions = Omit<ConfirmModalOptions, "onCloseRequest" | "onConfirm" | "onCancel"> & PromptOptions;
 
@@ -19,7 +19,7 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
   let input = options.value ?? "";
   const minLength = options.minLength ?? 0;
   const maxLength = options.maxLength ?? 999;
-  const match = options.match ?? /(?:)/;
+  const validate = options.validate ? options.validate instanceof RegExp ? (text: string) => (options.validate as RegExp).test(text) : options.validate : () => true;
 
   function dummy() { };
   const {
@@ -30,17 +30,17 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
   } = options;
 
   function isInputOk() {
-    if (!match.test(input)) return false;
+    if (!validate(input)) return false;
     if (input.length < minLength) return false;
     if (input.length > maxLength) return false;
     return true;
-  };
+  }
     
   return new Promise((resolve) => {
     const modal = openModal((props) => {
       const ref = useRef<{ shake(): void }>();
       const [ state, setState ] = useState(input);
-      const [ hasError, setHasError ] = useState(() => !match.test(input));
+      const [ hasError, setHasError ] = useState(() => !isInputOk());
       
       return (
         <MegaModule.Shakeable
@@ -55,7 +55,8 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
                 if (!ref.current) return;
                 ref.current.shake();
                 return;
-              };
+              }
+              
               resolve(input);
               modal.close();
             }}
@@ -75,13 +76,12 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
                 borderStyle: "solid",
                 borderWidth: 1
               }}
-              error={hasError ? `Input doesn't match expression '${match}'` : undefined}
+              error={hasError ? options.validate instanceof RegExp ? `Input doesn't match expression '${options.validate}'` : "Input doesn't match validator" : undefined}
               onChange={(value: string) => {                
                 setState(value);
                 input = value;
               
-                if (!match.test(value)) setHasError(true);
-                else setHasError(false);
+                setHasError(!isInputOk());
               }}
               onKeyPress={(event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.code.toLowerCase() === "enter") {
@@ -106,4 +106,4 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
       onCloseRequest() { return false; }
     });
   });
-};
+}

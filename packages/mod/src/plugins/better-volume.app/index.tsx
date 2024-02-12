@@ -43,7 +43,7 @@ export default definePlugin({
     }
   ],
   addTextInput(children: React.ReactNode, enabled: boolean, userId: string, context: any) {
-    const forceUpdate = useForceUpdate();
+    const [, forceUpdate ] = useForceUpdate();
 
     const [ isEmpty, setIsEmpty ] = useState(false);
     

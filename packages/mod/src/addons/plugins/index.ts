@@ -99,7 +99,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       rawModule.call(window, module, module.exports);
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), while VX was trying to start it`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), while VX was trying to start it`, error);
     }
 
     this.#evaledPlugins[id] = module.exports;
@@ -153,7 +153,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   public getAuthors(id: string) {
     return getMeta(id).authors ?? [];
   };
-  public getName(id: string) {
+  public getAddonName(id: string) {
     return this.getMetaProperty(id, "name", Messages.UNKNOWN_NAME);
   };
   public getVersionName(id: string) {
@@ -258,7 +258,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       }
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
     }
 
     try {
@@ -266,7 +266,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       if (typeof method === "function") method();
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getName(id)}' (${id}), errored while running 'module.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'module.${name}'`, error);
     }
   };
   getSettings(id: string): React.ComponentType | null {

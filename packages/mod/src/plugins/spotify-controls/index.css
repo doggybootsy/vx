@@ -1,0 +1,168 @@
+.vx-spotify-panel {
+  color: var(--header-primary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--background-modifier-accent);
+  background: var(--background-secondary-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vx-spotify-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.vx-spotify-img-wrapper {
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  border-radius: 3px;
+  cursor: zoom-in;
+}
+.vx-spotify-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+.vx-spotify-slider-wrapper {
+  height: 4px;
+  background: var(--background-accent);
+  border-radius: 4px;
+  position: relative;
+  flex: 1 0 auto;
+}
+.vx-spotify-slider {
+  height: 4px;
+  background: var(--spotify);
+  border-radius: 4px;
+  width: 50%;
+}
+.vx-spotify-seek {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--spotify);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+.vx-spotify-time-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.vx-spotify-time {
+  font-family: var(--font-code);
+  font-size: smaller;
+}
+.vx-spotify-info {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+.vx-spotify-name,
+.vx-spotify-artists,
+.vx-spotify-album {
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+.vx-spotify-name:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.vx-spotify-artists,
+.vx-spotify-album {
+  color: var(--header-secondary);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  line-height: 1.3333333333333333;
+  font-weight: 400;
+}
+
+.vx-spotify-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vx-spotify-selected {
+  color: var(--spotify);
+}
+
+.vx-spotify-menu .vx-spotify-img-wrapper {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  cursor: unset;
+}
+.vx-spotify-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.vx-spotify-menu-info {
+  overflow: hidden;
+}
+.vx-spotify-menu-name,
+.vx-spotify-menu-album {
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+.vx-spotify-artist-img {
+  width: 18px;
+  height: 18px;
+}
+
+.vx-spotify-menu-artist-wrapper {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+.vx-spotify-menu-artist-img {
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+}
+.vx-spotify-menu-artist-name {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-weight: var(--font-weight-bold);
+  font-size: large;
+  display: none;
+}
+.vx-spotify-menu-artist-followers {
+  position: absolute;
+  left: 10px;
+  top: 26px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  display: none;
+}
+.vx-spotify-menu-artist-wrapper:hover .vx-spotify-menu-artist-img {
+  filter: brightness(0.25);
+}
+.vx-spotify-menu-artist-wrapper:hover :is(.vx-spotify-menu-artist-name, .vx-spotify-menu-artist-followers) {
+  display: block;
+}

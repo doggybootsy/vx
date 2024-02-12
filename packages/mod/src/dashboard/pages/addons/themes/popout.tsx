@@ -12,7 +12,7 @@ import { openExternalWindowModal } from "../../../../api/modals";
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
 
 export function openWindow(id: string) {
-  const name = themeStore.getName(id);
+  const name = themeStore.getPluginName(id);
   
   windowApi.openWindow({
     title: Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name }) as string,
@@ -131,8 +131,8 @@ export function openWindow(id: string) {
         </>
       );
 
-      const [ name, setName ] = useState(() => themeStore.getName(id));
-      const storedName = useInternalStore(themeStore, () => themeStore.getName(id));
+      const [ name, setName ] = useState(() => themeStore.getPluginName(id));
+      const storedName = useInternalStore(themeStore, () => themeStore.getPluginName(id));
 
       const deferredValue = useDeferredValue(storedName);
       useLayoutEffect(() => {
@@ -163,7 +163,7 @@ export function openWindow(id: string) {
                     event.currentTarget.blur();
                   }}
                   onBlur={() => {
-                    const oldName = themeStore.getName(id);
+                    const oldName = themeStore.getPluginName(id);
                     const trimmed = name.trim();
                     
                     setName(trimmed);

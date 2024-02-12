@@ -25,7 +25,7 @@ function native(id: string) {
 
 let js: string;
 let css: string;
-ipc.addEventListener("ready", (event) => {
+ipc.addEventListener("code-ready", (event) => {  
   js = event.data.js;
   css = event.data.css;
 });
@@ -34,7 +34,7 @@ function executeScript(connection: Connection) {
   if (!js || !css) {
     logger.warn("Code isn't ready! Adding listener...");
 
-    ipc.addEventListener("ready", () => {
+    ipc.addEventListener("code-ready", () => {
       connection.reload();
     });
     
@@ -49,22 +49,22 @@ function executeScript(connection: Connection) {
 }
 
 export class Connection {
-  public static conections = new Set<Connection>();
+  public static conections = new Map<number, Connection>();
   public static reloadAll() {
     logger.log(`Reloading ${this.conections.size} connection(s)!`);
 
-    for (const conection of this.conections) conection.reload();
+    for (const [, conection ] of this.conections) conection.reload();
   }
 
   #connected = true;
   constructor(private readonly connection: any) {
     this.logger = logger.createChild("tab", String(this.tabId));
 
-    Connection.conections.add(this);
+    Connection.conections.set(this.tabId, this);
 
     this.onDisconnect.addListener(() => {
       this.#connected = false;
-      Connection.conections.delete(this);
+      Connection.conections.delete(this.tabId);
     });
 
     executeScript(this);

@@ -6,7 +6,7 @@ export function addItem(caller: string, callback: (props: Props) => React.ReactN
   menuPatches.get(caller)!.add(callback);
 
   return () => removeItem(caller, callback);
-};
+}
 export function removeItem(caller: string, callback?: (props: Props) => React.ReactNode) {
   if (!menuPatches.has(caller)) return;
 
@@ -15,7 +15,7 @@ export function removeItem(caller: string, callback?: (props: Props) => React.Re
   if (typeof callback === "function") {
     patches.delete(callback);
     return;
-  };
+  }
 
   patches.clear();
-};
+}

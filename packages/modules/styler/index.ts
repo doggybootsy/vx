@@ -1,4 +1,5 @@
 import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "vx:i18n";
+import { logger } from "vx:logger";
 
 export const plugins = document.createElement("vx-plugins");
 
@@ -34,10 +35,11 @@ export function addChangeListener(id: any, css: string, callback: (css: string) 
 export class Styler {  
   constructor(css: string, public readonly id: string = `Styler-${all.size}-vx`) {
     this.#css = css;
+    this.#originalCSS = css;
 
     all.set(id, this);
 
-    addChangeListener(this, css, (css: string) => {
+    this.#undo = addChangeListener(this, css, (css: string) => {
       this.#css = css;
       if (this.#element) {
         this.#element.innerHTML = "";
@@ -46,10 +48,30 @@ export class Styler {
     });
   }
 
+  #undo: () => void;
   #element: null | HTMLStyleElement = null;
   
+  #originalCSS: string;
   #css: string;
   public get css() { return this.#css; }
+
+  public replaceCSS(css: (originalCSS: string) => string) {
+    const newCSS = css(this.#originalCSS);
+    if (typeof newCSS !== "string") {
+      logger.createChild("Styler", this.id).warn("CSS replacer function didn't return a string");
+      return;
+    }
+
+    this.#undo();
+
+    this.#undo = addChangeListener(this, newCSS, (css: string) => {
+      this.#css = css;
+      if (this.#element) {
+        this.#element.innerHTML = "";
+        this.#element.appendChild(document.createTextNode(css));
+      }
+    });
+  }
 
   public add() {
     this.remove();
@@ -74,4 +96,4 @@ export class Styler {
   static getAll() {
     return all
   }
-};
+}

@@ -81,7 +81,7 @@ function Notification({ notification }: { notification: Notification }) {
         springRef.current.reset();
         springRef.current.pause();
       }}
-      onMouseLeave={(event) => {
+      onMouseLeave={() => {
         if (!springRef.current) return;
         springRef.current.resume();
       }}
@@ -92,7 +92,7 @@ function Notification({ notification }: { notification: Notification }) {
         onMouseDown={(event) => {
           if (event.button !== MouseButtons.MIDDLE) return;
 
-          notificationStore.delete(notification.id);
+          notificationStore.delete(notification.id!);
         }}
       >
         <div className="vx-notification-info">
@@ -107,7 +107,7 @@ function Notification({ notification }: { notification: Notification }) {
         </div>
         <div 
           className="vx-notification-close"
-          onClick={() => notificationStore.delete(notification.id)}
+          onClick={() => notificationStore.delete(notification.id!)}
           onContextMenu={() => notificationStore.clear()}
         >
           <svg width={18} height={18} viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ function Notification({ notification }: { notification: Notification }) {
         <Slider 
           duration={notification.duration!} 
           springRef={springRef} 
-          close={() => notificationStore.delete(notification.id)}
+          close={() => notificationStore.delete(notification.id!)}
         />
       )}
     </div>

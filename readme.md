@@ -21,7 +21,7 @@ Currently there's no good way to install VX on the desktop app.
 ${\textsf{\color{red}Notice}}$: Weird Memory / CPU usage happens and can cause discord to crash / reload (Most likely a issue with edge itself, as just opening devtools can cause edge to use a lot a cpu / memory)
 
 ## Features
-VX has 26 plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
+VX has 30 plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
 
 Built in theming support.
 

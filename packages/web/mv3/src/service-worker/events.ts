@@ -18,5 +18,5 @@ export class VXMessageEvent<T> extends Event {
 }
 
 export const ipc = new TypedEventTarget<{
-  ready: VXMessageEvent<{ js: string, css: string }>
+  "code-ready": VXMessageEvent<{ js: string, css: string }>
 }>();

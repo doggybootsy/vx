@@ -6,7 +6,7 @@ getLazyByKeys([ "FormattedMessage" ]).then(api => FormatableMessageApi = api);
 
 export class FormattedMessage {
   constructor(message: string, locale: LocaleCodes, hasMarkdown: boolean) {
-    this.message = hasMarkdown ? message : message.replace(/!!/g, "");
+    this.message = message;
     this.hasMarkdown = hasMarkdown;
     this.#locale = locale;
   }

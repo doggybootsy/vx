@@ -7,10 +7,10 @@ import { openConfirmModal } from "../../../../api/modals";
 import { Messages } from "vx:i18n";
 
 export function ThemeCard({ id }: { id: string }) {
-  const [ name, setName ] = useState(() => themeStore.getName(id));
+  const [ name, setName ] = useState(() => themeStore.getPluginName(id));
   const { isEnabled, storedName } = useInternalStore(themeStore, () => ({
     isEnabled: themeStore.isEnabled(id),
-    storedName: themeStore.getName(id)
+    storedName: themeStore.getPluginName(id)
   }));
 
   const deferredValue = useDeferredValue(storedName);
@@ -38,7 +38,7 @@ export function ThemeCard({ id }: { id: string }) {
                 event.currentTarget.blur();
               }}
               onBlur={() => {
-                const oldName = themeStore.getName(id);
+                const oldName = themeStore.getPluginName(id);
                 const trimmed = name.trim();
                 
                 setName(trimmed);
