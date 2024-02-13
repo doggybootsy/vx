@@ -1,5 +1,6 @@
 import { onI18nLoaded, onLocaleChange, Messages, getLoadPromise } from "vx:i18n";
 import { logger } from "vx:logger";
+import { escapeRegex } from "../../mod/src/util";
 
 export const plugins = document.createElement("vx-plugins");
 
@@ -15,7 +16,7 @@ onI18nLoaded(() => {
     for (const [ css, setCSS ] of listeners.values()) {      
       setCSS(css.replace(/{{(\w+?)}}/g, (match, message) => Messages[message]));
     }
-  };
+  }
 
   onLocaleChange(changeCSS);
 
@@ -51,7 +52,7 @@ export class Styler {
   #undo: () => void;
   #element: null | HTMLStyleElement = null;
   
-  #originalCSS: string;
+  readonly #originalCSS: string;
   #css: string;
   public get css() { return this.#css; }
 
@@ -70,6 +71,20 @@ export class Styler {
         this.#element.innerHTML = "";
         this.#element.appendChild(document.createTextNode(css));
       }
+    });
+  }
+
+  // Just a wrapper for replaceCSS to make it more user friendly
+  // Works basically the same as 'FormattedMessage.prototype.format'
+  public format(format: Record<string, string>) {
+    this.replaceCSS((css) => {
+      for (const key in format) {
+        if (Object.prototype.hasOwnProperty.call(format, key)) {
+          css = css.replace(escapeRegex(`{{${key}}}`, "g"), format[key]);
+        }
+      }
+
+      return css;
     });
   }
 

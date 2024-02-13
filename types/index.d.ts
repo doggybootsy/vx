@@ -108,7 +108,7 @@ declare module Spotify {
     images: Image[],
     name: string,
     popularity: number,
-    type: string,
+    type: "artist",
     uri: string
   }
   
@@ -242,4 +242,9 @@ declare namespace React {
   interface CSSProperties {
     [key: CSSVariable]: string | number
   }
+}
+
+declare module "https://esm.sh/shiki@latest" {
+  const value: typeof import("shiki");
+  export = value;
 }

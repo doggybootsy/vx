@@ -38,6 +38,7 @@ function Slider({ duration, springRef, close }: { duration: number, springRef: R
     onRest() { close(); },
     config: {
       duration: duration,
+      clamp: true,
       ...ReactSpring.config.default
     }
   });

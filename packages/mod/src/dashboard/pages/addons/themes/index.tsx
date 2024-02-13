@@ -16,9 +16,9 @@ export function Themes() {
   const keys = useInternalStore(themeStore, () => {
     const keys = themeStore.keys();
 
-    return keys.sort((a, b) => themeStore.getPluginName(a).localeCompare(themeStore.getPluginName(b)));
+    return keys.sort((a, b) => themeStore.getAddonName(a).localeCompare(themeStore.getAddonName(b)));
   });
-  const queredKeys = useMemo(() => keys.filter((key) => themeStore.getPluginName(key).toLowerCase().includes(query.toLowerCase())), [ query, keys ]);
+  const queredKeys = useMemo(() => keys.filter((key) => themeStore.getAddonName(key).toLowerCase().includes(query.toLowerCase())), [ query, keys ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 

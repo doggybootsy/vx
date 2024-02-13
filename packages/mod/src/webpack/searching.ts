@@ -29,11 +29,11 @@ export function getModule<T extends Object>(filter: Webpack.Filter, opts: Webpac
 
         if (filter.call(module, exported, module, module.id)) {
           return exported as T;
-        };
-      };
-    };
-  };
-};
+        }
+      }
+    }
+  }
+}
 export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOptions = {}) {
   const modules: any[] = [];
 
@@ -55,7 +55,7 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
       
       if (filter.call(module, module.exports, module, module.id)) {
         modules.push(module.exports);
-      };
+      }
 
       for (const key of keys) {
         if (!Reflect.has(module.exports, key)) continue;
@@ -65,10 +65,10 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
 
         if (filter.call(module, exported, module, module.id)) {
           modules.push(exported);
-        };
-      };
-    };
-  };
+        }
+      }
+    }
+  }
 
   return modules;
 };
@@ -100,7 +100,7 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
         if (filter.call(module, module.exports, module, module.id)) {
           chunk.value = module.exports;
           chunk.hasValue = true;
-        };
+        }
   
         for (const key of keys) {
           if (!Reflect.has(module.exports, key)) continue;
@@ -113,11 +113,11 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
           if (filter.call(module, exported, module, module.id)) {
             chunk.value = exported;
             chunk.hasValue = true;
-          };
-        };
+          }
+        }
       }
-    };
-  };
+    }
+  }
 
   return modules.map((m) => m.value);
 };

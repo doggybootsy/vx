@@ -9,7 +9,7 @@ export function shouldSkipModule(module: Webpack.Module) {
   if (module.exports[Symbol.toStringTag] === "DOMTokenList") return true;
   if (!(module.exports instanceof Object)) return true;
   return false;
-};
+}
 
 export function wrapFilter(filter: Webpack.Filter): Webpack.Filter {
   let hasErrored = false;
@@ -20,12 +20,12 @@ export function wrapFilter(filter: Webpack.Filter): Webpack.Filter {
       hasErrored = true;
       logger.createChild("Webpack").warn("Webpack Module Search Error", { filter, module, error, moduleId: id });
       return false
-    };
+    }
   };
-};
+}
 
 export function shouldSearchDefault(module: Webpack.Module): boolean {
   if (!Reflect.has(module.exports, "__esModule")) return false;
   if (!module.exports.__esModule) return false;
   return "default" in module.exports;
-};
+}

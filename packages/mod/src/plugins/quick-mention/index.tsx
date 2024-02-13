@@ -1,6 +1,6 @@
 import { Messages } from "vx:i18n";
 import { definePlugin } from "..";
-import { addItem, removeItem } from "../../api/minipopover";
+import * as minipopover from "../../api/minipopover";
 import { Icons, MiniPopover } from "../../components";
 import { Developers } from "../../constants";
 import { PermissionStore, Constants, TextAreaInput, useStateFromStores } from "@webpack/common";
@@ -9,7 +9,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {
-    addItem("QuickMention", (props) => {
+    minipopover.addItem("QuickMention", (props) => {
       const canSendMessages = useStateFromStores<boolean>([ PermissionStore ], () => {
         if (props.channel.isDM() || props.channel.isMultiUserDM() || props.channel.isGroupDM()) return true;
         return PermissionStore.can(Constants.Permissions.SEND_MESSAGES, props.channel);
@@ -28,6 +28,6 @@ export default definePlugin({
     });
   },
   stop() {
-    removeItem("QuickMention");
+    minipopover.unpatchAll("QuickMention");
   }
 });

@@ -6,7 +6,7 @@
 <!-- [![CodeFactor](https://www.codefactor.io/repository/github/doggybootsy/vx/badge)](https://www.codefactor.io/repository/github/doggybootsy/vx) -->
 
 ## ${\textsf{\color{red}Notice}}$
-VX is currently not fully out, there's no official way to install it that works currently
+VX is currently not fully out, there's no official way to install it that works currently. All except for the [MS Edge Store](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
 
 ## VX
 VX is a client mod for [@discord](https://discord.com/)
@@ -21,7 +21,7 @@ Currently there's no good way to install VX on the desktop app.
 ${\textsf{\color{red}Notice}}$: Weird Memory / CPU usage happens and can cause discord to crash / reload (Most likely a issue with edge itself, as just opening devtools can cause edge to use a lot a cpu / memory)
 
 ## Features
-VX has 30 plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
+VX has 31 plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
 
 Built in theming support.
 

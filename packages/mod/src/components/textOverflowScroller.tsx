@@ -1,15 +1,25 @@
 import { forwardRef, useCallback, useMemo, useRef } from "react";
 import { ReactSpring } from "@webpack/common";
 
+type SpeedFunction = (isRevealing: boolean, gap: number, div: HTMLDivElement) => number;
+
 interface TextOverflowScrollerProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * @note Pixels per-second
+   * @note {Infinity} is instant | {0} is dont move
    */
-  speed?: number | ((isRevealing: boolean) => number)
+  speed?: number | SpeedFunction
 }
 
-// Have it go twice as fast on the way back
-const defaultSpeed = (isRevealing: boolean) => isRevealing ? 75 : 150;
+const defaultSpeed: SpeedFunction = (isRevealing, gap, div) => {
+  // Have it go twice as fast on the way back
+  const speed = isRevealing ? 75 : 150;
+
+  // If the width is less than or equal to the gap go even faster
+  // This is because it will show the full content when its done
+  if (Math.max(div.clientWidth, div.offsetWidth) >= gap) return speed * 2;
+  return speed;
+};
 
 export const TextOverflowScroller = forwardRef(function TextOverflowScroller(props: TextOverflowScrollerProps, reference: React.ForwardedRef<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,13 +33,9 @@ export const TextOverflowScroller = forwardRef(function TextOverflowScroller(pro
     config: { duration: 0, easing: (t: any) => t, clamp: true }
   }), []);
 
-  const speed = useMemo(() => {
+  const speed = useMemo<SpeedFunction>(() => {
     if (typeof props.speed === "function") return props.speed;
-    if (typeof props.speed === "number") {
-      const speed = props.speed;
-      return () => speed;
-    }
-
+    if (typeof props.speed === "number") return () => props.speed as number;
     return defaultSpeed;
   }, [ props.speed ]);
   
@@ -39,7 +45,7 @@ export const TextOverflowScroller = forwardRef(function TextOverflowScroller(pro
 
     set({
       x: final,
-      config: { duration: Math.abs(final - x.get()) / speed(isRevealing) * 1000 }
+      config: { duration: Math.abs(final - x.get()) / speed(isRevealing, gap, ref.current!) * 1000 }
     });
   }, [ set, speed ]);
 

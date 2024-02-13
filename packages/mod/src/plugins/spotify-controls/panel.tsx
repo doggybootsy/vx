@@ -119,38 +119,42 @@ export function SpotifyPanel() {
             <TextOverflowScroller className="vx-spotify-album">{data.track.album.name}</TextOverflowScroller>
           )}
         </div>
-        <div className="vx-spotify-buttons">
-          <PanelButton 
-            // tooltipText={data.shuffleState ? "Disable shuffle" : "Enable shuffle"}
-            innerClassName={className([ data.shuffleState && "vx-spotify-selected" ])}
-            role="switch"
-            aria-checked={String(data.shuffleState)}
-            onClick={() => {
-              spotifyStore.setShuffle(!data.shuffleState);
-            }}
-            icon={Icons.Shuffle}
-          />
-          <PanelButton 
-            // tooltipText={data.repeat === "off" ? "Enable repeat" : data.repeat === "context" ? "Enable repeat one" : "Disable repeat"}
-            innerClassName={className([ data.repeat !== "off" && "vx-spotify-selected" ])}
-            role="checkbox"
-            aria-checked={data.repeat === "off" ? "false" : data.repeat === "context" ? "true" : "mixed"}
-            onClick={() => {
-              let mode: Spotify.ShuffleState = "off";
-              switch (data.repeat) {
-                case "off":
-                  mode = "context";
-                  break;
-                case "context":
-                  mode = "track";
-                  break;
-              }
+        {data.isPremium && (
+          <>
+            <div className="vx-spotify-buttons">
+              <PanelButton 
+                // tooltipText={data.shuffleState ? "Disable shuffle" : "Enable shuffle"}
+                innerClassName={className([ data.shuffleState && "vx-spotify-selected" ])}
+                role="switch"
+                aria-checked={String(data.shuffleState)}
+                onClick={() => {
+                  spotifyStore.setShuffle(!data.shuffleState);
+                }}
+                icon={Icons.Shuffle}
+              />
+              <PanelButton 
+                // tooltipText={data.repeat === "off" ? "Enable repeat" : data.repeat === "context" ? "Enable repeat one" : "Disable repeat"}
+                innerClassName={className([ data.repeat !== "off" && "vx-spotify-selected" ])}
+                role="checkbox"
+                aria-checked={data.repeat === "off" ? "false" : data.repeat === "context" ? "true" : "mixed"}
+                onClick={() => {
+                  let mode: Spotify.ShuffleState = "off";
+                  switch (data.repeat) {
+                    case "off":
+                      mode = "context";
+                      break;
+                    case "context":
+                      mode = "track";
+                      break;
+                  }
 
-              spotifyStore.setRepeat(mode);
-            }}
-            icon={data.repeat === "track" ? Icons.Repeat1 : Icons.Repeat}
-          />
-        </div>
+                  spotifyStore.setRepeat(mode);
+                }}
+                icon={data.repeat === "track" ? Icons.Repeat1 : Icons.Repeat}
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="vx-spotify-time-wrapper">
         <div className="vx-spotify-time">{getTime(position)}</div>

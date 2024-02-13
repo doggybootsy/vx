@@ -13,14 +13,37 @@ function argvIncludesMatch(regex) {
     if (regex.test(arg)) return true;
   }
   return false;
-};
+}
 function argvIncludesArg(expression) {
   return argvIncludesMatch(new RegExp(`^-?-${expression}$`));
-};
+}
+
+function $(cmd) {
+  return cp.execSync(String.raw.apply(null, arguments), { cwd: process.cwd() }).toString("binary").trim();
+}
+
+const git = cache(() => {
+  try {
+    $`git --version`;
+  } 
+  catch (error) {
+    return { exists: false };
+  }
+
+  const branch = $`git rev-parse --abbrev-ref HEAD`;
+  const hash = $`git rev-parse HEAD`;
+  const hashShort = $`git rev-parse --short HEAD`;
+  
+  let url = $`git config --get remote.origin.url`;
+  if (url.endsWith(".git")) url = url.slice(0, url.length - 4);
+
+  return { branch, hash, hashShort, url, exists: true };
+});
 
 const IS_PROD = argvIncludesArg("p(roduction)?");
 console.log("is production:", IS_PROD);
 console.log("version:", version);
+console.log("git:", git().exists);
 
 console.log(Array(20).fill("-").join("-"));
 
@@ -151,30 +174,6 @@ function cache(factory) {
     return cache.ref;
   }
 }
-
-function exec(cmd) {
-  return cp.execSync(cmd, { cwd: process.cwd() }).toString("binary").trim();
-}
-
-const git = cache(() => {
-  try {
-    exec("git --version");
-  } 
-  catch (error) {
-    console.log("Git is not installed! Aborting getting git details");
-
-    return { exists: false };
-  }
-
-  const branch = exec("git rev-parse --abbrev-ref HEAD");
-  const hash = exec("git rev-parse HEAD");
-  const hashShort = exec("git rev-parse --short HEAD");
-  
-  let url = exec("git config --get remote.origin.url");
-  if (url.endsWith(".git")) url = url.slice(0, url.length - 4);
-
-  return { branch, hash, hashShort, url, exists: true };
-});
 
 /** @type {esbuild.Plugin} */
 const SelfPlugin = (desktop) => ({

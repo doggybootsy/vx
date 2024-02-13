@@ -25,39 +25,39 @@ export function isValidElement(component: any): component is React.ReactElement 
   if (typeof component !== "object") return false;
   if (component === null) return false;
   return component.$$typeof === Symbol.for("react.element");
-};
+}
 
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<{ default: T }>): React.LazyExoticComponent<T> {
   return proxyCache(() => React.lazy(factory), true);
-};
+}
 
 export function memo<T extends React.ComponentType<any>>(type: T, compare?: (prevProps: Readonly<React.ComponentProps<T>>, nextProps: Readonly<React.ComponentProps<T>>) => boolean): React.MemoExoticComponent<T> {
   return proxyCache(() => React.memo(type, compare), true);
-};
+}
 
 export function forwardRef<T, P = {}>(type: React.ForwardRefRenderFunction<T, P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<T>> {
   return proxyCache(() => React.forwardRef(type), true);
-};
+}
 
 export function startTransition(scope: React.TransitionFunction) {
   return React.startTransition(scope);
-};
+}
 
 export function useSyncExternalStore(subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => unknown, getServerSnapshot?: (() => unknown) | undefined) {
   return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-};
+}
 
 class BaseComponent {
   constructor(...args: Parameters<ReactType["Component"]>) {
     const component = Reflect.construct(React.Component, args);
     // Can't do it to 'this' directly
     Object.setPrototypeOf(Object.getPrototypeOf(this), component);
-  };
+  }
 
   static {
     (this.prototype as any).isReactComponent = {};
-  };
-};
+  }
+}
 
 export const Component = BaseComponent as unknown as ReactType["Component"];
 
@@ -90,7 +90,7 @@ getLazyByKeys<ReactType>([ "createElement", "memo" ]).then((react) => {
 export default new Proxy(React, {
   get(target, prop, receiver) {
     if (prop === Symbol.for("vx.react")) return React;
-    return React[prop as keyof ReactType];
+    return (target as any)[prop] = React[prop as keyof ReactType];
   },
   ownKeys() {
     return Array.from(new Set([ ...Reflect.ownKeys(React), "prototype" ]));
