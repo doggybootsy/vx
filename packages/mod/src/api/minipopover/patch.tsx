@@ -9,8 +9,10 @@ addPlainTextPatch({
   replace: "$1$vx.minipopover._patchPopover($2)$3"
 });
 
+export type Patch = (result: React.ReactElement, props: Omit<Props, "author">) => void;
+
 export interface Props { message: Message, channel: Channel, guild?: Guild, author: User };
-export const menuPatches = new Map<string, Set<(props: Props) => React.ReactNode>>();
+export const miniPopoverPatches = new Map<string, Set<Patch>>();
 
 interface MinipopoverType {
   (props: any): React.ReactElement<any, React.FunctionComponent>,
@@ -23,17 +25,9 @@ function Minipopover(Original: MinipopoverType, props: Props) {
 
   const guild = useStateFromStores([ GuildStore ], () => props.channel.guild_id ? GuildStore.getGuild(props.channel.guild_id) : undefined);  
 
-  for (const [ id, items ] of menuPatches) {
-    for (const [ index, Callback ] of Object.entries(Array.from(items))) {
-      returnValue.props.children.unshift(
-        <Callback 
-          channel={props.channel} 
-          message={props.message} 
-          author={props.message.author}
-          guild={guild}
-          key={`vx-mp-${props.message.id}-${props.channel.id}-${id}-${index}`}
-        />
-      );
+  for (const [, items ] of miniPopoverPatches) {
+    for (const patch of Array.from(items)) {
+      patch(returnValue, { ...props, guild });
     }
   }
   
@@ -49,8 +43,8 @@ export function _patchPopover(minipopover: React.ReactElement) {
     return minipopover;
   }
 
-  const newType = Minipopover.bind(window, type);
-  (newType as MinipopoverType).__VX = type;
+  const newType: MinipopoverType = Minipopover.bind(window, type);
+  newType.__VX = type;
 
   cached.set(type, newType);
 

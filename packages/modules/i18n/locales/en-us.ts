@@ -108,7 +108,9 @@ const messages = {
   SPOTIFY_CONTROLS_DESCRIPTION: "Add's a Spotify control panel to the user panels area. You cannot be a in a private session for this to work",
   SPOTIFY_CRACK_NAME: "Spotify++",
   SPOTIFY_CRACK_DESCRIPTION: "Tricks Discord into thinking you have Spotify premium",
-  
+  FORCE_EXPAND_MINIPOPOVER_NAME: "Force Expand MiniPopover",
+  FORCE_EXPAND_MINIPOPOVER_DESCRIPTION: "Shows all minipopover items without needing to hold shift",
+
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
   SPOTIFY_PREVIEW_ALBUM_COVER: "Preview Album Cover",

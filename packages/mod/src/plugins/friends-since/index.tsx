@@ -21,7 +21,7 @@ function FriendsSince({ userId, headingClassName, textClassName }: { userId: str
   const since = useStateFromStores([ RelationshipStore ], () => {
     const since = RelationshipStore.getSince(userId);
 
-    if (since) return userProfileUtils.getCreatedAtDate(since);
+    if (since && RelationshipStore.isFriend(userId)) return userProfileUtils.getCreatedAtDate(since);
     return null;
   });
 

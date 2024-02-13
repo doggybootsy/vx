@@ -16,7 +16,23 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
       handlers.get = (target, prop, r) => {
         if (prop === "prototype") return (cacheFactory() as any).prototype ?? Function.prototype;
         if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
-        return Reflect.get(cacheFactory(), prop, r);
+
+        const value = Reflect.get(cacheFactory(), prop, r);
+        try {
+          // Devtools
+          (target as any)[prop] = value;
+        } catch (error) {
+          
+        }
+
+        return value;
+      };
+      continue;
+    }
+    if (key === "set") {
+      handlers.set = (target, prop, value, r) => {
+        (target as any)[prop] = value;
+        return Reflect.set(cacheFactory(), prop, value, r);
       };
       continue;
     }

@@ -6,6 +6,7 @@ import { Message, User } from "discord-types/general";
 import { ErrorBoundary } from "../../components";
 
 import * as styler from "./index.css?managed";
+import { createState } from "../../util";
 
 type TypedUser = User & { isPomelo(): boolean, globalName: string | null };
 

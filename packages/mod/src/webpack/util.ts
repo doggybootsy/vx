@@ -5,7 +5,7 @@ import { webpackRequire } from "@webpack";
 
 export function getProxy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter, opts?: Webpack.FilterOptions): T {
   return proxyCache(() => getModule(filter, opts)!);
-};
+}
 
 export function getModuleIdBySource(...sources: string[]) {
   const filter = byStrings(...sources);
@@ -17,6 +17,6 @@ export function getModuleIdBySource(...sources: string[]) {
       const module = webpackRequire.m[key];
       
       if (filter(module)) return key;
-    };
-  };
-};
+    }
+  }
+}

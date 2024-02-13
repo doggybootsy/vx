@@ -22,7 +22,7 @@ const themeDataStore = new DataStore<DataStoreType>("VX-Themes", {
 
 const themeHead = document.createElement("vx-themes");
 waitForNode(".drag-previewer").then(() => {
-  document.body.append(themeHead, plugins);
+  document.body.append(plugins, themeHead);
 });
 
 const destroyers = new Map<string, () => void>();

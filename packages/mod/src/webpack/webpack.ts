@@ -18,8 +18,8 @@ webpackAppChunk.push([
     for (const key in wpr.m) {
       if (Object.prototype.hasOwnProperty.call(wpr.m, key)) {
         set(wpr.m, key, wpr.m[key]);
-      };
-    };
+      }
+    }
 
     wpr.m = new Proxy(wpr.m, {
       set(modules, id, value: Webpack.RawModule) { return set(modules, id, value); }
