@@ -33,41 +33,37 @@ export default definePlugin({
   patches: [
     {
       identifier: "panel",
-      match: ".default.Messages.ACCOUNT_A11Y_LABEL,",
-      find: /\.default\.Messages\.ACCOUNT_A11Y_LABEL,children:\[/,
+      find: ".default.Messages.ACCOUNT_A11Y_LABEL,children:[",
       replace: "$&$enabled&&$react.createElement($self.SpotifyPanel),"
     },
     {
       identifier: "dispatch-more-info",
       match: "hm://pusher/v1/connections/",
-      replacements: [
-        {
-          find: /repeat:"off"!==(.{1,3}),/,
-          replace: "$&true_repeat:$1,"
-        },
-        {
-          find: /function .{1,3}\(.{1,3},.{1,3},(.{1,3})\){let .{1,3},.{1,3},.+?repeat:"off"!==(.{1,3}),/,
-          replace: "$&shuffle_state:$1.shuffle_state,"
-        }
-      ]
+      find: /function .{1,3}\(.{1,3},.{1,3},(.{1,3})\){let .{1,3},.{1,3},.+?repeat:"off"!==(.{1,3}),/,
+      replace: "$&currentlyPlayingType:$1.currently_playing_type,shuffle_state:$1.shuffle_state,repeatState:$2,"
     }
   ],
   styler,
   SpotifyPanel: ErrorBoundary.wrap(SpotifyPanel),
   fluxEvents: {
     SPOTIFY_PLAYER_STATE(data) {      
+      if (data.currentlyPlayingType === "unknown") return;
+      
       spotifyStore.device = data.device ?? null;
       spotifyStore.track = data.track;
       spotifyStore.isPlaying = data.isPlaying;
       spotifyStore.position = data.position ?? 0;
-      spotifyStore.repeat = data.true_repeat || spotifyStore.repeat;
+      spotifyStore.repeat = data.repeatState || spotifyStore.repeat;
       spotifyStore.accountId = data.accountId;
-      spotifyStore.shuffleState = data.shuffle_state ?? spotifyStore.shuffleState;
+      spotifyStore.shuffleState = data.shuffle_state ?? spotifyStore.shuffleState;      
 
       spotifyStore.emit();
     },
     SPOTIFY_PROFILE_UPDATE(data: any) {
       spotifyStore.accounts[data.accountId] = data;
+
+      spotifyStore.accountId = data.accountId;
+      spotifyStore.emit();
     }
   }
 });

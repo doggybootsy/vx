@@ -1,6 +1,5 @@
 import { Children, cloneElement } from "react";
 
-import { getProxyByProtoKeys } from "@webpack";
 import ErrorBoundary from "./boundary";
 import { PopoutAlign, PopoutPosition } from "./popout";
 import { MegaModule } from "./util";

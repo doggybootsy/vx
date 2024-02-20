@@ -234,7 +234,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
       return {
         resolveDir: "./packages/mod/src",
         contents: `function esModuleInteropDefault(exports) {
-          if (typeof exports === "object" && exports.__esModule && exports.default) return exports.default;
+          if (typeof exports === "object" && exports !== null && exports.__esModule && exports.default) return exports.default;
           return exports;
         }
         ${pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = esModuleInteropDefault(require("./plugins/${dir}"));`).join("\n")}`

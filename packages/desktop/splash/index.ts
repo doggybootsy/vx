@@ -10,6 +10,8 @@ import { logger } from "vx:logger";
 waitForNode("body").then((body) => {
   const clone = logo.querySelector("svg")!.cloneNode(true);
   body.appendChild(clone);
+
+  if (electron.ipcRenderer.sendSync("@vx/transparency/get-state")) document.body.classList.add("transparent");
 });
 
 waitForNode("head").then((head) => {

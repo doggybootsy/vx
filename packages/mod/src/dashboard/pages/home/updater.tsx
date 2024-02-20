@@ -4,7 +4,7 @@ import { updater } from "../../../native";
 import { compare } from "./semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
-import { whenWebpackReady } from "@webpack";
+import { whenWebpackInit } from "@webpack";
 import { openNotification } from "../../../api/notifications";
 import { Messages } from "vx:i18n";
 import { openExternalWindowModal } from "../../../api/modals";
@@ -18,7 +18,7 @@ const updaterStore = new class extends InternalStore {
   constructor() {
     super();
 
-    whenWebpackReady().then(() => {
+    whenWebpackInit().then(() => {
       if (!env.IS_DEV && git.exists) this.checkForUpdates();
     });
   };

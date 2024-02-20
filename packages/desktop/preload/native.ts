@@ -106,6 +106,14 @@ const native = {
     update(release: Git.Release) {
       electron.ipcRenderer.invoke("@vx/update", release);
     }
+  },
+  transparency: {
+    get(): boolean {
+      return electron.ipcRenderer.sendSync("@vx/transparency/get-state");
+    },
+    set(state: boolean) {
+      electron.ipcRenderer.invoke("@vx/transparency/set-state", state);
+    }
   }
 };
 

@@ -1,16 +1,17 @@
+import { Component, isValidElement } from "react";
 import { FunctionType, ThisParameterType, Parameters, ReturnType } from "typings";
 
 type KeysMatching<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never }[keyof T];
 
-const SET_VALUE = Symbol.for("vx.patcher.return");
+class InjectorAfterReturn<T = any> {
+  constructor(public readonly value: T) {}
+}
 
-interface AfterCallbackSetReturn<T> {
-  [SET_VALUE]: T
-};
-
-type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, result: ReturnType<F>) => void | AfterCallbackSetReturn<ReturnType<F>>;
+type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, result: ReturnType<F>) => void | InjectorAfterReturn<ReturnType<F>>;
 type InsteadCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, original: F) => ReturnType<F>;
 type BeforeCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>) => void;
+// 'component' argument only exist's if the element type is a React.Component
+type ReactElementCallback<P extends {}> = (props: P, result: React.ReactNode, component?: React.Component<P>) => InjectorAfterReturn<React.ReactNode>;
 
 type UndoFunction = () => void;
 
@@ -63,7 +64,7 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 
     for (const after of hook.after) {
       const res = after(this, args, result);
-      if (res && SET_VALUE in res) result = res[SET_VALUE];
+      if (res instanceof InjectorAfterReturn) result = res.value;
     }
 
     return result;
@@ -91,14 +92,62 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 const patches = new WeakMap<Injector, Set<UndoFunction>>();
 
 export class Injector {
-  public static afterReturn<T extends any>(value: T): AfterCallbackSetReturn<T> {
-    return { [SET_VALUE]: value };
+  public static afterReturn<T extends any>(value: T) {
+    return new InjectorAfterReturn(value);
   }
   public static getOriginal<T extends FunctionType>(hooked: T): T {
     if (HOOK_SYMBOL in hooked) (hooked[HOOK_SYMBOL] as Hook<T>).original;
     return hooked;
   }
 
+  public static patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>) {
+    if (!isValidElement(node)) throw new TypeError(`Argument 'node' must be type a react element!`);
+
+    const { type } = node;
+
+    if (type.prototype instanceof Component) {
+      const $type = type as React.ComponentClass<P> & { prototype: React.Component<P> };
+
+      node.type = class extends $type {
+        static [HOOK_SYMBOL] = type;
+        render() {
+          const result = super.render();
+
+          const res = callback(this.props, result, this);
+          if (res instanceof InjectorAfterReturn) return res.value;
+          
+          return result;
+        }
+      }
+
+      return;
+    }
+
+    function newType(props: P) {
+      const result = (type as Function).apply(null, arguments);
+
+      const res = callback(props, result);
+      if (res instanceof InjectorAfterReturn) return res.value;
+
+      return result;
+    }
+    newType.displayName = (node.type as any).displayName;
+    newType[HOOK_SYMBOL] = type;
+
+    node.type = newType;
+  }
+  // Copy the 3 static methods to the prototype
+  public afterReturn<T extends any>(value: T) {
+    return Injector.afterReturn(value);
+  }
+  public getOriginal<T extends FunctionType>(hooked: T): T {
+    return Injector.getOriginal(hooked);
+  }
+  public patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>) {
+    Injector.patchElement(node, callback);
+  }
+
+  // Runs callback after the original function was called
   public after<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: AfterCallback<F>) {
     const hook = hookFunction(module, key);
 
@@ -115,6 +164,7 @@ export class Injector {
     $patches.add(undo);
     return undo;
   }
+  // Runs the callback instead of the original function
   public instead<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: InsteadCallback<F>) {
     const hook = hookFunction(module, key);
 
@@ -131,6 +181,7 @@ export class Injector {
     $patches.add(undo);
     return undo;
   }
+  // Runs callback before the original function was called
   public before<M extends Record<PropertyKey, any>, K extends KeysMatching<M, FunctionType>, F extends M[K]>(module: M, key: K, callback: BeforeCallback<F>) {
     const hook = hookFunction(module, key);
 
@@ -147,6 +198,7 @@ export class Injector {
     $patches.add(undo);
     return undo;
   }
+  // Undos all patches
   public unpatchAll() {
     if (!patches.has(this)) return;
     for (const undo of patches.get(this)!) undo();

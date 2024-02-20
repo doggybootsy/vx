@@ -81,6 +81,9 @@ export const ComponentDispatch = proxyCache(() => {
 });
 
 const userUploadActions = getProxyByKeys([ "promptToUpload" ]);
+const DraftStore = getProxyStore("DraftStore");
+const UploadAttachmentStore = getProxyStore("UploadAttachmentStore");
+
 export const TextAreaInput = createNullObject({
   clearText() {
     ComponentDispatch.dispatchToLastSubscribed("CLEAR_TEXT");
@@ -100,11 +103,25 @@ export const TextAreaInput = createNullObject({
 
     userUploadActions.promptToUpload(files, channel, 0);
   },
+  
   focus() {
     ComponentDispatch.dispatchToLastSubscribed("TEXTAREA_FOCUS");
   },
   blur() {
     ComponentDispatch.dispatchToLastSubscribed("TEXTAREA_BLUR");
+  },
+
+  getText(): string {
+    return DraftStore.getDraft(SelectedChannelStore.getChannelId(), 0);
+  },
+  getFiles(): File[] {
+    return UploadAttachmentStore.getUploads(SelectedChannelStore.getChannelId(), 0).map((cloud: any) => cloud.item.file);
+  },
+  get() {
+    return {
+      text: TextAreaInput.getText(),
+      files: TextAreaInput.getFiles()
+    }
   }
 }, "TextAreaInput");
 
@@ -253,3 +270,23 @@ interface Invite {
 export const InviteActions = getProxyByKeys<{
   resolveInvite: (code: string, analytics?: string) => Promise<{ code: string, invite?: Invite }>
 }>([ "resolveInvite", "createInvite" ]);
+
+export const MessageActions = getProxyByKeys([ "sendMessage", "_sendMessage" ]);
+
+export function sendMessage(message?: string, channelId: string = SelectedChannelStore.getChannelId()) {
+  if (!arguments.length) {
+    message = TextAreaInput.getText();
+    TextAreaInput.clearText();
+  }
+
+  return new Promise<boolean>(async (resolve) => {
+    const { ok } = await MessageActions.sendMessage(channelId, {
+      content: message!,
+      invalidEmojis: [],
+      tts: false,
+      validNonShortcutEmojis: []
+    });
+
+    resolve(ok);
+  });
+}

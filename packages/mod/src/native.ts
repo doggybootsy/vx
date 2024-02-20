@@ -45,3 +45,14 @@ export const updater = {
     window.VXNative!.updater.update(release);
   }
 };
+
+export const transparency = {
+  set(state: boolean) {
+    if (!IS_DESKTOP) return;
+    return window.VXNative!.transparency.set(state);
+  },
+  get() {
+    if (!IS_DESKTOP) return false;
+    return window.VXNative!.transparency.get();
+  }
+}

@@ -4,6 +4,7 @@ import { PlainTextPatchType, addPlainTextPatch, getLazyByKeys } from "@webpack";
 import { CreatedSetting } from "./settings";
 import { FluxDispatcher } from "@webpack/common";
 import { logger } from "vx:logger";
+import { env } from "vx:self";
 
 export interface PluginType {
   authors: Developer[],
@@ -162,4 +163,8 @@ export function isPluginEnabled(id: string) {
   return false;
 }
 
-logger.debug(require("@plugins"));
+if (env.IS_DEV) {
+  const plugins = require("@plugins");
+  logger.debug(Object.keys(plugins));
+}
+else require("@plugins");

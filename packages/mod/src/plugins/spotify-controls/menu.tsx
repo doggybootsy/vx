@@ -43,19 +43,9 @@ export function SpotifyMenu(props: MenuRenderProps) {
 
     const abortController = new AbortController();
 
-    const artistsPromise = track.artists.map(({ id }) => spotifyStore.getArtist(id));
-
-    Promise.all(artistsPromise).then((artistsFull) => {
-      if (abortController.signal.aborted) return;
-
-      const newArtists = { ...artists };
-      
-      for (const artist of artistsFull) {
-        newArtists[artist.id] = artist;
-      }
-
-      setArtists(newArtists);
-    });
+    for (const artist of track.artists) {
+      spotifyStore.getArtist(artist.id).then((artist) => setArtists((p) => Object.assign({}, p, { [artist.id]: artist })));
+    }
 
     return () => abortController.abort();
   }, [ track ]);

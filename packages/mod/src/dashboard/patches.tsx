@@ -4,7 +4,7 @@ import { isDashboardOpen, openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { cache, className } from "../util";
-import { byStrings, getByKeys, whenWebpackReady } from "@webpack";
+import { byStrings, getByKeys, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
 import { env } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
@@ -53,7 +53,7 @@ export function TitlebarButton(props: { windowKey?: string }) {
   useLayoutEffect(() => {
     const controller = new AbortController();
     
-    whenWebpackReady().then(() => {
+    whenWebpackInit().then(() => {
       if (controller.signal.aborted) return;
       setLoading(false);
     });
@@ -89,7 +89,7 @@ export const _addHomeButton = cache(() => {
 
     const index = children.findIndex((child) => isValidElement(child) ? dmsFilter(child.type) : false);
     
-    if (~index) {
+    if (~index) {      
       children.splice(
         index, 
         0, 

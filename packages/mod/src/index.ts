@@ -7,8 +7,9 @@ import masks from "./masks.html";
 import { VX } from "./window";
 
 import { pluginStore } from "./addons/plugins";
-import { whenWebpackReady } from "@webpack";
+import { whenWebpackInit } from "@webpack";
 import { IS_DESKTOP, env } from "vx:self";
+import { transparency } from "./native";
 
 console.log(`Welcome to VX v${env.VERSION}`);
 
@@ -39,7 +40,7 @@ document.addEventListener("readystatechange", () => {
   }
 });
 
-whenWebpackReady().then(() => pluginStore.initPlugins("webpack-ready"));
+whenWebpackInit().then(() => pluginStore.initPlugins("webpack-ready"));
 
 waitForNode("body").then((body) => {
   const script = document.createElement("script");
@@ -50,6 +51,7 @@ waitForNode("body").then((body) => {
   body.append(script, svg);
 
   body.classList.add("vx");
+  if (transparency.get()) body.classList.add("transparent");
 });
 
 const debug = new Function("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js");
