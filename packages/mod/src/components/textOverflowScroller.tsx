@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { ReactSpring } from "@webpack/common";
 
 type SpeedFunction = (isRevealing: boolean, gap: number, div: HTMLDivElement) => number;
@@ -8,7 +8,8 @@ interface TextOverflowScrollerProps extends React.DetailedHTMLProps<React.HTMLAt
    * @note Pixels per-second
    * @note {Infinity} is instant | {0} is dont move
    */
-  speed?: number | SpeedFunction
+  speed?: number | SpeedFunction,
+  divRef?: React.ForwardedRef<HTMLDivElement>
 }
 
 const defaultSpeed: SpeedFunction = (isRevealing, gap, div) => {
@@ -21,7 +22,7 @@ const defaultSpeed: SpeedFunction = (isRevealing, gap, div) => {
   return speed;
 };
 
-export const TextOverflowScroller = forwardRef(function TextOverflowScroller(props: TextOverflowScrollerProps, reference: React.ForwardedRef<HTMLDivElement>) {
+export function TextOverflowScroller(props: TextOverflowScrollerProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const [ { x }, set ] = ReactSpring.useSpring(() => ({
@@ -67,9 +68,9 @@ export const TextOverflowScroller = forwardRef(function TextOverflowScroller(pro
       ref={(div) => {
         (ref as any).current = div;
         
-        if (typeof reference === "function") reference(div);
-        else if (typeof reference === "object" && reference !== null) reference.current = div;
+        if (typeof props.divRef === "function") props.divRef(div);
+        else if (typeof props.divRef === "object" && props.divRef !== null) props.divRef.current = div;
       }}
     />
   )
-});
+};

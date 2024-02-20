@@ -26,4 +26,9 @@ export class FormattedMessage {
   format<T extends string | React.ReactNode | string[] | React.ReactNode[]>(formatters: Record<string, any>): T {
     return (this.#ensure() ? this.#formattedMessage!.format(formatters) : this.message) as T;
   }
+
+  // Fallback
+  toString(): string {
+    return this.message;
+  }
 };

@@ -1,5 +1,4 @@
 import { Button, MegaModule, transformContent } from "../../components";
-import { getProxyByKeys } from "@webpack";
 import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 

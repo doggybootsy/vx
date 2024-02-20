@@ -1,6 +1,6 @@
 import { Messages } from "vx:i18n";
 import { DataStore } from "../../api/storage";
-import { InternalStore, download, getDiscordTag, isInvalidSyntax, showFilePicker } from "../../util";
+import { InternalStore, download, getDiscordTag, showFilePicker } from "../../util";
 import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";
 import { logger } from "vx:logger";
@@ -99,7 +99,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       rawModule.call(window, module, module.exports);
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), while VX was trying to start it`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), while VX was trying to eval it\n`, error);
     }
 
     this.#evaledPlugins[id] = module.exports;

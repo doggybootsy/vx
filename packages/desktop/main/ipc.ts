@@ -124,3 +124,18 @@ electron.ipcMain.on("@vx/get-path", (event, path: Path) => {
 electron.ipcMain.on("@vx/extensions/get-all", (event) => {
   event.returnValue = electron.session.defaultSession.getAllExtensions();
 });
+
+electron.ipcMain.on("@vx/transparency/get-state", (event) => {
+  const data = BrowserWindow.__VXWindowsSettings.get();
+
+  event.returnValue = typeof data.transparent === "boolean" && data.transparent;
+});
+electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) => {
+  const settings = BrowserWindow.__VXWindowsSettings.get();
+  
+  settings.transparent = enabled;
+  BrowserWindow.__VXWindowsSettings.save();
+
+  electron.app.quit();
+  electron.app.relaunch();
+});

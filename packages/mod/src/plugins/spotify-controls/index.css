@@ -45,7 +45,7 @@
   height: 4px;
   background: var(--spotify);
   border-radius: 4px;
-  width: 50%;
+  width: var(--percent);
 }
 .vx-spotify-seek {
   position: absolute;
@@ -53,7 +53,7 @@
   height: 8px;
   background: var(--spotify);
   top: 50%;
-  left: 50%;
+  left: var(--percent);;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   cursor: ew-resize;

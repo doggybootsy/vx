@@ -1,5 +1,5 @@
 import { getProxyByKeys, getProxyByStrings } from "@webpack";
-import { Button, Icons, TextOverflowScroller } from "../../components";
+import { Button, Icons, TextOverflowScroller, Tooltip } from "../../components";
 import { className } from "../../util";
 
 import { useInternalStore } from "../../hooks";
@@ -18,8 +18,8 @@ const getTime = (elapsed: string | number | Date) => new Date(elapsed).toUTCStri
 const PanelButton = getProxyByStrings<React.ComponentType<any>>([ "{tooltipText:", ".default.Masks.PANEL_BUTTON," ]);
 
 export function SpotifyPanel() {
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const seekRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const percentRef = useRef(0);
 
   const [ position, setPosition ] = useState(spotifyStore.position);
   const data = useInternalStore(spotifyStore, () => ({
@@ -37,11 +37,12 @@ export function SpotifyPanel() {
       id = requestAnimationFrame(frame);
       setPosition(spotifyStore.position);
 
-      if (sliderRef.current && spotifyStore.track && !spotifyStore.isDragging) {
+      if (ref.current && spotifyStore.track && !spotifyStore.isDragging) {
         const percent = Math.round((spotifyStore.position / spotifyStore.track.duration) * 100);
-        if (sliderRef.current.style.width === `${percent}%`) return;
-        sliderRef.current.style.width = `${percent}%`;
-        if (seekRef.current) seekRef.current.style.left = `${percent}%`;
+        if (ref.current.style.getPropertyValue("--percent") === `${percent}%`) return;
+
+        ref.current.style.setProperty("--percent", `${percent}%`, "important");
+        percentRef.current = percent;
       }
     }
     let id = requestAnimationFrame(frame);
@@ -51,21 +52,27 @@ export function SpotifyPanel() {
 
   const onMouseDown = useCallback((event: React.MouseEvent) => {
     const target = event.currentTarget;
+
     spotifyStore.isDragging = true;
+    spotifyStore.emit();
 
     let percent = Math.round((spotifyStore.position / spotifyStore.track!.duration) * 100);
-
+    
+    onMouseMove(event as any as MouseEvent);
+    
     function onMouseMove(event: MouseEvent) {
       event.preventDefault();
   
       const rect = target.getBoundingClientRect();
 
-      if (!(event.clientX >= rect.left && event.clientX <= rect.left + rect.width)) return; 
-
-      percent = Math.round((event.clientX - rect.left) / rect.width * 100);
-        
-      sliderRef.current!.style.width = `${percent}%`;
-      if (seekRef.current) seekRef.current.style.left = `${percent}%`;
+      if (!(event.clientX >= rect.left && event.clientX <= rect.left + rect.width)) {
+        if (event.clientX >= rect.left) percent = 100;
+        else percent = 0;
+      }
+      else percent = Math.round((event.clientX - rect.left) / rect.width * 100);
+      
+      percentRef.current = percent;
+      ref.current!.style.setProperty("--percent", `${percent}%`, "important");
     }
     function onMouseUp() {
       document.removeEventListener("mouseup", onMouseUp);
@@ -73,7 +80,9 @@ export function SpotifyPanel() {
       document.body.style.cursor = "unset";
 
       spotifyStore.seek(percent / 100 * spotifyStore.track!.duration);
+
       spotifyStore.isDragging = false;
+      spotifyStore.emit();
     }
 
     document.body.style.cursor = "ew-resize";
@@ -158,10 +167,14 @@ export function SpotifyPanel() {
       </div>
       <div className="vx-spotify-time-wrapper">
         <div className="vx-spotify-time">{getTime(position)}</div>
-        <div className="vx-spotify-slider-wrapper" onMouseDown={data.isPremium ? onMouseDown : () => {}}>
-          <div ref={sliderRef} className="vx-spotify-slider" />
+        <div className="vx-spotify-slider-wrapper" onMouseDown={data.isPremium ? onMouseDown : () => {}} ref={ref}>
+          <div className="vx-spotify-slider" />
           {data.isPremium && (
-            <div ref={seekRef} className="vx-spotify-seek" />
+            <Tooltip text={getTime(data.track.duration * (percentRef.current / 100))} shouldShow={data.isDragging} forceOpen={data.isDragging}>
+              {(props) => (
+                <div className="vx-spotify-seek" {...props} />
+              )}
+            </Tooltip>
           )}
         </div>
         <div className="vx-spotify-time">{getTime(data.track.duration)}</div>

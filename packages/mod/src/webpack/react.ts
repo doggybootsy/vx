@@ -1,5 +1,5 @@
 import { Parameters } from "typings";
-import { proxyCache } from "../util";
+import { hasInstance, proxyCache, reactExists } from "../util";
 import { getLazyByKeys } from "./filters";
 
 type ReactType = typeof import("react");
@@ -35,8 +35,13 @@ export function memo<T extends React.ComponentType<any>>(type: T, compare?: (pre
   return proxyCache(() => React.memo(type, compare), true);
 }
 
-export function forwardRef<T, P = {}>(type: React.ForwardRefRenderFunction<T, P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<T>> {
-  return proxyCache(() => React.forwardRef(type), true);
+export function forwardRef<T, P = {}>(render: React.ForwardRefRenderFunction<T, P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<T>> {
+  // Breaks the whole mod wtf??
+  return proxyCache(() => React.forwardRef(render), true);
+  return {
+    $$typeof: Symbol.for("react.forward_ref"),
+    render
+  } as any
 }
 
 export function startTransition(scope: React.TransitionFunction) {
@@ -54,6 +59,13 @@ class BaseComponent {
     Object.setPrototypeOf(Object.getPrototypeOf(this), component);
   }
 
+  static [Symbol.hasInstance](item: any): boolean {
+    // Call once
+    if (!reactExists) return hasInstance(BaseComponent, item);
+
+    return hasInstance(React.Component, item) || hasInstance(BaseComponent, item);
+  }
+  
   static {
     (this.prototype as any).isReactComponent = {};
   }

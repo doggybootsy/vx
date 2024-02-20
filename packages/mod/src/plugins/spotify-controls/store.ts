@@ -140,11 +140,14 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
       return request;
     }
     if (!request.ok) {
+      const { error } = await request.json();
+      
       openNotification({
         id: `spotify-bad-${request.status}`,
         title: `${request.status} Bad Request`,
         icon: Icons.Spotify,
-        type: "danger"
+        type: "danger",
+        description: error.message
       });
     }
 

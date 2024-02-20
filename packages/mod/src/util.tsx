@@ -3,6 +3,7 @@ import { getLazyByKeys, getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
 import { logger } from "vx:logger";
+import { debounce } from "common/util";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -16,23 +17,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
       handlers.get = (target, prop, r) => {
         if (prop === "prototype") return (cacheFactory() as any).prototype ?? Function.prototype;
         if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
-
-        const value = Reflect.get(cacheFactory(), prop, r);
-        try {
-          // Devtools
-          (target as any)[prop] = value;
-        } catch (error) {
-          
-        }
-
-        return value;
-      };
-      continue;
-    }
-    if (key === "set") {
-      handlers.set = (target, prop, value, r) => {
-        (target as any)[prop] = value;
-        return Reflect.set(cacheFactory(), prop, value, r);
+        return Reflect.get(cacheFactory(), prop, r);
       };
       continue;
     }
@@ -48,7 +33,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
     // @ts-expect-error
     handlers[key] = function(target, ...args) {
       // @ts-expect-error
-      return handler.call(this, cacheFactory(), ...args);
+      return handler.apply(this, [ cacheFactory() ].concat(args));
     };
   }
 
@@ -812,4 +797,19 @@ export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | St
 
   value.listeners.add(listener);
   return () => void value.listeners.delete(listener);
+}
+
+export function destructuredPromise<T extends any = void>() {
+  let resolve: (value: T | PromiseLike<T>) => void;
+  let reject: (reason: any) => void;
+  const promise = new Promise<T>(($resolve, $reject) => {
+    resolve = $resolve;
+    reject = $reject;
+  });
+  return { promise, resolve: resolve!, reject: reject! };
+}
+
+// [Symbol.hasInstance] overrides the native instanceof so this calls
+export function hasInstance(object: any, item: any) {
+  return Object[Symbol.hasInstance].call(object, item);
 }

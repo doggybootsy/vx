@@ -1,5 +1,6 @@
 import { FluxDispatcher } from "discord-types/other";
 import { getLazyByKeys } from "./filters";
+import { destructuredPromise } from "../util";
 
 export * from "./filters";
 export * from "./webpack";
@@ -9,20 +10,19 @@ export * from "./stores";
 export * from "./lazy";
 export * from "./patches";
 
-let resolve = () => {};
-const webpackReadyPromise = new Promise<void>((r) => resolve = r);
+const webpackReadyP = destructuredPromise();
 export function whenWebpackReady() {
-  return webpackReadyPromise;
-};
+  return webpackReadyP.promise;
+}
 export let webpackReady = false;
 
 getLazyByKeys<FluxDispatcher>([ "subscribe", "dispatch" ]).then((FluxDispatcher) => {
   function listener() {
     webpackReady = true;
     
-    resolve();
+    webpackReadyP.resolve();
     FluxDispatcher.unsubscribe("CONNECTION_OPEN", listener);
-  };
+  }
 
   FluxDispatcher.subscribe("CONNECTION_OPEN", listener);
 });

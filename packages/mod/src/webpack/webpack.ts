@@ -1,10 +1,15 @@
 import { logger } from "vx:logger";
-import { escapeRegex, isInvalidSyntax } from "../util";
+import { destructuredPromise, escapeRegex, isInvalidSyntax } from "../util";
 import { plainTextPatches } from "./patches";
 
 export const webpackAppChunk = window.webpackChunkdiscord_app ??= [];
 
 export let webpackRequire: Webpack.Require | void;
+
+const webpackInit = destructuredPromise();
+export function whenWebpackInit() {
+  return webpackInit.promise;
+}
 
 webpackAppChunk.push([
   [ Symbol.for("VX") ],
@@ -37,6 +42,8 @@ webpackAppChunk.push([
         });
       }
     };
+
+    webpackInit.resolve();
   }
 ]);
 
@@ -90,14 +97,20 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
         stringedModule = stringedModule.replace(replace.find as any, replacer);
       }
       else stringedModule = stringedModule.replace(replace.find as any, replace.replace as any);
-    };
-  };
+    }
+  }
   
-  stringedModule = `(()=>\n/*\n Module Id: ${key.toString()}${identifiers.size ? `\n Known string match identifiers '${Array.from(identifiers).join("', '")}'\n This doesn't mean they actually patched anything, just means they matched to it` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n}\n)()\n//# sourceURL=vx://VX/webpack-modules/${key.toString()}`;
+  const id = key.toString();
+  const nid = Number(key);
+  // When viewing the source tab having 100 thousand items render kills dom
+  // so this breaks it up into folders (roughly 1000 folders that hold 100 files)
+  const path = isNaN(nid) ? `nan/${id}.js` : `${Math.floor(nid / 1_000)}/${id}.js`;
+
+  stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string match identifiers '${Array.from(identifiers).join("', '")}'\n This doesn't mean they actually patched anything, just means they matched to it` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n})()\n//# sourceURL=vx://VX/webpack-modules/${path}`;
 
   const error = isInvalidSyntax(stringedModule);
   if (error) {
-    logger.createChild("Webpack").warn(`Syntax Error on module '${key.toString()}' reverting to original module`, {
+    logger.createChild("Webpack").warn(`Syntax Error on module '${id}' reverting to original module`, {
       code: stringedModule,
       identifiers: identifiers,
       error

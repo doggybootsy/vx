@@ -4,9 +4,10 @@ import { Panel } from "../..";
 import { internalDataStore } from "../../../api/storage";
 import { Button, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
-import { app } from "../../../native";
+import { app, transparency } from "../../../native";
 import { Updater } from "./updater";
 import { Messages } from "vx:i18n";
+import { openConfirmModal } from "../../../api/modals";
 
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
@@ -60,6 +61,25 @@ export function Home() {
           note={Messages.CONTENT_PROTECTION_NOTE}
         >
           {Messages.CONTENT_PROTECTION}
+        </FormSwitch>
+      )}
+      {IS_DESKTOP && (
+        <FormSwitch
+          value={transparency.get()}
+          onChange={(value) => {
+            openConfirmModal(Messages.ARE_YOU_SURE, [
+              "Do you wan't to restart Discord to toggle transparency?"
+            ], {
+              confirmText: "Restart",
+              onConfirm: () => {
+                transparency.set(value);
+              }
+            });
+          }}
+          style={{ marginTop: 20 }}
+          note={Messages.TRANSPARENCY_NOTE.format({ })}
+        >
+          {Messages.TRANSPARENCY}
         </FormSwitch>
       )}
 

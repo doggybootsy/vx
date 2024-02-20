@@ -43,6 +43,10 @@ const messages = {
   RESTART_DISCORD: "Restart Discord",
   RELOAD_DISCORD: "Reload Discord",
   VIEW_LICENSE: "View License",
+  ARE_YOU_SURE: "Are you sure?",
+  RESTART: "Restart",
+  TRANSPARENCY: "Transparency",
+  TRANSPARENCY_NOTE: new FormattedMessage("Enabling transparency allows you to be able to see your desktop background. This also breaks window snapping [crbug/41395671](https://issues.chromium.org/issues/41395671) [electron/electron/2170](https://github.com/electron/electron/issues/2170)", "en-US", true),
 
   TRUST_AND_VISIT_SITE: new FormattedMessage("Visit and trust **!!{domain}!!** links from now on", "en-US", true),
   
