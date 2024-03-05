@@ -27,7 +27,7 @@ export function getMetaProperty(meta: Meta, key: keyof Meta, defaultValue: strin
   const locale = I18n.getLocale().toLowerCase() as Lowercase<LocaleCodes>;
   if (locale in value.i18n) return value.i18n[locale]!;
   return value.default ?? defaultValue;
-};
+}
 
 export function getMetaUsagePropertyKey(meta: Meta, key: SupportsI18n) {
   const value = meta[key];
@@ -38,7 +38,7 @@ export function getMetaUsagePropertyKey(meta: Meta, key: SupportsI18n) {
   if (locale in value.i18n) return locale;
   if (typeof value.default === "string") return "default";
   return null;
-};
+}
 
 export function replaceMetaValue(meta: Meta, key: string, value: string | AuthorValue) {
   const clone = structuredClone(meta);
@@ -60,10 +60,10 @@ export function replaceMetaValue(meta: Meta, key: string, value: string | Author
   }
   else {
     meta[key] = value as string;
-  };
+  }
 
   return clone;
-};
+}
 
 export function getMeta(code: string): Meta {
   const metaBlock = code.match(META_REGEX);
@@ -108,7 +108,7 @@ export function getMeta(code: string): Meta {
     }
 
     meta[key] = body;
-  };
+  }
 
   const authors = [];
 
@@ -127,7 +127,7 @@ export function getMeta(code: string): Meta {
   }
 
   return Object.assign({ authors }, meta);
-};
+}
 
 function stringify(meta: Meta) {
   const chunks = [];
@@ -158,7 +158,7 @@ function stringify(meta: Meta) {
   }
 
   return `/**\n${chunks.join("\n")}\n */`;
-};
+}
 
 export function replaceMeta(code: string, newMeta: Meta) {
   const meta = stringify(newMeta);
@@ -167,7 +167,7 @@ export function replaceMeta(code: string, newMeta: Meta) {
 
   if (!match) {
     return `${meta}\n${code}`;
-  };
+  }
 
   return `${meta}${code.substring(match[0].length)}`
-};
+}

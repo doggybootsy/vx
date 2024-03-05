@@ -35,7 +35,7 @@ function MenuPopout({ closePopout }: { closePopout: () => void }) {
       />
     </MenuComponents.Menu>
   )
-};
+}
 
 export function openWindow(id: string) {  
   const name = pluginStore.getAddonName(id);
@@ -323,4 +323,4 @@ export function openWindow(id: string) {
       )
     }
   })
-};
+}

@@ -27,11 +27,16 @@
 .vx-section-info {
   padding: 8px 10px;
   user-select: text;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+}
+.vx-section-info-menu {
+  padding: 4px 6px;
 }
 .vx-section-info > div {
   color: var(--text-muted);
   display: inline-block;
-  width: 100%;
   font-family: var(--font-primary);
   font-size: 12px;
   line-height: 16px;

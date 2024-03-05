@@ -14,8 +14,8 @@ export function Switch(props: SwitchProps) {
     <ErrorBoundary>
       <MegaModule.Switch {...props} />
     </ErrorBoundary>
-  );
-};
+  )
+}
 
 export interface FormSwitchProps {
   value: boolean,
@@ -34,5 +34,5 @@ export function FormSwitch(props: FormSwitchProps) {
     <ErrorBoundary>
       <MegaModule.FormSwitch {...props} />
     </ErrorBoundary>
-  );
-};
+  )
+}

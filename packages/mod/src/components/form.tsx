@@ -18,4 +18,4 @@ export function FormBody(props: FormBodyProps) {
       {props.children}
     </div>
   )
-};
+}

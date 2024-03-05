@@ -46,7 +46,7 @@ function PopoutComponent(props: PopoutProps): React.ReactElement {
       <MegaModule.Popout {...props} />
     </ErrorBoundary>
   )
-};
+}
 
 Object.defineProperty(PopoutComponent, "Animation", {
   get: () => MegaModule.Popout.Animation

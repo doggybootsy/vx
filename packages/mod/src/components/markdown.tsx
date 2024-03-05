@@ -13,7 +13,7 @@ export function Markdown(props: { text: string, state?: Record<PropertyKey, any>
   }, [ props.text, props.state ]);
 
   return <>{parsed}</>;
-};
+}
 
 export function transformContent(content: React.ReactNode | React.ReactNode[], lineClassName: string) {
   return Children.map(content, (child) => {
@@ -21,7 +21,7 @@ export function transformContent(content: React.ReactNode | React.ReactNode[], l
       <div className={lineClassName}>
         <Markdown text={child} />
       </div>
-    );
+    )
     
     return (
       <div className={lineClassName}>
@@ -31,4 +31,4 @@ export function transformContent(content: React.ReactNode | React.ReactNode[], l
       </div>
     )
   });
-};
+}

@@ -15,6 +15,12 @@ export const settings = createSettings("SpotifyControls", {
     title: "Alternative Skip Backwards",
     description: "When enabled, if you click skip backwards after the 5s mark, it will restart the song instead of skipping backwards"
   },
+  altDuration: {
+    type: SettingType.SWITCH,
+    default: false,
+    title: "Alternative Duration",
+    description: "When enabled, it tells you long you have left until the song ends"
+  },
   openInApp: {
     type: SettingType.SWITCH,
     default: false,
@@ -39,7 +45,7 @@ export default definePlugin({
     {
       identifier: "dispatch-more-info",
       match: "hm://pusher/v1/connections/",
-      find: /function .{1,3}\(.{1,3},.{1,3},(.{1,3})\){let .{1,3},.{1,3},.+?repeat:"off"!==(.{1,3}),/,
+      find: /function .{1,3}\(.{1,3},.{1,3},(.{1,3})\){(?:var|let) .{1,3},.{1,3},.+?repeat:"off"!==(.{1,3}),/,
       replace: "$&currentlyPlayingType:$1.currently_playing_type,shuffle_state:$1.shuffle_state,repeatState:$2,"
     }
   ],

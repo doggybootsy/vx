@@ -45,7 +45,7 @@ export function waitForNode<T extends Element>(query: string, options: waitForNo
       });
     }
   });
-};
+}
 
 interface waitForElementRemovedOptions {
   target?: Node | Document,
@@ -63,8 +63,8 @@ export function waitForElementRemoved(element: Node, options: waitForElementRemo
   
           observer.disconnect();
           resolve();
-        };
-      };
+        }
+      }
     });
 
     observer.observe(target, {
@@ -78,6 +78,6 @@ export function waitForElementRemoved(element: Node, options: waitForElementRemo
 
         observer.disconnect();
       });
-    };
+    }
   });
-};
+}

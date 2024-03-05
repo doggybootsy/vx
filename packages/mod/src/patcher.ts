@@ -3,15 +3,15 @@ import { FunctionType, ThisParameterType, Parameters, ReturnType } from "typings
 
 type KeysMatching<T, V> = { [K in keyof T]-?: T[K] extends V ? K : never }[keyof T];
 
-class InjectorAfterReturn<T = any> {
+class InjectorReturn<T = any> {
   constructor(public readonly value: T) {}
 }
 
-type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, result: ReturnType<F>) => void | InjectorAfterReturn<ReturnType<F>>;
+type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, result: ReturnType<F>) => void | InjectorReturn<ReturnType<F>>;
 type InsteadCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, original: F) => ReturnType<F>;
 type BeforeCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>) => void;
 // 'component' argument only exist's if the element type is a React.Component
-type ReactElementCallback<P extends {}> = (props: P, result: React.ReactNode, component?: React.Component<P>) => InjectorAfterReturn<React.ReactNode>;
+type ReactElementCallback<P extends {}> = (props: P, result: React.ReactNode, component?: React.Component<P>) => InjectorReturn<React.ReactNode>;
 
 type UndoFunction = () => void;
 
@@ -39,52 +39,41 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
     original: fn
   };
 
-  function hookedFunction(this: ThisParameterType<F>): ReturnType<F> {
-    const args = Array.from(arguments) as Parameters<F>;
-
-    for (const before of hook.before) before(this, args)
-
-    let result: ReturnType<F>;
-    if (!hook.instead.size) {
-      result = apply(fn, this, args);
-    }
-    else {
-      const insteadHooks = Array.from(hook.instead);
-      const instead = insteadHooks.at(0)!;
-      let depth = 1;
-
-      function goDeeper(this: ThisParameterType<F>, ...args: Parameters<F>): any {
-        const hook = insteadHooks.at(depth++);
-        if (hook) return hook(this, args, goDeeper.apply(this, args));
-        return apply(fn, this, args);
-      };
-
-      result = instead(this, args, goDeeper as F);
-    };
-
-    for (const after of hook.after) {
-      const res = after(this, args, result);
-      if (res instanceof InjectorAfterReturn) result = res.value;
-    }
-
-    return result;
-  }
-
-  Object.defineProperties(hookedFunction, Object.getOwnPropertyDescriptors(fn));
+  const VXPatcher = new Proxy(fn, {
+    apply(target, that, argArray) {
+      const args = Array.from(argArray) as Parameters<F>;
   
-  hookedFunction[HOOK_SYMBOL] = hook;
-
-  const name = fn.name ? fn.name : "anonymous";
-
-  hookedFunction.displayName = "displayName" in fn ? `VXPatched(${fn.displayName})` : `VXPatched(${name})`;
-  Object.defineProperty(hookedFunction, "name", {
-    value: `VXPatched(${name})`,
-    configurable: true
+      for (const before of hook.before) before(that, args)
+  
+      let result: ReturnType<F>;
+      if (!hook.instead.size) {
+        result = apply(fn, that, args);
+      }
+      else {
+        const insteadHooks = Array.from(hook.instead);
+        const instead = insteadHooks.at(0)!;
+        let depth = 1;
+  
+        function goDeeper(this: ThisParameterType<F>, ...args: Parameters<F>): any {
+          const hook = insteadHooks.at(depth++);
+          if (hook) return hook(this, args, goDeeper.apply(this, args));
+          return apply(target, this, args);
+        }
+  
+        result = instead(that, args, goDeeper as F);
+      }
+  
+      for (const after of hook.after) {
+        const res = after(that, args, result);
+        if (res instanceof InjectorReturn) result = res.value;
+      }
+  
+      return result;
+    }
   });
 
-  hookedFunction.toString = () => fn.toString();
-
-  module[key] = hookedFunction as F;
+  VXPatcher[HOOK_SYMBOL] = hook;
+  module[key] = VXPatcher;
 
   return hook;
 };
@@ -92,8 +81,8 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 const patches = new WeakMap<Injector, Set<UndoFunction>>();
 
 export class Injector {
-  public static afterReturn<T extends any>(value: T) {
-    return new InjectorAfterReturn(value);
+  public static return<T extends any>(value: T) {
+    return new InjectorReturn(value);
   }
   public static getOriginal<T extends FunctionType>(hooked: T): T {
     if (HOOK_SYMBOL in hooked) (hooked[HOOK_SYMBOL] as Hook<T>).original;
@@ -114,7 +103,7 @@ export class Injector {
           const result = super.render();
 
           const res = callback(this.props, result, this);
-          if (res instanceof InjectorAfterReturn) return res.value;
+          if (res instanceof InjectorReturn) return res.value;
           
           return result;
         }
@@ -127,7 +116,7 @@ export class Injector {
       const result = (type as Function).apply(null, arguments);
 
       const res = callback(props, result);
-      if (res instanceof InjectorAfterReturn) return res.value;
+      if (res instanceof InjectorReturn) return res.value;
 
       return result;
     }
@@ -136,9 +125,10 @@ export class Injector {
 
     node.type = newType;
   }
+
   // Copy the 3 static methods to the prototype
-  public afterReturn<T extends any>(value: T) {
-    return Injector.afterReturn(value);
+  public return<T extends any>(value: T) {
+    return Injector.return(value);
   }
   public getOriginal<T extends FunctionType>(hooked: T): T {
     return Injector.getOriginal(hooked);
@@ -203,4 +193,4 @@ export class Injector {
     if (!patches.has(this)) return;
     for (const undo of patches.get(this)!) undo();
   }
-};
+}

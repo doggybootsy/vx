@@ -32,7 +32,7 @@ function CopyButton(props: {
       )}
     </Tooltip>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

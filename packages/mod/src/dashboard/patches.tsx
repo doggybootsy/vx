@@ -8,6 +8,8 @@ import { byStrings, getByKeys, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
 import { env } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
+import { HomeButton, HomeMenu } from "./button";
+import { openMenu } from "../api/menu";
 
 addPlainTextPatch(
   {
@@ -19,8 +21,8 @@ addPlainTextPatch(
   {
     identifier: "VX(settings-button)",
     match: ".Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format({webBuildOverride",
-    find: /USER_SETTINGS,onClick:(.{1,3}),/,
-    replace: "USER_SETTINGS,onClick:$vx._self._settingButtonOnClickWrapper($1),"
+    find: /USER_SETTINGS,onClick:(.{1,3}),onContextMenu:(.{1,3}),/,
+    replace: "USER_SETTINGS,onClick:$vx._self._settingButtonActionWrapper($1,false),onContextMenu:$vx._self._settingButtonActionWrapper($2,true),"
   },
   {
     identifier: "VX(titlebar)",
@@ -29,22 +31,6 @@ addPlainTextPatch(
     replace: "$1,$react.createElement($vx._self.TitlebarButton,$2)]"
   }
 );
-
-function HomeButton() {
-  return (
-    <div
-      id="vx-home-button"
-      onClick={() => {
-        openDashboard();
-      }}
-      role="button"
-      aria-label="Open VX Dashboard"
-      tabIndex={-1}
-    >
-      <Icons.Logo />
-    </div>
-  );
-}
 
 export function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(true);
@@ -107,16 +93,21 @@ export const _addHomeButton = cache(() => {
   });
 });
 
-export function _settingButtonOnClickWrapper(onClick: (event: React.MouseEvent) => void) {
+export function _settingButtonActionWrapper(action: (event: React.MouseEvent) => void, isOnContextMenu: boolean) {
   const shouldOpen = () => internalDataStore.get("user-setting-shortcut") ?? true;
   
   return (event: React.MouseEvent) => {
+    // Only run if shift is pressed
     if (event.shiftKey && shouldOpen()) {
-      openDashboard();
+      if (isOnContextMenu) {
+        openMenu(event, HomeMenu);
+        return;
+      }
 
+      openDashboard();
       return;
     }
 
-    onClick(event);
-  };
+    return action(event);
+  }
 }

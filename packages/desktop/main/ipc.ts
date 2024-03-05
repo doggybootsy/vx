@@ -1,10 +1,11 @@
-import electron from "electron";
+import electron, { safeStorage } from "electron";
 import { BrowserWindow } from "./window";
 import { request } from "https";
 import fs from "original-fs";
 import path from "node:path";
 import { waitFor } from "common/util";
 import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
+import { windowStorage } from "./storage";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -23,7 +24,7 @@ electron.ipcMain.handle("@vx/restart", () => {
 
 electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
   const asar = release.assets.find((asset) => asset.name.endsWith(".asar"))!;
-
+  
   request(asar.url, { 
     method: "GET",
     headers: {
@@ -126,16 +127,21 @@ electron.ipcMain.on("@vx/extensions/get-all", (event) => {
 });
 
 electron.ipcMain.on("@vx/transparency/get-state", (event) => {
-  const data = BrowserWindow.__VXWindowsSettings.get();
-
-  event.returnValue = typeof data.transparent === "boolean" && data.transparent;
+  event.returnValue = windowStorage.get("transparent", false);
 });
 electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) => {
-  const settings = BrowserWindow.__VXWindowsSettings.get();
-  
-  settings.transparent = enabled;
-  BrowserWindow.__VXWindowsSettings.save();
+  windowStorage.set("transparent", enabled);
 
   electron.app.quit();
   electron.app.relaunch();
+});
+
+electron.ipcMain.on("@vx/safestorage/encrypt", (event, string) => {
+  event.returnValue = safeStorage.encryptString(string).toString("base64");
+});
+electron.ipcMain.on("@vx/safestorage/decrypt", (event, encrypted) => {
+  event.returnValue = safeStorage.decryptString(Buffer.from(encrypted, "base64"));
+});
+electron.ipcMain.on("@vx/safestorage/is-available", (event) => {
+  event.returnValue = safeStorage.isEncryptionAvailable();
 });

@@ -17,7 +17,7 @@ function createLogArguments(logger: Logger, type: string, color: [ number, numbe
 
   if (!logger.options.showIcon) return [
     `%c[${type[0]}]%c %c[${logger.name}]:`,
-    `${IS_DESKTOP ? "margin-left: -21px;" : ""}color: #${color.map((color) => color.toString(16).padStart(2, color.toString(16))).join("")}; font-weight: bold;`,
+    `${IS_DESKTOP ? "margin-left: -21px;" : ""}color: rgb(${color.join(", ")}); font-weight: bold;`,
     IS_DESKTOP ? "margin-left: -5px;" : "",
     logger.options.nameStyling
   ];

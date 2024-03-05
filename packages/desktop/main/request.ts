@@ -8,8 +8,8 @@ function normalizeHeaders(responseHeaders: Record<string, string[]> = { }) {
   for (const key in responseHeaders) {
     if (Object.prototype.hasOwnProperty.call(responseHeaders, key)) {
       headers[key.toLowerCase().replace(/(^|-)\D/g, (string) => string.toUpperCase())] = responseHeaders[key];
-    };
-  };
+    }
+  }
 
   return headers;
 }

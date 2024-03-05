@@ -46,4 +46,4 @@ export function Collapsable(props: CollapsableProps) {
       )}
     </Flex>
   )
-};
+}

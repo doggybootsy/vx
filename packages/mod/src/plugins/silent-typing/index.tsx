@@ -46,7 +46,7 @@ async function patchSilentTyping() {
 
     return startTyping.apply(that, args);
   });
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

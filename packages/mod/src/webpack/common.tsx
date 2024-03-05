@@ -9,7 +9,7 @@ import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
 import { webpackRequire } from "@webpack";
-import { ErrorBoundary } from "../components";
+import { ErrorBoundary, FormBody } from "../components";
 
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
@@ -125,22 +125,22 @@ export const TextAreaInput = createNullObject({
   }
 }, "TextAreaInput");
 
+function FallbackView() {
+  return <ErrorBoundary.FallbackView closeAction={LayerManager.pop} />
+}
+
 export const LayerManager = createNullObject({
-  push(component: React.ComponentType) {
+  push(component: React.ComponentType, fallback: React.ComponentType = FallbackView) {
     dirtyDispatch({
       type: "LAYER_PUSH",
-      component: ErrorBoundary.wrap(component)
+      component: ErrorBoundary.wrap(component, fallback)
     });
   },
   pop() {
-    dirtyDispatch({
-      type: "LAYER_POP"
-    });
+    dirtyDispatch({ type: "LAYER_POP" });
   },
   clear() {
-    dirtyDispatch({
-      type: "LAYER_POP_ALL"
-    });
+    dirtyDispatch({ type: "LAYER_POP_ALL" });
   }
 }, "LayerManager");
 

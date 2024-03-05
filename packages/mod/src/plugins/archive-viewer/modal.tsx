@@ -94,7 +94,7 @@ function sort(a: FileType, b: FileType) {
   if (b.dir) return 1;
 
   return a.name.localeCompare(b.name);
-};
+}
 
 export function openZipModal(src: string | File | Blob) {
   if (src instanceof Blob && !(src instanceof File)) {
@@ -118,7 +118,7 @@ function ZipModal(props: ZipModalProps) {
     else setPath(view.name);
 
     setSelected([ ]);
-  };
+  }
 
   useAbortEffect(async (signal) => {
     let file: File;
@@ -296,7 +296,7 @@ function ZipModal(props: ZipModalProps) {
                         }
 
                         return;
-                      };
+                      }
 
                       showFiles(file);
                     }}

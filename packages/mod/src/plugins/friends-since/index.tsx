@@ -54,11 +54,13 @@ export default definePlugin({
   requiresRestart: false,
   patches: [
     {
+      identifier: "popout",
       match: "isUsingGuildBio:null",
       find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{userId:(.{1,3}\.id),guild:.{1,3},guildMember:.{1,3}}\)/,
       replace: "$&,$enabled&&$react.createElement($self.FriendsSinceSection,{userId:$1})"
     },
     {
+      identifier: "modal",
       match: ".ConnectedUserAccounts,",
       find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
       replace: "$&,$enabled&&$react.createElement($self.FriendsSince,$1)"

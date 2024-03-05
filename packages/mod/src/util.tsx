@@ -4,6 +4,7 @@ import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
 import { logger } from "vx:logger";
 import { debounce } from "common/util";
+import { Fiber } from "react-reconciler";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -137,25 +138,26 @@ export class ClassName {
     for (const cn of classNames) {
       if (!cn) continue;
       if (cn instanceof ClassName) {
-        classes.push(...cn.list());
+        classes.push(...cn.keys());
         continue;
       }
       classes.push(...className(Array.isArray(cn) ? cn : [ cn ]).split(" "));
-    };
+    }
 
-    if (classes) this.#classes = className(classes).split(" ");
-    else this.#classes = [];
+    this.#classes = className(classes).split(" ");
+
+    if (this.#classes.length === 1 && this.#classes[0] === "") this.#classes = [];
   }
 
   #classes: string[];
 
   add(...classNames: ClassNameType[]) {
-    const cn = new ClassName(...classNames).list();
+    const cn = new ClassName(...classNames).keys();
 
     this.#classes = className([ ...this.#classes, ...cn ]).split(" ");
   }
   remove(...classNames: ClassNameType[]) {
-    const cn = new ClassName(...classNames).list();
+    const cn = new ClassName(...classNames).keys();
 
     this.#classes = this.#classes.filter((className) => !cn.includes(className));
   }
@@ -167,7 +169,7 @@ export class ClassName {
     this.#classes = [];
   }
 
-  list() {
+  keys() {
     return this.#classes.splice(0);
   }
 
@@ -176,12 +178,12 @@ export class ClassName {
   }
 
   toJSON() {
-    return this.list();
+    return this.keys();
   }
   [Symbol.iterator]() {
     return iteratorFrom(this.#classes);
   }
-};
+}
 
 let hasSeen: WeakSet<any> | null = null;
 export function findInTree<T extends Object>(tree: any, searchFilter: (item: any) => any, options: {
@@ -275,6 +277,20 @@ export class InternalStore {
 const copyCommandSupported = document.queryCommandEnabled("copy") || document.queryCommandSupported("copy");
 export const clipboard = {
   SUPPORTS_COPY: typeof window.VXNative === "object" || typeof navigator.clipboard === "object" || copyCommandSupported,
+  async readText() {
+    if (window.VXNative) {
+      return Promise.resolve(window.VXNative.clipboard.read());
+    }
+    if (navigator.clipboard) {
+      try {
+        return navigator.clipboard.readText();
+      } catch (error) {
+        // Do nothing
+      }
+    }
+    
+    throw new Error("Clipboard action isn't supported!");
+  },
   async copy(text: string) {
     if (window.VXNative) {
       window.VXNative.clipboard.copy(text);
@@ -810,6 +826,45 @@ export function destructuredPromise<T extends any = void>() {
 }
 
 // [Symbol.hasInstance] overrides the native instanceof so this calls
-export function hasInstance(object: any, item: any) {
-  return Object[Symbol.hasInstance].call(object, item);
+export function hasInstance(object: any, instance: any) {
+  return Object[Symbol.hasInstance].call(object, instance);
+}
+
+interface TimeOptions {
+  includeHours?: boolean,
+  forceShowHours?: boolean,
+  forceShowMinutes?: boolean,
+  addExtraDegits?: boolean
+}
+
+export function simpleFormatTime(time: string | number | Date, options: TimeOptions = {}) {
+  const { includeHours = false, forceShowHours = true, forceShowMinutes = true, addExtraDegits = false } = options;
+
+  const seconds = Math.floor(new Date(time).getTime() / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const shouldShowHours = includeHours && Boolean(hours || forceShowHours);
+  const shouldShowMinutes = shouldShowHours || forceShowMinutes || Boolean(minutes || addExtraDegits);
+
+  function pad(time: number, addExtraDegits: boolean) {
+    if (addExtraDegits) return String(time).padStart(2, "0");
+    return String(time);
+  }
+
+  return `${shouldShowHours ? `${hours}:` : ""}${shouldShowMinutes ? `${pad(minutes % 60, shouldShowHours || addExtraDegits)}:` : ""}${pad(seconds % 60, shouldShowMinutes || addExtraDegits)}`;
+}
+
+export function getInternalInstance(node: Node): Fiber | null {
+  return node.__reactFiber$ || null;
+}
+export function getOwnerInstance<P = {}, S = {}, SS = any>(instance: Fiber | Node | null): Component<P, S, SS> | null {
+  if (instance instanceof Node) instance = getInternalInstance(instance);
+
+  if (!instance) return null;
+
+  const fiber = findInTree<Fiber>(instance, (item) => item.stateNode instanceof Component, { walkable: [ "return" ] });
+  if (!fiber) return null;
+
+  return fiber.stateNode;
 }

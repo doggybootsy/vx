@@ -21,7 +21,7 @@ export function loadExtensions() {
     if (!stats.isDirectory()) {
       logger.createChild("Extensions").warn(`File '${id}' is not a directory and will not be loaded`);
       continue;
-    };
+    }
 
     electron.session.defaultSession.loadExtension(
       extensionPath,
@@ -29,5 +29,5 @@ export function loadExtensions() {
     ).then((extension) => {
       logger.log(`Loaded extension ${extension.name} v${extension.version} (${id})`);
     });
-  };
+  }
 }

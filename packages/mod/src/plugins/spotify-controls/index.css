@@ -167,3 +167,8 @@
 .vx-spotify-menu-artist-wrapper:hover :is(.vx-spotify-menu-artist-name, .vx-spotify-menu-artist-followers) {
   display: block;
 }
+.vx-spotify-button-icon {
+  display: flex; 
+  width: 20px;
+  height: 20px;
+}

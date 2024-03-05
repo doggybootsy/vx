@@ -7,13 +7,13 @@ function linkIsTrusted(url: string | URL) {
   
   internalDataStore.ensure("trusted-domains", []);
   return internalDataStore.get("trusted-domains")!.includes(url.host);
-};
+}
 function trustLink(url: string | URL) {
   url = new URL(url);
   
   const links = internalDataStore.get("trusted-domains")!.splice(0);
   links.push(url.host);
-};
+}
 
 export function openExternalWindowModal(url: string | URL) {
   url = new URL(url);

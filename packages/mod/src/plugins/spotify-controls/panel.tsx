@@ -1,10 +1,10 @@
 import { getProxyByKeys, getProxyByStrings } from "@webpack";
 import { Button, Icons, TextOverflowScroller, Tooltip } from "../../components";
-import { className } from "../../util";
+import { className, simpleFormatTime } from "../../util";
 
 import { useInternalStore } from "../../hooks";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { openExternalWindowModal, openImageModal } from "../../api/modals";
+import { openImageModal } from "../../api/modals";
 
 import { spotifyStore } from "./store";
 import { settings } from ".";
@@ -13,13 +13,13 @@ import { SpotifyMenu } from "./menu";
 
 const voicePanelClasses = getProxyByKeys([ "buttonContents", "buttonColor" ]);
 
-const getTime = (elapsed: string | number | Date) => new Date(elapsed).toUTCString().split(" ").at(-2)!.split(":").slice(-2).join(":").replace(/^0/, "");
-
 const PanelButton = getProxyByStrings<React.ComponentType<any>>([ "{tooltipText:", ".default.Masks.PANEL_BUTTON," ]);
 
 export function SpotifyPanel() {
   const ref = useRef<HTMLDivElement>(null);
   const percentRef = useRef(0);
+
+  const altDuration = settings.altDuration.use();
 
   const [ position, setPosition ] = useState(spotifyStore.position);
   const data = useInternalStore(spotifyStore, () => ({
@@ -139,7 +139,7 @@ export function SpotifyPanel() {
                 onClick={() => {
                   spotifyStore.setShuffle(!data.shuffleState);
                 }}
-                icon={Icons.Shuffle}
+                icon={() => <Icons.Shuffle className="vx-spotify-button-icon" />}
               />
               <PanelButton 
                 // tooltipText={data.repeat === "off" ? "Enable repeat" : data.repeat === "context" ? "Enable repeat one" : "Disable repeat"}
@@ -159,25 +159,29 @@ export function SpotifyPanel() {
 
                   spotifyStore.setRepeat(mode);
                 }}
-                icon={data.repeat === "track" ? Icons.Repeat1 : Icons.Repeat}
+                icon={() => {
+                  const Repeat = data.repeat === "track" ? Icons.Repeat1 : Icons.Repeat;
+
+                  return <Repeat className="vx-spotify-button-icon" />
+                }}
               />
             </div>
           </>
         )}
       </div>
       <div className="vx-spotify-time-wrapper">
-        <div className="vx-spotify-time">{getTime(position)}</div>
+        <div className="vx-spotify-time">{simpleFormatTime(position)}</div>
         <div className="vx-spotify-slider-wrapper" onMouseDown={data.isPremium ? onMouseDown : () => {}} ref={ref}>
           <div className="vx-spotify-slider" />
           {data.isPremium && (
-            <Tooltip text={getTime(data.track.duration * (percentRef.current / 100))} shouldShow={data.isDragging} forceOpen={data.isDragging}>
+            <Tooltip text={simpleFormatTime(data.track.duration * (percentRef.current / 100))} shouldShow={data.isDragging} forceOpen={data.isDragging}>
               {(props) => (
                 <div className="vx-spotify-seek" {...props} />
               )}
             </Tooltip>
           )}
         </div>
-        <div className="vx-spotify-time">{getTime(data.track.duration)}</div>
+        <div className="vx-spotify-time">{altDuration ? `-${simpleFormatTime(data.track.duration - position)}` : simpleFormatTime(data.track.duration)}</div>
       </div>
       {data.isPremium && (
         <div className={voicePanelClasses.actionButtons}>

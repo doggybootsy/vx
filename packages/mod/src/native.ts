@@ -56,3 +56,19 @@ export const transparency = {
     return window.VXNative!.transparency.get();
   }
 }
+
+export const storage = {
+  getItem(key: string) {
+    if (!IS_DESKTOP) return window.localStorage.getItem(`VX(${key})`);
+    return window.VXNative!.storage.get(key) || window.localStorage.getItem(`VX(${key})`);
+  },
+  setItem(key: string, value: string) {
+    if (!IS_DESKTOP) return window.localStorage.setItem(`VX(${key})`, value);
+    return window.VXNative!.storage.set(key, value);
+  },
+  removeItem(key: string) {
+    if (IS_DESKTOP) window.VXNative!.storage.delete(key);
+
+    window.localStorage.removeItem(`VX(${key})`);
+  }
+}

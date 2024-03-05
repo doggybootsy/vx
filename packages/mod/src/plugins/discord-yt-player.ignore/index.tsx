@@ -43,13 +43,13 @@ function OverlayContent({ src, filename }: { src: string, filename: string }) {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 function getMiddle<T>(array: Array<T>): T {
   const sub = array.length % 2 ? 0 : 1;
   return array.at(Math.floor(array.length / 2) - sub)!;
-};
+}
 
 const cache = new Map<string, { video: string, pfp: string }>();
 
@@ -104,7 +104,7 @@ async function getYoutubeData(id: string) {
   cache.set(id, data);
 
   return data;
-};
+}
 
 function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.ReactNode }) {
   const author = props.embed.author.name;
@@ -203,8 +203,8 @@ function YoutubePlayer(props: { embed: any, renderEmbedContent: () => React.Reac
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

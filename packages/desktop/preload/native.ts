@@ -1,10 +1,12 @@
 import { getAndEnsureVXPath } from "common/preloads";
 import electron from "electron";
 import JSZip from "jszip";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { env } from "vx:self";
 import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
+
+const storageCache = new Map<string, string>();
 
 const native = {
   app: {
@@ -54,7 +56,7 @@ const native = {
       if (native.devtools.isOpen()) {
         electron.ipcRenderer.invoke("@vx/devtools/enter-inspect-mode");
         return;
-      };
+      }
 
       native.devtools.open({ enterInspectElementMode: true, page: "elements" });
     }
@@ -100,6 +102,9 @@ const native = {
   clipboard: {
     copy(text: string) {
       electron.clipboard.writeText(text);
+    },
+    read() {
+      return electron.clipboard.readText("clipboard");
     }
   },
   updater: {
@@ -114,10 +119,90 @@ const native = {
     set(state: boolean) {
       electron.ipcRenderer.invoke("@vx/transparency/set-state", state);
     }
+  },
+  safestorage: {
+    decrypt(string: string): string {
+      if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");
+      return electron.ipcRenderer.sendSync("@vx/safestorage/decrypt", string);
+    },
+    encrypt(string: string): string {
+      if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");
+      return electron.ipcRenderer.sendSync("@vx/safestorage/encrypt", string);
+    },
+    isAvailable(): boolean {
+      return electron.ipcRenderer.sendSync("@vx/safestorage/is-available");
+    }
+  },
+  storage: {
+    get(key: string): string | null {
+      if (storageCache.has(key)) return storageCache.get(key)!;
+
+      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const file = join(path, `${key}.vxs`);
+
+      if (!existsSync(file)) return null;
+
+      const data = readFileSync(file, "binary");
+      const match = data.match(/^vx-(0|1):([\s\S]+)$/);
+
+      if (!match) {
+        native.storage.delete(key)
+        return null;
+      }
+
+      const [, type, contents ] = match;
+
+      // 0 === not encrypted | 1 === encrypted
+      if (type === "0") {
+        const data = Buffer.from(contents, "base64").toString("binary");
+        storageCache.set(key, data);
+        
+        return data;
+      }
+      if (native.safestorage.isAvailable()) {
+        const data = native.safestorage.decrypt(contents);
+        storageCache.set(key, data);
+        
+        return data;
+      }
+      return null;
+    },
+    set(key: string, value: string) {
+      storageCache.set(key, value);
+
+      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const file = join(path, `${key}.vxs`);
+
+      const isAvailable = native.safestorage.isAvailable();
+
+      const data = isAvailable ? native.safestorage.encrypt(value) : Buffer.from(value, "binary").toString("base64");
+
+      writeFileSync(file, `vx-${isAvailable ? 1 : 0}:${data}`, "binary");
+    },
+    delete(key: string) {
+      storageCache.delete(key);
+
+      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const file = join(path, `${key}.vxs`);
+      
+      if (!existsSync(file)) return;
+
+      unlinkSync(file);
+    }
   }
 };
 
-electron.contextBridge.exposeInMainWorld("VXNative", native);
-window.VXNative = native;
+function expose(key: string, api: any) {
+  if (process.contextIsolated) electron.contextBridge.exposeInMainWorld(key, api);
+
+  Object.defineProperty(window, key, {
+    value: api,
+    configurable: false,
+    writable: false,
+    enumerable: true
+  });
+}
+
+expose("VXNative", native);
 
 export type NativeObject = typeof native;

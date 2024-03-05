@@ -102,8 +102,8 @@ function WrappedButton(props: ButtonProps) {
     <ErrorBoundary>
       <MegaModule.Button {...props} />
     </ErrorBoundary>
-  );
-};
+  )
+}
 Object.defineProperties(WrappedButton, {
   BorderColors: {
     get: () => MegaModule.Button.BorderColors

@@ -3,13 +3,40 @@ import * as windowApi from "../../../../api/window";
 import { Editor } from "../../../../editor";
 import { debounce } from "common/util";
 import { byKeys, byStrings, combine, getProxy, not } from "@webpack";
-import { Icons } from "../../../../components";
+import { Icons, Popout } from "../../../../components";
 import { themeStore } from "../../../../addons/themes";
 import { useInternalStore } from "../../../../hooks";
 import { Messages } from "vx:i18n";
 import { openExternalWindowModal } from "../../../../api/modals";
+import { MenuComponents } from "../../../../api/menu";
+import { git } from "vx:self";
 
 const HeaderBar = getProxy<React.FunctionComponent<any> & Record<string, React.FunctionComponent<any>>>(combine(byKeys("Icon", "Title"), not(byStrings(".GUILD_HOME"))));
+
+function MenuPopout({ closePopout }: { closePopout: () => void }) {
+  return (
+    <MenuComponents.Menu navId="vx-help-menu" onClose={closePopout}>
+      <MenuComponents.MenuItem 
+        label="CSS Help"
+        id="js-help"
+        action={() => {
+          openExternalWindowModal("https://developer.mozilla.org/docs/Web/CSS");
+        }}
+        icon={Icons.MDN}
+      />
+      <MenuComponents.MenuItem 
+        label="VX Documentation"
+        id="vx-help"
+        icon={Icons.Logo}
+        disabled={!git.exists}
+        action={() => {
+          if (!git.exists) return;
+          openExternalWindowModal("https://github.com/doggybootsy/vx/blob/main/docs/themes");
+        }}
+      />
+    </MenuComponents.Menu>
+  )
+}
 
 export function openWindow(id: string) {
   const name = themeStore.getAddonName(id);
@@ -19,6 +46,7 @@ export function openWindow(id: string) {
     id: `THEME_${id}`,
     render({ window }) {
       const ref = useRef<HTMLDivElement>(null);
+      const [ show, setShow ] = useState(false);
 
       useLayoutEffect(() => {
         if (!ref.current) return;
@@ -111,23 +139,32 @@ export function openWindow(id: string) {
           // @ts-expect-error
           customEvent.source = event.source;
           self.dispatchEvent(customEvent);
-        };
+        }
 
         window.addEventListener("message", listener);
-        return () => {
-          window.removeEventListener("message", listener);
-        };
+        return () => window.removeEventListener("message", listener);
       }, [ ]);
 
       const toolbar = (
         <>
-          <HeaderBar.Icon
-            icon={Icons.Help}
-            onClick={(event: React.MouseEvent) => {
-              openExternalWindowModal("https://developer.mozilla.org/docs/Web/CSS");
-            }}
-            tooltip={Messages.HELP}
-          />
+          <Popout 
+            renderPopout={(props) => (
+              <MenuPopout closePopout={() => props.closePopout()} />
+            )}
+            position="bottom"
+            shouldShow={show}
+            onRequestClose={() => setShow(false)}
+          >
+            {(props, state) => (
+              <HeaderBar.Icon
+                {...props}
+                onClick={() => setShow(!show)}
+                icon={Icons.Help}
+                tooltip={Messages.HELP}
+                selected={state.isShown}
+              />
+            )}
+          </Popout>
         </>
       );
 
@@ -138,7 +175,7 @@ export function openWindow(id: string) {
       useLayoutEffect(() => {
         setName(deferredValue);
         
-        window.document.title = Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name: storedName }) as string;
+        window.document.title = Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name: storedName });
       }, [ deferredValue ]);
 
       return (
@@ -186,4 +223,4 @@ export function openWindow(id: string) {
       )
     }
   })
-};
+}
