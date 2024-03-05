@@ -1,9 +1,9 @@
 type masks = "none" | "avatar-overlay" | "squircle";
 
-const createMaskURL = (mask: masks) => {
+function createMaskURL(mask: masks) {
   if (mask === "none") return "";
   return `url(#vx-${mask}-mask)`;
-};
+}
 
 export function Mask({ width, height, mask, children }: { mask: masks, width: number, height: number, children: React.ReactElement }) {
   return (
@@ -23,4 +23,4 @@ export function Mask({ width, height, mask, children }: { mask: masks, width: nu
       </foreignObject>
     </svg>
   )
-};
+}

@@ -26,5 +26,5 @@ export function ZipButton(props: ButtonProps) {
         </div>
       )}
     </Tooltip>
-  );
-};
+  )
+}

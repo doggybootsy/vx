@@ -71,8 +71,8 @@ function WrappedFlex(props: FlexProps) {
     <ErrorBoundary>
       <FlexModule {...props} />
     </ErrorBoundary>
-  );
-};
+  )
+}
 
 Object.defineProperties(WrappedFlex, {
   Align: {
@@ -99,5 +99,5 @@ export function FlexChild(props: FlexChildProps) {
     <ErrorBoundary>
       <FlexModule.Child {...props} />
     </ErrorBoundary>
-  );
-};
+  )
+}

@@ -59,11 +59,11 @@ class BaseComponent {
     Object.setPrototypeOf(Object.getPrototypeOf(this), component);
   }
 
-  static [Symbol.hasInstance](item: any): boolean {
+  static [Symbol.hasInstance](instance: any): boolean {
     // Call once
-    if (!reactExists) return hasInstance(BaseComponent, item);
+    if (!reactExists) return hasInstance(BaseComponent, instance);
 
-    return hasInstance(React.Component, item) || hasInstance(BaseComponent, item);
+    return hasInstance(React.Component, instance) || hasInstance(BaseComponent, instance);
   }
   
   static {

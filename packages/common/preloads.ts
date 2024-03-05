@@ -14,4 +14,4 @@ export function getAndEnsureVXPath(requestPath: string, noExist: (path: string) 
   if (!existsSync(filePath)) noExist(filePath);
 
   return filePath;
-};
+}

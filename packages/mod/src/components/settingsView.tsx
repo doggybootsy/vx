@@ -1,11 +1,11 @@
-import { getModuleIdBySource, webpackRequire, getByKeys, getByProtoKeys } from "@webpack";
+import { getModuleIdBySource, webpackRequire, getByProtoKeys } from "@webpack";
 
 import { makeLazy, proxyCache } from "../util";
 import ErrorBoundary from "./boundary";
 import { IconProps } from "./icons";
 import { Tooltip } from "./tooltip";
 
-const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"UserSettings"}\)/;
+const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\2",name:"UserSettings"}\)/;
 
 type Predicate = () => boolean;
 
@@ -135,17 +135,17 @@ function getSettingsView() {
 
   const module = String(webpackRequire!.m[moduleId]!);
 
-  const [, matchedId ] = module.match(moduleIdRegex)!;
+  const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
 
   return makeLazy({
     name: "SettingsView",
-    factory: async () => {
-      await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
+    factory: async () => {      
+      await webpackRequire!.el(loadId).then(webpackRequire!.bind(webpackRequire, matchedId));
 
       return getByProtoKeys<React.ComponentType<SettingsViewProps>>([ "renderSidebar", "getPredicateSections" ])!;
     }
   });
-};
+}
 
 const WrappedSettingsView = proxyCache(getSettingsView);
 
@@ -155,6 +155,6 @@ export function SettingsView(props: SettingsViewProps) {
       <WrappedSettingsView {...props} />
     </ErrorBoundary>
   )
-};
+}
 
 SettingsView.Sections = sections;

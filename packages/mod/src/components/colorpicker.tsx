@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 
 import { className, makeLazy, proxyCache } from "../util";
-import { getProxyStore, getModuleIdBySource, webpackRequire } from "@webpack";
-import { useStateFromStores } from "@webpack/common";
+import { getModuleIdBySource, webpackRequire } from "@webpack";
 import ErrorBoundary from "./boundary";
 
 import "./colorpicker.css";
@@ -35,33 +34,33 @@ function getColorPicker() {
       },
       factory: async () => {
         {
-          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1",name:"GuildSettings"}\)/;
+          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\2",name:"GuildSettings"}\)/;
 
           const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
       
           const module = String(webpackRequire!.m[moduleId]!);
       
-          const [, matchedId ] = module.match(moduleIdRegex)!;
+          const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
   
-          await webpackRequire!.el(matchedId).then(webpackRequire!.bind(webpackRequire, matchedId));
+          await webpackRequire!.el(loadId).then(webpackRequire!.bind(webpackRequire, matchedId));
         };
 
-        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+?)"\).then\(.{1,3}.bind\(.{1,3},"\1"\)\),webpackId:"\1"}\)/;
+        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\1"}\)/;
 
         const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format", ".DEFAULT_ROLE_COLOR,")!;
     
         const module = String(webpackRequire!.m[moduleId]!);
     
-        const [, matchedId ] = module.match(moduleIdRegex)!;
+        const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
 
-        return webpackRequire!.el(matchedId).then(() => webpackRequire!(matchedId));
+        return webpackRequire!.el(loadId).then(() => webpackRequire!(matchedId));
       }
     });
   } 
   catch (error) {}
 
   return () => null;
-};
+}
 
 const ColorPickerModule = proxyCache(getColorPicker);
 
@@ -99,6 +98,6 @@ export function ColorPicker({ className: cn, ...props }: ColorPickerProps & { cl
       </div>
     </ErrorBoundary>
   )
-};
+}
 
 ColorPicker.RolesColors = roleColors;

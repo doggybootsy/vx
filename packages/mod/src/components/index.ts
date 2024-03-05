@@ -22,3 +22,4 @@ export * from "./searchBar";
 export * from "./popout";
 export * from "./util";
 export * from "./textOverflowScroller";
+export * from "./html";

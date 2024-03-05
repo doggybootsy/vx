@@ -2,12 +2,13 @@ import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { LocaleCodes } from "@webpack/common";
 import { logger } from "vx:logger";
+import { storage } from "../../native";
 
 export const { localStorage, sessionStorage } = window;
 
 function setItem(name: string, structure: any) {
-  localStorage.setItem(`VX(${name})`, JSON.stringify(structure));
-};
+  storage.setItem(name, JSON.stringify(structure));
+}
 
 interface DataStoreOptions<T extends Record<string, any>> {
   version?: number,
@@ -24,7 +25,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
 
     const { version: $version, upgrader } = opts;
 
-    const data = localStorage.getItem(`VX(${name})`);
+    const data = storage.getItem(name);
 
     if (!data) {
       setItem(name, { data: {}, version: 1 });
@@ -47,7 +48,7 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
       };
     };
 
-    const raw = JSON.parse(localStorage.getItem(`VX(${name})`)!);
+    const raw = JSON.parse(storage.getItem(name)!);
     
     this.#raw = raw.data;
 

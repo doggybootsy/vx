@@ -15,7 +15,7 @@ export function debounce<F extends anyFN>(handler: F, timeout?: number | undefin
     timer = setTimeout(() => {
       handler.apply(this, args);
     }, timeout);
-  };
+  }
   
   return debouncer;
 }

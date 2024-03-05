@@ -48,7 +48,11 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
         });
       }
     });
+
+    this.authors = Array.from(new Set(exports.authors));
   }
+
+  authors: Developer[];
 
   type = <const>"internal";
 

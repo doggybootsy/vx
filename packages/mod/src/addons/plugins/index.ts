@@ -75,7 +75,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   private evalPlugin(id: string) {
     const code = this.getJS(id);
 
-    const rawModule = new Function("module", "exports", `"use strict";\n${code}\n//# sourceURL=vx://VX/plugins/${id}.js`);
+    const rawModule = new Function("module", "exports", "require", `"use strict";\n${code}\n//# sourceURL=vx://VX/plugins/${id}.js`);
 
     let loaded = false;
 
@@ -96,7 +96,9 @@ export const pluginStore = new class PluginStore extends InternalStore {
     };
 
     try {
-      rawModule.call(window, module, module.exports);
+      rawModule.call(window, module, module.exports, () => {
+        throw new Error("Require isn't supported!");
+      });
     } 
     catch (error) {
       logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), while VX was trying to eval it\n`, error);
@@ -109,7 +111,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     if (this.isEnabled(id)) this.runMethod(id, "start");
 
     return module;
-  };
+  }
   private _updateData(callback: (clone: Record<string, PluginObject>) => void) {    
     const clone = structuredClone(this.#plugins);
 
@@ -119,11 +121,11 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
     this.#plugins = clone;
     this.emit();
-  };
+  }
 
   public getJS(id: string) {
     return this.#plugins[id].js;
-  };
+  }
   public updateJS(id: string, js: string) {
     const enabled = this.isEnabled(id);
     
@@ -137,7 +139,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     });
 
     this.evalPlugin(id);
-  };
+  }
 
   public getMeta(id: string) {
     if (metaCache.has(id)) return metaCache.get(id)!;
@@ -146,25 +148,25 @@ export const pluginStore = new class PluginStore extends InternalStore {
     metaCache.set(id, meta);
 
     return meta;
-  };
+  }
   public getMetaProperty(id: string, key: string, defaultValue: string) {
     return getMetaProperty(this.getMeta(id), key, defaultValue);
-  };
+  }
   public getAuthors(id: string) {
     return getMeta(id).authors ?? [];
-  };
+  }
   public getAddonName(id: string) {
     return this.getMetaProperty(id, "name", Messages.UNKNOWN_NAME);
-  };
+  }
   public getVersionName(id: string) {
     const version = this.getMetaProperty(id, "version", "?.?.?");
 
     return this.getMetaProperty(id, "version_name", "v{{version}}").replace("{{version}}", version);
-  };
+  }
 
   public download(id: string) {
     download(`${id}.js`, this.getJS(id));
-  };
+  }
   public upload() {
     showFilePicker(async (file) => {
       if (!file) return;
@@ -181,7 +183,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
       this.evalPlugin(id);
     }, "js");
-  };
+  }
   public new() {
     const id = Date.now().toString(36).toUpperCase();
 
@@ -193,7 +195,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     });
 
     this.evalPlugin(id);
-  };
+  }
   public delete(id: string) {
     this.disable(id);
 
@@ -206,20 +208,20 @@ export const pluginStore = new class PluginStore extends InternalStore {
     this._updateData((clone) => {
       delete clone[id];
     });
-  };
+  }
 
   public getExports(id: string) {
     return this.#evaledPlugins[id] ?? { };
-  };
+  }
 
   public isEnabled(id: string) {
     if (id in this.#plugins) return this.#plugins[id].enabled;
     return false;
-  };
+  }
 
   public keys() {
     return Object.keys(this.#plugins);
-  };
+  }
 
   public enable(id: string) {
     if (this.#plugins[id].enabled) return;
@@ -229,7 +231,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     });
 
     this.runMethod(id, "start");
-  };
+  }
   public disable(id: string) {
     if (!this.#plugins[id].enabled) return;
     
@@ -238,12 +240,12 @@ export const pluginStore = new class PluginStore extends InternalStore {
     });
 
     this.runMethod(id, "stop");
-  };
+  }
   public toggle(id: string) {
     if (!Reflect.has(this.#plugins, id)) return;
     if (this.isEnabled(id)) return this.disable(id);
     this.enable(id);
-  };
+  }
   public hasInitializedPlugin(id: string) {
     return id in this.#evaledPlugins;
   }
@@ -268,7 +270,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     catch (error) {
       logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'module.${name}'`, error);
     }
-  };
+  }
   getSettings(id: string): React.ComponentType | null {
     const exports = this.getExports(id);
 
@@ -306,12 +308,10 @@ export const pluginStore = new class PluginStore extends InternalStore {
     logger.createChild("Plugins").log(`Initializing ${ids.length} Plugin(s) for state '${timing}'!`);
 
     const then = performance.now();
-    for (const id of ids) {
-      this.evalPlugin(id);
-    };
+    for (const id of ids) this.evalPlugin(id);
 
     // Only allow 2 decimal places back
     const dur = (performance.now() - then).toFixed(2);
     logger.createChild("Plugins").log("Initializing took", Number(dur), "ms");
-  };
+  }
 }

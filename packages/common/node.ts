@@ -6,4 +6,4 @@ export function replaceNodeModuleExports(id: string, newExports: any) {
   
   delete cache.exports;
   cache.exports = newExports;
-};
+}

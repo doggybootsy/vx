@@ -18,7 +18,7 @@ const Type = {
   SPINNING_CIRCLE: "spinningCircle",
   SPINNING_CIRCLE_SIMPLE: "spinningCircleSimple",
   LOW_MOTION: "lowMotion"
-};
+} as const;
 
 export function Spinner(props: SpinnerProps) {
   const cn = className([ props.className, "vx-spinner" ]);
@@ -27,6 +27,7 @@ export function Spinner(props: SpinnerProps) {
     <ErrorBoundary>
       <MegaModule.Spinner {...props} className={cn} />
     </ErrorBoundary>
-  );
-};
+  )
+}
+
 Spinner.Type = Type;

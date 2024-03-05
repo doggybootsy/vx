@@ -46,7 +46,7 @@ function Loop() {
       <Icons.Loop />
     </div>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

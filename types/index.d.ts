@@ -122,12 +122,12 @@ interface DiscordNative {
     supportsContentProtection?(): boolean,
     setContentProtection?(enabled: boolean): void
   }
-};
+}
 
 interface ExtensionNative {
   id: string,
   update(release: Git.Release): void
-};
+}
 
 type sassCompilerData = {
   status: 1
@@ -148,7 +148,7 @@ interface DiscordWindow {
   DiscordNative?: DiscordNative,
   Sass?: Sass,
   VX: typeof import("../packages/mod/src/window")["VX"]
-};
+}
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;
 declare global {
@@ -167,7 +167,7 @@ declare module "*.css?m" {
   export function addStyle(): void;
   export function removeStyle(): void;
   export function hasStyle(): boolean;
-};
+}
 
 declare interface ManagedCSS {
   id: string,
@@ -175,16 +175,16 @@ declare interface ManagedCSS {
   addStyle(): void,
   removeStyle(): void,
   hasStyle(): boolean
-};
+}
 
 declare module "*.html" {
   const type: Document;
   export default type;
-};
+}
 declare module "@plugins" {
   const type: Record<string, any>;
   export = type;
-};
+}
 
 declare module "uncompress.js" {
   export interface Entry {
@@ -193,16 +193,16 @@ declare module "uncompress.js" {
     readData(cb: Callback<ArrayBuffer>): void,
     size_compressed: number,
     size_uncompressed: number
-  };
+  }
   
   export interface Archive {
     archive_type: string,
     entries: Entry[]
-  };
+  }
 
   export interface Callback<T> extends Function {
     (archive: T, err: Error | null): void
-  };
+  }
 
   export function archiveOpenFile(file: File, password: string, callback: Callback<Archive>): void;
   export function archiveOpenFileAsync(file: File, password: string): Promise<Archive>;
@@ -217,16 +217,16 @@ declare module "vx:self" {
       DOWNLOAD_URL: string,
       ID: string
     }
-  };
+  }
   interface Browser {
     [key: string]: any
-  };
+  }
   interface GitDetails {
     branch: string, 
     hash: string, 
     hashShort: string, 
     url: string
-  };
+  }
 
   type Git = (GitDetails & { exists: true }) | { exists: false };
 
@@ -234,7 +234,7 @@ declare module "vx:self" {
   export const browser: Readonly<Browser>;
   export const git: Git;
   export const IS_DESKTOP: boolean;
-};
+}
 
 type CSSVariable = `--${string}`;
 declare namespace React {
@@ -242,6 +242,11 @@ declare namespace React {
   interface CSSProperties {
     [key: CSSVariable]: string | number
   }
+}
+
+interface Node {
+  __reactFiber$?: import("react-reconciler").Fiber,
+  __reactProps$?: any
 }
 
 declare module "https://esm.sh/shiki@latest" {

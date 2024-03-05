@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
 import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
@@ -41,7 +41,7 @@ export function useAbortEffect(effect: ReactEffectWithArg<AbortSignal>, deps?: R
       return () => {
         controller.abort("End Of React Life Cycle");
         if (typeof ret === "function") ret();
-      };
+      }
     } 
     catch (error) {
       return () => controller.abort("End Of React Life Cycle");

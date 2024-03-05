@@ -16,7 +16,7 @@ import { getPlugin, plugins } from "./plugins";
 
 import { waitForNode } from "common/dom";
 
-import { TitlebarButton, _addHomeButton, _settingButtonOnClickWrapper } from "./dashboard/patches";
+import { TitlebarButton, _addHomeButton, _settingButtonActionWrapper } from "./dashboard/patches";
 
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
@@ -80,7 +80,24 @@ class AddonApi {
 
     return this.#store.getAddonName(id);
   }
-};
+}
+
+const encryption = {
+  encrypt(string: string) {
+    if (encryption.isUsingSafeStorage()) return window.VXNative!.safestorage.encrypt(string);
+    return util.base64.encode(string);
+  },
+  decrypt(string: string) {
+    if (encryption.isUsingSafeStorage()) return window.VXNative!.safestorage.decrypt(string);
+    return util.base64.decode(string);
+  },
+  isUsingSafeStorage() {
+    return self.IS_DESKTOP && window.VXNative!.safestorage.isAvailable();
+  },
+  isUsingBase64() {
+    return !encryption.isUsingSafeStorage();
+  }
+}
 
 export const VX = {
   webpack: api,
@@ -106,7 +123,7 @@ export const VX = {
     _onWebpackModule: webpack._onWebpackModule,
     waitForNode,
     _addHomeButton,
-    _settingButtonOnClickWrapper,
+    _settingButtonActionWrapper,
     TitlebarButton,
     getSrc(getSrc: (...args: any[]) => string) {
       return (...args: any[]) => {
@@ -117,6 +134,7 @@ export const VX = {
       }
     }
   },
+  encryption,
   self,
   I18n: {
     Messages: I18n.Messages,

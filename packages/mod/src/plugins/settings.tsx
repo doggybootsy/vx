@@ -6,7 +6,7 @@ export const enum SettingType {
   COLOR,
   INPUT,
   CUSTOM
-};
+}
 
 interface SettingsCommon<T> {
   title: string,
@@ -15,26 +15,26 @@ interface SettingsCommon<T> {
   // How does one type this, so it shows all of the settings? Because SettingTypes can't be used in itself
   disabled?(settings: CreatedSettings<Record<string, SettingTypes>>): boolean,
   onChange?(state: T): void
-};
+}
 
 interface SwitchSettingType extends SettingsCommon<boolean> {
   type: SettingType.SWITCH,
   props?: Omit<FormSwitchProps, "disabled" | "value" | "onChange" | "children" | "note">
-};
+}
 interface ColorSettingType extends SettingsCommon<number> {
   type: SettingType.COLOR
-};
+}
 interface InputSettingType extends SettingsCommon<string> {
   type: SettingType.INPUT,
   placeholder: string
-};
+}
 
 export interface CustomSettingType<V> {
   type: SettingType.CUSTOM,
   default: V,
   render?(props: { setState(state: V): void, state: V }): React.ReactNode,
   onChange?(settings: V): void
-};
+}
 
 type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | CustomSettingType<any>;
 
@@ -55,7 +55,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
   function set(value: any) {
     setting.set(value);
     if (typeof element.onChange === "function") element.onChange(value as never);
-  };
+  }
 
   if (element.type === SettingType.CUSTOM) {
     if (!element.render) return () => null;
@@ -113,7 +113,7 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
       Setting Type '{element.type}' doesn't have a render!
     </div>
   );
-};
+}
 
 type CreatedSettings<K extends Record<string, SettingTypes>> = { [key in keyof K]: CreatedSetting<K[key]> };
 
@@ -151,8 +151,8 @@ export function createSettings<K extends Record<string, SettingTypes>>(pluginNam
       setting.render = getRender(element, setting, result);
 
       result[key] = setting;
-    };
-  };
+    }
+  }
 
   return result;
-};
+}

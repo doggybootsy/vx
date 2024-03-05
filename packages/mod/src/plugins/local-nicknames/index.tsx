@@ -53,7 +53,8 @@ async function patchUser() {
       }
     });
   });
-};
+}
+
 async function patchGuildMember() {
   const signal = getCurrentSignal();
 
@@ -66,7 +67,8 @@ async function patchGuildMember() {
       res.nick = dataStore.proxy[userId];
     }
   });
-};  
+}
+
 function useMenu(user?: PatchedUser) {
   if (!user) return null;
   
@@ -90,8 +92,8 @@ function useMenu(user?: PatchedUser) {
         dataStore.proxy[user.id] = value;
       }}
     />
-  );
-};
+  )
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

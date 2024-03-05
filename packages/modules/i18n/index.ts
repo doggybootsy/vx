@@ -14,9 +14,8 @@ const onI18nListeners = new Set<() => void>();
 getLazy<typeof I18n>(m => m.Messages && Array.isArray(m._events.locale)).then(() => {
   i18nModuleLoaded = true;
 
-  for (const listener of onI18nListeners) {
-    listener();
-  }
+  for (const listener of onI18nListeners) listener();
+
   onI18nListeners.clear();
 
   internalDataStore.set("last-loaded-locale", I18n.getLocale());
@@ -25,13 +24,16 @@ getLazy<typeof I18n>(m => m.Messages && Array.isArray(m._events.locale)).then(()
 export function getLoadPromise(): Promise<void> {
   if (i18nModuleLoaded) return I18n.loadPromise;
   return new Promise((resolve) => {
-    onI18nLoaded(() => {
-      resolve(I18n.loadPromise);
-    });
+    onI18nLoaded(() => resolve(I18n.loadPromise));
   });
 }
 
 export function onI18nLoaded(listener: () => void) {
+  if (i18nModuleLoaded) {
+    queueMicrotask(listener);
+    return () => {};
+  }
+
   onI18nListeners.add(listener);
   return () => void onI18nListeners.delete(listener);
 }
@@ -42,7 +44,7 @@ export function onLocaleChange(listener: (newLocale: LocaleCodes, oldLocale: Loc
 
     function onI18n() {
       undo = onLocaleChange(listener);
-    };
+    }
 
     onI18nListeners.add(onI18n);
     return () => undo();

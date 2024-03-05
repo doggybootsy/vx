@@ -59,7 +59,7 @@ async function openForwardModal(message: Message) {
   const input = await waitForNode<HTMLInputElement>(`input[placeholder=${JSON.stringify(Messages.QUICKSWITCHER_PLACEHOLDER)}]`);
 
   input.placeholder = Messages.WHERE_TO_FORWARD;
-};
+}
 
 type useMessageMenu = (props: { message: Message }) => React.ReactNode;
 
@@ -90,7 +90,7 @@ export default definePlugin({
           icon={Icons.Forward}
           action={() => openForwardModal(args[0].message)}
         />
-      );
+      )
     });
   },
   stop() {

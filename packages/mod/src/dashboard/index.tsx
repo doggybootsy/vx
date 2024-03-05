@@ -36,10 +36,7 @@ const [ isDashboardOpen, setDashboardState ] = createState(false);
 
 export { isDashboardOpen };
 
-function Dashboard(props: { section: string }) {
-  const [ SHOW_COMMUNITY ] = useState(() => "$$_VX" in String && Boolean((String as any).$$_VX.SHOW_COMMUNITY_TABS_CONCEPT));
-  const [ section, setSection ] = useState(() => props.section);
-
+export function InfoSection({ isMenu }: { isMenu: boolean }) {
   // Add electron to the list of versions | This is because discord doesn't
   const electronVersionSection = useMemo(() => {
     const match = navigator.userAgent.match(/electron\/((?:\d+\.){1,}\d+)/i);
@@ -51,6 +48,47 @@ function Dashboard(props: { section: string }) {
       </div>
     )
   }, [ ]);
+
+  return (
+    <div className={className([ "vx-section-info", isMenu && "vx-section-info-menu" ])}>
+      <div className="vx-section-version">
+        <span>{`${Messages.VX} ${env.VERSION} `}</span>
+        <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+      </div>
+      {git.exists ? (
+        <div 
+          className="vx-section-git"
+          onClick={() => {
+            if (!git.exists) return;
+
+            openExternalWindowModal(`${git.url}/tree/${git.hash}`);
+          }}
+        >
+          <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
+          <span className="vx-section-hash">({git.hashShort})</span>
+        </div>
+      ) : (
+        <div 
+          className="vx-section-git"
+          onClick={() => {
+            openAlertModal("Github", [
+              "Current build has no git details!", 
+              "This is from your local machine (or the local machine that compiled VX) not having git installed when compiling VX"
+            ]);
+          }}
+        >
+          <span>???/???{" "}</span>
+          <span className="vx-section-hash">(???????)</span>
+        </div>
+      )}
+      {electronVersionSection}
+    </div>
+  )
+}
+
+function Dashboard(props: { section: string }) {
+  const [ SHOW_COMMUNITY ] = useState(() => "$$_VX" in String && Boolean((String as any).$$_VX.SHOW_COMMUNITY_TABS_CONCEPT));
+  const [ section, setSection ] = useState(() => props.section);
 
   useEffect(() => {
     return () => void setDashboardState(false);
@@ -105,41 +143,7 @@ function Dashboard(props: { section: string }) {
       predicate: () => IS_DESKTOP
     }),
     SettingsView.Sections.Divider(() => IS_DESKTOP),
-    SettingsView.Sections.Custom(() => (
-      <div className="vx-section-info">
-        <div className="vx-section-version">
-          <span>{`${Messages.VX} ${env.VERSION} `}</span>
-          <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
-        </div>
-        {git.exists ? (
-          <div 
-            className="vx-section-git"
-            onClick={(event) => {
-              if (!git.exists) return;
-
-              openExternalWindowModal(`${git.url}/tree/${git.hash}`);
-            }}
-          >
-            <span>{git.url.split("/").slice(-2).join("/")}{" "}</span>
-            <span className="vx-section-hash">({git.hashShort})</span>
-          </div>
-        ) : (
-          <div 
-            className="vx-section-git"
-            onClick={() => {
-              openAlertModal("Github", [
-                "Current build has no git details!", 
-                "This is from your local machine (or the local machine that compiled VX) not having git installed when compiling VX"
-              ]);
-            }}
-          >
-            <span>???/???{" "}</span>
-            <span className="vx-section-hash">(???????)</span>
-          </div>
-        )}
-        {electronVersionSection}
-      </div>
-    ))
+    SettingsView.Sections.Custom(() => <InfoSection isMenu={false} />)
   ], [ ]);
 
   return (

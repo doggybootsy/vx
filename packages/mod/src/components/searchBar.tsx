@@ -32,7 +32,7 @@ function SearchBarWrapper(props: SearchBarProps) {
       <SearchBarModule {...props} className={cn} />
     </ErrorBoundary>
   );
-};
+}
 Object.defineProperty(SearchBarWrapper, "Sizes", {
   get() { return SearchBarModule.Sizes; }
 });

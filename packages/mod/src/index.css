@@ -42,3 +42,101 @@
   color: var(--interactive-normal);
   z-index: 3000;
 }
+
+.vx-react-error-view {
+  background-image: url(https://discord.com/assets/14223d22c9628be36fc0.svg);
+  width: 100%;
+  overflow: hidden;
+  min-height: 100vh;
+  background-size: cover;
+  color: var(--text-normal);
+  background-color: var(--background-secondary);
+  background-position: 50% 0;
+  z-index: 10000;
+}
+.theme-light .vx-react-error-view {
+  background-image: url(https://discord.com/assets/1c04c4fae98fbfc21d22.svg);
+}
+.vx-react-error-view-flex {
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  height: 100vh;
+  flex-direction: column;
+  display: flex;
+  flex: 1 1 auto;
+}
+.vx-react-error-view-image {
+  background-image: url(https://discord.com/assets/72eaa596042042be6259.svg);
+  width: 254px;
+  height: 154px;
+  margin-bottom: 40px;
+  background-size: 100% 100%;
+  flex: 0 1 auto;
+}
+.theme-light .vx-react-error-view-image {
+  background-image: url(https://discord.com/assets/1c04c4fae98fbfc21d22.svg);
+}
+.vx-react-error-view-text {
+  width: 440px;
+  margin-bottom: 20px;
+  flex: 0 1 auto;
+}
+.vx-react-error-view-title {
+  font-size: 24px;
+  line-height: 8px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--header-primary);
+}
+.vx-react-error-view-note {
+  font-size: 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.vx-react-error-view-buttons {
+  display: flex;
+}
+.vx-react-error-view-tools-container {
+  flex: 0 0 36px;
+  margin-right: 35px;
+  width: 60px;
+  padding-top: 60px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.vx-react-error-view-tools {
+  position: fixed;
+}
+.vx-react-error-view-close-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.vx-react-error-view-close-button {
+  color: var(--interactive-normal);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 36px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.vx-react-error-view-close-button:hover {
+  color: var(--interactive-hover);
+  background-color: var(--background-modifier-hover);
+}
+.vx-react-error-view-keybind {
+  color: var(--interactive-normal);
+  margin-top: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: center;
+}

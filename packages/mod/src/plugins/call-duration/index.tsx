@@ -8,6 +8,7 @@ import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } f
 
 import * as styler from "./index.css?managed";
 import { Messages } from "vx:i18n";
+import { simpleFormatTime } from "../../util";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 
@@ -46,7 +47,7 @@ function CallDuration() {
         NavigationUtils.transitionTo(`/channels/${channel.guild_id || "@me"}/${channel.id}`);
       }}
     >
-      {Messages.CALL_DURATION.format({ time: new Date(elapsed).toUTCString().split(" ").at(-2) })}
+      {Messages.CALL_DURATION.format({ time: simpleFormatTime(elapsed) })}
     </Components.Text>
   )
 };
