@@ -31,4 +31,4 @@ export class FormattedMessage {
   toString(): string {
     return this.message;
   }
-};
+}

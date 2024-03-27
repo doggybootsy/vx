@@ -3,8 +3,8 @@ import { getLazyByKeys, getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
 import { logger } from "vx:logger";
-import { debounce } from "common/util";
 import { Fiber } from "react-reconciler";
+import { FunctionType } from "typings";
 
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
@@ -52,7 +52,7 @@ export function cache<T>(factory: () => T): () => T {
     if ("current" in cache) return cache.current;
     
     const current = factory();
-    (cache as { current: T }).current = factory();
+    (cache as { current: T }).current = current;
 
     return current;
   }
@@ -640,7 +640,7 @@ export function createAbort(): readonly [ (reason?: any) => void, () => AbortSig
 
 export function isInvalidSyntax(code: string): false | SyntaxError {
   try {
-    new Function(code);
+    compileFunction(code, [ ]);
     return false;
   } 
   catch (error) {
@@ -875,4 +875,8 @@ export function setRefValue<T>(ref: React.Ref<T> | void, value: T) {
     return;
   }
   if (ref) (ref as React.MutableRefObject<T>).current = value;
+}
+
+export function compileFunction<T extends FunctionType>(code: string, args: string[]): T {
+  return new Function(...args, code) as T;
 }

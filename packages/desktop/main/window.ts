@@ -1,4 +1,4 @@
-import electron, { BrowserWindowConstructorOptions } from "electron";
+import electron, { BrowserWindowConstructorOptions, systemPreferences } from "electron";
 import { existsSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { UndefinedSymbol, windowStorage } from "./storage";
@@ -51,7 +51,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     window.webContents.on("devtools-open-url", (event, url) => {
       electron.shell.openExternal(url, { });
     });
-
+    
     return window;
   }
   
