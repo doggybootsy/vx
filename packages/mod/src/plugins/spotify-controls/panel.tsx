@@ -99,6 +99,9 @@ export function SpotifyPanel() {
         openMenu(event, SpotifyMenu);
       }}
       data-is-premium={data.isPremium.toString()}
+      style={{
+        "--vx-spotify-album-image": `url(${data.track.album.image.url})`
+      }}
     >
       <div className="vx-spotify-details">
         <div 

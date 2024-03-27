@@ -58,7 +58,7 @@ export function cache<T>(factory: () => T): () => T {
   }
 }
 
-export function cacheComponent<P extends {}>(factory: () => React.FunctionComponent<P>) {
+export function cacheComponent<P extends {}>(factory: () => React.FunctionComponent<P>): React.FunctionComponent<P> {
   const cacheFactory = cache(factory);
 
   return (props: P) => createElement(cacheFactory(), props);
@@ -228,7 +228,7 @@ export function findInTree<T extends Object>(tree: any, searchFilter: (item: any
 
   hasSeen = null;
   return tempReturn;
-};
+}
 
 export function findInReactTree<T extends Object>(tree: any, searchFilter: (item: any) => any): T | void {
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
@@ -385,7 +385,7 @@ export function getDefaultAvatar(id?: string) {
     let number = Number(id);
     if (isNaN(number)) number = hashCode(id);
 
-    return defaultAvatarModule.DEFAULT_AVATARS[number % 5];
+    return defaultAvatarModule.DEFAULT_AVATARS[Math.abs(number % defaultAvatarModule.DEFAULT_AVATARS.length)];
   }
 
   return getRandomItem(defaultAvatarModule.DEFAULT_AVATARS);
@@ -799,7 +799,7 @@ export function createState<T>(initialState: T): State<T> {
   ];
 
   return state;
-};
+}
 
 export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | State<T>, onChange: (state: T) => void): () => void {
   if (typeof stateOrChild !== "function") stateOrChild = stateOrChild[0];
@@ -825,9 +825,9 @@ export function destructuredPromise<T extends any = void>() {
   return { promise, resolve: resolve!, reject: reject! };
 }
 
-// [Symbol.hasInstance] overrides the native instanceof so this calls
-export function hasInstance(object: any, instance: any) {
-  return Object[Symbol.hasInstance].call(object, instance);
+// [Symbol.hasInstance] overrides the native instanceof so this calls it
+export function hasInstance(constructor: any, instance: any) {
+  return Object[Symbol.hasInstance].call(constructor, instance);
 }
 
 interface TimeOptions {
@@ -855,8 +855,8 @@ export function simpleFormatTime(time: string | number | Date, options: TimeOpti
   return `${shouldShowHours ? `${hours}:` : ""}${shouldShowMinutes ? `${pad(minutes % 60, shouldShowHours || addExtraDegits)}:` : ""}${pad(seconds % 60, shouldShowMinutes || addExtraDegits)}`;
 }
 
-export function getInternalInstance(node: Node): Fiber | null {
-  return node.__reactFiber$ || null;
+export function getInternalInstance(node?: Node): Fiber | null {
+  return node?.__reactFiber$ || null;
 }
 export function getOwnerInstance<P = {}, S = {}, SS = any>(instance: Fiber | Node | null): Component<P, S, SS> | null {
   if (instance instanceof Node) instance = getInternalInstance(instance);
@@ -867,4 +867,12 @@ export function getOwnerInstance<P = {}, S = {}, SS = any>(instance: Fiber | Nod
   if (!fiber) return null;
 
   return fiber.stateNode;
+}
+
+export function setRefValue<T>(ref: React.Ref<T> | void, value: T) {
+  if (typeof ref === "function") {
+    ref(value);
+    return;
+  }
+  if (ref) (ref as React.MutableRefObject<T>).current = value;
 }

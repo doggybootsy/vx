@@ -168,16 +168,6 @@ export function openWindow(id: string) {
         </>
       );
 
-      const [ name, setName ] = useState(() => themeStore.getAddonName(id));
-      const storedName = useInternalStore(themeStore, () => themeStore.getAddonName(id));
-
-      const deferredValue = useDeferredValue(storedName);
-      useLayoutEffect(() => {
-        setName(deferredValue);
-        
-        window.document.title = Messages.EDITOR_TITLE.format({ type: Messages.THEMES, name: storedName });
-      }, [ deferredValue ]);
-
       return (
         <>
           <HeaderBar
@@ -186,36 +176,7 @@ export function openWindow(id: string) {
           >
             <HeaderBar.Icon icon={Icons.Palette} />
             <HeaderBar.Title>
-              <div id="label-wrapper">
-                <input 
-                  type="text" 
-                  value={name} 
-                  id="label-input" 
-                  className="vx-input"
-                  onChange={(event) => {
-                    setName(event.currentTarget.value);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key.toLowerCase() !== "enter") return;
-                    event.currentTarget.blur();
-                  }}
-                  onBlur={() => {
-                    const oldName = themeStore.getAddonName(id);
-                    const trimmed = name.trim();
-                    
-                    setName(trimmed);
-
-                    if (!trimmed) {
-                      setName(oldName);
-                      return;
-                    };
-                    if (oldName === trimmed) return;
-    
-                    themeStore.setName(id, trimmed);
-                  }}
-                />
-                <div id="label-text" className="vx-input">{name}</div>
-              </div>
+              {themeStore.getAddonName(id)}
             </HeaderBar.Title>
           </HeaderBar>
           <div id="editor" ref={ref} />

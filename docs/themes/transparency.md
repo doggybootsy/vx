@@ -60,7 +60,7 @@ This shows a notice if the user has transparency disabled, it also tells them to
 VX doesn't provide a easy to way to enable bluring. But you can enable it by doing going to one of these path's. Bluring is only supported for Windows and MacOS
 
 * Windows: `%appdata%\.vx`
-* OSX: `~/Application Support/.vx`
+* OSX: `~/Library/Application Support/.vx`
 
 Then open the `window.json` and a custom property named either `backgroundMaterial` for windows or `vibrancy` for MacOS
 
@@ -90,7 +90,7 @@ Then open the `window.json` and a custom property named either `backgroundMateri
 So the output of your `window.json` should look something like this 
 ```json
 {
-	  "transparent": true,
+    "transparent": true,
     "backgroundMaterial": "mica"
 }
 ```

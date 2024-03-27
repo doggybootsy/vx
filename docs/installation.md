@@ -18,7 +18,7 @@ First time installing? Do this
 
 2. Go to your appdata like folder
     * Windows: `%appdata%`
-    * OSX: `~/Application Support/`
+    * OSX: `~/Library/Application Support/`
     * Linux: `~/.config/`
 
 3. Create a folder named `.vx`
@@ -65,7 +65,7 @@ require(`./${latest}.asar`);
 
 11. Go to your local appdata like folder
     * Windows: `%localappdata%`
-    * OSX: `~/Application Support/`
+    * OSX: `~/Library/Application Support/`
     * Linux: `~/.config/`
 
 12. Find your Discord installation modules folder

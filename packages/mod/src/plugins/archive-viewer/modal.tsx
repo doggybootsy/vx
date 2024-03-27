@@ -1,12 +1,12 @@
 import { ModalComponents, ModalProps, openCodeModal, openImageModal, openModal, openVideoModal } from "../../api/modals";
 import JSZip from "jszip";
 import { useAbortEffect } from "../../hooks";
-import { Fragment, useMemo, useRef, useState } from "react";
-import { Button, Flex, Icons, Spinner, Tooltip } from "../../components";
+import { Fragment, useMemo, useState } from "react";
+import { Button, Flex, Icons, MegaModule, Spinner, Tooltip } from "../../components";
 import { getProxyByKeys } from "@webpack";
 import { className, download, getParents } from "../../util";
-import { archiveOpenFileAsync } from "uncompress.js";
-import { isZIP } from ".";
+import { archiveOpenFileAsync } from "vx:uncompress";
+import { isArchive } from ".";
 import { Messages } from "vx:i18n";
 
 interface ZipModalProps extends ModalProps {
@@ -26,8 +26,6 @@ type FileType = FileTypeDir | FileTypeFile;
 const mediaFileUtils = getProxyByKeys<{ isImageFile(name: string): boolean, isVideoFile(name: string): boolean }>([ "isImageFile", "isVideoFile" ]);
 const textFileUtils = getProxyByKeys<{ isPlaintextPreviewableFile(name: string): boolean }>([ "isPlaintextPreviewableFile" ]);
 const scrollerClasses = getProxyByKeys([ "thin", "customTheme" ]);
-
-const Components = getProxyByKeys([ "FormSwitch", "Button" ]);
 
 function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { file: FileType, onClick(): void, disabled?: boolean, selected?: boolean, onSelect?(state: boolean): void, onDownload?(): void }) {
   return (
@@ -74,7 +72,7 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
                 </div>
               )}
             </Tooltip>
-            <Components.Checkbox 
+            <MegaModule.Checkbox 
               value={selected}
               type="inverted"
               onChange={(event: React.ChangeEvent, newState: boolean) => {
@@ -105,6 +103,7 @@ export function openZipModal(src: string | File | Blob) {
 }
 
 function ZipModal(props: ZipModalProps) {
+  const [ error, setError ] = useState<Error | null>(null);
   const [ files, setFiles ] = useState<null | Record<string, FileType>>(null);
   const [ viewingFiles, setViewingFiles ] = useState<null | Record<string, FileType>>(null);
   const [ path, setPath ] = useState("");
@@ -131,68 +130,73 @@ function ZipModal(props: ZipModalProps) {
     }
     else file = props.src;    
 
-    const archive = await archiveOpenFileAsync(file, "");
-    if (signal.aborted) return;
-
-    const files: Record<string, FileType> = {};
-
-    for (const file of archive.entries) {      
-      const split = file.name.split("/").filter(Boolean);
-      let level = files;
-
-      for (const index in split) {
-        if (Object.prototype.hasOwnProperty.call(split, index)) {
-          const key = split[index];
-          const last = (Number(index) + 1) === split.length;
-
-          const path = split.slice(0, Number(index)).join("/");            
-          
-          if (last && file.is_file) {
-            level[key] = {
-              dir: false,
-              name: key,
-              getContent(type) {
-                return new Promise<any>((resolve) => {
-                  file.readData((archive) => {
-                    if (type === "uint8array") return resolve(new Uint8Array(archive));
-                    if (type === "text") {
-                      const decoder = new TextDecoder();
-                      return resolve(decoder.decode(archive));
-                    }
-                    if (type === "blob") return resolve(new Blob([ new Uint8Array(archive) ]));
+    try {
+      const archive = await archiveOpenFileAsync(file, "");
+      if (signal.aborted) return;
+  
+      const files: Record<string, FileType> = {};
+  
+      for (const file of archive.entries) {      
+        const split = file.name.split("/").filter(Boolean);
+        let level = files;
+  
+        for (const index in split) {
+          if (Object.prototype.hasOwnProperty.call(split, index)) {
+            const key = split[index];
+            const last = (Number(index) + 1) === split.length;
+  
+            const path = split.slice(0, Number(index)).join("/");            
+            
+            if (last && file.is_file) {
+              level[key] = {
+                dir: false,
+                name: key,
+                getContent(type) {
+                  return new Promise<any>((resolve) => {
+                    file.readData((archive) => {
+                      if (type === "uint8array") return resolve(new Uint8Array(archive));
+                      if (type === "text") {
+                        const decoder = new TextDecoder();
+                        return resolve(decoder.decode(archive));
+                      }
+                      if (type === "blob") return resolve(new Blob([ new Uint8Array(archive) ]));
+                    });
                   });
-                });
-              },
-              path,
-              is: {
-                image: mediaFileUtils.isImageFile(key),
-                video: mediaFileUtils.isVideoFile(key),
-                code: textFileUtils.isPlaintextPreviewableFile(key),
-                zip: isZIP(key)
-              }
-            };
-          }
-          else if (key in level && level[key].dir) {
-            const dir = level[key];
-            if (dir.dir) level = dir.children;
-          }
-          else {
-            const dir: FileType = {
-              dir: true,
-              children: Object.create(null),
-              name: key,
-              path
-            };
-
-            level[key] = dir;
-            level = dir.children;
+                },
+                path,
+                is: {
+                  image: mediaFileUtils.isImageFile(key),
+                  video: mediaFileUtils.isVideoFile(key),
+                  code: textFileUtils.isPlaintextPreviewableFile(key),
+                  zip: isArchive(key)
+                }
+              };
+            }
+            else if (key in level && level[key].dir) {
+              const dir = level[key];
+              if (dir.dir) level = dir.children;
+            }
+            else {
+              const dir: FileType = {
+                dir: true,
+                children: Object.create(null),
+                name: key,
+                path
+              };
+  
+              level[key] = dir;
+              level = dir.children;
+            }
           }
         }
       }
+  
+      setFiles(files);
+      setViewingFiles(files);
+    } 
+    catch (error) {
+      setError(error as Error);
     }
-
-    setFiles(files);
-    setViewingFiles(files);
   }, [ ]);
 
   const name = useMemo(() => {
@@ -313,19 +317,20 @@ function ZipModal(props: ZipModalProps) {
                               if (element.dir) {
                                 deep(element.children, name);
                                 continue;
-                              };
+                              }
 
                               zip.file(name, element.getContent("uint8array"));
                             }
                           }
-                        };
+                        }
+
                         deep(file.children, "");
 
                         const data = await zip.generateAsync({ type: "uint8array" });
                         if (data) download(`${file.name}.zip`, data);
 
                         return;
-                      };
+                      }
 
                       const data = await file.getContent("uint8array");
                       download(file.name, data);
@@ -345,6 +350,10 @@ function ZipModal(props: ZipModalProps) {
             </div>
             <div style={{ margin: 4 }} />
           </>
+        ) : error ? (
+          <div>
+            {String(error)}
+          </div>
         ) : (
           <div className="vx-zip-spinner">
             <Spinner />
@@ -371,12 +380,12 @@ function ZipModal(props: ZipModalProps) {
                   if (element.dir) {
                     deep(element.children, name);
                     continue;
-                  };
+                  }
 
                   zip.file(name, element.getContent("uint8array"));
                 }
               }
-            };
+            }
             
             deep(files, "");
 

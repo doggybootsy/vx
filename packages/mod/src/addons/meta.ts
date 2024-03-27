@@ -86,12 +86,8 @@ export function getMeta(code: string): Meta {
     if (supportsI18nKeys.has(key)) {
       const data = meta[key as SupportsI18n] ??= { default: null, i18n: {} };
 
-      if (typeof lang === "string") {
-        data.i18n[lang as Lowercase<LocaleCodes>] = body;
-      }
-      else {
-        data.default = body;
-      }
+      if (typeof lang === "string") data.i18n[lang as Lowercase<LocaleCodes>] = body;
+      else data.default = body;
 
       continue;
     }
@@ -102,7 +98,7 @@ export function getMeta(code: string): Meta {
       continue;
     }
 
-    // Body can only be these 5 values so ya
+    // Body can only be these 4 values so ya
     if (key === "run_at" && !/^((webpack(_|-)ready)|document(-|_)(start|end|idle))$/i.test(body)) {
       body = "webpack-ready";
     }

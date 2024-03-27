@@ -1,5 +1,5 @@
 import { Messages } from "vx:i18n";
-import { isZIP } from ".";
+import { isArchive } from ".";
 import { Tooltip } from "../../components";
 import { ZIP } from "../../components/icons";
 import { openZipModal } from "./modal";
@@ -10,7 +10,7 @@ interface ButtonProps {
 
 export function ZipButton(props: ButtonProps) {  
   if (!props.downloadURL) return null;
-  if (!isZIP(props.downloadURL)) return null;
+  if (!isArchive(props.downloadURL)) return null;
   
   return (
     <Tooltip text={Messages.VIEW_ZIP}>

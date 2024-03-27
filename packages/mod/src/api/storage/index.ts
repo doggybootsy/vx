@@ -2,9 +2,29 @@ import { InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { LocaleCodes } from "@webpack/common";
 import { logger } from "vx:logger";
-import { storage } from "../../native";
+import { IS_DESKTOP } from "vx:self";
 
-export const { localStorage, sessionStorage } = window;
+const storage = {
+  getItem(key: string) {
+    key = key.toLowerCase();
+
+    if (!IS_DESKTOP) return window.localStorage.getItem(`VX(${key})`);
+    return window.VXNative!.storage.get(key) || window.localStorage.getItem(`VX(${key})`);
+  },
+  setItem(key: string, value: string) {
+    key = key.toLowerCase();
+
+    if (!IS_DESKTOP) return window.localStorage.setItem(`VX(${key})`, value);
+    return window.VXNative!.storage.set(key, value);
+  },
+  removeItem(key: string) {
+    key = key.toLowerCase();
+
+    if (IS_DESKTOP) window.VXNative!.storage.delete(key);
+
+    window.localStorage.removeItem(`VX(${key})`);
+  }
+};
 
 function setItem(name: string, structure: any) {
   storage.setItem(name, JSON.stringify(structure));
@@ -17,7 +37,7 @@ interface DataStoreOptions<T extends Record<string, any>> {
 
 const cache = new Map<string, DataStore<any>>();
 
-export class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
+class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
   constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
     if (cache.has(name)) return cache.get(name)!;
 
@@ -40,13 +60,13 @@ export class DataStore<T extends Record<string, any> = Record<string, any>> exte
         }
         else if (!("version" in parsed || "data" in parsed)) {
           setItem(name, { data: {}, version: $version ?? 1 });
-        };
+        }
       } 
       catch (error) {
         logger.createChild("DataStore").error(`Error reading data for '${name}'`, error);
         setItem(name, { data: {}, version: $version ?? 1 });
-      };
-    };
+      }
+    }
 
     const raw = JSON.parse(storage.getItem(name)!);
     
@@ -210,7 +230,7 @@ interface InternalData {
   "trusted-domains": string[]
 };
 
-export const internalDataStore = new DataStore<InternalData>("Internal", {
+const internalDataStore = new DataStore<InternalData>("Internal", {
   version: 7,
   upgrader(version, oldData) {
     switch (version) {
@@ -219,3 +239,5 @@ export const internalDataStore = new DataStore<InternalData>("Internal", {
     };
   },
 });
+
+export { DataStore, internalDataStore };

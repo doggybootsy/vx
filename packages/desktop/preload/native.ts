@@ -1,15 +1,82 @@
-import { getAndEnsureVXPath } from "common/preloads";
+import { expose, getAndEnsureVXPath } from "common/preloads";
 import electron from "electron";
 import JSZip from "jszip";
-import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
+import { basename, extname, join } from "node:path";
 import { env } from "vx:self";
 import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
+import { watch } from "chokidar";
+
+type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
+
+function createAddonAPI(type: "themes" | "plugins") {
+  const path = getAndEnsureVXPath(type, (path) => mkdirSync(path));
+  
+  const watcher = watch(path, {
+    awaitWriteFinish: true,
+    ignoreInitial: true,
+    atomic: true
+  });
+
+  const listeners = new Set<AddonListener>();
+
+  const requireExt = type === "themes" ? ".css" : ".js";
+
+  watcher.on("all", (eventName, path) => {
+    const filename = basename(path);
+    const ext = extname(path);
+    if (ext !== requireExt) return;
+
+    for (const listener of listeners) {
+      listener(eventName, filename);
+    }
+  });
+
+  return {
+    type,
+    addListener(listener: AddonListener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener)
+      };
+    },
+    removeListener(listener: AddonListener) {
+      listeners.delete(listener);
+    },
+    getAll() {
+      const ext = type === "themes" ? ".css" : ".js";
+      return readdirSync(path).filter((filename) => extname(filename) === ext); 
+    },
+    exists(filename: string) {
+      return existsSync(join(path, basename(filename)));
+    },
+    read(filename: string) {
+      return readFileSync(join(path, basename(filename)), "binary");
+    },
+    write(filename: string, content: string) {
+      writeFileSync(join(path, basename(filename)), content, "binary");
+    },
+    delete(filename: string) {
+      return electron.shell.trashItem(join(path, basename(filename)));
+    },
+    async open(filename: string) {
+      const result = await electron.shell.openPath(join(path, basename(filename)));
+      if (result) console.warn(result);
+    },
+    async openDirectory() {
+      const result = await electron.shell.openPath(path);
+      if (result) console.warn(result);
+    }
+  }
+}
 
 const storageCache = new Map<string, string>();
 
 const native = {
+  themes: createAddonAPI("themes"),
+  plugins: createAddonAPI("plugins"),
   app: {
+    platform: process.platform,
     quit() {
       electron.ipcRenderer.invoke("@vx/quit");
     },
@@ -138,7 +205,7 @@ const native = {
       if (storageCache.has(key)) return storageCache.get(key)!;
 
       const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
-      const file = join(path, `${key}.vxs`);
+      const file = join(path, `${basename(key)}.vxs`);
 
       if (!existsSync(file)) return null;
 
@@ -171,7 +238,7 @@ const native = {
       storageCache.set(key, value);
 
       const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
-      const file = join(path, `${key}.vxs`);
+      const file = join(path, `${basename(key)}.vxs`);
 
       const isAvailable = native.safestorage.isAvailable();
 
@@ -191,17 +258,6 @@ const native = {
     }
   }
 };
-
-function expose(key: string, api: any) {
-  if (process.contextIsolated) electron.contextBridge.exposeInMainWorld(key, api);
-
-  Object.defineProperty(window, key, {
-    value: api,
-    configurable: false,
-    writable: false,
-    enumerable: true
-  });
-}
 
 expose("VXNative", native);
 

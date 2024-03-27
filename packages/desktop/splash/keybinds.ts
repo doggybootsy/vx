@@ -8,9 +8,9 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  const ctrl = event.metaKey || event.ctrlKey;
-
-  if (event.key.toLowerCase() === "f12" || (event.key.toLowerCase() === "i" && event.shiftKey && ctrl)) {
+  const dataKeys = process.platform === "darwin" ? event.altKey && event.metaKey : event.shiftKey && event.ctrlKey;
+  
+  if (event.key.toLowerCase() === "f12" || (dataKeys && event.key.toLowerCase() === "i")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     event.stopPropagation();
@@ -19,11 +19,12 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (event.key.toLowerCase() === "s" && event.shiftKey && ctrl) {
+  if (event.key.toLowerCase() === "s" && dataKeys) {
     electron.ipcRenderer.invoke("@vx/splash/no-close");
     return;
   }
-  if (event.key.toLowerCase() === "o" && event.shiftKey && ctrl) {
+  
+  if (event.key.toLowerCase() === "o" && dataKeys) {
     const path = getAndEnsureVXPath("splash.css", (path) => writeFileSync(path, ""));
 
     electron.shell.openPath(path);

@@ -1,4 +1,5 @@
 export { default as React } from "./react";
+export { default as moment } from "./moment";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
@@ -9,10 +10,26 @@ import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
 import { webpackRequire } from "@webpack";
-import { ErrorBoundary, FormBody } from "../components";
+import { ErrorBoundary } from "../components";
 
 export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
-export const ReactSpring = getProxyByKeys<any>([ "config", "to", "a", "useSpring" ]);
+
+type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses";
+
+interface ReactSpringType {
+  useSpring: any,
+  useSprings: any[],
+  config: Record<ConfigKeys, {
+    friction: number,
+    tension: number
+  }>,
+  animated: {
+    [key in keyof JSX.IntrinsicElements]: React.ComponentType<JSX.IntrinsicElements[key]>
+  },
+  a: this["animated"]
+}
+
+export const ReactSpring = getProxyByKeys<ReactSpringType>([ "config", "to", "a", "useSpring" ]);
 export const UserStore = getProxyStore("UserStore");
 export const ChannelStore = getProxyStore("ChannelStore");
 export const SelectedChannelStore = getProxyStore("SelectedChannelStore");

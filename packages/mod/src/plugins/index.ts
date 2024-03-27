@@ -169,6 +169,6 @@ export function isPluginEnabled(id: string) {
 
 if (env.IS_DEV) {
   const plugins = require("@plugins");
-  logger.debug(Object.keys(plugins));
+  logger.debug(plugins);
 }
 else require("@plugins");

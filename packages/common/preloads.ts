@@ -15,3 +15,14 @@ export function getAndEnsureVXPath(requestPath: string, noExist: (path: string) 
 
   return filePath;
 }
+
+export function expose(key: string, api: any) {
+  if (process.contextIsolated) electron.contextBridge.exposeInMainWorld(key, api);
+
+  Object.defineProperty(window, key, {
+    value: api,
+    configurable: false,
+    writable: false,
+    enumerable: true
+  });
+}

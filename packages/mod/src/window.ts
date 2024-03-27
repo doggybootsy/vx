@@ -99,6 +99,51 @@ const encryption = {
   }
 }
 
+export function vxRequire(path: string) {
+  switch (path) {
+    case "vx:i18n": return require("vx:i18n");
+    case "vx:logger": return require("vx:logger");
+    case "vx:styler": return require("vx:styler");
+    case "vx:self": return require("vx:self");
+    
+    case "@webpack": return require("@webpack");
+    case "@webpack/api": return require("@webpack/api");
+    case "@webpack/common": return require("@webpack/common");
+    case "@webpack/filters": return require("@webpack/filters");
+    case "@webpack/lazy": return require("@webpack/lazy");
+    case "@webpack/patches": return require("@webpack/patches");
+    case "@webpack/searching": return require("@webpack/searching");
+    case "@webpack/shared": return require("@webpack/shared");
+    case "@webpack/stores": return require("@webpack/stores");
+    case "@webpack/util": return require("@webpack/util");
+    case "@webpack/webpack": return require("@webpack/webpack");
+
+    case "console":
+    case "node:console": return console;
+
+    case "vx:uncompress":
+    case "uncompress.js": return require("vx:uncompress");
+
+    case "jszip": return require("jszip");
+
+    case "react": return React;
+
+    case "react-dom": 
+    case "react-dom/client": return api.common.ReactDOM;
+
+    case "moment": return api.common.moment;
+
+    case "common": return { dom: require("common/dom"), util: require("common/util") };
+    case "common/dom": return require("common/dom");
+    case "common/util": return require("common/util");
+  
+    // vxi === vx internal
+    case "vxi:native": return require("./native");
+
+    default: return require(path);
+  }
+}
+
 export const VX = {
   webpack: api,
   menus,
@@ -117,6 +162,7 @@ export const VX = {
   themes: { ...new AddonApi(themeStore) },
   plugins: { ...new AddonApi(pluginStore) },
   hooks,
+  require: vxRequire,
   _self: {
     plugins,
     getPlugin,
@@ -127,7 +173,7 @@ export const VX = {
     TitlebarButton,
     getSrc(getSrc: (...args: any[]) => string) {
       return (...args: any[]) => {
-        const url = getSrc.call(this, args);
+        const url = getSrc.apply(this, args);
         if (url.startsWith("blob:")) return url.split("?").at(0);
         if (url.startsWith("data:")) return url.split("?").at(0);
         return url;

@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useLayoutEffect, useState } from "react";
+import { Fragment, useLayoutEffect, useState } from "react";
 import { MenuComponents, MenuRenderProps, closeMenu } from "../../api/menu";
 import { useInternalStore } from "../../hooks";
 import { spotifyStore } from "./store";
-import { Spinner, TextOverflowScroller } from "../../components";
+import { TextOverflowScroller } from "../../components";
 import { openImageModal } from "../../api/modals";
 import { Messages } from "vx:i18n";
+import { getDefaultAvatar } from "../../util";
 
 function SpotifyTopMenu({ track }: { track: Spotify.Track }) {
   return (
@@ -83,7 +84,7 @@ export function SpotifyMenu(props: MenuRenderProps) {
                 id={`artists-i-${index}`}
                 render={() => (
                   <div className="vx-spotify-menu-artist-wrapper">
-                    <img className="vx-spotify-menu-artist-img" src={artists[artist.id].images.at(0)!.url} />
+                    <img className="vx-spotify-menu-artist-img" src={artists[artist.id].images.length ? artists[artist.id].images.at(0)!.url : getDefaultAvatar(artist.id)} />
                     <div className="vx-spotify-menu-artist-name">
                       {artist.name}
                     </div>

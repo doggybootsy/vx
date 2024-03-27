@@ -1,5 +1,6 @@
 import "./dashboard";
 import "./index.css";
+
 import { waitForNode } from "common/dom";
 
 import masks from "./masks.html";
@@ -43,12 +44,8 @@ document.addEventListener("readystatechange", () => {
 whenWebpackInit().then(() => pluginStore.initPlugins("webpack-ready"));
 
 waitForNode("body").then((body) => {
-  const script = document.createElement("script");
-  script.src = "https://medialize.github.io/sass.js/dist/sass.sync.js";
-  script.id = "sass.sync.js";
-
   const svg = masks.querySelector("svg")!.cloneNode(true);
-  body.append(script, svg);
+  body.append(svg);
 
   body.classList.add("vx");
   if (transparency.get()) body.classList.add("transparent");
@@ -57,7 +54,6 @@ waitForNode("body").then((body) => {
 const debug = new Function("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js");
 
 document.addEventListener("keydown", (event) => {
-  const ctrl = event.ctrlKey || event.metaKey;
   const key = event.key.toLowerCase();
 
   if (key === "f8") debug();
@@ -65,7 +61,12 @@ document.addEventListener("keydown", (event) => {
     if (key === "f12") {
       window.VXNative!.devtools.toggle();
     }
-    if (ctrl && event.shiftKey && key === "c") {
+    if (window.VXNative!.app.platform === "darwin") {
+      if (event.metaKey && event.altKey && key === "c") {
+        window.VXNative!.devtools.enterInspectMode();
+      }
+    }
+    else if (event.ctrlKey && event.shiftKey && key === "c") {
       window.VXNative!.devtools.enterInspectMode();
     }
   }

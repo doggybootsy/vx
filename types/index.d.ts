@@ -129,24 +129,11 @@ interface ExtensionNative {
   update(release: Git.Release): void
 }
 
-type sassCompilerData = {
-  status: 1
-} | {
-  status: 0,
-  text: string
-}
-
-interface Sass {
-  style: Record<string, number>,
-  compile(text: string, options: { style: number, indentedSyntax: boolean }, callback: (data: sassCompilerData) => void): void
-}
-
 interface DiscordWindow {
   webpackChunkdiscord_app?: Webpack.AppObject,
   VXNative?: NativeObject,
   VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative,
-  Sass?: Sass,
   VX: typeof import("../packages/mod/src/window")["VX"]
 }
 
@@ -184,28 +171,6 @@ declare module "*.html" {
 declare module "@plugins" {
   const type: Record<string, any>;
   export = type;
-}
-
-declare module "uncompress.js" {
-  export interface Entry {
-    is_file: boolean,
-    name: string,
-    readData(cb: Callback<ArrayBuffer>): void,
-    size_compressed: number,
-    size_uncompressed: number
-  }
-  
-  export interface Archive {
-    archive_type: string,
-    entries: Entry[]
-  }
-
-  export interface Callback<T> extends Function {
-    (archive: T, err: Error | null): void
-  }
-
-  export function archiveOpenFile(file: File, password: string, callback: Callback<Archive>): void;
-  export function archiveOpenFileAsync(file: File, password: string): Promise<Archive>;
 }
 
 declare module "vx:self" {
@@ -249,7 +214,4 @@ interface Node {
   __reactProps$?: any
 }
 
-declare module "https://esm.sh/shiki@latest" {
-  const value: typeof import("shiki");
-  export = value;
-}
+declare type ChokidarFileEvent = "add" | "addDir" | "change" | "unlink" | "unlinkDir";

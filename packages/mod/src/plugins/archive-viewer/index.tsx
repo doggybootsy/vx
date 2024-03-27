@@ -5,9 +5,9 @@ import { ZipButton } from "./button";
 
 import * as styler from "./index.css?managed";
 
-export function isZIP(filename: string) {
+export function isArchive(filename: string) {
   return /\.(zip|rar|tar)($|\?|#)/.test(filename);
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

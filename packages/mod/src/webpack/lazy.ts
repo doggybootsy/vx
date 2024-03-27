@@ -18,7 +18,7 @@ export function getLazy<T extends Record<PropertyKey, any>>(filter: Webpack.Filt
       if (filter.call(module, module.exports, module, module.id)) {
         resolve(module.exports);
         return undoListener();
-      };
+      }
 
       const keys: string[] = [ ];
       if (searchExports) keys.push(...Object.keys(module.exports));
@@ -33,9 +33,9 @@ export function getLazy<T extends Record<PropertyKey, any>>(filter: Webpack.Filt
         if (filter.call(module, exported, module, module.id)) {
           resolve(exported);
           return undoListener();
-        };
-      };
-    };
+        }
+      }
+    }
 
     listeners.add(listener);
 

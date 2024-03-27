@@ -1,26 +1,21 @@
 import { addChangeListener, plugins } from "vx:styler";
-import { InternalStore, createAbort, download, showFilePicker } from "../../util";
+import { InternalStore, createAbort, download, getDiscordTag, showFilePicker } from "../../util";
 import { waitForNode } from "common/dom";
 import { closeWindow } from "../../api/window";
-import { openNotification } from "../../api/notifications";
-import { Icons } from "../../components";
 import { DataStore } from "../../api/storage";
-import { getMeta, getMetaProperty } from "../meta";
-import { logger } from "vx:logger";
-import { transparency } from "../../native";
+import { Meta, getMeta, getMetaProperty } from "../meta";
+import { addons, transparency } from "../../native";
 import * as css from "common/css";
+import { eventNames } from "node:process";
+import { UserStore } from "@webpack/common";
+import { Messages } from "vx:i18n";
 
 export interface ThemeObject {
   css: string,
-  name: string,
   enabled: boolean
 };
 
 type DataStoreType = Record<string, ThemeObject>;
-
-const themeDataStore = new DataStore<DataStoreType>("VX-Themes", {
-  version: 1
-});
 
 const themeHead = document.createElement("vx-themes");
 waitForNode(".drag-previewer").then(() => {
@@ -61,11 +56,33 @@ async function handleStyleSheet(id: string, sheet: CSSStyleSheet | null, signal:
 
 const destroyers = new Map<string, () => void>();
 
+const metaCache = new Map<string, Meta>();
+
+const defaultTheme = (id: string) => {
+  const user = UserStore.getCurrentUser();
+
+  return `/**
+ * @name 0 New Theme - ${id}
+ * @author ${getDiscordTag(user)}
+ * @authorId ${user.id}
+ * @version 1.0.0
+ */
+
+/* CSS Here */
+`;
+};
+
 export const themeStore = new class ThemeStore extends InternalStore {
   constructor() {
     super();
 
-    const themes = themeDataStore.getAll() as DataStoreType;
+    const themes: Record<string, ThemeObject> = {};
+    for (const filename of addons.themes.getAll()) {
+      themes[filename] = {
+        css: addons.themes.read(filename),
+        enabled: addons.themes.isEnabled(filename)
+      }
+    }
     
     this.#themes = themes;
 
@@ -74,6 +91,47 @@ export const themeStore = new class ThemeStore extends InternalStore {
         if (themes[id].enabled) this._insertCSS(id);
       }
     }
+
+    function removeTheme(this: ThemeStore, filename: string) {
+      this._clearCSS(filename);
+
+      delete this.#themes[filename];
+      metaCache.delete(filename);
+    }
+
+    addons.themes.addListener((eventName, filename) => {
+      switch (eventName) {
+        case "add":
+        case "change": {
+          const enabled = addons.themes.isEnabled(filename);
+
+          removeTheme.call(this, filename);
+
+          const code = addons.themes.read(filename);
+
+          const themes = {
+            ...this.#themes,
+            [filename]: {
+              css: code,
+              enabled: enabled
+            }
+          };
+
+          this.#themes = themes;
+
+          if (enabled) this._insertCSS(filename);
+
+          this.emit();
+
+          break;
+        }
+        case "unlink": {
+          removeTheme.call(this, filename);
+          this.emit();
+          break;
+        }
+      }
+    });
   }
 
   #themes: DataStoreType;
@@ -88,14 +146,14 @@ export const themeStore = new class ThemeStore extends InternalStore {
 
     const [ abort, getSignal ] = createAbort();
 
-    style.appendChild(document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/themes/${id}.css */`));
+    style.appendChild(document.createTextNode(`${data.css}\n/*# sourceURL=vx://VX/themes/${id} */`));
     handleStyleSheet(id, style.sheet, getSignal());
     
     const undo = addChangeListener(`theme-${id}`, data.css, (css) => {
       abort();
       style.innerHTML = "";
 
-      style.appendChild(document.createTextNode(`${css}\n/*# sourceURL=vx://VX/themes/${id}.css */`));
+      style.appendChild(document.createTextNode(`${css}\n/*# sourceURL=vx://VX/themes/${id} */`));
       handleStyleSheet(id, style.sheet, getSignal());
     });
 
@@ -114,15 +172,27 @@ export const themeStore = new class ThemeStore extends InternalStore {
     if (node) node.remove();
   }
 
-  private _updateData(callback: (clone: Record<string, ThemeObject>) => void) {    
-    const clone = structuredClone(this.#themes);
+  public getMeta(id: string) {
+    if (metaCache.has(id)) return metaCache.get(id)!;
 
-    callback(clone);
-    
-    themeDataStore.replace(clone);
+    const meta = getMeta(this.getCSS(id));
+    metaCache.set(id, meta);
 
-    this.#themes = clone;
-    this.emit();
+    return meta;
+  }
+  public getMetaProperty(id: string, key: string, defaultValue: string) {
+    return getMetaProperty(this.getMeta(id), key, defaultValue);
+  }
+  public getAuthors(id: string) {
+    return this.getMeta(id).authors ?? [];
+  }
+  public getAddonName(id: string) {
+    return this.getMetaProperty(id, "name", id);
+  }
+  public getVersionName(id: string) {
+    const version = this.getMetaProperty(id, "version", "?.?.?");
+
+    return this.getMetaProperty(id, "version_name", "v{{version}}").replace("{{version}}", version);
   }
 
   public keys() {
@@ -137,138 +207,48 @@ export const themeStore = new class ThemeStore extends InternalStore {
   }
   public setCSS(id: string, css: string) {
     this._clearCSS(id);
-    
-    this._updateData((clone) => {
-      clone[id].css = css;
-    });
-
-    if (this.isEnabled(id)) this._insertCSS(id);
-  }
-  
-  public getAddonName(id: string) {
-    return this.#themes[id].name;
-  }
-  public setName(id: string, name: string) {
-    this._updateData((clone) => {
-      clone[id].name = name;
-    });
+    addons.themes.write(id, css);
   }
 
   public new() {
-    this._updateData((clone) => {
-      const id = Date.now().toString(36).toUpperCase();
-      
-      clone[id] = {
-        css: "/* Insert CSS Here */\n",
-        enabled: true,
-        name: `0 New Theme - ${id}`
-      };
-    });
+    const id = `${Date.now().toString(36).toUpperCase()}.css`;
+    addons.themes.write(id, defaultTheme(id));
+    addons.themes.setEnabledState(id, true);
   }
   public delete(id: string) {
     closeWindow(`THEME_${id}`);
-    this._clearCSS(id);
-
-    this._updateData((clone) => {
-      delete clone[id];
-    });
+    addons.themes.delete(id);
   }
   public upload() {
-    const canLoadSass = typeof window.Sass === "object";
-
     showFilePicker(async (file) => {
       if (!file) return;
   
       const text = await file.text();
 
       const handleCSS = (css: string) => {
-        const name = getMetaProperty(getMeta(text), "name", file.name.replace(/\.(s(a|c)|c)ss$/, ""));
-  
-        this._updateData((clone) => {
-          const id = Date.now().toString(36).toUpperCase();
-          
-          clone[id] = {
-            css: css,
-            enabled: false,
-            name
-          };
-        });
-  
-        return;
+        const id = `${Date.now().toString(36).toUpperCase()}.css`;
+
+        addons.themes.write(id, css);
       }
   
-      if (file.type === "text/css") {
-        handleCSS(text);
-        return;
-      }
-      
-      if (window.Sass && /\.s(c|a)ss$/.test(file.name)) {
-        window.Sass.compile(text, {
-          style: window.Sass.style.nested,
-          indentedSyntax: file.name.endsWith(".sass")
-        }, (data) => {
-          if (data.status === 1) {
-            logger.warn("SASS Compiler Error", data);
-            
-            openNotification({
-              title: "Unable To Compile Theme",
-              id: "vx-unable-to-Compile",
-              icon: Icons.Warn,
-              type: "warn"
-            });
-
-            return;
-          };
-  
-          handleCSS(data.text);
-        });
-
-        return;
-      }
-
-      openNotification({
-        title: "Unable To Load Theme",
-        id: "vx-unable-to-load",
-        icon: Icons.Warn,
-        type: "warn"
-      });
-    }, canLoadSass ? ".css,.scss,.sass" : ".css");
+      handleCSS(text);
+    }, ".css");
   }
 
   public enable(id: string) {
     this._insertCSS(id);
-
-    this._updateData((clone) => {
-      clone[id].enabled = true;
-    });
+    addons.themes.setEnabledState(id, true);
   }
   public disable(id: string) {
     this._clearCSS(id);
-
-    this._updateData((clone) => {
-      clone[id].enabled = false;
-    });
+    addons.themes.setEnabledState(id, false);
   }
   public isEnabled(id: string) {
-    if (id in this.#themes) return this.#themes[id].enabled;
-    return false;
+    return addons.themes.isEnabled(id);
   }
   public toggle(id: string) {
     if (!Reflect.has(this.#themes, id)) return;
     if (this.isEnabled(id)) return this.disable(id);
     this.enable(id);
-  }
-
-  // Public private method
-  __mergeOldThemes(themes: DataStoreType) {
-    themeDataStore.merge(themes);
-    Object.assign(this.#themes, themes);
-
-    for (const key in themes) {
-      if (Object.prototype.hasOwnProperty.call(themes, key)) {
-        const element = themes[key];
-        if (element.enabled) this._insertCSS(key);
-      }
-    }
   }
 }

@@ -4,17 +4,13 @@ import { InternalStore, download, getDiscordTag, showFilePicker } from "../../ut
 import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";
 import { logger } from "vx:logger";
+import { vxRequire } from "../../window";
+import { addons } from "../../native";
 
 export interface PluginObject {
   js: string,
   enabled: boolean
 };
-
-type DataStoreType = Record<string, PluginObject>;
-
-const pluginDataStore = new DataStore<DataStoreType>("VX-Plugins", {
-  version: 1
-});
 
 interface PluginExport {
   Settings?: React.ComponentType,
@@ -64,11 +60,61 @@ export const pluginStore = new class PluginStore extends InternalStore {
   constructor() {
     super();
 
-    this.#plugins = pluginDataStore.getAll() as DataStoreType;
-    this.#evaledPlugins = {};
+    const plugins: Record<string, PluginObject> = {};
+    for (const filename of addons.plugins.getAll()) {
+      plugins[filename] = {
+        js: addons.plugins.read(filename),
+        enabled: addons.plugins.isEnabled(filename)
+      };
+    }
+
+    this.#plugins = plugins;
+
+    function removePlugin(this: PluginStore, filename: string) {
+      this.disable(filename);
+  
+      this.runMethod(filename, "delete");
+  
+      delete this.#evaledPlugins[filename];
+      delete this.#plugins[filename];
+      metaCache.delete(filename);
+    }
+
+    addons.plugins.addListener((eventName, filename) => {
+      switch (eventName) {
+        case "add":
+        case "change": {
+          const enabled = addons.plugins.isEnabled(filename);          
+
+          removePlugin.call(this, filename);
+
+          const code = addons.plugins.read(filename);
+
+          const plugins = {
+            ...this.#plugins,
+            [filename]: {
+              js: code,
+              enabled
+            }
+          };
+
+          this.#plugins = plugins;
+          this.evalPlugin(filename);
+
+          this.emit();
+
+          break;
+        }
+        case "unlink": {
+          removePlugin.call(this, filename);
+          this.emit();
+          break;
+        }
+      }
+    });
   }
-  #plugins: DataStoreType;
-  #evaledPlugins: Record<string, PluginExports>;
+  #plugins: Record<string, PluginObject>;
+  #evaledPlugins: Record<string, PluginExports> = {};
 
   public displayName = "PluginStore";
 
@@ -96,9 +142,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     };
 
     try {
-      rawModule.call(window, module, module.exports, () => {
-        throw new Error("Require isn't supported!");
-      });
+      rawModule.call(window, module, module.exports, vxRequire);
     } 
     catch (error) {
       logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), while VX was trying to eval it\n`, error);
@@ -112,33 +156,33 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
     return module;
   }
-  private _updateData(callback: (clone: Record<string, PluginObject>) => void) {    
-    const clone = structuredClone(this.#plugins);
-
-    callback(clone);
-    
-    pluginDataStore.replace(clone);
-
-    this.#plugins = clone;
-    this.emit();
-  }
 
   public getJS(id: string) {
     return this.#plugins[id].js;
   }
-  public updateJS(id: string, js: string) {
-    const enabled = this.isEnabled(id);
+  public updateJS(filename: string, js: string) {
+    const enabled = this.isEnabled(filename);
     
-    this.delete(id);
-    
-    this._updateData((clone) => {
-      clone[id] = {
-        js: js,
-        enabled: enabled
-      };
-    });
+    this.disable(filename);
 
-    this.evalPlugin(id);
+    this.runMethod(filename, "delete");
+
+    delete this.#evaledPlugins[filename];
+    delete this.#plugins[filename];
+    metaCache.delete(filename);
+    
+    const plugins = {
+      ...this.#plugins,
+      [filename]: {
+        js,
+        enabled
+      }
+    };
+
+    this.#plugins = plugins;
+    
+    addons.plugins.write(filename, js);
+    this.emit();
   }
 
   public getMeta(id: string) {
@@ -153,7 +197,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
     return getMetaProperty(this.getMeta(id), key, defaultValue);
   }
   public getAuthors(id: string) {
-    return getMeta(id).authors ?? [];
+    return this.getMeta(id).authors ?? [];
   }
   public getAddonName(id: string) {
     return this.getMetaProperty(id, "name", Messages.UNKNOWN_NAME);
@@ -164,50 +208,51 @@ export const pluginStore = new class PluginStore extends InternalStore {
     return this.getMetaProperty(id, "version_name", "v{{version}}").replace("{{version}}", version);
   }
 
-  public download(id: string) {
-    download(`${id}.js`, this.getJS(id));
+  public download(filename: string) {
+    download(filename, this.getJS(filename));
   }
   public upload() {
     showFilePicker(async (file) => {
       if (!file) return;
 
       const text = await file.text();
-      const id = Date.now().toString(36).toUpperCase();
+      const filename = `${Date.now().toString(36).toUpperCase()}.vx.js`;
 
-      this._updateData((clone) => {
-        clone[id] = {
+      const plugins = {
+        ...this.#plugins,
+        [filename]: {
           js: text,
           enabled: false
-        };
-      });
-
-      this.evalPlugin(id);
+        }
+      };
+  
+      this.#plugins = plugins;
+      
+      addons.plugins.write(filename, text);
+      this.emit();
     }, "js");
   }
   public new() {
     const id = Date.now().toString(36).toUpperCase();
 
-    this._updateData((clone) => {
-      clone[id] = {
-        js: defaultPlugin(id),
+    const filename = `${Date.now().toString(36).toUpperCase()}.vx.js`;
+    const code = defaultPlugin(id);
+
+    const plugins = {
+      ...this.#plugins,
+      [filename]: {
+        js: code,
         enabled: false
-      };
-    });
+      }
+    };
 
-    this.evalPlugin(id);
+    this.#plugins = plugins;
+    
+    addons.plugins.write(filename, code);
+    this.emit();
   }
-  public delete(id: string) {
-    this.disable(id);
-
-    this.runMethod(id, "delete");
-
-    delete this.#evaledPlugins[id];
-    delete this.#plugins[id];
-    metaCache.delete(id);
-  
-    this._updateData((clone) => {
-      delete clone[id];
-    });
+  public delete(filename: string) {
+    return addons.plugins.delete(filename);
   }
 
   public getExports(id: string) {
@@ -215,7 +260,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   }
 
   public isEnabled(id: string) {
-    if (id in this.#plugins) return this.#plugins[id].enabled;
+    if (id in this.#plugins) return this.#plugins[id]?.enabled || false;
     return false;
   }
 
@@ -223,23 +268,39 @@ export const pluginStore = new class PluginStore extends InternalStore {
     return Object.keys(this.#plugins);
   }
 
-  public enable(id: string) {
-    if (this.#plugins[id].enabled) return;
+  public enable(filename: string) {
+    if (this.#plugins[filename]?.enabled) return;
     
-    this._updateData((data) => {
-      data[id].enabled = true;
-    });
+    const plugins = {
+      ...this.#plugins,
+      [filename]: {
+        js: this.#plugins[filename].js,
+        enabled: true
+      }
+    };
 
-    this.runMethod(id, "start");
+    this.#plugins = plugins;
+    addons.plugins.setEnabledState(filename, true);
+
+    this.runMethod(filename, "start");
+    this.emit();
   }
-  public disable(id: string) {
-    if (!this.#plugins[id].enabled) return;
+  public disable(filename: string) {
+    if (!this.#plugins[filename]?.enabled) return;
     
-    this._updateData((data) => {
-      data[id].enabled = false;
-    });
+    const plugins = {
+      ...this.#plugins,
+      [filename]: {
+        js: this.#plugins[filename].js,
+        enabled: false
+      }
+    };
 
-    this.runMethod(id, "stop");
+    this.#plugins = plugins;
+    addons.plugins.setEnabledState(filename, false);
+
+    this.runMethod(filename, "stop");
+    this.emit();
   }
   public toggle(id: string) {
     if (!Reflect.has(this.#plugins, id)) return;

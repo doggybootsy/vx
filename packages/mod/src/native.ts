@@ -1,4 +1,5 @@
 import { IS_DESKTOP, git } from "vx:self";
+import { DataStore } from "./api/storage";
 
 export const extensions = {
   open() {
@@ -55,20 +56,78 @@ export const transparency = {
     if (!IS_DESKTOP) return false;
     return window.VXNative!.transparency.get();
   }
-}
+};
 
-export const storage = {
-  getItem(key: string) {
-    if (!IS_DESKTOP) return window.localStorage.getItem(`VX(${key})`);
-    return window.VXNative!.storage.get(key) || window.localStorage.getItem(`VX(${key})`);
-  },
-  setItem(key: string, value: string) {
-    if (!IS_DESKTOP) return window.localStorage.setItem(`VX(${key})`, value);
-    return window.VXNative!.storage.set(key, value);
-  },
-  removeItem(key: string) {
-    if (IS_DESKTOP) window.VXNative!.storage.delete(key);
+type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
+const addonStateStore = new DataStore<Record<string, boolean>>("VXI-Addon-States");
 
-    window.localStorage.removeItem(`VX(${key})`);
+function createAddonAPI(type: "themes" | "plugins") {
+  let baseObject: NonNullable<typeof window.VXNative>["themes"];
+
+  if (IS_DESKTOP) baseObject = window.VXNative![type];
+  else {
+    const addonStore = new DataStore<Record<string, string>>(`VXI-${type}`);
+    
+    const listeners = new Set<AddonListener>();
+
+    function emit(eventName: ChokidarFileEvent, filename: string) {
+      for (const listener of listeners) {
+        listener(eventName, filename);
+      }
+    }
+
+    baseObject = {
+      type,
+      addListener(listener: AddonListener) {
+        listeners.add(listener);
+        return () => {
+          listeners.delete(listener)
+        };
+      },
+      removeListener(listener: AddonListener) {
+        listeners.delete(listener);
+      },
+      getAll(): string[] {
+        return addonStore.keys();
+      },
+      exists(filename: string) {
+        return addonStore.has(filename);
+      },
+      read(filename: string) {
+        if (!addonStore.has(filename)) throw new Error("Addon doesn't exist");
+        return addonStore.get(filename)!;
+      },
+      write(filename: string, content: string) {
+        addonStore.set(filename, content);
+        emit("change", filename);
+      },
+      async delete(filename: string) {
+        addonStore.delete(filename);
+        emit("unlink", filename);
+      },
+      async open(filename: string) {
+        const { openWindow } = await (type === "themes" ? import("./dashboard/pages/addons/themes/popout.js") : import("./dashboard/pages/addons/plugins/popout.js"));
+        openWindow(filename);
+      },
+      async openDirectory() {
+        // Cant. Maybe have the ext open a page? or a devtools page? idk
+      }
+    }
+  }
+
+  return {
+    ...baseObject,
+    isEnabled(filename: string) {
+      if (addonStateStore.has(filename)) return addonStateStore.get(filename)!;
+      return false;
+    },
+    setEnabledState(filename: string, state: boolean) {
+      addonStateStore.set(filename, state);
+    }
   }
 }
+
+const themes = createAddonAPI("themes");
+const plugins = createAddonAPI("plugins");
+
+export const addons = { themes, plugins };
