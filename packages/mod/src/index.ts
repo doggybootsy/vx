@@ -11,6 +11,7 @@ import { pluginStore } from "./addons/plugins";
 import { whenWebpackInit } from "@webpack";
 import { IS_DESKTOP, env } from "vx:self";
 import { transparency } from "./native";
+import { compileFunction } from "./util";
 
 console.log(`Welcome to VX v${env.VERSION}`);
 
@@ -51,7 +52,7 @@ waitForNode("body").then((body) => {
   if (transparency.get()) body.classList.add("transparent");
 });
 
-const debug = new Function("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js");
+const debug = compileFunction<() => void>("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js", []);
 
 document.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();

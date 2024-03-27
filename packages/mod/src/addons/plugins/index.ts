@@ -1,6 +1,6 @@
 import { Messages } from "vx:i18n";
 import { DataStore } from "../../api/storage";
-import { InternalStore, download, getDiscordTag, showFilePicker } from "../../util";
+import { InternalStore, compileFunction, download, getDiscordTag, showFilePicker } from "../../util";
 import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";
 import { logger } from "vx:logger";
@@ -121,7 +121,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
   private evalPlugin(id: string) {
     const code = this.getJS(id);
 
-    const rawModule = new Function("module", "exports", "require", `"use strict";\n${code}\n//# sourceURL=vx://VX/plugins/${id}.js`);
+    const rawModule = compileFunction<(module: PluginModule, exports: PluginExports, require: typeof vxRequire) => void>(`"use strict";\n${code}\n//# sourceURL=vx://VX/plugins/${id}.js`, [ "module", "exports", "require" ]);
 
     let loaded = false;
 

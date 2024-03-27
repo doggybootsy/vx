@@ -1,4 +1,4 @@
-import electron, { safeStorage } from "electron";
+import electron, { safeStorage, systemPreferences } from "electron";
 import { BrowserWindow } from "./window";
 import { request } from "https";
 import fs from "original-fs";
@@ -144,4 +144,8 @@ electron.ipcMain.on("@vx/safestorage/decrypt", (event, encrypted) => {
 });
 electron.ipcMain.on("@vx/safestorage/is-available", (event) => {
   event.returnValue = safeStorage.isEncryptionAvailable();
+});
+
+electron.ipcMain.on("@vx/accent-color/get", (event) => {
+  event.returnValue = systemPreferences.getAccentColor();
 });
