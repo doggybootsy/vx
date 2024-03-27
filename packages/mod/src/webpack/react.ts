@@ -16,6 +16,28 @@ export const useDeferredValue = proxyCache(() => React.useDeferredValue);
 export const useCallback = proxyCache(() => React.useCallback);
 export const useLayoutEffect = proxyCache(() => React.useLayoutEffect);
 export const useInsertionEffect = proxyCache(() => React.useInsertionEffect);
+export const useContext = proxyCache(() => React.useContext);
+
+export function createContext<T>(value: T): React.Context<T> {
+  const context = {
+    $$typeof: Symbol.for("react.context"),
+    _currentValue: value,
+    _currentValue2: value,
+    _threadCount: 0,
+    Provider: null,
+    Consumer: null,
+    _defaultValue: null,
+    _globalName: null
+  };
+
+  (context as any).Provider = {
+    $$typeof: Symbol.for("react.provider"),
+    _context: context
+  };
+  (context as any).Consumer = context;
+  
+  return context as unknown as React.Context<T>;
+};
 
 export const Children = proxyCache(() => React.Children);
 

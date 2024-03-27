@@ -1,9 +1,9 @@
 /**
  * All rights to https://github.com/workhorsy/uncompress.js
  * This is a altered version of that library. For this use case
- * 
- * How do i make this use the already existing JSZip api?
  */
+
+import JSZip from "jszip";
 
 const uncompressJS = {};
 
@@ -112,7 +112,7 @@ const uncompressJS = {};
           _loaded_archive_formats.push(archive_format);
           break;
         case 'zip':
-          loadScript(path + 'jszip.js', checkForLoadDone);
+          checkForLoadDone();
           _loaded_archive_formats.push(archive_format);
           break;
         case 'tar':
@@ -133,12 +133,12 @@ const uncompressJS = {};
 
     // Convert the blob into an array buffer
     let reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = async function(evt) {
       let array_buffer = reader.result;
 
       // Open the file as an archive
       try {
-        let archive = archiveOpenArrayBuffer(file_name, password, array_buffer);
+        let archive = await archiveOpenArrayBuffer(file_name, password, array_buffer);
         cb(archive, null);
       } catch(e) {
         cb(null, e);
@@ -147,7 +147,7 @@ const uncompressJS = {};
     reader.readAsArrayBuffer(blob);
   }
 
-  function archiveOpenArrayBuffer(file_name, password, array_buffer) {
+  async function archiveOpenArrayBuffer(file_name, password, array_buffer) {
     // Get the archive type
     let archive_type = null;
     if (isRarFile(array_buffer)) {
@@ -175,7 +175,7 @@ const uncompressJS = {};
           entries = _rarGetEntries(handle);
           break;
         case 'zip':
-          handle = _zipOpen(file_name, password, array_buffer);
+          handle = await _zipOpen(file_name, password, array_buffer);
           entries = _zipGetEntries(handle);
           break;
         case 'tar':
@@ -231,9 +231,11 @@ const uncompressJS = {};
     };
   }
 
-  function _zipOpen(file_name, password, array_buffer) {
-    let zip = new JSZip(array_buffer);
+  async function _zipOpen(file_name, password, array_buffer) {
+    let zip = new JSZip();
 
+    await zip.loadAsync(array_buffer);
+        
     // Return zip handle
     return {
       file_name: file_name,
@@ -409,14 +411,14 @@ const uncompressJS = {};
 })();
 
 let loaded = false;
-export async function archiveOpenFile(file, password, callback) {
+export function archiveOpenFile(file, password, callback) {
   if (loaded) return uncompressJS.archiveOpenFile(file, password, callback);
   
   uncompressJS.loadArchiveFormats([ "rar", "zip", "tar" ], () => {
     loaded = true;
     uncompressJS.archiveOpenFile(file, password, callback);
   });
-};
+}
 export function archiveOpenFileAsync(file, password) {
   return new Promise((resolve, reject) => {
     archiveOpenFile(file, password, (archive, err) => {
@@ -424,4 +426,4 @@ export function archiveOpenFileAsync(file, password) {
       resolve(archive);
     });
   });
-};
+}

@@ -79,26 +79,27 @@ const ReactPlugin = {
   }
 };
 /** @type {esbuild.Plugin} */
-const UncompressJSPlugin = {
-  name: "uncompress.js-plugin",
+const MomentPlugin = {
+  name: "moment-plugin",
   setup(build) {
     build.onResolve({
-      filter: /^uncompress\.js$/
+      filter: /^moment$/
     }, () => ({
-      namespace: "uncompress.js-plugin",
-      path: "uncompress.js"
+      namespace: "moment-plugin",
+      path: "moment"
     }));
 
     build.onLoad({
-      filter: /.*/, namespace: "uncompress.js-plugin"
+      filter: /.*/, namespace: "moment-plugin"
     }, (args) => {
       return {
-        resolveDir: "./packages/modules",
-        contents: `export * from "./uncompress";`
+        resolveDir: "./packages/mod/src",
+        contents: `export * from "@webpack/moment.ts";export { default } from "@webpack/moment.ts";`
       }
     });
   }
 };
+
 /** @type {esbuild.Plugin} */
 const HTMLPlugin = {
   name: "html-plugin",
@@ -141,20 +142,14 @@ const ManagedCSSPlugin = {
         contents: `
         import { Styler } from "vx:styler";
         
-        export const id = ${JSON.stringify(args.path)};
+        export const id = ${JSON.stringify(args.path.replace("./packages/mod/src/plugins", "@plugins"))};
         export const css = ${JSON.stringify(css)};
         
         const styler = new Styler(css, id);
 
-        export function addStyle() {
-          styler.add();
-        };
-        export function removeStyle() {
-          styler.remove();
-        };
-        export function hasStyle() {
-          return styler.enabled();
-        };
+        export function addStyle() { styler.add(); }
+        export function removeStyle() { styler.remove(); }
+        export function hasStyle() { return styler.enabled(); }
         `,
         resolveDir: "./packages/mod/src"
       }
@@ -250,7 +245,7 @@ const plugins = (desktop) => [
   SelfPlugin(desktop),
   ManagedCSSPlugin,
   ReactPlugin,
-  UncompressJSPlugin
+  MomentPlugin
 ];
 
 (async function() {

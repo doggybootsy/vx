@@ -3,15 +3,15 @@ import { useMemo, useState } from "react";
 import { Panel } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { useInternalStore } from "../../../../hooks";
-import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
+import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
 import { ThemeCard } from "./card";
 import { themeStore } from "../../../../addons/themes";
-import { internalDataStore } from "../../../../api/storage";
 import { Messages } from "vx:i18n";
+import { addons } from "../../../../native";
+import { IS_DESKTOP } from "vx:self";
 
-let search = "";
 export function Themes() {
-  const [ query, setQuery ] = useState(() => (internalDataStore.get("preserve-query") ?? true) ? search : "");
+  const [ query, setQuery ] = useState(() => queryStore.get("themes"));
 
   const keys = useInternalStore(themeStore, () => {
     const keys = themeStore.keys();
@@ -27,6 +27,24 @@ export function Themes() {
       title={Messages.THEMES}
       buttons={
         <>
+          {IS_DESKTOP && (
+            <Tooltip text={Messages.OPEN_FOLDER}>
+              {(props) => (
+                <Button
+                  {...props}
+                  size={Button.Sizes.NONE}
+                  look={Button.Looks.BLANK} 
+                  className="vx-header-button"
+                  onClick={() => {
+                    props.onClick();
+                    addons.themes.openDirectory();
+                  }}
+                >
+                  <Icons.Folder />
+                </Button>
+              )}
+            </Tooltip>
+          )}
           <Tooltip text={Messages.UPLOAD}>
             {(props) => (
               <Button
@@ -66,11 +84,11 @@ export function Themes() {
             size={SearchBar.Sizes.SMALL}
             onChange={(query) => {
               setQuery(query);
-              search = query;
+              queryStore.set("themes", query);
             }}
             onClear={() => {
               setQuery("");
-              search = "";
+              queryStore.clear("themes");
             }}
             autoFocus
           />

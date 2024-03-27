@@ -12,24 +12,19 @@ export function patch(caller: string, menuId: string, callback: MenuCallback) {
   const menusPatches = callerPatches.get(menuId)!;
   menusPatches.add(callback);
 
-  return () => unpatch(caller, menuId, callback);
+  return () => void menusPatches.delete(callback);
 }
-export function unpatch(caller: string, menuId?: string, callback?: MenuCallback) {
+export function unpatch(caller: string, menuId?: string) {
   if (!menuPatches.has(caller)) return;
 
   const callerPatches = menuPatches.get(caller)!;
   if (typeof menuId !== "string") {
     callerPatches.clear();
     return;
-  };
+  }
 
   const menusPatches = callerPatches.get(menuId)!;
-  if (typeof callback !== "function") {
-    menusPatches.clear();
-    return;
-  };
-
-  menusPatches.delete(callback);
+  menusPatches.clear();
 }
 
 addPlainTextPatch({

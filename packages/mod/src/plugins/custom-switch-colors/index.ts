@@ -27,21 +27,22 @@ const settings = createSettings("CustomSwitchColors", {
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
+  requiresRestart: false,
   settings,
   patches: {
     match: ".unsafe_rawColors.PRIMARY_400).spring()",
     replacements: [
       {
-        find: /=\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.GREEN_360\)\.spring\(\),/,
-        replace: "=$self.useColor('on'),"
+        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.GREEN_360\)\.spring\(\)),/,
+        replace: "=((n,o)=>$enabled?n:o)($self.useColor('on'),$1),"
       },
       {
-        find: /=\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\),/,
-        replace: "=$self.useColor('off'),"
+        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\)),/,
+        replace: "=((n,o)=>$enabled?n:o)($self.useColor('off'),$1),"
       }
     ]
   },
-  useColor(type: "on" | "off") {
+  useColor(type: "on" | "off") {    
     const color = settings[type].use();
 
     return useMemo(() => `#${color.toString(16).padStart(6, "0")}`, [ color ]);

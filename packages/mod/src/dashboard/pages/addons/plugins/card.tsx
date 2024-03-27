@@ -9,6 +9,7 @@ import { pluginStore } from "../../../../addons/plugins";
 import { openWindow } from "./popout";
 import { internalDataStore } from "../../../../api/storage";
 import { Messages } from "vx:i18n";
+import { addons } from "../../../../native";
 
 function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
@@ -49,7 +50,7 @@ function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string
       </Tooltip>
     </Mask>
   );
-};
+}
 
 export function PluginCard({ plugin }: { plugin: SafePlugin }) {
   const [ isEnabled, setEnabled ] = useState(() => plugin.isEnabled());
@@ -183,7 +184,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                     if (event.shiftKey) {
                       pluginStore.delete(plugin.id);
                       return;
-                    };
+                    }
                     
                     openConfirmModal("Are you sure?", [
                       `Are you sure you wan't to delete \`${plugin.name}\` (\`${plugin.id}\`)`,
@@ -208,7 +209,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                   {...props}
                   onClick={() => {
                     props.onClick();
-                    openWindow(plugin.id);
+                    addons.plugins.open(plugin.id);
                   }}
                 >
                   <Icons.Pencil />

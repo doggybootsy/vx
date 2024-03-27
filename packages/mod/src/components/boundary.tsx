@@ -1,6 +1,5 @@
-import { Component, createElement, useEffect, useMemo } from "react";
-import { Button, Flex } from ".";
-import { LayerManager } from "@webpack/common";
+import { Component, useMemo } from "react";
+import { Button } from ".";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode,

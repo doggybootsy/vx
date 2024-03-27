@@ -24,17 +24,17 @@ type PlainTextPatchReplacer = PlainTextReplacer & PlainTextPatchBase & {
 type Replacer = (substring: string, ...args: any[]) => string;
 
 interface PlainTextReplacerString {
-  predicate?: () => boolean,
+  predicate?(): boolean,
   find: string,
   replace: string
 };
 interface PlainTextReplacerFunction {
-  predicate?: () => boolean,
+  predicate?(): boolean,
   find: { [Symbol.replace](string: string, replacer: Replacer): string; },
   replace: Replacer
 };
 interface PlainTextReplacerSymbolString {
-  predicate?: () => boolean,
+  predicate?(): boolean,
   find: { [Symbol.replace](string: string, replaceValue: string): string; },
   replace: string
 };
@@ -48,15 +48,23 @@ addPlainTextPatch(
   {
     identifier: "VX(no-react-reconciler-hash)",
     match: "__reactFiber$",
-    find: /(var (.{1,3}))=Math.random\(\).toString\(36\).slice\(2\)/,
-    replace: "$1=''"
+    replacements: [
+      {
+        find: /(var (.{1,3}))=Math.random\(\).toString\(36\).slice\(2\)/,
+        replace: "$1=''"
+      },
+      {
+        find: '"_reactListening"+Math.random().toString(36).slice(2)',
+        replace: '"_reactListening"'
+      }
+    ]
   }, 
   // Removes the 'HOLD UP' logs in console and prevents token hiding
   {
     identifier: "VX(no-hold-up)",
     match: ".window.setDevtoolsCallbacks",
     find: /.+/,
-    replace: "function(module,exports,require){require.r(exports);require.d(exports,{default(){return ()=>{}}})}"
+    replace: "function(module,exports,require){require.r(exports);require.d(exports,{UserDefenses(){return ()=>{}}})}"
   },
   // Little loader icon in bottom left
   {
@@ -71,6 +79,7 @@ addPlainTextPatch(
     find: `delete window.${type}`,
     replace: ""
   })),
+  // For webpack getLazy
   {
     identifier: "VX(lazy-store)",
     match: "Store.waitFor(...)",

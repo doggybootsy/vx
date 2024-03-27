@@ -4,7 +4,7 @@ import { isDashboardOpen, openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { cache, className } from "../util";
-import { byStrings, getByKeys, whenWebpackInit } from "@webpack";
+import { byStrings, getByKeys, webpackRequire, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
 import { env } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
@@ -33,7 +33,7 @@ addPlainTextPatch(
 );
 
 export function TitlebarButton(props: { windowKey?: string }) {
-  const [ loading, setLoading ] = useState(true);
+  const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");
   const isOpen = isDashboardOpen();
 
   useLayoutEffect(() => {

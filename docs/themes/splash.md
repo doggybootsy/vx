@@ -11,14 +11,14 @@ You can edit that file and it will update automatically (after a .1s debounce)
 ## Important Keybinds
 * Devtools
     * `f12`
-    * `ctrl` + `shift` + `i`
-    * `cmd` + `shift` + `i`
+    * `control` + `shift` + `i`
+    * `command` + `option` + `i`
 * Keep Splash Screen Open (Makes it so the splash screen can't close)
-    * `ctrl` + `shift` + `s`
-    * `cmd` + `shift` + `s`
+    * `control` + `shift` + `s`
+    * `command` + `option` + `s`
 * Open Splash File
-    * `ctrl` + `shift` + `o`
-    * `cmd` + `shift` + `o`
+    * `control` + `shift` + `o`
+    * `command` + `option` + `o`
 
 ## Installation for splash theming
 [NOTICE]: This doesnt show a complete VX install, this only works if you have the `appdata like/.vx` folder fully setup
@@ -47,7 +47,7 @@ You can edit that file and it will update automatically (after a .1s debounce)
 5. In the `index.js` 
     1. Add a line that's similar to `require("appdata like/.vx/app");`. To find your appdata like folder look below
         * Windows: `%appdata%` (You must get the result of and replace all `\` with `/`)
-        * OSX: `~/Application Support/` (You must get the full result of this)
+        * OSX: `~/Library/Application Support/` (You must get the full result of this)
         * Linux: `~/.config/` (You must get the full result)
 
         * If you don't get the result it will error saying something to the extent of path not found

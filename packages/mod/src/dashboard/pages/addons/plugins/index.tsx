@@ -4,12 +4,13 @@ import { Panel } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { Plugin, plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
-import { NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../shared";
-import { internalDataStore } from "../../../../api/storage";
+import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
 import { pluginStore } from "../../../../addons/plugins";
 import { useInternalStore } from "../../../../hooks";
 import { openPluginSettingsModal } from "./modal";
 import { Messages } from "vx:i18n";
+import { addons } from "../../../../native";
+import { IS_DESKTOP } from "vx:self";
 
 export interface SafePlugin {
   type: "internal" | "custom",
@@ -69,7 +70,6 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
   }
 }
 
-let search = "";
 export function Plugins() {
   const customPlugins = useInternalStore<[ string, SafePlugin ][]>(pluginStore, () => (
     pluginStore.keys().map((key) => [
@@ -89,7 +89,7 @@ export function Plugins() {
     return plugins.sort((a, b) => a[1].name.localeCompare(b[1].name));
   }, [ customPlugins, internalPlugins ]);
 
-  const [ query, setQuery ] = useState(() => (internalDataStore.get("preserve-query") ?? true) ? search : "");
+  const [ query, setQuery ] = useState(() => queryStore.get("plugins"));
   const queredPlugins = useMemo(() => allPlugins.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, allPlugins ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
@@ -99,6 +99,24 @@ export function Plugins() {
     title={Messages.PLUGINS}
     buttons={
         <>
+          {IS_DESKTOP && (
+            <Tooltip text={Messages.OPEN_FOLDER}>
+              {(props) => (
+                <Button
+                  {...props}
+                  size={Button.Sizes.NONE}
+                  look={Button.Looks.BLANK} 
+                  className="vx-header-button"
+                  onClick={() => {
+                    props.onClick();
+                    addons.plugins.openDirectory();
+                  }}
+                >
+                  <Icons.Folder />
+                </Button>
+              )}
+            </Tooltip>
+          )}
           <Tooltip text={Messages.UPLOAD}>
             {(props) => (
               <Button
@@ -138,11 +156,11 @@ export function Plugins() {
             size={SearchBar.Sizes.SMALL}
             onChange={(query) => {
               setQuery(query);
-              search = query;
+              queryStore.set("plugins", query);
             }}
             onClear={() => {
               setQuery("");
-              search = "";
+              queryStore.clear("plugins");
             }}
             autoFocus
           />
