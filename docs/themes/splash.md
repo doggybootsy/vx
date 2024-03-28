@@ -55,7 +55,7 @@ You can edit that file and it will update automatically (after a .1s debounce)
   
 6. In the `package.json` make its contents be `{"main":"./index.js"}`
 
-7. (optional but recommended) Make a copy of the `app` folder somewhere same like Documents
+7. (optional but recommended) Make a copy of the `app` folder somewhere safe like Documents
     * When Discord updates theres a chance it will reset your asar so you would need to redo all the steps up to here
     * Theres only one step you need todo if you did this. It is just step #2 and #3, then just add your `app` folder back to that folder
 
