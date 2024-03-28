@@ -84,7 +84,7 @@ require(`./${latest}.asar`);
     * You code should look like 
     ```js
     require("appdata like/.vx/app");
-    require("./core.asar");
+    module.exports = require("./core.asar");
     ```
     * appdata like being your full appdata folder path
 
