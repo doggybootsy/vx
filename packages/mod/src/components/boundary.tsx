@@ -69,6 +69,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     )
   }
 
+  static decorator<T extends typeof React.Component>(fallback?: React.ComponentType<React.PropsWithRef<T>>) {
+    return function(component: T): T {
+      return ErrorBoundary.wrap(component, fallback as any) as any;
+    }
+  }
+
   static wrap<P extends {}>(ComponentToWrap: React.ComponentType<P>, Fallback: React.ComponentType<P> = ErrorBoundary.Fallback): React.ComponentType<P> {
     class WrappedErrorBoundary extends Component<P> {
       static displayName: string;

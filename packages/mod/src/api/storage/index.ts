@@ -225,6 +225,7 @@ interface InternalData {
   "content-protection": boolean,
   "user-setting-shortcut": boolean,
   "preserve-query": boolean,
+  "vx-titlebar": boolean,
   "show-favicon": boolean,
   "last-loaded-locale": LocaleCodes,
   "trusted-domains": string[]

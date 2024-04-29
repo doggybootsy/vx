@@ -50,14 +50,14 @@ function CallDuration() {
       {Messages.CALL_DURATION.format({ time: simpleFormatTime(elapsed) })}
     </Components.Text>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
     find: "this.renderConnectionStatus()",
-    replace: "[$&,$enabled&&$react.createElement($self.CallDuration)]"
+    replace: "[$&,$enabled&&$jsx($self.CallDuration)]"
   },
   CallDuration: memo(ErrorBoundary.wrap(CallDuration)),
   styler

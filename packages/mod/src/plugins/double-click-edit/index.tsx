@@ -28,6 +28,6 @@ export default definePlugin({
         messageId,
         content: message.content
       });
-    };
+    }
   }
 });

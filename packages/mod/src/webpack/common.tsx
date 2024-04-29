@@ -3,7 +3,7 @@ export { default as moment } from "./moment";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { getProxyByKeys } from "./filters"
+import { getLazyByKeys, getProxyByKeys } from "./filters"
 import { GenericStore, getProxyStore } from "./stores";
 import { getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
@@ -79,6 +79,23 @@ export function dirtyDispatch(event: DispatchEvent): Promise<void> {
       resolve(FluxDispatcher.dispatch(event));
     });
   });
+}
+
+const FluxDispatcherPromise = getLazyByKeys([ "subscribe", "dispatch" ]);
+export function subscribeToDispatch<T extends DispatchEvent = DispatchEvent>(eventName: string, listener: (event: T) => void) {
+  const controller = new AbortController();
+
+  FluxDispatcherPromise.then(() => {
+    if (controller.signal.aborted) return;
+    
+    FluxDispatcher.subscribe(eventName, listener);
+
+    controller.signal.addEventListener("abort", () => {
+      FluxDispatcher.unsubscribe(eventName, listener);
+    });
+  });
+
+  return () => controller.abort();
 }
 
 export type LocaleCodes = "en-US" | "en-GB" | "zh-CN" | "zh-TW" | "cs" | "da" | "nl" | "fr" | "de" | "el" | "hu" | "it" | "ja" | "ko" | "pl" | "pt-PT" | "pt-BR" | "ru" | "sk" | "es-ES" | "es-419" | "sv-SE" | "tr" | "bg" | "uk" | "fi" | "no" | "hr" | "ro" | "lt" | "th" | "vi" | "hi" | "he" | "ar" | "id";

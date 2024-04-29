@@ -21,7 +21,7 @@ interface MenuItemRenderProps {
   isFocused: boolean
 };
 
-type MenuItemLabelAndRenderProps = { label: string } | { render(props: MenuItemRenderProps): React.ReactNode };
+type MenuItemLabelAndRenderProps = { label: React.ReactNode } | { render(props: MenuItemRenderProps): React.ReactNode };
 
 interface BaseMenuItemProps extends Record<string, any> {
   id: string,

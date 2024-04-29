@@ -124,7 +124,7 @@ export function getPlugin(id: string) {
   }
 
   return null;
-};
+}
 
 export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {  
   const plugin = new Plugin(exports);

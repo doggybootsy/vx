@@ -64,7 +64,7 @@ function PIP() {
       <Icons.PIP />
     </div>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
@@ -73,7 +73,7 @@ export default definePlugin({
     {
       match: "this.renderVideo()",
       find: /this\.renderVideo\(\)/g,
-      replace: "[$enabled&&$react.createElement($self.PIP),$&]"
+      replace: "[$enabled&&$jsx($self.PIP),$&]"
     }
   ],
   PIP: ErrorBoundary.wrap(PIP),

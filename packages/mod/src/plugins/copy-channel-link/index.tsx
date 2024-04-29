@@ -40,7 +40,7 @@ export default definePlugin({
   patches: {
     match: "renderAcceptSuggestionButton",
     find: /\[(.{1,3}&&this\.renderAcceptSuggestionButton\(\))/g,
-    replace: "[$enabled&&$react.createElement($self.CopyButton, this.props),$1"
+    replace: "[$enabled&&$jsx($self.CopyButton, this.props),$1"
   },
   CopyButton: ErrorBoundary.wrap(CopyButton)
 });

@@ -224,7 +224,8 @@ const RequireAllPluginsPlugin = (desktop) => ({
       }))
         .filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory())
         .filter(dir => !dir.endsWith(".ignore"))
-        .filter(dir => !dir.endsWith(desktop ? ".web" : ".app"));
+        .filter(dir => !dir.endsWith(desktop ? ".web" : ".app"))
+        .filter(dir => dir !== "shared");
         
       return {
         resolveDir: "./packages/mod/src",

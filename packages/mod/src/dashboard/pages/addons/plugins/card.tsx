@@ -6,7 +6,6 @@ import { LayerManager, openUserContextMenu } from "@webpack/common";
 import { useInternalStore, useUser } from "../../../../hooks";
 import { SafePlugin } from ".";
 import { pluginStore } from "../../../../addons/plugins";
-import { openWindow } from "./popout";
 import { internalDataStore } from "../../../../api/storage";
 import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";

@@ -84,7 +84,7 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
       </div>
     </div>
   )
-};
+}
 
 function sort(a: FileType, b: FileType) {
   if (a.dir && b.dir) return a.name.localeCompare(b.name);
@@ -396,4 +396,4 @@ function ZipModal(props: ZipModalProps) {
       </ModalComponents.ModalFooter>
     </ModalComponents.ModalRoot>
   )
-};
+}

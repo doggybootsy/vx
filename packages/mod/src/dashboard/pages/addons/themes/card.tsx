@@ -55,10 +55,9 @@ export function ThemeCard({ id }: { id: string }) {
   const [ isEnabled, setEnabled ] = useState(() => themeStore.isEnabled(id));
   const [ showFavicon, setShowFavicon ] = useState(() => internalDataStore.get("show-favicon") ?? true);
 
-  const meta = useMemo(() => themeStore.getMeta(id), [ ]);
-  const name = useMemo(() => themeStore.getAddonName(id), [ ]);
-  const version = useMemo(() => themeStore.getVersionName(id), [ ]);
-  const authors = useMemo(() => themeStore.getAuthors(id), [ ]);
+  const meta = themeStore.getMeta(id);
+
+  const authors = themeStore.getAuthors(id);
 
   useLayoutEffect(() => {
     if (!meta.website) return;
@@ -66,10 +65,10 @@ export function ThemeCard({ id }: { id: string }) {
 
     const controller = new AbortController();
 
-    const fetch = window.fetch(generateFaviconURL(meta.website), { mode: "no-cors" });
+    const fetch = window.fetch(generateFaviconURL(meta.website), { cache: "force-cache" });
 
     fetch.then((res) => {
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted) return;      
       setShowFavicon(res.ok);
     });
 
@@ -85,10 +84,10 @@ export function ThemeCard({ id }: { id: string }) {
         <div className="vx-addon-details">
           <div className="vx-addon-name">
             <span>
-              {name}
+              {themeStore.getAddonName(id)}
             </span>
             <span className="vx-addon-version">
-              {version}
+              {themeStore.getVersionName(id)}
             </span>
           </div>
           <div className="vx-addon-authors">

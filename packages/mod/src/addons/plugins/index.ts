@@ -321,7 +321,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       }
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'module.default.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'exports.default.${name}'`, error);
     }
 
     try {
@@ -329,7 +329,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       if (typeof method === "function") method();
     } 
     catch (error) {
-      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'module.${name}'`, error);
+      logger.createChild("Plugins").warn(`Plugin '${this.getAddonName(id)}' (${id}), errored while running 'exports.${name}'`, error);
     }
   }
   getSettings(id: string): React.ComponentType | null {
@@ -362,7 +362,7 @@ export const pluginStore = new class PluginStore extends InternalStore {
       if (!regex.test(whenToRun)) continue;
 
       ids.push(key);
-    };
+    }
 
     if (!ids.length) return;
     

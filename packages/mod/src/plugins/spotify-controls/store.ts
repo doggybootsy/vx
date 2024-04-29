@@ -155,12 +155,12 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
     return request;
   }
 
-  openPage(type: Spotify.PageType, id: string) {
-    if (settings.openInApp.get()) {
-      window.open(`spotify:${type}:${id}`);
-      return;
-    }
+  private getURL(type: Spotify.PageType, id: string) {
+    if (settings.openInApp.get()) return `spotify:${type}:${id}`;
+    return `https://open.spotify.com/${type}/${id}`;
+  }
 
-    window.open(`https://open.spotify.com/${type}/${id}`);
+  public openPage(type: Spotify.PageType, id: string) {
+    window.open(this.getURL(type, id));
   }
 }

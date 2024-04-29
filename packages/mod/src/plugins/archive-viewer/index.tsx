@@ -15,7 +15,7 @@ export default definePlugin({
   patches: {
     match: ".spoilerRemoveAttachmentButton:",
     find: /(=(.{1,3})=>.+?hoverButtonGroup,.+?children:)\[(.+?)\]/,
-    replace: "$1[$enabled&&$react.createElement($self.ZipButton,$2),$3]"
+    replace: "$1[$enabled&&$jsx($self.ZipButton,$2),$3]"
   },
   ZipButton: memo(ZipButton),
   styler

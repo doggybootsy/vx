@@ -15,16 +15,16 @@ function compareMain(versionA: string, versionB: string) {
       const nn = Number(b[index]);
       
       states[i] = an - nn;
-    };
-  };
+    }
+  }
   
   for (const state of states) {
     if (state >= 1) return -1;
     if (state <= -1) return 1;
-  };
+  }
 
   return 0;
-};
+}
 
 function comparePrelease(versionA: string, versionB: string) {
   const a = versionA.match(PreReleaseRegex);
@@ -46,8 +46,8 @@ function comparePrelease(versionA: string, versionB: string) {
   if (state >= 1) return -1;
   if (state <= -1) return 1;
   return 0;
-};
+}
 
 export function compare(versionA: string, versionB: string) {
   return compareMain(versionA, versionB) || comparePrelease(versionA, versionB);
-};
+}

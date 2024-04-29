@@ -71,7 +71,7 @@ addPlainTextPatch(
     identifier: "VX(loading-logo)",
     match: "opacity:this.state.opacity},children:[",
     find: /opacity:this\.state\.opacity},children:\[/,
-    replace: `$&$react.createElement("div",{className:"vx-loader-icon",title:"VX v${env.VERSION}",children:$react.createElement($vx.components.Icons.Logo)}),`
+    replace: `$&$jsx("div",{className:"vx-loader-icon",title:"VX v${env.VERSION}",children:$jsx($vx.components.Icons.Logo)}),`
   },
   // Prevents localStorage and sessionStorage from getting deleted
   ...[ "localStorage", "sessionStorage" ].map((type) => ({

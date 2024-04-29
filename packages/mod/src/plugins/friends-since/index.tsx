@@ -9,7 +9,6 @@ const Components = getProxyByKeys([ "Heading", "Text" ]);
 const Section = getProxyByStrings<React.FunctionComponent<{ children: React.ReactNode }>>([ ",lastSection:", ".lastSection]:" ]);
 
 const sectionClasses = getProxyByKeys([ "body", "title", "clydeMoreInfo" ]);
-const classes = getProxyByKeys([ "memberSinceContainer", "discordIcon" ]);
 
 const userProfileUtils = getProxyByKeys<{
   getCreatedAtDate(timeStamp: number | string | Date): string
@@ -28,26 +27,24 @@ function FriendsSince({ userId, headingClassName, textClassName }: { userId: str
   if (!since) return null;
 
   return (
-    <>
+    <div>
       <Components.Heading variant="eyebrow" className={headingClassName}>
         {Messages.FRIENDS_SINCE}
       </Components.Heading>
-      <div className={classes.memberSinceContainer}>
-        <Components.Text variant="text-sm/normal" className={textClassName}>
-          {since}
-        </Components.Text>
-      </div>
-    </>
-  );
-};
+      <Components.Text variant="text-sm/normal" className={textClassName}>
+        {since}
+      </Components.Text>
+    </div>
+  )
+}
 
-function FriendsSinceSection({ userId }: { userId: string }) {
+function FriendsSinceSection({ userId }: { userId: string }) {  
   return (
     <Section>
       <FriendsSince userId={userId} headingClassName={sectionClasses.title} textClassName={sectionClasses.body} />
     </Section>
   )
-};
+}
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
@@ -56,14 +53,14 @@ export default definePlugin({
     {
       identifier: "popout",
       match: "isUsingGuildBio:null",
-      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{userId:(.{1,3}\.id),guild:.{1,3},guildMember:.{1,3}}\)/,
-      replace: "$&,$enabled&&$react.createElement($self.FriendsSinceSection,{userId:$1})"
+      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{user:(.{1,3}),guild:.{1,3},guildMember:.{1,3},showBorder:.+?}\),/,
+      replace: "$enabled&&$jsx($self.FriendsSinceSection,{userId:$1.id}),$&"
     },
     {
       identifier: "modal",
       match: ".ConnectedUserAccounts,",
       find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
-      replace: "$&,$enabled&&$react.createElement($self.FriendsSince,$1)"
+      replace: "$&,$enabled&&$jsx($self.FriendsSince,$1)"
     }
   ],
   FriendsSinceSection: ErrorBoundary.wrap(FriendsSinceSection),

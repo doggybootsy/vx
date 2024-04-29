@@ -55,7 +55,7 @@ export default definePlugin({
   patches: [
     {
       find: "this.renderPlayIcon()",
-      replace: "$&,$enabled&&$react.createElement($self.Loop)"
+      replace: "$&,$enabled&&$jsx($self.Loop)"
     }
   ],
   Loop: ErrorBoundary.wrap(Loop),

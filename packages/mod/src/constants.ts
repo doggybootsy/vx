@@ -3,11 +3,9 @@ export interface Developer {
   discord: string
 };
 
-type Developers = Record<string, Developer>;
-
-export const Developers = {
+export const Developers: Record<string, Developer> = {
   doggybootsy: {
     username: "doggybootsy",
     discord: "515780151791976453"
   }
-} satisfies Developers;
+};
