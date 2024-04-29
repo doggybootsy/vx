@@ -211,7 +211,7 @@ export default definePlugin({
   requiresRestart: false,
   patches: {
     find: "this.renderEmbedContent()",
-    replace: "$enabled&&$self.shouldReplaceContent(this.props)?$react.createElement($self.YoutubePlayer,{embed:this.props.embed,renderEmbedContent:()=>this.renderEmbedContent()}):$&"
+    replace: "$enabled&&$self.shouldReplaceContent(this.props)?$jsx($self.YoutubePlayer,{embed:this.props.embed,renderEmbedContent:()=>this.renderEmbedContent()}):$&"
   },
 
   styler,

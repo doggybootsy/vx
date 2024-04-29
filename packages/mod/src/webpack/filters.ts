@@ -29,12 +29,15 @@ export function not(filter: Webpack.Filter): Webpack.Filter {
   };
 }
 
+const hook = Symbol.for("vx.patcher.hook");
 export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
   return (exports) => {
     if (!(exports instanceof Function)) return;
+    // Check for patch
+    const originalFunction = hook in exports ? exports[hook].original : exports;
 
     try {
-      const stringed = Function.prototype.toString.call(exports);
+      const stringed = Function.prototype.toString.call(originalFunction);
       for (const string of strings) {
         if (!stringed.includes(string)) return;
       }

@@ -116,11 +116,27 @@ declare module Spotify {
   type PageType = "artist" | "album" | "track";
 }
 
+interface RecordingOptions {
+  echoCancellation?: boolean,
+  noiseCancellation?: boolean
+}
+
+interface DiscordNativeModules {
+  voice: {
+    startLocalAudioRecording(options: RecordingOptions, callback: (ok: boolean) => void): void;
+    stopLocalAudioRecording(callback: (filename: string, size: number) => void): void;
+  }
+}
+
 interface DiscordNative {
   window: {
     USE_OSX_NATIVE_TRAFFIC_LIGHTS: boolean,
     supportsContentProtection?(): boolean,
     setContentProtection?(enabled: boolean): void
+  },
+  nativeModules: {
+    ensureModule(module: `discord_${string}`): Promise<void>,
+    requireModule<K extends keyof DiscordNativeModules>(module: `discord_${K}`): DiscordNativeModules[K]
   }
 }
 

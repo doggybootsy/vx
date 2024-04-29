@@ -106,17 +106,17 @@ export function vxRequire(path: string) {
     case "vx:styler": return require("vx:styler");
     case "vx:self": return require("vx:self");
     
-    case "@webpack": return require("@webpack");
-    case "@webpack/api": return require("@webpack/api");
-    case "@webpack/common": return require("@webpack/common");
-    case "@webpack/filters": return require("@webpack/filters");
-    case "@webpack/lazy": return require("@webpack/lazy");
-    case "@webpack/patches": return require("@webpack/patches");
-    case "@webpack/searching": return require("@webpack/searching");
-    case "@webpack/shared": return require("@webpack/shared");
-    case "@webpack/stores": return require("@webpack/stores");
-    case "@webpack/util": return require("@webpack/util");
-    case "@webpack/webpack": return require("@webpack/webpack");
+    case "vx:webpack": return require("@webpack");
+    case "vx:webpack/api": return require("@webpack/api");
+    case "vx:webpack/common": return require("@webpack/common");
+    case "vx:webpack/filters": return require("@webpack/filters");
+    case "vx:webpack/lazy": return require("@webpack/lazy");
+    case "vx:webpack/patches": return require("@webpack/patches");
+    case "vx:webpack/searching": return require("@webpack/searching");
+    case "vx:webpack/shared": return require("@webpack/shared");
+    case "vx:webpack/stores": return require("@webpack/stores");
+    case "vx:webpack/util": return require("@webpack/util");
+    case "vx:webpack/webpack": return require("@webpack/webpack");
 
     case "console":
     case "node:console": return console;
@@ -133,9 +133,11 @@ export function vxRequire(path: string) {
 
     case "moment": return api.common.moment;
 
-    case "common": return { dom: require("common/dom"), util: require("common/util") };
-    case "common/dom": return require("common/dom");
-    case "common/util": return require("common/util");
+    case "vx:common": return { dom: require("common/dom"), util: require("common/util") };
+    case "vx:common/dom": return require("common/dom");
+    case "vx:common/util": return require("common/util");
+
+    case "vx": return window.VX;
   
     // vxi === vx internal
     case "vxi:native": return require("./native");

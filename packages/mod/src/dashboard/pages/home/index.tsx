@@ -14,6 +14,7 @@ export function Home() {
   const [ userSettingShortcut, setUserSettingShortcut ] = useState(() => internalDataStore.get("user-setting-shortcut") ?? true);
   const [ preserveQuery, setPreserveQuery ] = useState(() => internalDataStore.get("preserve-query") ?? true);
   const [ showFavicon, setShowFavicon ] = useState(() => internalDataStore.get("show-favicon") ?? true);
+  const [ addVXTitleBarButton, setVXTitleBarButton ] = useState(() => internalDataStore.get("vx-titlebar") ?? false);
 
   return (
     <Panel title="Home">
@@ -117,6 +118,19 @@ export function Home() {
         note={Messages.SHOW_FAVICON_NOTE}
       >
         {Messages.SHOW_FAVICON}
+      </FormSwitch>
+
+      <FormSwitch
+        disabled={window.VXNative?.app.platform !== "win32"}
+        value={addVXTitleBarButton}
+        onChange={(value) => {
+          setVXTitleBarButton(value);
+          internalDataStore.set("vx-titlebar", value);
+        }}
+        style={{ marginTop: 20 }}
+        note={Messages.ADD_VX_TO_TITLEBAR_NOTE}
+      >
+        {Messages.ADD_VX_TO_TITLEBAR}
       </FormSwitch>
     </Panel>
   )

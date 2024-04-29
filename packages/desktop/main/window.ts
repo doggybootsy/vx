@@ -1,5 +1,4 @@
-import electron, { BrowserWindowConstructorOptions, systemPreferences } from "electron";
-import { existsSync, writeFileSync } from "node:fs";
+import electron, { BrowserWindowConstructorOptions } from "electron";
 import path from "node:path";
 import { UndefinedSymbol, windowStorage } from "./storage";
 
@@ -13,6 +12,8 @@ export class BrowserWindow extends electron.BrowserWindow {
     return window[preloadSymbol];
   }
   constructor(opts?: BrowserWindowConstructorOptions) {
+    console.log(opts?.webPreferences?.devTools);
+    
     if (!opts || !opts.webPreferences || !opts.webPreferences.preload) {
       super(opts);
       return;

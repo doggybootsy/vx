@@ -29,7 +29,7 @@ export default definePlugin({
   patches: {
     match: "showCommunicationDisabledStyles:",
     find: /,(.{1,3}&&!.{1,3}&&\(.+?getMessageTimestampId\)\((.{1,3})\))/,
-    replace: ",$enabled&&$react.createElement($self.DisplayUsername,$2),$1"
+    replace: ",$enabled&&$jsx($self.DisplayUsername,$2),$1"
   },
   styler,
   DisplayUsername: ErrorBoundary.wrap(DisplayUsername)

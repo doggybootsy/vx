@@ -682,10 +682,12 @@ export function getDiscordTag(user: User) {
   ].filter((m) => m).join("");
 }
 
-export function generateFaviconURL(website: string): string {
-  const url = new URL("https://www.google.com/s2/favicons");
-  url.searchParams.set("sz", "64");
-  url.searchParams.set("domain", website);
+export function generateFaviconURL(website: string, size = 64): string {
+  const url = new URL("https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL");
+  
+  url.searchParams.set("url", website);
+  url.searchParams.set("size", String(size));
+
   return url.href;
 }
 
@@ -693,42 +695,17 @@ export function toArray<T>(itemOrItems: T | T[]): T[] {
   return Array.isArray(itemOrItems) ? itemOrItems : [ itemOrItems ];
 }
 
-export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory: () => T) {
-  const sym = Symbol("vx.flux.component");
-
+export function createFluxComponent<P = {}, S = {}, SS = {}, T = any>(stores: (FluxStore | InternalStore)[] | FluxStore | InternalStore, factory: () => T) {
   const $stores = toArray(stores);
 
-  class FluxComponent<P = {}, S = {},  SS = {}> extends React.Component<P, S, SS> {
+  class FluxComponent extends React.Component<P, S, SS> {
     constructor(props: P) {
       super(props);
 
       this.forceUpdateFluxState = this.forceUpdateFluxState.bind(this);
-      
-      const { componentWillUnmount, componentDidMount } = this;
-
-      this.componentDidMount = function() {
-        componentDidMount.call(this);
-
-        if (!this[sym].componentDidMount) {
-          logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
-          FluxComponent.prototype.componentDidMount.call(this);
-        }
-      }
-      this.componentWillUnmount = function() {
-        componentWillUnmount.call(this);
-
-        if (!this[sym].componentWillUnmount) {
-          logger.createChild("FluxComponent").warn("Original 'componentDidMount' wasn't ran! Make sure to do 'super.componentDidMount()'!");
-          FluxComponent.prototype.componentWillUnmount.call(this);
-        }
-      }
     }
 
     public readonly fluxState: T = factory();
-    private readonly [sym] = {
-      componentDidMount: false,
-      componentWillUnmount: false
-    }
     
     protected forceUpdateFluxState(callback?: () => void) {
       (this as any).fluxState = factory();
@@ -736,16 +713,10 @@ export function createFluxComponent<T>(stores: FluxStore[] | FluxStore, factory:
     }
 
     public componentDidMount(): void {
-      for (const store of $stores) {
-        store.addChangeListener(this.forceUpdateFluxState);
-      }
-      this[sym].componentDidMount = true;
+      for (const store of $stores) store.addChangeListener(this.forceUpdateFluxState);
     }
     public componentWillUnmount(): void {
-      for (const store of $stores) {
-        store.removeChangeListener(this.forceUpdateFluxState);
-      }
-      this[sym].componentWillUnmount = true;
+      for (const store of $stores) store.removeChangeListener(this.forceUpdateFluxState);
     }
   }
 
@@ -879,4 +850,18 @@ export function setRefValue<T>(ref: React.Ref<T> | void, value: T) {
 
 export function compileFunction<T extends FunctionType>(code: string, args: string[]): T {
   return new Function(...args, code) as T;
+}
+
+type RGB = `rgb(${number}, ${number}, ${number})`;
+
+export function getCSSVarColor(variable: `--${string}`, node: Element = document.body): RGB {
+  const div = document.createElement("div");
+  div.style.color = `var(${variable})`;
+  div.style.display = "none !important";
+  
+  node.append(div);
+  const color = getComputedStyle(div).color;
+  div.remove();
+  
+  return color as any;
 }

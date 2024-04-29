@@ -505,3 +505,13 @@ export function Spotify(props: IconProps) {
     </svg>
   )
 }
+
+export function Send(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "Send");
+
+  return (
+    <svg className={className} width={width} height={height} aria-hidden="true" role="img" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill={color} d="M6.6 10.02 14 11.4a.6.6 0 0 1 0 1.18L6.6 14l-2.94 5.87a1.48 1.48 0 0 0 1.99 1.98l17.03-8.52a1.48 1.48 0 0 0 0-2.64L5.65 2.16a1.48 1.48 0 0 0-1.99 1.98l2.94 5.88Z" />
+    </svg>
+  )
+}

@@ -83,6 +83,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
       if (typeof replace.replace === "string") {
         let replacer = replace.replace
           .replace(/\$react/g, "window.VX.React")
+          .replace(/\$jsx/g, "window.VX.React.createElement")
           .replace(/\$vx/g, "window.VX");
 
         if (patch._self) {

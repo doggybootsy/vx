@@ -28,7 +28,7 @@ addPlainTextPatch(
     identifier: "VX(titlebar)",
     match: ".wordmarkWindows,",
     find: /(,.{1,3}=(.{1,3})=>{let.+?\.default,{}\)}\),.+?)\]/,
-    replace: "$1,$react.createElement($vx._self.TitlebarButton,$2)]"
+    replace: "$1,$jsx($vx._self.TitlebarButton,$2)]"
   }
 );
 
@@ -45,8 +45,9 @@ export function TitlebarButton(props: { windowKey?: string }) {
     });
 
     return () => controller.abort();
-  }, [ ]);
-  
+  }, [ ]);  
+
+  if (!internalDataStore.use("vx-titlebar")) return;
   if (typeof props.windowKey === "string") return;
 
   return (

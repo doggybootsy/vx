@@ -39,8 +39,8 @@ export default definePlugin({
   patches: [
     {
       identifier: "panel",
-      find: ".default.Messages.ACCOUNT_A11Y_LABEL,children:[",
-      replace: "$&$enabled&&$react.createElement($self.SpotifyPanel),"
+      find: /\("section",({className:.{1,3}\.panels,"aria-label":.{1,3}\.default\.Messages\.ACCOUNT_A11Y_LABEL,)/,
+      replace: "($self.Section,$1"
     },
     {
       identifier: "dispatch-more-info",
@@ -50,7 +50,17 @@ export default definePlugin({
     }
   ],
   styler,
-  SpotifyPanel: ErrorBoundary.wrap(SpotifyPanel),
+  Section(props: { children: React.ReactElement[] }) {
+    props.children.splice(
+      props.children.length - 1, 
+      0,
+      <ErrorBoundary>
+        <SpotifyPanel />
+      </ErrorBoundary>
+    );
+
+    return <section {...props} />;
+  },
   fluxEvents: {
     SPOTIFY_PLAYER_STATE(data) {      
       if (data.currentlyPlayingType === "unknown") return;
