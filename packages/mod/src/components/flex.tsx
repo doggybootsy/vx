@@ -11,7 +11,7 @@ interface Flex extends React.FunctionComponent<FlexProps> {
 
 const FlexModule = getProxyByKeys<Flex>([ "Align", "Child", "Wrap" ]);
 
-interface FlexProps extends React.DetailedHTMLProps<React.HTMLProps<HTMLDivElement>, HTMLDivElement> {
+interface FlexProps extends GetComponentProps<"div"> {
   className?: string,
   justify?: string,
   direction?: string,
@@ -24,7 +24,7 @@ interface FlexProps extends React.DetailedHTMLProps<React.HTMLProps<HTMLDivEleme
   gap?: React.CSSProperties["gap"]
 };
 
-interface FlexChildProps extends React.DetailedHTMLProps<React.HTMLProps<HTMLDivElement>, HTMLDivElement> {
+interface FlexChildProps extends GetComponentProps<"div"> {
   className?: string,
   wrap?: string,
   style?: React.CSSProperties,

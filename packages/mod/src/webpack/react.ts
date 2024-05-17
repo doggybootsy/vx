@@ -4,19 +4,21 @@ import { getLazyByKeys } from "./filters";
 
 type ReactType = typeof import("react");
 
+let $React: ReactType;
+
 export const Suspense = Symbol.for("react.suspense") as unknown as ReactType["Suspense"];
 export const Fragment = Symbol.for("react.fragment") as unknown as ReactType["Fragment"];
 
-export const useState = proxyCache(() => React.useState);
-export const useReducer = proxyCache(() => React.useReducer);
-export const useMemo = proxyCache(() => React.useMemo);
-export const useEffect = proxyCache(() => React.useEffect);
-export const useRef = proxyCache(() => React.useRef);
-export const useDeferredValue = proxyCache(() => React.useDeferredValue);
-export const useCallback = proxyCache(() => React.useCallback);
-export const useLayoutEffect = proxyCache(() => React.useLayoutEffect);
-export const useInsertionEffect = proxyCache(() => React.useInsertionEffect);
-export const useContext = proxyCache(() => React.useContext);
+export const useState = proxyCache(() => $React.useState);
+export const useReducer = proxyCache(() => $React.useReducer);
+export const useMemo = proxyCache(() => $React.useMemo);
+export const useEffect = proxyCache(() => $React.useEffect);
+export const useRef = proxyCache(() => $React.useRef);
+export const useDeferredValue = proxyCache(() => $React.useDeferredValue);
+export const useCallback = proxyCache(() => $React.useCallback);
+export const useLayoutEffect = proxyCache(() => $React.useLayoutEffect);
+export const useInsertionEffect = proxyCache(() => $React.useInsertionEffect);
+export const useContext = proxyCache(() => $React.useContext);
 
 export function createContext<T>(value: T): React.Context<T> {
   const context = {
@@ -39,10 +41,10 @@ export function createContext<T>(value: T): React.Context<T> {
   return context as unknown as React.Context<T>;
 };
 
-export const Children = proxyCache(() => React.Children);
+export const Children = proxyCache(() => $React.Children);
 
-export const createElement = proxyCache(() => React.createElement);
-export const cloneElement = proxyCache(() => React.cloneElement);
+export const createElement = proxyCache(() => $React.createElement);
+export const cloneElement = proxyCache(() => $React.cloneElement);
 export function isValidElement(component: any): component is React.ReactElement {
   if (typeof component !== "object") return false;
   if (component === null) return false;
@@ -50,33 +52,29 @@ export function isValidElement(component: any): component is React.ReactElement 
 }
 
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<{ default: T }>): React.LazyExoticComponent<T> {
-  return proxyCache(() => React.lazy(factory), true);
+  return proxyCache(() => $React.lazy(factory), true);
 }
 
 export function memo<T extends React.ComponentType<any>>(type: T, compare?: (prevProps: Readonly<React.ComponentProps<T>>, nextProps: Readonly<React.ComponentProps<T>>) => boolean): React.MemoExoticComponent<T> {
-  return proxyCache(() => React.memo(type, compare), true);
+  return proxyCache(() => $React.memo(type, compare), true);
 }
 
 export function forwardRef<T, P = {}>(render: React.ForwardRefRenderFunction<T, P>): React.ForwardRefExoticComponent<React.PropsWithoutRef<P> & React.RefAttributes<T>> {
   // Breaks the whole mod wtf??
-  return proxyCache(() => React.forwardRef(render), true);
-  return {
-    $$typeof: Symbol.for("react.forward_ref"),
-    render
-  } as any
+  return proxyCache(() => $React.forwardRef(render), true);
 }
 
 export function startTransition(scope: React.TransitionFunction) {
-  return React.startTransition(scope);
+  return $React.startTransition(scope);
 }
 
 export function useSyncExternalStore(subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => unknown, getServerSnapshot?: (() => unknown) | undefined) {
-  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return $React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 class BaseComponent {
   constructor(...args: Parameters<ReactType["Component"]>) {
-    const component = Reflect.construct(React.Component, args);
+    const component = Reflect.construct($React.Component, args);
     // Can't do it to 'this' directly
     Object.setPrototypeOf(Object.getPrototypeOf(this), component);
   }
@@ -85,7 +83,7 @@ class BaseComponent {
     // Call once
     if (!reactExists) return hasInstance(BaseComponent, instance);
 
-    return hasInstance(React.Component, instance) || hasInstance(BaseComponent, instance);
+    return hasInstance($React.Component, instance) || hasInstance(BaseComponent, instance);
   }
   
   static {
@@ -119,6 +117,7 @@ let React = {
 
 getLazyByKeys<ReactType>([ "createElement", "memo" ]).then((react) => {
   React = react;
+  $React = react;
 });
 
 export default new Proxy(React, {

@@ -8,6 +8,7 @@ import { loadExtensions } from "./extensions";
 
 import "./ipc";
 import "./request";
+import "./colors";
 
 replaceNodeModuleExports("electron", { ...electron, BrowserWindow });
 

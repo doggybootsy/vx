@@ -2,7 +2,7 @@ import { className } from "../util";
 import ErrorBoundary from "./boundary";
 import { MegaModule } from "./util";
 
-type HTMLDivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+type HTMLDivProps = GetComponentProps<"div">;
 
 interface SpinnerProps extends Omit<HTMLDivProps, "children"> {
   type?: typeof Type[keyof typeof Type], 

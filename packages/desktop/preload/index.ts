@@ -2,10 +2,12 @@ import electron from "electron";
 import path from "node:path";
 import { readFileSync } from "node:fs";
 import { waitForNode } from "common/dom";
+import { injectOSVars } from "common/preloads";
+import { logger } from "vx:logger";
 
 import "./native";
 import "./discordnative";
-import { logger } from "vx:logger";
+
 
 waitForNode("head").then(() => {
   const script = document.createElement("script");
@@ -18,6 +20,9 @@ waitForNode("head").then(() => {
 
   document.head.append(script, style);
 });
+
+
+injectOSVars();
 
 try {
   require(electron.ipcRenderer.sendSync("@vx/preload"));

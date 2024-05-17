@@ -13,7 +13,7 @@ export function bySource(...sources: string[]): Webpack.Filter {
   };
 }
 export function combine(...filters: Webpack.ExportedOnlyFilter[]): Webpack.ExportedOnlyFilter
-export function combine(...filters: (Webpack.ExportedOnlyFilter | Webpack.Filter)[]): Webpack.ExportedOnlyFilter
+export function combine(...filters: (Webpack.ExportedOnlyFilter | Webpack.Filter)[]): Webpack.Filter
 export function combine(...filters: Webpack.Filter[]): Webpack.Filter {
   return (exports, module, id) => {
     for (const filter of filters) {
@@ -22,6 +22,7 @@ export function combine(...filters: Webpack.Filter[]): Webpack.Filter {
     return true;
   };
 }
+
 export function not(filter: Webpack.ExportedOnlyFilter): Webpack.ExportedOnlyFilter
 export function not(filter: Webpack.Filter): Webpack.Filter {
   return (exports, module, id) => {
@@ -33,8 +34,10 @@ const hook = Symbol.for("vx.patcher.hook");
 export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
   return (exports) => {
     if (!(exports instanceof Function)) return;
+
     // Check for patch
-    const originalFunction = hook in exports ? exports[hook].original : exports;
+    let originalFunction = hook in exports ? exports[hook].original : exports;
+    if ("__VXOriginal" in originalFunction) originalFunction = originalFunction.__VXOriginal;
 
     try {
       const stringed = Function.prototype.toString.call(originalFunction);
@@ -45,7 +48,7 @@ export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
     } 
     catch (error) {}
   }
-};
+}
 export function getByStrings<T extends Record<PropertyKey, any>>(strings: string[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byStrings(...strings), opts);
 }

@@ -10,8 +10,8 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {
-    patch("ViewServerAsUser", "user-context", (props, res) => {
-      if (!props.channel.guild_id) return;
+    patch("ViewServerAsUser", "user-context", (props, res) => {      
+      if (!props?.channel?.guild_id) return;
       const guild = GuildStore.getGuild(props.channel.guild_id);
       const member = GuildMemberStore.getMember(props.channel.guild_id, props.user.id);
 

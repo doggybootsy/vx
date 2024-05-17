@@ -71,9 +71,7 @@ function createAddonAPI(type: "themes" | "plugins") {
     const listeners = new Set<AddonListener>();
 
     function emit(eventName: ChokidarFileEvent, filename: string) {
-      for (const listener of listeners) {
-        listener(eventName, filename);
-      }
+      for (const listener of listeners) listener(eventName, filename);
     }
 
     baseObject = {
