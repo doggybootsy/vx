@@ -43,38 +43,39 @@ class AddonApi {
     this.disable = this.disable.bind(this);
     this.getName = this.getName.bind(this);
   }
+
   #store: typeof themeStore | typeof pluginStore;
   getAll() {
     return this.#store.keys();
-  };
+  }
   isEnabled(id: string) {
     if (!this.has(id)) return false;
 
     return this.#store.isEnabled(id);
-  };
+  }
   has(id: string) {
     return this.#store.keys().includes(id);
-  };
+  }
   toggle(id: string) {
     if (!this.has(id)) return false;
 
     this.#store.toggle(id);
     return this.#store.isEnabled(id);
-  };
+  }
   enable(id: string) {
     if (!this.has(id)) return false;
 
     if (this.#store.isEnabled(id)) return false;
     this.#store.enable(id);
     return true;
-  };
+  }
   disable(id: string) {
     if (!this.has(id)) return false;
 
     if (!this.#store.isEnabled(id)) return false;
     this.#store.disable(id);
     return true;
-  };
+  }
   getName(id: string) {
     if (!this.has(id)) return null;
 
@@ -142,7 +143,13 @@ export function vxRequire(path: string) {
     // vxi === vx internal
     case "vxi:native": return require("./native");
 
-    default: return require(path);
+    default: {
+      // if (webpack.webpackRequire) {
+      //   if (path in webpack.webpackRequire.m) return webpack.webpackRequire(path);
+      // }
+      
+      return require(path);
+    }
   }
 }
 

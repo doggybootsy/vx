@@ -1,11 +1,14 @@
 import electron from "electron";
-import { waitForNode } from "common/dom";
+import { createStyle, waitForNode } from "common/dom";
+import { logger } from "vx:logger";
+import { injectOSVars } from "common/preloads";
 
 import logo from "./logo.html";
-import { customCSS } from "./css";
+import { appendTo as customCSSAppendTo } from "./css";
 
 import "./keybinds";
-import { logger } from "vx:logger";
+
+injectOSVars();
 
 waitForNode("body").then((body) => {
   const clone = logo.querySelector("svg")!.cloneNode(true);
@@ -15,19 +18,16 @@ waitForNode("body").then((body) => {
 });
 
 waitForNode("head").then((head) => {
-  const style = document.createElement("style");
-  
-  style.id = "vx-logo-css";
-  style.appendChild(document.createTextNode(`#vx-logo {
+  const { appendTo } = createStyle("vx-logo-css", `#vx-logo {
     position: fixed;
     bottom: 4px;
     left: 4px;
     color: rgb(148, 155, 164);
-    z-index: 3000;
-  }`));
+    z-index: 30000;
+  }`);
 
-  head.appendChild(style);
-  head.appendChild(customCSS);
+  appendTo(head);
+  customCSSAppendTo(head);
 });
 
 try {

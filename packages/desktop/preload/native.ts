@@ -154,12 +154,8 @@ const native = {
           const file = zip.files[key];
           const path = join(dir, key);
           
-          if (file.dir) {
-            mkdirSync(path);
-          }
-          else {
-            writeFileSync(path, await file.async("nodebuffer"));
-          }
+          if (file.dir) mkdirSync(path);
+          else writeFileSync(path, await file.async("nodebuffer"));
         }
       }
 

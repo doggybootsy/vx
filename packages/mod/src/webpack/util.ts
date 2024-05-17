@@ -10,13 +10,12 @@ export function getProxy<T extends Record<PropertyKey, any>>(filter: Webpack.Fil
 export function getModuleIdBySource(...sources: string[]) {
   const filter = byStrings(...sources);
   
-  if (!webpackRequire) return;
+  if (!webpackRequire) return null;
 
   for (const key in webpackRequire.m) {
-    if (Object.prototype.hasOwnProperty.call(webpackRequire.m, key)) {
-      const module = webpackRequire.m[key];
-      
-      if (filter(module)) return key;
-    }
+    if (!Object.prototype.hasOwnProperty.call(webpackRequire.m, key)) continue;
+    if (filter(webpackRequire.m[key])) return key;
   }
+
+  return null;
 }

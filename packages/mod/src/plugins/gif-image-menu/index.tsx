@@ -11,7 +11,7 @@ const useImageActions = getProxyByStrings<(src: string) => any>([ ".AnalyticEven
 
 const [ abort, getSignal ] = createAbort();
 
-type DivHTMLElement = React.ReactElement<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "div">;
+type DivHTMLElement = React.ReactElement<GetComponentProps<"div">, "div">;
 
 function Menu({ src }: { src: string }) {
   const items = useImageActions(src);

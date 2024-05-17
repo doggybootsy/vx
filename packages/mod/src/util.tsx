@@ -1,8 +1,7 @@
-import React, { createElement, lazy as $lazy, Suspense, Component, useSyncExternalStore } from "react";
+import React, { Suspense, Component, useSyncExternalStore } from "react";
 import { getLazyByKeys, getProxyByKeys } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
-import { logger } from "vx:logger";
 import { Fiber } from "react-reconciler";
 import { FunctionType } from "typings";
 
@@ -19,7 +18,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
         if (prop === "prototype") return (cacheFactory() as any).prototype ?? Function.prototype;
         if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
         return Reflect.get(cacheFactory(), prop, r);
-      };
+      }
       continue;
     }
     if (key === "ownKeys") {
@@ -34,8 +33,8 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
     // @ts-expect-error
     handlers[key] = function(target, ...args) {
       // @ts-expect-error
-      return handler.apply(this, [ cacheFactory() ].concat(args));
-    };
+      return handler.apply(this, [ cacheFactory(), ...args ]);
+    }
   }
 
   const proxy = new Proxy(Object.assign(typeofIsObject ? {} : function() {}, {
@@ -58,14 +57,19 @@ export function cache<T>(factory: () => T): () => T {
   }
 }
 
-export function cacheComponent<P extends {}>(factory: () => React.FunctionComponent<P>): React.FunctionComponent<P> {
+export function cacheComponent<P extends {}>(factory: () => React.JSXElementConstructor<P>): React.JSXElementConstructor<P> {
   const cacheFactory = cache(factory);
 
-  return (props: P) => createElement(cacheFactory(), props);
+  return class extends Component<P> {
+    component = cacheFactory();
+    render() {
+      return <this.component {...this.props} />;
+    }
+  }
 }
 
 export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<T | { default: T }>): React.LazyExoticComponent<T> {
-  return $lazy(async () => {
+  return React.lazy(async () => {
     const result = await factory();
 
     if (result instanceof Object && "default" in result) return result;
@@ -73,23 +77,21 @@ export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<
   });
 }
 
-export function makeLazy<T extends React.ComponentType<any>>(opts: {
-  factory: () => Promise<T>,
-  fallback?: React.ComponentType<{}>,
+export function makeLazy<T extends React.ComponentType<any>, P extends GetComponentProps<T>>(opts: {
+  factory: () => Promise<{ default: T } | T>,
+  fallback?: React.ComponentType<P>,
   name?: string
-}): React.ComponentClass<React.ComponentPropsWithRef<T>> {
-  const { factory } = opts;
+}) {
+  const Lazy = lazy(opts.factory);
+  const Fallback: React.ComponentType<P> = opts.fallback ?? (() => null);
 
-  const Lazy = lazy(factory);
-  const Fallback = opts.fallback ?? (() => null);
-
-  class LazyComponent extends Component<React.ComponentPropsWithRef<T>> {
+  class LazyComponent extends Component<P> {
     static displayName: string = `VX(Suspense(${"name" in opts ? opts.name : "Unknown"}))`;
 
     render() {
       return (
-        <Suspense fallback={<Fallback />}>
-          {createElement(Lazy, this.props as React.ComponentPropsWithRef<T>)}
+        <Suspense fallback={<Fallback {...this.props} />}>
+          <Lazy {...this.props as any} />
         </Suspense>
       )
     }
@@ -117,7 +119,7 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
     if (typeof className === "string") {
       flattenedString.push(parseString(className));
       continue;
-    };
+    }
 
     for (const key in className) {
       if (Object.prototype.hasOwnProperty.call(className, key)) {

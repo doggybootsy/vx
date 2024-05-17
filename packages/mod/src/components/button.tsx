@@ -71,7 +71,7 @@ interface ButtonColors {
   CUSTOM: string
 }
 
-type HTMLButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+type HTMLButtonProps = GetComponentProps<"button">;
 type ButtonProps = HTMLButtonProps & {
   size?: string,
   color?: string,

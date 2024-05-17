@@ -3,7 +3,7 @@ import { ReactSpring } from "@webpack/common";
 
 type SpeedFunction = (isRevealing: boolean, gap: number, div: HTMLDivElement) => number;
 
-interface TextOverflowScrollerProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface TextOverflowScrollerProps extends GetComponentProps<"div"> {
   /**
    * @note Pixels per-second
    * @note {Infinity} is instant | {0} is dont move

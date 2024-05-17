@@ -20,14 +20,14 @@ export function waitForNode<T extends Element>(query: string, options: waitForNo
   
             observer.disconnect();
             return;
-          };
+          }
   
           const element = addedNode.querySelector<T>(query);
           if (element) {
             resolve(element);
 
             observer.disconnect();
-          };
+          }
         }
       }
     });
@@ -80,4 +80,23 @@ export function waitForElementRemoved(element: Node, options: waitForElementRemo
       });
     }
   });
+}
+
+export function createStyle(id: string, css: string = "") {
+  const style = document.createElement("style");
+  style.id = id;
+
+  const text = document.createTextNode(css);
+
+  style.append(text);
+
+  return {
+    style,
+    setCSS(css: string) {
+      text.textContent = css;
+    },
+    appendTo(node: Element) {
+      node.append(style);
+    }
+  }
 }

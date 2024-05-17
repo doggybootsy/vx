@@ -42,7 +42,7 @@ function getColorPicker() {
       
           const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
   
-          await webpackRequire!.el(loadId).then(webpackRequire!.bind(webpackRequire, matchedId));
+          await webpackRequire!.e(loadId).then(webpackRequire!.bind(webpackRequire, matchedId));
         };
 
         const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\1"}\)/;
@@ -53,7 +53,7 @@ function getColorPicker() {
     
         const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
 
-        return webpackRequire!.el(loadId).then(() => webpackRequire!(matchedId));
+        return webpackRequire!.e(loadId).then(() => webpackRequire!(matchedId));
       }
     });
   } 

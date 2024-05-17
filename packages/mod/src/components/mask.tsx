@@ -1,11 +1,11 @@
-type masks = "none" | "avatar-overlay" | "squircle";
+type Masks = "none" | "avatar-overlay" | "squircle";
 
-function createMaskURL(mask: masks) {
-  if (mask === "none") return "";
-  return `url(#vx-${mask}-mask)`;
+function createMaskURL<T extends Masks>(mask: T): T extends "none" ? "" : `url(#vx-${T}-mask)` {
+  if (mask === "none") return "" as any;
+  return `url(#vx-${mask}-mask)` as any;
 }
 
-export function Mask({ width, height, mask, children }: { mask: masks, width: number, height: number, children: React.ReactElement }) {
+export function Mask({ width, height, mask, children }: { mask: Masks, width: number, height: number, children: React.ReactElement }) {
   return (
     <svg
       height={height}

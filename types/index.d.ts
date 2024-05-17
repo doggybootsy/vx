@@ -1,10 +1,19 @@
+// Gets a react components props
+// Including HTML / SVG components
+type BasicDOMProps = React.ClassAttributes<Element> & React.AnchorHTMLAttributes<Element>;
+
+type GetPropsFromDOMFactory<T extends React.DetailedHTMLFactory> = T extends React.DetailedHTMLFactory<infer P, infer E> ? React.DetailedHTMLProps<P, E> : BasicDOMProps;
+type GetDOMProps<T extends string> = T extends keyof React.ReactHTML ? GetPropsFromDOMFactory<React.ReactHTML[T]> : T extends keyof React.ReactSVG ? GetPropsFromDOMFactory<React.ReactSVG[T]> : BasicDOMProps;
+
+type GetComponentProps<T> = T extends string ? GetDOMProps<T> : T extends React.ComponentType<infer P> ? P extends never ? {} : P extends unknown ? {} : NonNullable<P> : any;
+
 declare module Webpack {
   interface Require extends Function {
     <T = any>(id: PropertyKey): T;
     d(target, exports): void;
     c: Record<PropertyKey, Module>;
     m: Record<PropertyKey, RawModule>;
-    el(id: PropertyKey): Promise<unknown>;
+    e(id: PropertyKey): Promise<unknown>;
   };
   interface Module {
     id: PropertyKey,
@@ -135,7 +144,7 @@ interface DiscordNative {
     setContentProtection?(enabled: boolean): void
   },
   nativeModules: {
-    ensureModule(module: `discord_${string}`): Promise<void>,
+    ensureModule(module: `discord_${keyof DiscordNativeModules}`): Promise<void>,
     requireModule<K extends keyof DiscordNativeModules>(module: `discord_${K}`): DiscordNativeModules[K]
   }
 }

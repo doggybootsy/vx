@@ -44,7 +44,7 @@ document.addEventListener("readystatechange", () => {
 
 whenWebpackInit().then(() => pluginStore.initPlugins("webpack-ready"));
 
-waitForNode("body").then((body) => {
+waitForNode<HTMLBodyElement>("body").then((body) => {
   const svg = masks.querySelector("svg")!.cloneNode(true);
   body.append(svg);
 
