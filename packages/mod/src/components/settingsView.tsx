@@ -9,29 +9,29 @@ const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(Promise.all
 
 type Predicate = () => boolean;
 
-interface DividerSection {
+export interface DividerSection {
   section: "DIVIDER",
   predicate: Predicate
-};
-interface CustomSection {
+}
+export interface CustomSection {
   section: "CUSTOM",
   predicate: Predicate,
   element: React.ComponentType
-};
-interface HeaderSection {
+}
+export interface HeaderSection {
   section: "HEADER",
   predicate: Predicate,
   label: string
-};
-interface ViewSection {
+}
+export interface ViewSection {
   section: string,
   element: React.ComponentType,
   predicate: Predicate,
   label: string,
   icon: React.ReactNode
-};
+}
 
-type Section = DividerSection | CustomSection | HeaderSection | ViewSection;
+export type Section = DividerSection | CustomSection | HeaderSection | ViewSection;
 
 interface SettingsViewProps {
   sections: Section[],

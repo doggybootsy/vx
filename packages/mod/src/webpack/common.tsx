@@ -1,5 +1,6 @@
-export { default as React } from "./react";
-export { default as moment } from "./moment";
+export { default as React } from "react";
+export { default as moment } from "moment";
+export { default as ReactDOM } from "react-dom/client";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
@@ -11,8 +12,6 @@ import { Channel, User } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
 import { webpackRequire } from "@webpack";
 import { ErrorBoundary } from "../components";
-
-export const ReactDOM = getProxyByKeys<typeof import("react-dom")>([ "render", "hydrate", "createPortal" ]);
 
 type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses";
 
