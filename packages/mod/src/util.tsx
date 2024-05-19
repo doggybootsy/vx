@@ -77,11 +77,11 @@ export function lazy<T extends React.ComponentType<any>>(factory: () => Promise<
   });
 }
 
-export function makeLazy<T extends React.ComponentType<any>, P extends GetComponentProps<T>>(opts: {
-  factory: () => Promise<{ default: T } | T>,
+export function makeLazy<P extends {}>(opts: {
+  factory: () => Promise<{ default: React.ComponentType<P> } | React.ComponentType<P>>,
   fallback?: React.ComponentType<P>,
   name?: string
-}) {
+}): React.JSXElementConstructor<P extends {} ? any : P> {
   const Lazy = lazy(opts.factory);
   const Fallback: React.ComponentType<P> = opts.fallback ?? (() => null);
 
@@ -97,7 +97,7 @@ export function makeLazy<T extends React.ComponentType<any>, P extends GetCompon
     }
   }
 
-  return LazyComponent;
+  return LazyComponent as any;
 }
 
 interface classNameValueTypes {
@@ -628,7 +628,7 @@ export function getParents(element: Element | null): VXNodeList<Element> {
   return new VXNodeList(parents);
 }
 
-export function createAbort(): readonly [ (reason?: any) => void, () => AbortSignal ] {
+export function createAbort(): readonly [ abort: (reason?: any) => void, getSignal: () => AbortSignal ] {
   let controller = new AbortController();
 
   function abort(reason?: any) {

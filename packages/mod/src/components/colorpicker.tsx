@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { className, makeLazy, proxyCache } from "../util";
+import { className, compileFunction, makeLazy, proxyCache } from "../util";
 import { getModuleIdBySource, webpackRequire } from "@webpack";
 import ErrorBoundary from "./boundary";
 
@@ -34,26 +34,31 @@ function getColorPicker() {
       },
       factory: async () => {
         {
-          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\2",name:"GuildSettings"}\)/;
+          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(Promise\.all\(\[(.{1,3})\.e\("\d+"\),(?:\2\.e\("\d+"\),?){1,}\]\))\.then\(\2\.bind\(\2,"(\d+)"\)\),webpackId:"\d+",name:"GuildSettings"}\)/;
 
           const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
       
           const module = String(webpackRequire!.m[moduleId]!);
       
-          const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
-  
-          await webpackRequire!.e(loadId).then(webpackRequire!.bind(webpackRequire, matchedId));
+          const [, promiseString, requireKey, moduleKey ] = module.match(moduleIdRegex)!;
+
+          const load = compileFunction<(require: Webpack.Require) => Promise<void>>(`return ${promiseString}`, [ requireKey ]);
+
+          await load(webpackRequire!);
+          webpackRequire!(moduleKey);
         };
 
-        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>.{1,3}\..{1,3}\("(\d+(?:@\d+:\d+)?)"\).then\(.{1,3}.bind\(.{1,3},"(\d+?)"\)\),webpackId:"\1"}\)/;
+        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(.{1,3})\.e\("(\d+)"\)\.then\(\1\.bind\(\1,"(\d+)"\)\),webpackId:"\3"}\)/;
 
         const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format", ".DEFAULT_ROLE_COLOR,")!;
-    
+            
         const module = String(webpackRequire!.m[moduleId]!);
-    
-        const [, loadId, matchedId ] = module.match(moduleIdRegex)!;
+        
+        const [,, loadId, matchedId ] = module.match(moduleIdRegex)!;
+        
+        await webpackRequire!.e(loadId);
 
-        return webpackRequire!.e(loadId).then(() => webpackRequire!(matchedId));
+        return webpackRequire!(matchedId);
       }
     });
   } 

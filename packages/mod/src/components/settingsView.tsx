@@ -1,37 +1,38 @@
-import { getModuleIdBySource, webpackRequire, getByProtoKeys } from "@webpack";
+import { getModuleIdBySource, webpackRequire } from "@webpack";
 
-import { compileFunction, makeLazy, proxyCache } from "../util";
+import { compileFunction } from "../util";
 import ErrorBoundary from "./boundary";
 import { IconProps } from "./icons";
 import { Tooltip } from "./tooltip";
+import { Component } from "react";
 
 const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(Promise.all\(\[.+?\]\))\.then\((.{1,3})\.bind\(\2,"(\d+)"\)\),webpackId:"\3",name:"UserSettings"}\),/;
 
 type Predicate = () => boolean;
 
-interface DividerSection {
+export interface DividerSection {
   section: "DIVIDER",
   predicate: Predicate
-};
-interface CustomSection {
+}
+export interface CustomSection {
   section: "CUSTOM",
   predicate: Predicate,
   element: React.ComponentType
-};
-interface HeaderSection {
+}
+export interface HeaderSection {
   section: "HEADER",
   predicate: Predicate,
   label: string
-};
-interface ViewSection {
+}
+export interface ViewSection {
   section: string,
   element: React.ComponentType,
   predicate: Predicate,
   label: string,
   icon: React.ReactNode
-};
+}
 
-type Section = DividerSection | CustomSection | HeaderSection | ViewSection;
+export type Section = DividerSection | CustomSection | HeaderSection | ViewSection;
 
 interface SettingsViewProps {
   sections: Section[],
@@ -130,27 +131,55 @@ const sections = {
   }
 };
 
-function getSettingsView() {  
-  const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
+type SettingsViewComponent = React.ComponentType<SettingsViewProps>;
 
-  const module = String(webpackRequire!.m[moduleId]!);
+class WrappedSettingsView extends Component<SettingsViewProps, { SettingsView: SettingsViewComponent | null }> {
+  static resolve: (value: SettingsViewComponent) => void;
+  static promise = new Promise<SettingsViewComponent>((r) => this.resolve = r);
+  static inited = false;
   
-  const [, promiseString, requireKey, moduleKey ] = module.match(moduleIdRegex)!;
+  static async init() {
+    if (this.inited) return;
+    this.inited = true;
 
-  const load = compileFunction<(require: Webpack.Require) => Promise<void>>(`return ${promiseString}`, [ requireKey ]);
+    const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
   
-  return makeLazy({
-    name: "SettingsView",
-    factory: async () => {
-      await load(webpackRequire!);
-      webpackRequire!(moduleKey);
+    const module = String(webpackRequire!.m[moduleId]!);
+    
+    const [, promiseString, requireKey, moduleKey ] = module.match(moduleIdRegex)!;
+  
+    const load = compileFunction<(require: Webpack.Require) => Promise<void>>(`return ${promiseString}`, [ requireKey ]);
 
-      return getByProtoKeys<React.ComponentType<SettingsViewProps>>([ "renderSidebar", "getPredicateSections" ])!;
-    }
-  });
+    
+    await load(webpackRequire!);
+    webpackRequire!(moduleKey);
+
+    const id = getModuleIdBySource("renderSidebar", "getPredicateSections")!;    
+
+    this.resolve(webpackRequire!(id).default);
+  }
+
+  state: { SettingsView: SettingsViewComponent | null } = { SettingsView: null }
+
+  mounted = false;
+
+  componentDidMount(): void {
+    WrappedSettingsView.init();
+    this.mounted = true;
+
+    WrappedSettingsView.promise.then((SettingsView) => {
+      if (this.mounted) this.setState({ SettingsView });
+    });
+  }
+  componentWillUnmount(): void {
+    this.mounted = false;
+  }
+  
+  render() {
+    if (this.state.SettingsView) return <this.state.SettingsView {...this.props} />;
+    return null;
+  }
 }
-
-const WrappedSettingsView = proxyCache(getSettingsView);
 
 export function SettingsView(props: SettingsViewProps) {
   return (

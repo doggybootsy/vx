@@ -240,3 +240,8 @@ interface Node {
 }
 
 declare type ChokidarFileEvent = "add" | "addDir" | "change" | "unlink" | "unlinkDir";
+
+declare const __jsx__ = {
+  createElement: React["createElement"],
+  Fragment: React["Fragment"]
+}

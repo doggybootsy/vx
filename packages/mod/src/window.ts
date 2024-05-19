@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 
 import * as util from "./util";
 import * as components from "./components";
@@ -130,7 +131,7 @@ export function vxRequire(path: string) {
     case "react": return React;
 
     case "react-dom": 
-    case "react-dom/client": return api.common.ReactDOM;
+    case "react-dom/client": return ReactDOM;
 
     case "moment": return api.common.moment;
 
@@ -197,5 +198,6 @@ export const VX = {
     getLocale: I18n.getLocale,
     getLoadPromise: I18n.getLoadPromise,
     FormattedMessage: I18n.FormattedMessage
-  }
+  },
+  jsx: __jsx__
 };

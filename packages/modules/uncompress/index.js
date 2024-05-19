@@ -38,21 +38,6 @@ const uncompressJS = {};
 
   let _loaded_archive_formats = [];
 
-  // Polyfill for missing array slice method (IE 11)
-  if (typeof Uint8Array !== 'undefined') {
-  if (! Uint8Array.prototype.slice) {
-    Uint8Array.prototype.slice = function(start, end) {
-      let retval = new Uint8Array(end - start);
-      let j = 0;
-      for (let i=start; i<end; ++i) {
-        retval[j] = this[i];
-        j++;
-      }
-      return retval;
-    };
-  }
-  }
-
   // FIXME: This function is super inefficient
   function saneJoin(array, separator) {
     let retval = '';

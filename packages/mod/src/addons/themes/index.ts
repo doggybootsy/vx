@@ -2,13 +2,10 @@ import { addChangeListener, plugins } from "vx:styler";
 import { InternalStore, createAbort, download, getDiscordTag, showFilePicker } from "../../util";
 import { waitForNode } from "common/dom";
 import { closeWindow } from "../../api/window";
-import { DataStore } from "../../api/storage";
 import { Meta, getMeta, getMetaProperty } from "../meta";
 import { addons, transparency } from "../../native";
 import * as css from "common/css";
-import { eventNames } from "node:process";
 import { UserStore } from "@webpack/common";
-import { Messages } from "vx:i18n";
 
 export interface ThemeObject {
   css: string,

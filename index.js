@@ -58,47 +58,33 @@ function hashCode(str) {
 }
 
 /** @type {esbuild.Plugin} */
-const ReactPlugin = {
-  name: "react-plugin",
+const FakeNodeModules = {
+  name: "fake-node-modules-plugin",
   setup(build) {
+    const modules = [
+      "moment",
+      "react",
+      "react-dom",
+      "react-dom/client"
+    ];
+
     build.onResolve({
-      filter: /^react$/
-    }, () => ({
-      namespace: "react-plugin",
-      path: "react"
+      filter: new RegExp(`^(${modules.join("|")})$`)
+    }, (args) => ({
+      namespace: "fake-node-modules-plugin",
+      path: args.path
     }));
 
     build.onLoad({
-      filter: /.*/, namespace: "react-plugin"
+      filter: /.*/, namespace: "fake-node-modules-plugin"
     }, (args) => {
       return {
-        resolveDir: "./packages/mod/src",
-        contents: `export * from "@webpack/react.ts";export { default } from "@webpack/react.ts";`
+        resolveDir: "./packages/mod/src/fake_node_modules",
+        contents: `export * from "./${args.path}";export { default } from "./${args.path}";`
       }
     });
   }
-};
-/** @type {esbuild.Plugin} */
-const MomentPlugin = {
-  name: "moment-plugin",
-  setup(build) {
-    build.onResolve({
-      filter: /^moment$/
-    }, () => ({
-      namespace: "moment-plugin",
-      path: "moment"
-    }));
-
-    build.onLoad({
-      filter: /.*/, namespace: "moment-plugin"
-    }, (args) => {
-      return {
-        resolveDir: "./packages/mod/src",
-        contents: `export * from "@webpack/moment.ts";export { default } from "@webpack/moment.ts";`
-      }
-    });
-  }
-};
+}
 
 /** @type {esbuild.Plugin} */
 const HTMLPlugin = {
@@ -156,7 +142,7 @@ const ManagedCSSPlugin = {
     });
   }
 };
-/** @type {<T>(factory: () => T): () => T} */
+/** @type {<T>(factory: () => T) () => T} */
 function cache(factory) {
   const cache = { ref: null, hasValue: false };
 
@@ -195,12 +181,10 @@ const SelfPlugin = (desktop) => ({
       filter: /.*/, namespace: "self-plugin"
     }, () => ({
       contents: `
-      const env = ${JSON.stringify(env)};
-      const git = ${JSON.stringify(git())};
-      const $browser = typeof chrome === "object" ? chrome : typeof browser === "object" ? browser : null;
-      const IS_DESKTOP = ${desktop};
-
-      export { env, git, $browser as browser, IS_DESKTOP };
+      export const env = ${JSON.stringify(env)};
+      export const git = ${JSON.stringify(git())};
+      export const browser = global.chrome ?? global.browser ?? {};
+      export const IS_DESKTOP = ${desktop};
       `
     }));
   }
@@ -245,8 +229,12 @@ const plugins = (desktop) => [
   RequireAllPluginsPlugin(desktop),
   SelfPlugin(desktop),
   ManagedCSSPlugin,
-  ReactPlugin,
-  MomentPlugin
+  FakeNodeModules
+];
+
+const injections = [
+  "./injections/global.js",
+  "./injections/jsx.js"
 ];
 
 (async function() {
@@ -265,6 +253,7 @@ const plugins = (desktop) => [
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
       plugins: plugins(true),
+      inject: injections,
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"
@@ -278,6 +267,7 @@ const plugins = (desktop) => [
       platform: "node",
       external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
+      inject: injections,
       plugins: [
         SelfPlugin(true)
       ],
@@ -293,6 +283,7 @@ const plugins = (desktop) => [
       platform: "node",
       external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
+      inject: injections,
       plugins: [
         SelfPlugin(true)
       ],
@@ -307,6 +298,7 @@ const plugins = (desktop) => [
       platform: "node",
       external: [ "original-fs", "electron" ],
       tsconfig: path.join(__dirname, "tsconfig.json"),
+      inject: injections,
       plugins: [
         SelfPlugin(true),
         HTMLPlugin
@@ -343,6 +335,7 @@ const plugins = (desktop) => [
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
       plugins: plugins(false),
+      inject: injections,
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"
@@ -378,6 +371,7 @@ const plugins = (desktop) => [
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
       plugins: plugins(false),
+      inject: injections,
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"
@@ -391,6 +385,7 @@ const plugins = (desktop) => [
       tsconfig: path.join(__dirname, "tsconfig.json"),
       jsx: "transform",
       plugins: plugins(false),
+      inject: injections,
       footer: {
         css: "/*# sourceURL=vx://VX/app/build.css */",
         js: "//# sourceURL=vx://VX/app/build.js"

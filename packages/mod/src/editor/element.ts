@@ -23,7 +23,7 @@ export function getTheme(theme: string | void | null): MonacoThemes {
     default:
       return "system-preference";
   };
-};
+}
 
 const cache = new WeakMap<HTMLEditorElement, {
   postMessage(event: string, data: any): void,
@@ -36,7 +36,7 @@ const cache = new WeakMap<HTMLEditorElement, {
 
 export function getCache(editor: HTMLEditorElement) {
   return cache.get(editor)!;
-};
+}
 
 let index = 0;
 export class HTMLEditorElement extends HTMLElement {
@@ -125,33 +125,33 @@ export class HTMLEditorElement extends HTMLElement {
       customEvent.data = event.data;
       this.dispatchEvent(customEvent);
     });
-  };
+  }
 
   get ready() { return cache.get(this)!.ready; };
   get language() { return cache.get(this)!.language; };
   set language(language) {
     this.postMessage("set-options", { language });
     this.postMessage("update-options", { language });
-  };
+  }
   get value() { return cache.get(this)!.value; };
   set value(v) { this.setValue(v); }
   get theme() { return cache.get(this)!.theme; };
   set theme(theme) {
     this.postMessage("set-options", { theme });
     this.postMessage("update-options", { theme });
-  };
+  }
 
   addEventListener<E extends keyof EditorEvents>(event: E, listener: (this: HTMLEditorElement, event: EditorEvents[E]) => void, options?: boolean | AddEventListenerOptions): void
   addEventListener(event: string, listener: (this: HTMLEditorElement, event: EditorEvents[keyof EditorEvents]) => void, options?: boolean | AddEventListenerOptions): void {
     // @ts-expect-error
     super.addEventListener(event, listener, options);
-  };
+  }
   
   get postMessage() { return cache.get(this)!.postMessage; };
 
   setValue(value: string) {
     this.postMessage("set-value", { value });
-  };
-};
+  }
+}
 
 export const EDITOR_TAGNAME = "doggybootsy-editor";
