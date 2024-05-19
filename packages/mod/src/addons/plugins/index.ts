@@ -1,5 +1,4 @@
 import { Messages } from "vx:i18n";
-import { DataStore } from "../../api/storage";
 import { InternalStore, compileFunction, download, getDiscordTag, showFilePicker } from "../../util";
 import { UserStore } from "@webpack/common";
 import { Meta, getMeta, getMetaProperty } from "../meta";

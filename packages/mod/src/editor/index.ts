@@ -36,7 +36,7 @@ export class Editor {
         self.postMessage("set-options", options);
         self.postMessage("update-options", options);
       }, 50);
-    };
+    }
 
     editorElement.addEventListener("waiting", () => {
       setOptions({
@@ -66,43 +66,43 @@ export class Editor {
     waitForElementRemoved(element).then(() => {
       ThemeStore.removeChangeListener(listener);
     });
-  };
+  }
 
-  get value() { return cache.get(this)!.value; };
+  get value() { return cache.get(this)!.value; }
   set value(v) { this.setValue(v); }
 
-  get language() { return cache.get(this)!.language; };
+  get language() { return cache.get(this)!.language; }
   set language(language) {
     this.postMessage("set-options", { language });
     this.postMessage("update-options", { language });
-  };
+  }
 
-  get readonly() { return cache.get(this)!.readonly; };
+  get readonly() { return cache.get(this)!.readonly; }
   set readonly(readonly) {
     this.postMessage("set-options", { readonly });
     this.postMessage("update-options", { readonly });
-  };
+  }
 
   get ready() { return cache.get(this)!.ready; };
 
-  get theme() { return cache.get(this)!.theme; };
+  get theme() { return cache.get(this)!.theme; }
   set theme(theme) {
     this.postMessage("set-options", { theme });
     this.postMessage("update-options", { theme });
-  };
+  }
   
   setValue(value: string) {
     this.postMessage("set-value", { value });
-  };
+  }
 
-  get postMessage() { return cache.get(this)!.postMessage; };
+  get postMessage() { return cache.get(this)!.postMessage; }
 
   #listeners = new Map<keyof EditorEvents, Set<(data: any) => void>>();
   on<K extends keyof EditorEvents>(event: K, cb: Listener<K>) {
     if (!this.#listeners.has(event)) this.#listeners.set(event, new Set());
 
     this.#listeners.get(event)!.add(cb);
-  };
+  }
   once<K extends keyof EditorEvents>(event: K, cb: Listener<K>) {
     if (!this.#listeners.has(event)) this.#listeners.set(event, new Set());
 
@@ -113,10 +113,10 @@ export class Editor {
     };
 
     listeners.add(listener);
-  };
+  }
   off<K extends keyof EditorEvents>(event: K, cb: Listener<K>) {
     if (!this.#listeners.has(event)) return;
     
     this.#listeners.get(event)!.delete(cb);
-  };
-};
+  }
+}

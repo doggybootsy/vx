@@ -1,8 +1,3 @@
-/** @type {(type: string) => symbol} */
-function getTypeOf(type) {
-  return getTypeOf[type] ??= Symbol.for(`react.${type}`);
-}
-
 function createElement(type, props, children) {
 	let key = null;
 	let ref = null;
@@ -52,7 +47,7 @@ function createElement(type, props, children) {
 	}
 
 	return {
-		$$typeof: getTypeOf("element"),
+		$$typeof: Symbol.for("react.element"),
 		type: type,
 		key: key,
 		ref: ref,
@@ -63,7 +58,7 @@ function createElement(type, props, children) {
 }
 
 /** @type {import("react")["Fragment"]} */
-const Fragment = getTypeOf("fragment");
+const Fragment = Symbol.for("react.fragment");
 
 export const __jsx__ = { createElement, Fragment };
 

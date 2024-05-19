@@ -66,5 +66,5 @@ export function HomeButton() {
     >
       <Icons.Logo />
     </div>
-  );
+  )
 }

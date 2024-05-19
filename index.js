@@ -142,7 +142,7 @@ const ManagedCSSPlugin = {
     });
   }
 };
-/** @type {<T>(factory: () => T): () => T} */
+/** @type {<T>(factory: () => T) () => T} */
 function cache(factory) {
   const cache = { ref: null, hasValue: false };
 
