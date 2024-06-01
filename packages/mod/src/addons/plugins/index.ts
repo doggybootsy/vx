@@ -28,7 +28,8 @@ interface PluginModule {
   exports: PluginExports,
   loaded: boolean,
   enabled: boolean,
-  meta: Record<string, string | null>
+  meta: Record<string, string | null>,
+  __vx__: true;
 };
 
 const metaCache = new Map<string, Meta>();
@@ -137,7 +138,8 @@ export const pluginStore = new class PluginStore extends InternalStore {
         set() { return false },
         deleteProperty() { return false },
         defineProperty() { return false }
-      })
+      }),
+      __vx__: true
     };
 
     try {

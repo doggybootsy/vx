@@ -105,7 +105,7 @@
 .vx-notification-slider {
 	height: 4px;
 	box-sizing: border-box;
-	background-color: var(--brand-experiment);
+	background-color: var(--brand-500);
 	border-radius: 4px;
 }
 

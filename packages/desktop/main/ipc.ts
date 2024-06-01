@@ -5,7 +5,7 @@ import fs from "original-fs";
 import path from "node:path";
 import { waitFor } from "common/util";
 import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
-import { windowStorage } from "./storage";
+import { Storage } from "./storage";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -127,10 +127,10 @@ electron.ipcMain.on("@vx/extensions/get-all", (event) => {
 });
 
 electron.ipcMain.on("@vx/transparency/get-state", (event) => {
-  event.returnValue = windowStorage.get("transparent", false);
+  event.returnValue = Storage.window.get("transparent", false);
 });
 electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) => {
-  windowStorage.set("transparent", enabled);
+  Storage.window.set("transparent", enabled);
 
   electron.app.quit();
   electron.app.relaunch();

@@ -5,10 +5,24 @@ import { FluxStore } from "discord-types/stores";
 import { Fiber } from "react-reconciler";
 import { FunctionType } from "typings";
 
+export function isObject(item: any): item is Object {
+  if (typeof item === "object" && item !== null) return true;
+  if (typeof item === "function") return true;
+  return false;
+}
+
 export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
   const handlers: ProxyHandler<T> = {};
 
-  const cacheFactory = cache(factory);
+  const cFactory = cache(factory);
+
+  const cacheFactory = () => {
+    if (!cFactory.hasValue()) return cFactory();
+    if (cFactory() instanceof Object) return cFactory();
+    // Attempt to hopefully have the results be a instance of Object
+    cFactory.reset();
+    return cFactory();
+  }
   
   for (const key of Object.getOwnPropertyNames(Reflect) as Array<keyof typeof Reflect>) {
     const handler = Reflect[key];
@@ -16,7 +30,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
     if (key === "get") {
       handlers.get = (target, prop, r) => {
         if (prop === "prototype") return (cacheFactory() as any).prototype ?? Function.prototype;
-        if (prop === Symbol.for("vx.proxy.cache")) return cacheFactory;
+        if (prop === Symbol.for("vx.proxy.cache")) return cFactory;
         return Reflect.get(cacheFactory(), prop, r);
       }
       continue;
@@ -38,23 +52,45 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
   }
 
   const proxy = new Proxy(Object.assign(typeofIsObject ? {} : function() {}, {
-    [Symbol.for("vx.proxy.cache")]: cacheFactory
+    [Symbol.for("vx.proxy.cache")]: cFactory
   }) as T, handlers);
 
   return proxy;
 }
 
-export function cache<T>(factory: () => T): () => T {
-  const cache = { } as { current: T } | { };
+interface Cache<T> {
+  (): T,
+  get: T,
+  hasValue(): boolean,
+  reset(): void
+}
 
-  return () => {
-    if ("current" in cache) return cache.current;
+export function cache<T>(factory: () => T): Cache<T> {
+  const value = { } as { current: T } | { };
+
+  function cache() {
+    if ("current" in value) return value.current;
     
     const current = factory();
-    (cache as { current: T }).current = current;
+    (value as { current: T }).current = current;
 
     return current;
   }
+
+  cache.__internal__ = value;
+
+  cache.hasValue = () => "current" in value;
+
+  cache.reset = () => {
+    // @ts-expect-error
+    if ("current" in value) delete value.current;
+  };
+
+  Object.defineProperty(cache, "get", {
+    get: () => cache()
+  });
+
+  return cache as unknown as Cache<T>;
 }
 
 export function cacheComponent<P extends {}>(factory: () => React.JSXElementConstructor<P>): React.JSXElementConstructor<P> {
@@ -731,9 +767,9 @@ getLazyByKeys([ "memo", "createElement" ]).then(() => { reactExists = true; });
 type Accessor<T> = (forceNoUseHook?: boolean) => T;
 type SetterArg<T> = ((prev: T) => T) | T;
 type Setter<T> = (value: SetterArg<T>) => T;
-type State<T> = Readonly<[ Accessor<T>, Setter<T> ]>;
+type OnChange<T> = (callback: (value: T) => void) => void;
+type State<T> = Readonly<[ get: Accessor<T>, set: Setter<T>, addListener: OnChange<T> ]>;
 
-const stateValues = new WeakMap<Accessor<any> | Setter<any>, { listeners: Set<() => void>, accessor: Accessor<any> }>();
 // SolidJS like thing
 export function createState<T>(initialState: T): State<T> {
   let currentState = initialState;
@@ -763,29 +799,25 @@ export function createState<T>(initialState: T): State<T> {
     return currentState;
   }
   
-  stateValues.set(accessor, { listeners, accessor });
-  stateValues.set(setter, { listeners, accessor });
+  function onChange(callback: (state: T) => void): () => void {
+    function callbackWrapper() {
+      try {
+        callback(currentState);
+      } 
+      catch (error) {}
+    }
+
+    listeners.add(callbackWrapper);
+    return () => void listeners.delete(callbackWrapper);
+  }
 
   const state: State<T> = [
     accessor,
-    setter
+    setter,
+    onChange
   ];
 
   return state;
-}
-
-export function monitorStateChange<T>(stateOrChild: Accessor<T> | Setter<T> | State<T>, onChange: (state: T) => void): () => void {
-  if (typeof stateOrChild !== "function") stateOrChild = stateOrChild[0];
-  
-  const value = stateValues.get(stateOrChild);
-  if (!value) throw new Error("State has no listeners!");
-
-  function listener() {
-    onChange(value!.accessor());
-  }
-
-  value.listeners.add(listener);
-  return () => void value.listeners.delete(listener);
 }
 
 export function destructuredPromise<T extends any = void>() {
@@ -854,9 +886,7 @@ export function compileFunction<T extends FunctionType>(code: string, args: stri
   return new Function(...args, code) as T;
 }
 
-type RGB = `rgb(${number}, ${number}, ${number})`;
-
-export function getCSSVarColor(variable: `--${string}`, node: Element = document.body): RGB {
+export function getCSSVarColor(variable: `--${string}`, node: Element = document.body): string {
   const div = document.createElement("div");
   div.style.color = `var(${variable})`;
   div.style.display = "none !important";

@@ -7,7 +7,7 @@ import { Home, Plugins, Themes } from "./pages";
 import "./index.css";
 import { className, createState } from "../util";
 import { openAlertModal, openExternalWindowModal } from "../api/modals";
-import { Icons, SettingsView } from "../components";
+import { Icons, SettingsView, Tooltip } from "../components";
 import { Extensions } from "./pages/extension";
 import { Community } from "./pages/community";
 import { Messages } from "vx:i18n";
@@ -53,7 +53,11 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
     <div className={className([ "vx-section-info", isMenu && "vx-section-info-menu" ])}>
       <div className="vx-section-version">
         <span>{`${Messages.VX} ${env.VERSION} `}</span>
-        <span className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+        <Tooltip shouldShow={env.IS_DEV} text="VX is in dev mode">
+          {(props) => (
+            <span {...props} className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+          )}
+        </Tooltip>
       </div>
       {git.exists ? (
         <div 

@@ -10,7 +10,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   start() {
-    patch("ViewServerAsUser", "user-context", (props, res) => {      
+    patch("ViewServerAsUser", "user-context", (props, res) => {
       if (!props?.channel?.guild_id) return;
       const guild = GuildStore.getGuild(props.channel.guild_id);
       const member = GuildMemberStore.getMember(props.channel.guild_id, props.user.id);
@@ -21,8 +21,8 @@ export default definePlugin({
         <MenuComponents.MenuItem
           label="View Server As User"
           id="view-server-as-user"
-          action={() => {
-            const roles = member.roles.map((id) => [ id, guild.roles[id] ]);
+          action={() => {            
+            const roles = member.roles.map((id) => [ id, GuildStore.getRole(guild.id, id) ]);
 
             impersonationModule.startImpersonating(props.channel.guild_id, {
               type: "ROLES",

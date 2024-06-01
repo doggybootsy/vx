@@ -1,6 +1,6 @@
 import electron, { BrowserWindowConstructorOptions } from "electron";
 import path from "node:path";
-import { UndefinedSymbol, windowStorage } from "./storage";
+import { UndefinedSymbol, Storage } from "./storage";
 
 const preloadSymbol = Symbol.for("vx.browserwindow.preload");
 
@@ -28,19 +28,19 @@ export class BrowserWindow extends electron.BrowserWindow {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
     }
 
-    const transparent = windowStorage.get<boolean>("transparent", false);
+    const transparent = Storage.window.get<boolean>("transparent", false);
 
-    const backgroundColor = windowStorage.get<string>("backgroundColor", UndefinedSymbol);
+    const backgroundColor = Storage.window.get<string>("backgroundColor", UndefinedSymbol);
     if (typeof backgroundColor === "string") opts.backgroundColor = backgroundColor;
     else if (transparent) opts.backgroundColor = "#00000000";
 
     if (transparent) {
       opts.transparent = true;
 
-      const vibrancy = windowStorage.get<Vibrancy>("vibrancy", UndefinedSymbol);
+      const vibrancy = Storage.window.get<Vibrancy>("vibrancy", UndefinedSymbol);
       if (typeof vibrancy === "string") opts.vibrancy = vibrancy;
 
-      const backgroundMaterial = windowStorage.get<BackgroundMaterial>("backgroundMaterial", UndefinedSymbol);
+      const backgroundMaterial = Storage.window.get<BackgroundMaterial>("backgroundMaterial", UndefinedSymbol);
       if (typeof backgroundMaterial === "string") opts.backgroundMaterial = backgroundMaterial;
     }
 
@@ -50,7 +50,12 @@ export class BrowserWindow extends electron.BrowserWindow {
     
     // For electron 24.x.x
     window.webContents.on("devtools-open-url", (event, url) => {
+      event.preventDefault();
+
       electron.shell.openExternal(url, { });
+
+      // const w = new electron.BrowserWindow({ center: true });
+      // w.loadURL(url);
     });
     
     return window;

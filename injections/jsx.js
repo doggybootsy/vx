@@ -37,7 +37,7 @@ function createElement(type, props, children) {
 			if (!Object.hasOwnProperty.call(type.defaultProps, key)) continue;
 			if (Object.hasOwnProperty.call(passedProps, key)) continue;
 
-			passedProps[type.defaultProps[key]];
+			passedProps[key] = type.defaultProps[key];
 		}
 	}
 

@@ -11,7 +11,7 @@
   margin-right: 8px;
 }
 .vx-loop-looping {
-  color: var(--brand-experiment);
+  color: var(--brand-500);
 }
 
 :root [class*="videoButton__"] {
