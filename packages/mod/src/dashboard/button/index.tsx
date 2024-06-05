@@ -3,6 +3,8 @@ import { InfoSection, openDashboard } from "..";
 import { MenuComponents, closeMenu, openMenu } from "../../api/menu";
 import { Icons } from "../../components";
 import { IS_DESKTOP } from "vx:self";
+import { useInternalStore } from "../../hooks";
+import { updaterStore } from "../pages/home/updater";
 
 export function HomeMenu() {
   return (
@@ -51,9 +53,12 @@ export function HomeMenu() {
 }
 
 export function HomeButton() {
+  const hasUpdate = useInternalStore(updaterStore, () => updaterStore.getState().compared === -1);  
+
   return (
     <div
       id="vx-home-button"
+      data-has-update={hasUpdate.toString()}
       onClick={() => {
         openDashboard();
       }}
@@ -64,7 +69,36 @@ export function HomeButton() {
       aria-label="Open VX Dashboard"
       tabIndex={-1}
     >
-      <Icons.Logo />
+      <svg
+        height={32}
+        width={48}
+        viewBox={`0 0 48 32`}
+      >
+        <defs>
+          <rect id="vx-home-button-blob" width="48" height="32" />
+          <rect id="vx-home-button-badge" x={hasUpdate ? 28 : 48} y="-4" width="24" height="24" rx="12" ry="12" transform="translate(0 0)" />
+        </defs>
+        <mask id="vx-home-button-mask" x={0} y={0} width={48} height={32} fill="black">
+          <use href="#vx-home-button-blob" fill="white" />
+          <use href="#vx-home-button-badge" fill="black" />
+        </mask>
+        <foreignObject
+          mask="url(#vx-home-button-mask)"
+          height={32}
+          width={48}
+          x={0}
+          y={0}
+        >
+          <div id="vx-home-button-inner">
+            <Icons.Logo />
+          </div>
+        </foreignObject>
+      </svg>
+      <div id="vx-home-button-update">
+        <div id="vx-home-button-update-inner">
+          <Icons.Download />
+        </div>
+      </div>
     </div>
   )
 }

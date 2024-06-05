@@ -30,7 +30,7 @@ function setItem(name: string, structure: any) {
   storage.setItem(name, JSON.stringify(structure));
 }
 
-interface DataStoreOptions<T extends Record<string, any>> {
+export interface DataStoreOptions<T extends Record<string, any>> {
   version?: number,
   upgrader?(version: number, oldData: any): Partial<T> | void
 };

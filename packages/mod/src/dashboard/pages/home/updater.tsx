@@ -14,7 +14,7 @@ const DELAY_MIN = 1000 * 60 * 3;
 // 30 mins
 const DELAY_AUTO = DELAY_MIN * 10;
 
-const updaterStore = new class extends InternalStore {
+export const updaterStore = new class extends InternalStore {
   constructor() {
     super();
 

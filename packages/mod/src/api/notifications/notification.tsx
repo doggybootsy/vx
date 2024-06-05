@@ -72,6 +72,8 @@ function Notification({ notification }: { notification: Notification }) {
 
   const displaySlider = shouldDisplaySlider(notification);
 
+  const ref = typeof notification.ref === "function" ? notification.ref : () => {};
+
   return (
     <div 
       className={`vx-notification${notification.type ? ` vx-notification-type-${notification.type}` : ""}`}
@@ -86,7 +88,7 @@ function Notification({ notification }: { notification: Notification }) {
         if (!springRef.current) return;
         springRef.current.resume();
       }}
-      ref={notification.ref}
+      ref={ref}
     >
       <div 
         className="vx-notification-header"
