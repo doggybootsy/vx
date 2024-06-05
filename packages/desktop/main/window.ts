@@ -11,6 +11,7 @@ export class BrowserWindow extends electron.BrowserWindow {
   static __getPreloadFromWindow(window: BrowserWindow) {
     return window[preloadSymbol];
   }
+  
   constructor(opts?: BrowserWindowConstructorOptions) {
     console.log(opts?.webPreferences?.devTools);
     

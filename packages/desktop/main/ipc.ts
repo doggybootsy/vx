@@ -6,6 +6,7 @@ import path from "node:path";
 import { waitFor } from "common/util";
 import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
 import { Storage } from "./storage";
+import { getVolume, setVolume } from "./spotify";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -144,4 +145,11 @@ electron.ipcMain.on("@vx/safestorage/decrypt", (event, encrypted) => {
 });
 electron.ipcMain.on("@vx/safestorage/is-available", (event) => {
   event.returnValue = safeStorage.isEncryptionAvailable();
+});
+
+electron.ipcMain.on("@vx/spotify-embed-volume/get", (event) => {
+  event.returnValue = getVolume();
+});
+electron.ipcMain.handle("@vx/spotify-embed-volume/set", (event, volume) => {
+  setVolume(volume);
 });
