@@ -65,10 +65,14 @@
 }
 
 #vx-home-button {
+  margin: 0 12px 8px 12px;
+  border-radius: 4px;
+  position: relative;
+}
+#vx-home-button-inner {
   transition: background-color .15s ease-out, color .15s ease-out;
   background-color: var(--background-primary);
   color: var(--text-normal);
-  margin: 0 12px 8px 12px;
   padding: 4px;
   border-radius: 4px;
   display: flex;
@@ -77,9 +81,37 @@
   cursor: pointer;
   font-weight: 550;
 }
-#vx-home-button:hover {
+#vx-home-button:hover #vx-home-button-inner {
   color: var(--white-500);
   background-color: var(--brand-500);
+}
+#vx-home-button-update {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#vx-home-button-update-inner {
+  background-color: var(--status-danger-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  color: var(--white-500);
+  text-align: center;
+}
+#vx-home-button-update-inner > svg {
+  padding: 2px;
+  width: 100%;
+  height: 100%;
+}
+#vx-home-button[data-has-update="false"] #vx-home-button-update {
+  display: none;
 }
 
 .vx-titlebar-button {
