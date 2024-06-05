@@ -13,7 +13,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: ".spoilerRemoveAttachmentButton:",
+    match: ".default.Messages.REMOVE_ATTACHMENT_TOOLTIP_TEXT",
     find: /(=(.{1,3})=>.+?hoverButtonGroup,.+?children:)\[(.+?)\]/,
     replace: "$1[$enabled&&$jsx($self.ZipButton,$2),$3]"
   },

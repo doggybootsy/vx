@@ -288,9 +288,9 @@ const uncompressJS = {};
         size_compressed: size_compressed,
         size_uncompressed: size_uncompressed,
         readData: function(cb) {
-          setTimeout(function() {
+          setTimeout(async function() {
             if (is_file) {
-              let data = zip_entry.asArrayBuffer();
+              let data = await zip_entry.async("arraybuffer")
               cb(data, null);
             } else {
               cb(null, null);
