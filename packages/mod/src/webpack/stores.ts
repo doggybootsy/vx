@@ -1,4 +1,4 @@
-import { User, Guild, Channel } from "discord-types/general";
+import { User, Guild, Channel, Role } from "discord-types/general";
 import { ChannelStore, FluxStore, GuildMemberStore, MessageStore, RelationshipStore, SelectedChannelStore, SelectedGuildStore, GuildStore, UserStore } from "discord-types/stores";
 import { proxyCache } from "../util";
 import { getByKeys } from "./filters";
@@ -36,6 +36,11 @@ interface CorrectChannelStore extends ChannelStore {
   getMutablePrivateChannels(): Record<string, Channel>
 };
 
+interface CorrectGuildStore extends GuildStore {
+  getRoles(guildId: string): Record<string, Role>;
+  getRole(guildId: string, roleId: string): Role;
+}
+
 interface KnownStores {
   UserStore: UserStore,
   ChannelStore: CorrectChannelStore,
@@ -44,7 +49,7 @@ interface KnownStores {
   MessageStore: MessageStore,
   RelationshipStore: CorrectRelationshipStore,
   SelectedGuildStore: SelectedGuildStore,
-  GuildStore: GuildStore,
+  GuildStore: CorrectGuildStore,
   PermissionStore: PermissionStore,
   PopoutWindowStore: PopoutWindowStore,
   ThemeStore: ThemeStore

@@ -38,12 +38,8 @@ export const updater = {
     return await response.json();
   },
   update(release: Git.Release) {
-    if (!IS_DESKTOP) {
-      window.VXExtension!.update(release);
-      return;
-    }
-
-    window.VXNative!.updater.update(release);
+    if (window.VXExtension) window.VXExtension.update(release);
+    else if (window.VXNative) window.VXNative.updater.update(release);
   }
 };
 

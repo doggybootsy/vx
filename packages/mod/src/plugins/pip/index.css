@@ -17,7 +17,7 @@
   opacity: 1;
 }
 .vx-pip-active {
-  color: var(--brand-experiment);
+  color: var(--brand-500);
 }
 [class*=wrapperControlsHidden_] .vx-pip-button,
 /* Anyone know how to make it where :has isnt needed? */

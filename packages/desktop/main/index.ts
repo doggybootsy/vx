@@ -9,6 +9,7 @@ import { loadExtensions } from "./extensions";
 import "./ipc";
 import "./request";
 import "./colors";
+import "./spotify";
 
 replaceNodeModuleExports("electron", { ...electron, BrowserWindow });
 

@@ -79,7 +79,7 @@
 }
 #vx-home-button:hover {
   color: var(--white-500);
-  background-color: var(--brand-experiment);
+  background-color: var(--brand-500);
 }
 
 .vx-titlebar-button {
@@ -108,7 +108,7 @@
   cursor: not-allowed;
 }
 .vx-titlebar-loading {
-  color: var(--brand-experiment);
+  color: var(--brand-500);
   animation: fadeInOut 2s infinite;
   cursor: unset;
 }

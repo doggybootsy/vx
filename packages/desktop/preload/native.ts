@@ -1,5 +1,5 @@
 import { expose, getAndEnsureVXPath } from "common/preloads";
-import electron from "electron";
+import electron, { ipcRenderer } from "electron";
 import JSZip from "jszip";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
@@ -251,6 +251,14 @@ const native = {
       if (!existsSync(file)) return;
 
       unlinkSync(file);
+    }
+  },
+  spotify: {
+    getVolume() {
+      return ipcRenderer.sendSync("@vx/spotify-embed-volume/get");
+    },
+    setVolume(volume: number) {
+      ipcRenderer.invoke("@vx/spotify-embed-volume/set", volume);
     }
   }
 };

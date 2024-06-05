@@ -43,7 +43,17 @@ function executeScript(connection: Connection) {
 
   connection.eval(native, { id: browser.runtime.id });
 
-  connection.eval(`if(location.pathname === "/popout"){console.log("VX Skipping, is a popout");return;}if (typeof webpackChunkdiscord_app === "object"){console.log("VX loaded to late aborting!");console.log(Array.from(webpackChunkdiscord_app));return;};\n${js}`);
+  connection.eval(`
+if (location.pathname === "/popout") {
+  console.log("VX Skipping, is a popout");
+  return;
+}
+if (typeof webpackChunkdiscord_app === "object") {
+  console.log("VX loaded to late aborting!");
+  console.log(Array.from(webpackChunkdiscord_app));
+  return;
+}
+${js}`);
 
   connection.insertCSS(css);
 }

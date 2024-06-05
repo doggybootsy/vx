@@ -34,6 +34,14 @@ export class Storage {
     writeFileSync(this.#fullpath, JSON.stringify(data, null, "\t"));
   }
   path() { return this.#fullpath; }
-}
 
-export const windowStorage = new Storage("window");
+  static get window() {
+    const storage = new this("window");
+
+    Object.defineProperty(this, "window", {
+      get: () => storage
+    });
+
+    return storage;
+  }
+}

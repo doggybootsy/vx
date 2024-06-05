@@ -5,7 +5,8 @@ import fs from "original-fs";
 import path from "node:path";
 import { waitFor } from "common/util";
 import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
-import { windowStorage } from "./storage";
+import { Storage } from "./storage";
+import { getVolume, setVolume } from "./spotify";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -127,10 +128,10 @@ electron.ipcMain.on("@vx/extensions/get-all", (event) => {
 });
 
 electron.ipcMain.on("@vx/transparency/get-state", (event) => {
-  event.returnValue = windowStorage.get("transparent", false);
+  event.returnValue = Storage.window.get("transparent", false);
 });
 electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) => {
-  windowStorage.set("transparent", enabled);
+  Storage.window.set("transparent", enabled);
 
   electron.app.quit();
   electron.app.relaunch();
@@ -144,4 +145,11 @@ electron.ipcMain.on("@vx/safestorage/decrypt", (event, encrypted) => {
 });
 electron.ipcMain.on("@vx/safestorage/is-available", (event) => {
   event.returnValue = safeStorage.isEncryptionAvailable();
+});
+
+electron.ipcMain.on("@vx/spotify-embed-volume/get", (event) => {
+  event.returnValue = getVolume();
+});
+electron.ipcMain.handle("@vx/spotify-embed-volume/set", (event, volume) => {
+  setVolume(volume);
 });
