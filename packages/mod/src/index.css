@@ -12,9 +12,6 @@
 .doggybootsy-editor {
   display: block;
 }
-#vx-masks {
-  position: fixed;
-}
 
 [class*="codeContainer_"] {
   position: relative;
