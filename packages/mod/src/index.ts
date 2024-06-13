@@ -1,4 +1,5 @@
 import "./dashboard";
+import "./recovery";
 import "./index.css";
 
 import { waitForNode } from "common/dom";

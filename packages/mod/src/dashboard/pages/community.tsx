@@ -15,7 +15,7 @@ export function Community({ title }: { title: string }) {
           <SearchBar 
             query={query}
             size={SearchBar.Sizes.SMALL}
-            onChange={(query) => {
+            onQueryChange={(query) => {
               setQuery(query);
               search = query;
             }}

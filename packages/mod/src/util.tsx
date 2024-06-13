@@ -897,3 +897,14 @@ export function getCSSVarColor(variable: `--${string}`, node: Element = document
   
   return color as any;
 }
+
+export const focusStore = new class FocusStore extends InternalStore {
+  constructor() {
+    super();
+    
+    window.addEventListener("focus", () => this.emit());
+    window.addEventListener("blur", () => this.emit());
+  }
+
+  get hasFocus() { return document.hasFocus(); }
+}

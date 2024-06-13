@@ -23,3 +23,4 @@ export * from "./popout";
 export * from "./util";
 export * from "./textOverflowScroller";
 export * from "./html";
+export * from "./userPopout";

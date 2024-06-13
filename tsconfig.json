@@ -3,7 +3,9 @@
     "target": "es2016",
     "lib": [
       "DOM",
-      "DOM.Iterable"
+      "DOM.Iterable",
+      "ESNext.Intl",
+      "ES2022.Intl"
     ],
     "jsx": "react",
     "experimentalDecorators": true,

@@ -154,7 +154,7 @@ export function Plugins() {
           <SearchBar 
             query={query}
             size={SearchBar.Sizes.SMALL}
-            onChange={(query) => {
+            onQueryChange={(query) => {
               setQuery(query);
               queryStore.set("plugins", query);
             }}

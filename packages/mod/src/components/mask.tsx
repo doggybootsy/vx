@@ -5,12 +5,13 @@ function createMaskURL<T extends Masks>(mask: T): T extends "none" ? "" : `url(#
   return `url(#vx-${mask}-mask)` as any;
 }
 
-export function Mask({ width, height, mask, children }: { mask: Masks, width: number, height: number, children: React.ReactElement }) {
+export function Mask({ width, height, mask, children, className }: { mask: Masks, width: number, height: number, children: React.ReactElement, className?: string }) {
   return (
     <svg
       height={height}
       width={width}
       viewBox={`0 0 ${width} ${height}`}
+      className={className}
     >
       <foreignObject
         mask={createMaskURL(mask)}

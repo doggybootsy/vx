@@ -82,7 +82,7 @@ export function Themes() {
           <SearchBar 
             query={query}
             size={SearchBar.Sizes.SMALL}
-            onChange={(query) => {
+            onQueryChange={(query) => {
               setQuery(query);
               queryStore.set("themes", query);
             }}
