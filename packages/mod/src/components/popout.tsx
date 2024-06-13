@@ -1,5 +1,7 @@
+import { Component, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import ErrorBoundary from "./boundary";
 import { MegaModule } from "./util";
+import { Spinner } from "./spinner";
 
 interface Animation {
   NONE: string,
@@ -8,10 +10,10 @@ interface Animation {
   FADE: string
 };
 
-export type PopoutPosition = "top" | "bottom" | "left" | "right" | "center";
+export type PopoutPosition = "top" | "bottom" | "left" | "right" | "center" | "window_center";
 export type PopoutAlign = "top" | "bottom" | "left" | "right" | "center";
 
-interface RenderPopoutProps {
+export interface RenderPopoutProps {
   closePopout(): boolean,
   isPositioned: boolean,
   nudge: number,
@@ -19,7 +21,7 @@ interface RenderPopoutProps {
   setPopoutRef(value: Element | null): void,
   updatePosition(): void
 };
-interface ChildrenPopoutProps {
+export interface ChildrenPopoutProps {
   "aria-controls": string,
   "aria-expanded": boolean,
   onClick(event: React.MouseEvent): void,
@@ -27,7 +29,7 @@ interface ChildrenPopoutProps {
   onMouseDown(): void
 };
 
-interface PopoutProps {
+export interface PopoutProps {
   animation?: string,
   autoInvert?: boolean,
   nudgeAlignIntoViewport?: boolean,
@@ -37,7 +39,7 @@ interface PopoutProps {
   shouldShow: boolean,
   onRequestClose?(): void,
   renderPopout(props: RenderPopoutProps): React.ReactElement,
-  children(props: ChildrenPopoutProps, state: { isShown: boolean }): React.ReactElement
+  children(props: ChildrenPopoutProps, state: { isShown: boolean }): React.ReactElement;
 };
 
 function PopoutComponent(props: PopoutProps): React.ReactElement {

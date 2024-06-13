@@ -1,9 +1,8 @@
 import "./dashboard";
+import "./recovery";
 import "./index.css";
 
 import { waitForNode } from "common/dom";
-
-import masks from "./masks.html";
 
 import { VX } from "./window";
 
@@ -45,9 +44,6 @@ document.addEventListener("readystatechange", () => {
 whenWebpackInit().then(() => pluginStore.initPlugins("webpack-ready"));
 
 waitForNode<HTMLBodyElement>("body").then((body) => {
-  const svg = masks.querySelector("svg")!.cloneNode(true);
-  body.append(svg);
-
   body.classList.add("vx");
   if (transparency.get()) body.classList.add("transparent");
 });

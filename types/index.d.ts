@@ -228,6 +228,9 @@ declare module "vx:self" {
 
 type CSSVariable = `--${string}`;
 declare namespace React {
+  interface Component {
+    render(this: this): ReactNode;
+  }
   // Add CSS Variables to 'React.CSSProperties'
   interface CSSProperties {
     [key: CSSVariable]: string | number
@@ -244,4 +247,34 @@ declare type ChokidarFileEvent = "add" | "addDir" | "change" | "unlink" | "unlin
 declare const __jsx__ = {
   createElement: React["createElement"],
   Fragment: React["Fragment"]
+};
+
+declare namespace Intl {
+  interface ListFormatOptions {
+    localeMatcher?: "best fit" | "lookup" | undefined;
+    type?: "conjunction" | "disjunction" | "unit" | undefined;
+    style?: "long" | "short" | "narrow" | undefined;
+  }
+  interface ListFormatResolvedOptions {
+    type?: "conjunction" | "disjunction" | "unit" | undefined;
+    style?: "long" | "short" | "narrow" | undefined;
+    locale?: string | undefined;
+  }
+  interface ListFormatPart {
+    type: "element" | "literal";
+    value: string;
+  }
+  interface ListFormat {
+    format(list: string[]): string;
+    formatToParts(list: string[]): ListFormatPart[];
+    resolvedOptions(): ListFormatResolvedOptions; 
+  }
+  interface ListFormatConstructor {
+    new (locales?: string | string[], options?: ListFormatOptions): ListFormat;
+    prototype: ListFormat;
+
+    supportedLocalesOf(locales?: string | string[], options?: ListFormatOptions): string[];
+  }
+
+  var ListFormat: ListFormatConstructor;
 }

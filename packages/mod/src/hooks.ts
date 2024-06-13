@@ -4,7 +4,7 @@ import { InternalStore } from "./util";
 import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
 import { useState } from "react";
 
-export function useInternalStore<T>(store: InternalStore, factory: () => T, isSame: (a: T, b: T) => boolean = Object.is): T {
+export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   const [, forceUpdate] = useForceUpdate();
   const [ state, setState ] = useState(factory);
 
@@ -26,7 +26,7 @@ export function useInternalStore<T>(store: InternalStore, factory: () => T, isSa
 }
 
 export function useForceUpdate() {
-  return useReducer((num) => num + 1, 0);
+  return useReducer<(num: number) => number>((num) => num + 1, 0);
 }
 
 type ReactEffectWithArg<T> = (value: T) => (void | (() => void) | Promise<void>);
@@ -53,7 +53,8 @@ export function useUser(userId?: string): User | null {
   const [ user, setUser ] = useState(() => userId ? UserStore.getUser(userId) || null : null);
 
   useAbortEffect(async (signal) => {
-    if (!userId || user) return;
+    if (!userId) return;
+    if (user && user.id === userId) return;
 
     const fetched = await fetchUser(userId); 
 

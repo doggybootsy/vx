@@ -1,6 +1,7 @@
 import { className } from "../util";
 import { getProxy } from "@webpack";
 import ErrorBoundary from "./boundary";
+import { Messages } from "vx:i18n";
 
 interface SearchBarProps {
   query: string,
@@ -8,8 +9,9 @@ interface SearchBarProps {
   disabled?: boolean,
   autoFocus?: boolean,
   size?: string,
-  onChange(value: string): void,
-  onClear(): void
+  onQueryChange(value: string): void,
+  onClear(): void,
+  placeholder?: string
 };
 
 interface SearchBarSizes {
@@ -22,10 +24,12 @@ interface SearchBar extends React.FunctionComponent<SearchBarProps> {
   Sizes: SearchBarSizes
 }
 
-const SearchBarModule = getProxy<SearchBar>(m => m.Sizes?.SMALL && m.defaultProps?.isLoading === false);
+const SearchBarModule = getProxy<SearchBar>(m => m.Sizes?.SMALL && m.defaultProps?.query === "");
 
 function SearchBarWrapper(props: SearchBarProps) {
   const cn = className([ props.className, "vx-searchbar" ]);
+
+  props.placeholder ??= Messages.SEARCH;
 
   return (
     <ErrorBoundary>

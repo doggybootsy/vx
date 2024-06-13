@@ -32,6 +32,7 @@ import { themeStore } from "./addons/themes";
 import { pluginStore } from "./addons/plugins";
 
 import * as hooks from "./hooks";
+import * as intl from "./intl";
 
 class AddonApi {
   constructor(store: typeof themeStore | typeof pluginStore) {
@@ -162,6 +163,7 @@ export const VX = {
   React,
   util,
   components,
+  intl,
   storage: {
     DataStore: storage.DataStore,
     internalDataStore: storage.internalDataStore,
@@ -198,7 +200,7 @@ export const VX = {
   },
   encryption,
   self,
-  I18n: {
+  i18n: {
     Messages: I18n.Messages,
     onLocaleChange: I18n.onLocaleChange,
     getLocale: I18n.getLocale,

@@ -114,6 +114,8 @@ const messages = {
   SPOTIFY_CRACK_DESCRIPTION: "Tricks Discord into thinking you have Spotify premium",
   FORCE_EXPAND_MINIPOPOVER_NAME: "Force Expand MiniPopover",
   FORCE_EXPAND_MINIPOPOVER_DESCRIPTION: "Shows all minipopover items without needing to hold shift",
+  BETTER_TYPING_INDICATORS_NAME: "Better Typing Indicators",
+  BETTER_TYPING_INDICATORS_DESCRIPTION: "Enhances the typing indicators",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",

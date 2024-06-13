@@ -12,9 +12,6 @@
 .doggybootsy-editor {
   display: block;
 }
-#vx-masks {
-  position: fixed;
-}
 
 [class*="codeContainer_"] {
   position: relative;
@@ -139,4 +136,18 @@
   font-weight: 600;
   font-size: 13px;
   text-align: center;
+}
+
+.vx-react-error-recovery-note {
+  color: var(--text-normal)
+}
+#vx-react-error-recovery-header {
+  margin-bottom: 8px;
+}
+
+.vx-loading-popout {
+  background-color: var(--background-secondary);
+  display: flex;
+  justify-content: center;
+  padding: 8px;
 }

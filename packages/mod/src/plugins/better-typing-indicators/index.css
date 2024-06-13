@@ -1,0 +1,42 @@
+.vx-bti-users {
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-left: 4px;
+}
+.vx-bti-user {
+  position: relative;
+  cursor: pointer;
+}
+.vx-bti-user[data-show-avatar="true"] {
+  padding-left: 22px;
+}
+.vx-bti-pfp {
+  width: 18px;
+  height: 18px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+}
+
+.vx-bti-user[data-avatar-only="true"] {
+  margin-left: -6px;
+}
+.vx-bti-user[data-avatar-only="true"] .vx-bti-pfp-wrapper,
+.vx-bti-user[data-avatar-only="false"] .vx-bti-pfp {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+}
+.vx-bti-users .vx-bti-user:first-of-type {
+  margin-left: 0;
+}
+.vx-bti-extra {
+  margin-left: -4px;
+  position: relative;
+}
+.vx-bti-extra-content {
+  translate: 0 -50%;
+}
