@@ -35,8 +35,8 @@ import * as hooks from "./hooks";
 import * as intl from "./intl";
 
 class AddonApi {
-  constructor(store: typeof themeStore | typeof pluginStore) {
-    this.#store = store;
+  #store: typeof themeStore | typeof pluginStore;
+  constructor(store: typeof themeStore | typeof pluginStore) {    
     this.getAll = this.getAll.bind(this);
     this.isEnabled = this.isEnabled.bind(this);
     this.has = this.has.bind(this);
@@ -44,9 +44,10 @@ class AddonApi {
     this.enable = this.enable.bind(this);
     this.disable = this.disable.bind(this);
     this.getName = this.getName.bind(this);
+
+    this.#store = store;
   }
 
-  #store: typeof themeStore | typeof pluginStore;
   getAll() {
     return this.#store.keys();
   }
@@ -155,7 +156,7 @@ export function vxRequire(path: string) {
   }
 }
 
-export const VX = {
+export const VX = () => ({
   webpack: api,
   menus,
   notifications,
@@ -208,4 +209,4 @@ export const VX = {
     FormattedMessage: I18n.FormattedMessage
   },
   jsx: __jsx__
-};
+});

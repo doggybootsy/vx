@@ -29,9 +29,12 @@ console.log(`Welcome to VX v${env.VERSION}`);
 //   reader.readAsDataURL(await response.blob()) ;
 // });
 
-window.VX = VX;
+queueMicrotask(() => {  
+  window.VX = VX();
+  
+  pluginStore.initPlugins("document-start");
+});
 
-pluginStore.initPlugins("document-start");
 document.addEventListener("readystatechange", () => {
   switch (document.readyState) {
     case "complete":

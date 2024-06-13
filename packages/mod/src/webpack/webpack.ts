@@ -82,7 +82,8 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
       if (typeof replace.replace === "string") {
         let replacer = replace.replace
           .replace(/\$react/g, "globalThis.VX.React")
-          .replace(/\$jsx/g, "globalThis.VX.jsx.createElement")
+          .replace(/\$jsx/g, "globalThis.VX.jsx")
+          .replace(/\$fragment/g, "globalThis.VX.jsx.Fragment")
           .replace(/\$vx/g, "globalThis.VX");
 
         if (patch._self) {

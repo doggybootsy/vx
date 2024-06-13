@@ -60,7 +60,7 @@ function createElement(type, props, children) {
 /** @type {import("react")["Fragment"]} */
 const Fragment = Symbol.for("react.fragment");
 
-export const __jsx__ = { createElement, Fragment };
+export const __jsx__ = Object.assign(createElement, { createElement, Fragment });
 
 // There is no error here
 export {

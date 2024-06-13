@@ -2,11 +2,6 @@ import { Component } from "react";
 
 type Masks = "none" | "avatar-overlay";
 
-function createMaskURL<T extends Masks>(mask: T): T extends "none" ? "" : `url(#vx-${T}-mask)` {
-  if (mask === "none") return "" as any;
-  return `url(#vx-${mask}-mask)` as any;
-}
-
 interface MaskProps {
   mask: Masks, 
   width: number, 

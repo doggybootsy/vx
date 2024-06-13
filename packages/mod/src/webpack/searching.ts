@@ -19,7 +19,7 @@ export function getModule<T extends Object>(filter: Webpack.Filter, opts: Webpac
       
       if (filter.call(module, module.exports, module, module.id)) {
         return module.exports as T;
-      };
+      }
 
       for (const key of keys) {
         if (!Reflect.has(module.exports, key)) continue;

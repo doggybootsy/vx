@@ -159,7 +159,7 @@ interface DiscordWindow {
   VXNative?: NativeObject,
   VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative,
-  VX: typeof import("../packages/mod/src/window")["VX"]
+  VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>
 }
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;
@@ -244,10 +244,10 @@ interface Node {
 
 declare type ChokidarFileEvent = "add" | "addDir" | "change" | "unlink" | "unlinkDir";
 
-declare const __jsx__ = {
+declare const __jsx__ = Object.assign(React["createElement"], {
   createElement: React["createElement"],
   Fragment: React["Fragment"]
-};
+});
 
 declare namespace Intl {
   interface ListFormatOptions {
@@ -256,9 +256,9 @@ declare namespace Intl {
     style?: "long" | "short" | "narrow" | undefined;
   }
   interface ListFormatResolvedOptions {
-    type?: "conjunction" | "disjunction" | "unit" | undefined;
-    style?: "long" | "short" | "narrow" | undefined;
-    locale?: string | undefined;
+    type: "conjunction" | "disjunction" | "unit" | undefined;
+    style: "long" | "short" | "narrow" | undefined;
+    locale: string | undefined;
   }
   interface ListFormatPart {
     type: "element" | "literal";

@@ -53,12 +53,14 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
         const insteadHooks = Array.from(hook.instead);
         const instead = insteadHooks.at(0)!;
         let depth = 1;
-  
-        function goDeeper(this: ThisParameterType<F>, ...args: Parameters<F>): any {
-          const hook = insteadHooks.at(depth++);
-          if (hook) return hook(this, args, goDeeper.apply(this, args));
-          return apply(target, this, args);
-        }
+
+        const goDeeper: M[K] = new Proxy(target, {
+          apply(target, thisArg, argArray) {
+            const hook = insteadHooks.at(depth++);
+            if (hook) return hook(thisArg, argArray as Parameters<F>, goDeeper as F);
+            return apply(target, thisArg, argArray as Parameters<F>);
+          }
+        });
   
         result = instead(that, args, goDeeper as F);
       }
