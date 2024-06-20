@@ -6,7 +6,7 @@ import { IconProps } from "./icons";
 import { Tooltip } from "./tooltip";
 import { Component } from "react";
 
-const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(Promise.all\(\[.+?\]\))\.then\((.{1,3})\.bind\(\2,"(\d+)"\)\),webpackId:"\3",name:"UserSettings"}\),/;
+const moduleIdRegex = /\(0,.{1,3}\..{1,3}\)\({createPromise:\(\)=>(Promise.all\(\[.+?\]\))\.then\((.{1,3})\.bind\(\2,(\d+)\)\),webpackId:\3,name:"UserSettings"}\),/;
 
 type Predicate = () => boolean;
 
@@ -154,7 +154,7 @@ class WrappedSettingsView extends Component<SettingsViewProps, { SettingsView: S
     await load(webpackRequire!);
     webpackRequire!(moduleKey);
 
-    const id = getModuleIdBySource("renderSidebar", "getPredicateSections")!;    
+    const id = getModuleIdBySource("renderSidebar", "getPredicateSections")!;
 
     this.resolve(webpackRequire!(id).default);
   }

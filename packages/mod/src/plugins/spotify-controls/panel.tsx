@@ -13,7 +13,9 @@ import { SpotifyMenu } from "./menu";
 
 const voicePanelClasses = getProxyByKeys([ "buttonContents", "buttonColor" ]);
 
-const PanelButton = getProxyByStrings<React.ComponentType<any>>([ "{tooltipText:", ".default.Masks.PANEL_BUTTON," ]);
+// const PanelButton = getProxyByStrings<React.ComponentType<any>>([ "{tooltipText:", ".default.Masks.PANEL_BUTTON," ]);
+
+const PanelButton: React.FC<any> = () => false;
 
 export function SpotifyPanel() {
   const ref = useRef<HTMLDivElement>(null);

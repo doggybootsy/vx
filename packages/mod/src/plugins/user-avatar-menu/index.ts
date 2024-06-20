@@ -7,7 +7,7 @@ export default definePlugin({
   requiresRestart: false,
   patches: {
     match: ".Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format({webBuildOverride",
-    find: /renderAvatarWithPopout\(\){.+?"aria-label":.{1,3}\.default\.Messages\.SET_STATUS/,
+    find: /renderAvatarWithPopout\(\){.+?"aria-label":.{1,3}\.(?:default|Z|ZP)\.Messages\.SET_STATUS/,
     replace: "$&,onContextMenu:(event)=>$enabled&&$self.onContextMenu(event)"
   },
   onContextMenu(event: React.MouseEvent) {

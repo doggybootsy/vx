@@ -7,7 +7,7 @@ export default definePlugin({
   requiresRestart: false,
   styler,
   patches: {
-    match: ".default.Messages.ADD_REACTION_NAMED",
+    match: ".Messages.ADD_REACTION_NAMED",
     replacements: [
       {
         find: /;((.{1,3})\.length>4&&\(\2\.length=4\);)/,

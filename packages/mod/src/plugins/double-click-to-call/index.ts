@@ -7,7 +7,7 @@ export default definePlugin({
   patches: [
     {
       match: "[this.renderVoiceCallButton(),this.renderVideoCallButton()]",
-      find: /(\(.{1,3}\.default\.Icon,{icon:.{1,3}\.default,onClick:)(.+?),/g,
+      find: /(\(.{1,3}\.(?:default|Z|ZP)\.Icon,{icon:.{1,3}\.(?:default|Z|ZP),onClick:)(.+?),/g,
       replace: "$1$self._wrapOnClick($2,()=>$enabled),"
     }
   ],

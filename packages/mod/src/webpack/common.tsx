@@ -4,9 +4,9 @@ export { default as ReactDOM } from "react-dom/client";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { getLazyByKeys, getProxyByKeys } from "./filters"
+import { byKeys, byStrings, getLazyByKeys, getProxyByKeys } from "./filters"
 import { GenericStore, getProxyStore } from "./stores";
-import { getModuleIdBySource, getProxy } from "./util";
+import { getMangledProxy, getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
@@ -45,10 +45,16 @@ export interface Store {
 }
 
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T, deps?: React.DependencyList) => T;
-export const Flux = getProxyByKeys<{
+
+export const Flux = getMangledProxy<{
   useStateFromStores: useStateFromStores,
-  Store: Store
-}>([ "useStateFromStores", "Dispatcher" ]);
+  Store: Store,
+  Dispatcher: { new (...args: any[]): FluxDispatcherType, prototype: FluxDispatcherType }
+}>(m => m.default?.Store, {
+  useStateFromStores: byStrings("useStateFromStores"),
+  Store: byKeys("displayName", "getAll"),
+  Dispatcher: m => typeof m === "function" && m.prototype && m.prototype.addInterceptor
+});
 
 export const useStateFromStores = proxyCache(() => Flux.useStateFromStores);
 
@@ -64,13 +70,19 @@ interface NavigationUtil {
   // Guild Thread
   transitionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
 
-  replace(path: string): void,
+  replaceWith(path: string): void,
 
   back(): void,
   forward(): void
 };
 
-export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
+export const NavigationUtils = getMangledProxy<NavigationUtil>("transitionTo - Transitioning to", {
+  transitionTo: byStrings("\"transitionTo - Transitioning to \""),
+  replaceWith: byStrings("\"Replacing route with \""),
+  back: byStrings(".goBack()"),
+  forward: byStrings(".goForward()"),
+  transitionToGuild: byStrings("\"transitionToGuild - Transitioning to \"")
+});
 
 export function dirtyDispatch(event: DispatchEvent): Promise<void> {
   return new Promise((resolve) => {
@@ -109,8 +121,15 @@ interface i18n {
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
 export const ComponentDispatch = proxyCache(() => {
-  const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
-  return webpackRequire!(id).ComponentDispatch;
+  const id = getModuleIdBySource("ComponentDispatchUtils")!;
+  const module = webpackRequire!(id);
+
+  for (const key in module) {
+    if (Object.prototype.hasOwnProperty.call(module, key)) {
+      const element = module[key];
+      if (typeof element === "object") return element;
+    }
+  }
 });
 
 const userUploadActions = getProxyByKeys([ "promptToUpload" ]);

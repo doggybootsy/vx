@@ -39,7 +39,7 @@ export default definePlugin({
   patches: [
     {
       identifier: "panel",
-      find: /\("section",({className:.{1,3}\.panels,"aria-label":.{1,3}\.default\.Messages\.ACCOUNT_A11Y_LABEL,)/,
+      find: /\("section",({className:.{1,3}\.panels,"aria-label":.{1,3}\.(?:default|Z|ZP)\.Messages\.ACCOUNT_A11Y_LABEL,)/,
       replace: "($self.Section,$1"
     },
     {

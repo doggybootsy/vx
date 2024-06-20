@@ -29,7 +29,7 @@ export default definePlugin({
       replace: "shouldReadWriteAudioSettings:function(){return $enabled?()=>false:$1}"
     },
     {
-      match: ".default.Messages.STREAM_VOLUME:",
+      match: ".Messages.STREAM_VOLUME:",
       replacements: [
         {
           find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.MenuControlItem,{.+}\)}\)/,

@@ -63,8 +63,8 @@ addPlainTextPatch(
   {
     identifier: "VX(no-hold-up)",
     match: ".window.setDevtoolsCallbacks",
-    find: /.+/,
-    replace: "function(module,exports,require){require.r(exports);require.d(exports,{UserDefenses(){return ()=>{}}})}"
+    find: /^function\(.{1,3},(.{1,3}),(.{1,3})\){"use strict";\2\.d\(\1,{(.{1,3}|UserDefenses):function\(\){return .{1,3}}.+/,
+    replace: "function(module,$1,$2){$2.d($1,{$3(){return ()=>{}}})}"
   },
   // Little loader icon in bottom left
   {

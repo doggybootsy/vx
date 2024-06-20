@@ -73,6 +73,7 @@ function createAddonAPI(type: "themes" | "plugins") {
 const storageCache = new Map<string, string>();
 
 const native = {
+  release: electron.ipcRenderer.sendSync("DISCORD_APP_GET_RELEASE_CHANNEL_SYNC") as string,
   themes: createAddonAPI("themes"),
   plugins: createAddonAPI("plugins"),
   app: {
@@ -186,7 +187,9 @@ const native = {
   safestorage: {
     decrypt(string: string): string {
       if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");
-      return electron.ipcRenderer.sendSync("@vx/safestorage/decrypt", string);
+      const { error, result } = electron.ipcRenderer.sendSync("@vx/safestorage/decrypt", string);
+      if (error) throw new Error("Failed to decrypt the text");
+      return result;
     },
     encrypt(string: string): string {
       if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");
@@ -200,7 +203,9 @@ const native = {
     get(key: string): string | null {
       if (storageCache.has(key)) return storageCache.get(key)!;
 
-      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const path = getAndEnsureVXPath(`storage/${native.release}`, (path) => mkdirSync(path));
+
       const file = join(path, `${basename(key)}.vxs`);
 
       if (!existsSync(file)) return null;
@@ -233,7 +238,9 @@ const native = {
     set(key: string, value: string) {
       storageCache.set(key, value);
 
-      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const path = getAndEnsureVXPath(`storage/${native.release}`, (path) => mkdirSync(path));
+
       const file = join(path, `${basename(key)}.vxs`);
 
       const isAvailable = native.safestorage.isAvailable();
@@ -245,7 +252,9 @@ const native = {
     delete(key: string) {
       storageCache.delete(key);
 
-      const path = getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      getAndEnsureVXPath("storage", (path) => mkdirSync(path));
+      const path = getAndEnsureVXPath(`storage/${native.release}`, (path) => mkdirSync(path));
+
       const file = join(path, `${key}.vxs`);
       
       if (!existsSync(file)) return;

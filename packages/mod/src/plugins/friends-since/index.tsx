@@ -53,13 +53,13 @@ export default definePlugin({
     {
       identifier: "popout",
       match: "isUsingGuildBio:null",
-      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{user:(.{1,3}),guild:.{1,3},guildMember:.{1,3},showBorder:.+?}\),/,
+      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.(?:default|Z|ZP),{user:(.{1,3}),guild:.{1,3},guildMember:.{1,3},showBorder:.+?}\),/,
       replace: "$enabled&&$jsx($self.FriendsSinceSection,{userId:$1.id}),$&"
     },
     {
       identifier: "modal",
       match: ".ConnectedUserAccounts,",
-      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.default,({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
+      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.(?:default|Z|ZP),({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
       replace: "$&,$enabled&&$jsx($self.FriendsSince,$1)"
     }
   ],

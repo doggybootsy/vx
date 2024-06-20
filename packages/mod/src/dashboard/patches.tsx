@@ -14,7 +14,7 @@ import { openMenu } from "../api/menu";
 addPlainTextPatch(
   {
     identifier: "VX(home-button)",
-    match: ".default.Messages.GUILDS_BAR_A11Y_LABEL",
+    match: ".Messages.GUILDS_BAR_A11Y_LABEL",
     find: /\((.{1,3}\.AdvancedScrollerNone)/,
     replace: "($vx._self._addHomeButton()"
   },
@@ -27,7 +27,7 @@ addPlainTextPatch(
   {
     identifier: "VX(titlebar)",
     match: ".wordmarkWindows,",
-    find: /(,.{1,3}=(.{1,3})=>{let.+?\.default,{}\)}\),.+?)\]/,
+    find: /(,.{1,3}=(.{1,3})=>{let.+?\.(?:default|Z|ZP),{}\)}\),.+?)\]/,
     replace: "$1,$jsx($vx._self.TitlebarButton,$2)]"
   }
 );

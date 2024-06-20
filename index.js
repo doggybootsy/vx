@@ -1,3 +1,13 @@
+try {
+  if (typeof require("electron") === "object") {
+    require("./app");
+    return;
+  }
+}
+catch (e) {
+
+}
+
 const esbuild = require("esbuild");
 const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync, readdirSync, readFileSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");

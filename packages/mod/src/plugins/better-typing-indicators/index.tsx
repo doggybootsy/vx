@@ -120,7 +120,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: ".default.Messages.ONE_USER_TYPING.format",
+    match: ".Messages.ONE_USER_TYPING.format",
     find: /class .{1,3} extends .{1,3}\.PureComponent{componentDidMount\(\){.{1,3}?\..+constructor\(\.{3}.{1,3}\){super\(\.{3}.{1,3}\)/,
     replace: "$&,$enabled&&$self.patch(this)"
   },

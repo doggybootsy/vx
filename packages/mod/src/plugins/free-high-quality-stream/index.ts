@@ -25,8 +25,8 @@ export default definePlugin({
     },
     {
       identifier: "no-upsell",
-      match: ".default.Messages.STREAM_PREMIUM_UPSELL_BANNER_PRESET_DOCUMENTS",
-      find: /,(.{1,3}\?\(0,.{1,3}\.jsx\)\(.{1,3}\.default,{.+?openStreamUpsellModal:.{1,3}}\):null)/g,
+      match: ".Messages.STREAM_PREMIUM_UPSELL_BANNER_PRESET_DOCUMENTS",
+      find: /,(.{1,3}\?\(0,.{1,3}\.jsx\)\(.{1,3}\.(?:default|Z|ZP),{.+?openStreamUpsellModal:.{1,3}}\):null)/g,
       replace: ",$enabled?false:$1"
     }
   ]

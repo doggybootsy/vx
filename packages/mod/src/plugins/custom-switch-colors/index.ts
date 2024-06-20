@@ -33,11 +33,11 @@ export default definePlugin({
     match: ".unsafe_rawColors.PRIMARY_400).spring()",
     replacements: [
       {
-        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.GREEN_360\)\.spring\(\)),/,
+        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.(?:default|Z|ZP)\.unsafe_rawColors\.GREEN_360\)\.spring\(\)),/,
         replace: "=((n,o)=>$enabled?n:o)($self.useColor('on'),$1),"
       },
       {
-        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\)),/,
+        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.(?:default|Z|ZP)\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\)),/,
         replace: "=((n,o)=>$enabled?n:o)($self.useColor('off'),$1),"
       }
     ]

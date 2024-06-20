@@ -7,7 +7,7 @@ import { MenuComponents, closeMenu, openMenu } from "../../api/menu";
 
 const injector = new Injector()
 const GIFPicker = getLazyByKeys([ "GIFPickerSearchItem" ]);
-const useImageActions = getProxyByStrings<(src: string) => any>([ ".AnalyticEvents.CONTEXT_MENU_LINK_OPENED", ".default.Messages.OPEN_LINK" ]);
+const useImageActions = getProxyByStrings<(src: string) => any>([ ".AnalyticEvents.CONTEXT_MENU_LINK_OPENED", ".Messages.OPEN_LINK" ]);
 
 const [ abort, getSignal ] = createAbort();
 
