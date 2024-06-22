@@ -2,27 +2,36 @@ import { Messages } from "vx:i18n";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
-import { getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
+import { getProxy, getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
 import { useStateFromStores } from "@webpack/common";
+import { useDiscordLocale } from "../../hooks";
 
 const Components = getProxyByKeys([ "Heading", "Text" ]);
 const Section = getProxyByStrings<React.FunctionComponent<{ children: React.ReactNode }>>([ ",lastSection:", ".lastSection]:" ]);
 
-const sectionClasses = getProxyByKeys([ "body", "title", "clydeMoreInfo" ]);
-
-const userProfileUtils = getProxyByKeys<{
-  getCreatedAtDate(timeStamp: number | string | Date): string
-}>([ "getCreatedAtDate" ]);
+const sectionClasses = getProxy(m => m.body && m.title && Object.keys(m).length === 2);
 
 const RelationshipStore = getProxyStore("RelationshipStore");
 
+function getCreatedAt(value: Date | string | number, lang?: string) {
+  if (null == value || "" === value) return null;
+  const data = new Date(value);
+  return !(data instanceof Date) || isNaN(data.getTime()) ? null : data.toLocaleDateString(lang, {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  })
+}
+
 function FriendsSince({ userId, headingClassName, textClassName }: { userId: string, headingClassName: string, textClassName: string }) {
+  const local = useDiscordLocale(false);
+
   const since = useStateFromStores([ RelationshipStore ], () => {
     const since = RelationshipStore.getSince(userId);
 
-    if (since && RelationshipStore.isFriend(userId)) return userProfileUtils.getCreatedAtDate(since);
+    if (since && RelationshipStore.isFriend(userId)) return getCreatedAt(since, local);
     return null;
-  });
+  }, [ local ]);
 
   if (!since) return null;
 

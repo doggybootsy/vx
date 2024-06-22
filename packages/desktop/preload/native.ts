@@ -187,9 +187,7 @@ const native = {
   safestorage: {
     decrypt(string: string): string {
       if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");
-      const { error, result } = electron.ipcRenderer.sendSync("@vx/safestorage/decrypt", string);
-      if (error) throw new Error("Failed to decrypt the text");
-      return result;
+      return electron.ipcRenderer.sendSync("@vx/safestorage/decrypt", string);
     },
     encrypt(string: string): string {
       if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");

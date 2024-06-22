@@ -192,7 +192,7 @@ export const VX = () => ({
     TitlebarButton,
     getSrc(getSrc: (...args: any[]) => string) {
       return (...args: any[]) => {
-        const url = getSrc.apply(this, args);
+        const url = getSrc.apply(this, args);        
         if (url.startsWith("blob:")) return url.split("?").at(0);
         if (url.startsWith("data:")) return url.split("?").at(0);
         return url;

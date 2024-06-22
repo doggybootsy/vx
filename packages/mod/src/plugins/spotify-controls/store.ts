@@ -1,10 +1,14 @@
-import { getProxyByKeys } from "@webpack"
+import { byStrings, getMangledProxy } from "@webpack"
 import { InternalStore } from "../../util"
 import { openNotification } from "../../api/notifications";
 import { Icons } from "../../components";
 import { settings } from ".";
 
-const SpotifyUtil = getProxyByKeys([ "getAccessToken", "SpotifyAPI" ]);
+const SpotifyUtil = getMangledProxy<{
+  getAccessToken(accountId: string): Promise<{ body: { access_token: string } }>
+}>('type:"SPOTIFY_PROFILE_UPDATE",', {
+  getAccessToken: byStrings("SPOTIFY_ACCOUNT_ACCESS_TOKEN_REVOKE")
+});
 
 export const spotifyStore = new class SpotifyStore extends InternalStore {
   constructor() {
@@ -98,6 +102,8 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
 
   #requests = 0;
   private async request(path: string, method: string, data: any = {}): Promise<Response> {
+    if (!this.accountId) throw new Error("Account id is not set!");
+
     if (!this.accessToken) {
       const data = await SpotifyUtil.getAccessToken(this.accountId);
       this.accessToken = data.body.access_token;

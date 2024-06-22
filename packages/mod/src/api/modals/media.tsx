@@ -1,5 +1,5 @@
 import { ModalComponents } from ".";
-import { addPlainTextPatch, getProxyByKeys } from "@webpack";
+import { addPlainTextPatch, byStrings, getMangledProxy, getProxyByKeys, not } from "@webpack";
 import { openModal } from "./actions";
 import { MegaModule } from "../../components";
 
@@ -46,7 +46,16 @@ function getVideoDetails(src: string){
   });
 }
 
-const mediaModal = getProxyByKeys([ "ImageModal", "VideoModal" ]);
+const mediaModals = getMangledProxy<{
+  VideoModal: React.FunctionComponent<any>,
+  ImageModal: React.FunctionComponent<any>
+}>(".videoWrapper),", {
+  VideoModal: byStrings(".videoWrapper),"),
+  ImageModal: not(byStrings(".videoWrapper),"))
+});
+
+console.log(mediaModals);
+
 
 addPlainTextPatch({
   identifier: "VX(image-blob-support)",
@@ -69,7 +78,7 @@ export async function openImageModal(src: string | URL) {
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-image-modal"
       >
-        <mediaModal.ImageModal
+        <mediaModals.ImageModal
           animated={true}
           height={height}
           width={width}
@@ -79,6 +88,7 @@ export async function openImageModal(src: string | URL) {
           shouldHideMediaOptions={false}
           src={src}
           renderLinkComponent={MegaModule.Anchor}
+          renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>
     )
@@ -99,7 +109,7 @@ export async function openVideoModal(src: string | URL) {
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-video-modal"
       >
-        <mediaModal.VideoModal
+        <mediaModals.VideoModal
           animated={true}
           height={height}
           width={width}
@@ -110,6 +120,7 @@ export async function openVideoModal(src: string | URL) {
           src={src}
           poster={poster}
           renderLinkComponent={MegaModule.Anchor}
+          renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>
     )

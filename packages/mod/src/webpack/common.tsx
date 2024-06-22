@@ -84,7 +84,14 @@ export const NavigationUtils = getMangledProxy<NavigationUtil>("transitionTo - T
   transitionToGuild: byStrings("\"transitionToGuild - Transitioning to \"")
 });
 
+const FluxDispatcherPromise = getLazyByKeys([ "subscribe", "dispatch" ]);
+
+let FluxDispatcherExists = false;
+FluxDispatcherPromise.then(() => { FluxDispatcherExists = true; })
+
 export function dirtyDispatch(event: DispatchEvent): Promise<void> {
+  if (!FluxDispatcherExists) return Promise.resolve();
+  
   return new Promise((resolve) => {
     FluxDispatcher.wait(() => {
       resolve(FluxDispatcher.dispatch(event));
@@ -92,7 +99,6 @@ export function dirtyDispatch(event: DispatchEvent): Promise<void> {
   });
 }
 
-const FluxDispatcherPromise = getLazyByKeys([ "subscribe", "dispatch" ]);
 export function subscribeToDispatch<T extends DispatchEvent = DispatchEvent>(eventName: string, listener: (event: T) => void) {
   const controller = new AbortController();
 
@@ -197,9 +203,18 @@ export const LayerManager = createNullObject({
 }, "LayerManager");
 
 const cachedUserFetches = new Map<string, Promise<User>>();
-const fetchUserModule = getProxyByKeys<{
-  getUser: (userId: string) => Promise<User>
-}>([ "fetchCurrentUser", "getUser" ]);
+
+const fetchUserModule = getMangledProxy<{
+  getUser(userId: string): Promise<User>,
+  fetchProfile(userId: string): Promise<any>
+}>('type:"USER_PROFILE_FETCH_START"', {
+  fetchProfile: byStrings("USER_PROFILE_FETCH_START"),
+  getUser: byStrings("USER_UPDATE", "Promise.resolve")
+});
+
+export function fetchProfile(userId: string): Promise<any> {
+  return fetchUserModule.fetchProfile(userId);
+}
 
 export function fetchUser(userId: string): Promise<User> {
   if (cachedUserFetches.has(userId)) return cachedUserFetches.get(userId)!;
@@ -220,9 +235,12 @@ export const ExternalWindow = getProxyByKeys<{
   isLinkTrusted(link: string): boolean
 }>([ "isLinkTrusted" , "handleClick" ]);
 
-const openMenuModule = getProxyByKeys<{
+const openUserMenuModule = getMangledProxy<{
   openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
-}>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
+}>(",showMute:!1,targetIsUser:!0", {
+  openUserContextMenu: byStrings(".isGroupDM()?")
+})
+
 export function openUserContextMenu(event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) {
   if (typeof user === "string") user = UserStore.getUser(user);
   
@@ -235,7 +253,7 @@ export function openUserContextMenu(event: React.MouseEvent, user: User | string
 
   const channel = !useCurrentChannel ? dummyChannel : currentChannel || dummyChannel;
 
-  openMenuModule.openUserContextMenu(event, user, channel);
+  openUserMenuModule.openUserContextMenu(event, user, channel);
 }
 
 interface KnownPermssionBits {
@@ -294,7 +312,9 @@ interface Constants {
   Permissions: KnownPermssionBits & Record<string, bigint>
 };
 
-export const Constants = getProxyByKeys<Omit<Record<string, any>, keyof Constants> & Constants>([ "Accessibility", "AVATAR_SIZE", "Permissions" ]);
+export const Constants = getMangledProxy<Constants>(".PAYMENT_REQUEST=99]", {
+  Permissions: byKeys("CHANGE_NICKNAME", "STREAM")
+});
 
 interface Invite {
   approximate_member_count: number,

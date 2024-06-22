@@ -34,7 +34,7 @@ function getColorPicker() {
       },
       factory: async () => {
         {
-          const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(Promise\.all\(\[(.{1,3})\.e\("\d+"\),(?:\2\.e\("\d+"\),?){1,}\]\))\.then\(\2\.bind\(\2,"(\d+)"\)\),webpackId:"\d+",name:"GuildSettings"}\)/;
+          const moduleIdRegex = /\(0,.{1,3}\..{1,3}\)\({createPromise:\(\)=>(Promise\.all\(\[(.{1,3})\.e\("\d+"\),(?:\2\.e\("\d+"\),?){1,}\]\))\.then\(\2\.bind\(\2,(\d+)\)\),webpackId:\d+,name:"GuildSettings"}\)/;
 
           const moduleId = getModuleIdBySource("CollectiblesShop", "GuildSettings", "UserSettings")!;
       
@@ -48,10 +48,10 @@ function getColorPicker() {
           webpackRequire!(moduleKey);
         };
 
-        const moduleIdRegex = /\(0,.{1,3}\.makeLazy\)\({createPromise:\(\)=>(.{1,3})\.e\("(\d+)"\)\.then\(\1\.bind\(\1,"(\d+)"\)\),webpackId:"\3"}\)/;
+        const moduleIdRegex = /\(0,.{1,3}\..{1,3}\)\({createPromise:\(\)=>(.{1,3})\.e\("(\d+)"\)\.then\(\1\.bind\(\1,(\d+)\)\),webpackId:\3}\)/;
 
-        const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format", ".DEFAULT_ROLE_COLOR,")!;
-            
+        const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format")!;
+        
         const module = String(webpackRequire!.m[moduleId]!);
         
         const [,, loadId, matchedId ] = module.match(moduleIdRegex)!;

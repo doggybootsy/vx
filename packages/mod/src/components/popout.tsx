@@ -1,7 +1,5 @@
-import { Component, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import ErrorBoundary from "./boundary";
 import { MegaModule } from "./util";
-import { Spinner } from "./spinner";
 
 interface Animation {
   NONE: string,
