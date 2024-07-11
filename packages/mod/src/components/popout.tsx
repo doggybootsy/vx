@@ -1,7 +1,5 @@
-import { Component, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import ErrorBoundary from "./boundary";
-import { MegaModule } from "./util";
-import { Spinner } from "./spinner";
+import { SystemDesign } from "./util";
 
 interface Animation {
   NONE: string,
@@ -45,13 +43,13 @@ export interface PopoutProps {
 function PopoutComponent(props: PopoutProps): React.ReactElement {
   return (
     <ErrorBoundary>
-      <MegaModule.Popout {...props} />
+      <SystemDesign.Popout {...props} />
     </ErrorBoundary>
   )
 }
 
 Object.defineProperty(PopoutComponent, "Animation", {
-  get: () => MegaModule.Popout.Animation
+  get: () => SystemDesign.Popout.Animation
 });
 
 export const Popout = PopoutComponent as React.FunctionComponent<PopoutProps> & { Animation: Animation };

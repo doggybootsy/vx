@@ -1,3 +1,4 @@
+import { Component } from "react";
 import { MenuRenderProps } from ".";
 import { addPlainTextPatch } from "@webpack";
 
@@ -38,36 +39,33 @@ interface MenuProps extends MenuRenderProps {
   [key: PropertyKey]: any
 }
 
-function sendPatch(props: MenuProps, res: React.ReactElement) {
+function sendPatch(navId: string, props: MenuProps, res: React.ReactElement) {  
   for (const [, patchParent ] of menuPatches){
     for (const [ menuId, patches ] of patchParent) {
-      const navId = getNavId(res)!;
-
       if (menuId !== navId) continue;
       for (const patch of patches) patch(props, res);
     };
   }
 }
 
-function getNavId(res: React.ReactElement) {
+function getNavId(res: React.ReactElement) {  
   if (res.props.navId) return res.props.navId;
   return res.props.children?.props?.navId;
 }
-const MAX_SEARCHES = 10;
+const MAX_SEARCHES = 50;
 const subPatches = new WeakMap();
 
-const subPatch = function(this: any, type: React.JSXElementConstructor<MenuProps>, props: MenuProps) {
+function subPatch(this: any, type: React.JSXElementConstructor<MenuProps>, props: MenuProps) {  
   const res = (type as (...args: any[]) => React.ReactElement).apply(this, Array.from(arguments).slice(1));
   
   if (res && res instanceof Object) handlePatch(props, res);
-  
+
   return res;
 }
 
-function patchMenuRecursive(element: React.ReactElement, ref = { current: 0 }) {
+function patchMenuRecursive(element: React.ReactElement) {
   if (typeof element.type !== "function") return;
   const { type } = element;
-  if (ref.current++ >= MAX_SEARCHES) return;
 
   let patch;
 
@@ -93,7 +91,7 @@ function patchMenuRecursive(element: React.ReactElement, ref = { current: 0 }) {
 function handlePatch(props: MenuProps, res: React.ReactElement) {
   const navId = getNavId(res);
 
-  if (navId) sendPatch(props, res);
+  if (navId) sendPatch(navId, props, res);
   else {
     const layer = res.props.children ? res.props.children : res;
     
@@ -103,7 +101,7 @@ function handlePatch(props: MenuProps, res: React.ReactElement) {
 
 function replaceMenu(menu: (props: any) => React.ReactElement) {
   return (props: any) => {
-    const res = menu(props);
+    const res = menu(props);    
 
     if (res) handlePatch(props, res);
 
@@ -111,11 +109,14 @@ function replaceMenu(menu: (props: any) => React.ReactElement) {
   }
 }
 
-export function _handleMenu(render: any, lazy: boolean) {
+export function _handleMenu(render: any, lazy: boolean) {  
   if (!render) return;
   if (lazy) return () => render().then(replaceMenu);
   return replaceMenu(render);
 }
 
 // This is to prevent console spam
-Object.defineProperty(Document.prototype, "ownerDocument", { get() { return this; }, configurable: true });
+Object.defineProperty(Document.prototype, "ownerDocument", { 
+  get() { return this instanceof Document ? this : document; }, 
+  configurable: true 
+});

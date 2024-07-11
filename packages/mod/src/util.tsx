@@ -11,7 +11,7 @@ export function isObject(item: any): item is Object {
   return false;
 }
 
-export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
+export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false, debugName: string = "Name not provided"): T {
   const handlers: ProxyHandler<T> = {};
 
   const cFactory = cache(factory);
@@ -50,7 +50,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
       return handler.apply(this, [ cacheFactory(), ...args ]);
     }
   }
-
+  
   const proxy = new Proxy(Object.assign(typeofIsObject ? {} : function() {}, {
     [Symbol.for("vx.proxy.cache")]: cFactory
   }) as T, handlers);
@@ -453,28 +453,25 @@ const patchedReactHooks = {
     return context._currentValue;
   }
 };
-export function wrapInHooks<P>(functionComponent: React.FunctionComponent<P>): React.FunctionComponent<P> {  
+export function wrapInHooks<P>(functionComponent: React.FunctionComponent<P>, customPatches: Partial<typeof patchedReactHooks>): React.FunctionComponent<P> {
   return (props?: P, context?: any) => {
     const reactDispatcher = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentDispatcher.current;
 
     const clone = { ...reactDispatcher };
 
-    Object.assign(reactDispatcher, patchedReactHooks);
+    Object.assign(reactDispatcher, patchedReactHooks, customPatches);
 
     try {
-      const result = functionComponent(props ?? {} as P, context);
-
-      Object.assign(reactDispatcher, clone);
-
-      return result;
+      return functionComponent(props ?? {} as P, context);
     } 
     catch (error) {
-      Object.assign(reactDispatcher, clone);
-
       throw error;
     }
+    finally {
+      Object.assign(reactDispatcher, clone);
+    }
   };
-};
+}
 
 export function showFilePicker(callback: (file: File | null) => void, accepts: string = "*") {
   const input = document.createElement("input");
@@ -518,7 +515,8 @@ export function createNullObject<T extends Record<PropertyKey, any> = Record<Pro
   }
 
   return Object.create(null, descriptors);
-};
+}
+
 // 'Iterator.from' polyfill like thing
 export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
   if (typeof (window as any).Iterator === "function") {
@@ -548,16 +546,14 @@ export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
     configurable: true,
     value: function*() {
       let result: IteratorResult<T, any>;
-      while ((result = generator.next(), !result.done)) {
-        yield result.value;
-      };
+      while ((result = generator.next(), !result.done)) yield result.value;
     }
   });
 
   Object.setPrototypeOf(data, proto);
 
   return Object.setPrototypeOf({}, data);
-};
+}
 
 const VXNodeListPrivate = new WeakMap<VXNodeList<Node>, Node[]>();
 export class VXNodeList<T extends Node> {

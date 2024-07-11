@@ -15,7 +15,7 @@ function attemptRecovery() {
 async function init() {
   const ErrorBoundary = await getLazy<{
     default: { prototype: ErrorBoundaryComponent }
-  }>(bySource(".AnalyticEvents.APP_CRASHED"), { searchDefault: false });
+  }>(bySource(".APP_CRASHED,"), { searchDefault: false });
 
   const injector = new Injector();
 

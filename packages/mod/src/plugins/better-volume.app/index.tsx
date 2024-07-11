@@ -5,17 +5,22 @@ import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { MenuComponents } from "../../api/menu";
 import { useState } from "react";
-import { getProxyByKeys, getProxyStore } from "@webpack";
-import { MegaModule } from "../../components";
+import { byStrings, getMangledProxy, getProxyByKeys, getProxyStore } from "@webpack";
+import { SystemDesign } from "../../components";
 import { useForceUpdate } from "../../hooks";
 
 import * as styler from "./index.css?managed";
 
 const MediaEngineStore = getProxyStore("MediaEngineStore");
-const AudioConvert = getProxyByKeys<{
+
+const AudioConvert = getMangledProxy<{
   amplitudeToPerceptual(amplitude: number): number,
   perceptualToAmplitude(perceptual: number): number
-}>([ "amplitudeToPerceptual", "perceptualToAmplitude" ]);
+}>("*50-50", {
+  amplitudeToPerceptual: byStrings("log10"),
+  perceptualToAmplitude: byStrings("pow")
+});
+
 const MediaEngineActions = getProxyByKeys([ "setLocalVolume", "toggleSelfMute" ])
 
 export default definePlugin({
@@ -25,11 +30,11 @@ export default definePlugin({
   patches: [
     {
       match: "2022-09_remote_audio_settings",
-      find: /shouldReadWriteAudioSettings:function\(\){return (.{1,3})}/,
-      replace: "shouldReadWriteAudioSettings:function(){return $enabled?()=>false:$1}"
+      find: /return .{1,3}\.getCurrentConfig/,
+      replace: "if($enabled)return false;$&"
     },
     {
-      match: ".default.Messages.STREAM_VOLUME:",
+      match: ".Messages.STREAM_VOLUME:",
       replacements: [
         {
           find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.MenuControlItem,{.+}\)}\)/,
@@ -55,11 +60,11 @@ export default definePlugin({
         id="better-user-volume"
         render={() => (
           <div className="vx-bv">
-            <MegaModule.TextInput
+            <SystemDesign.TextInput
               className="vx-bv-input"
               value={isEmpty ? "" : Math.round(AudioConvert.amplitudeToPerceptual(MediaEngineStore.getLocalVolume(userId, context)))}
               type="number"
-              size={MegaModule.TextInput.Sizes.MINI}
+              size={SystemDesign.TextInput.Sizes.MINI}
               placeholder="100"
               max={1000}
               min={0}

@@ -1,3 +1,32 @@
+try {
+  if (typeof require("electron") === "object") {
+    try {
+      require("./app");
+    }
+    catch (e) {
+      const electron = require("electron");
+      const Notification = electron.Notification;
+  
+      electron.app.whenReady().then(() => {
+        const notification = new Notification({
+          title: "Compile VX",
+          body: "VX does not a have compiled version installed",
+          urgency: "critical"
+        });
+    
+        notification.show();
+    
+        notification.on("close", () => electron.app.quit());
+      });
+    }
+    
+    return;
+  }
+}
+catch (e) {
+
+}
+
 const esbuild = require("esbuild");
 const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync, readdirSync, readFileSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");

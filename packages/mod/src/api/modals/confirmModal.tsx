@@ -1,4 +1,4 @@
-import { Button, MegaModule, transformContent } from "../../components";
+import { Button, SystemDesign, transformContent } from "../../components";
 import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 
@@ -27,7 +27,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
   let closedFromButton = false;
   
   const modal = openModal((props) => (
-    <MegaModule.ConfirmModal
+    <SystemDesign.ConfirmModal
       header={title}
       className="vx-modals-confirm-modal"
       confirmText={confirmText}
@@ -49,7 +49,7 @@ export function openConfirmModal(title: React.ReactNode, content: React.ReactNod
       onClose={() => {}}
     >
       {transformContent(content, "vx-modal-line")}
-    </MegaModule.ConfirmModal>
+    </SystemDesign.ConfirmModal>
   ), {
     onCloseCallback() {
       if (!closedFromButton) onCloseCallback();

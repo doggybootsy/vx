@@ -15,9 +15,9 @@ declare module Webpack {
     m: Record<PropertyKey, RawModule>;
     e(id: PropertyKey): Promise<unknown>;
   };
-  interface Module {
+  interface Module<T extends any = any> {
     id: PropertyKey,
-    exports: any,
+    exports: T,
     loaded: boolean
   };
   type RawModule = (module: Module, exports: object, require: Require) => void;

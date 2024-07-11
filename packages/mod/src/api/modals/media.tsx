@@ -1,7 +1,7 @@
 import { ModalComponents } from ".";
-import { addPlainTextPatch, getProxyByKeys } from "@webpack";
+import { addPlainTextPatch, byStrings, getMangledProxy, getProxyByKeys, not } from "@webpack";
 import { openModal } from "./actions";
-import { MegaModule } from "../../components";
+import { SystemDesign } from "../../components";
 
 function getImageSize(src: string) {  
   return new Promise<{ height: number, width: number }>((resolve, reject) => {
@@ -46,7 +46,13 @@ function getVideoDetails(src: string){
   });
 }
 
-const mediaModal = getProxyByKeys([ "ImageModal", "VideoModal" ]);
+const mediaModals = getMangledProxy<{
+  VideoModal: React.FunctionComponent<any>,
+  ImageModal: React.FunctionComponent<any>
+}>(".videoWrapper),", {
+  VideoModal: byStrings(".videoWrapper),"),
+  ImageModal: not(byStrings(".videoWrapper),"))
+});
 
 addPlainTextPatch({
   identifier: "VX(image-blob-support)",
@@ -69,7 +75,7 @@ export async function openImageModal(src: string | URL) {
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-image-modal"
       >
-        <mediaModal.ImageModal
+        <mediaModals.ImageModal
           animated={true}
           height={height}
           width={width}
@@ -78,7 +84,8 @@ export async function openImageModal(src: string | URL) {
           shouldAnimate={true}
           shouldHideMediaOptions={false}
           src={src}
-          renderLinkComponent={MegaModule.Anchor}
+          renderLinkComponent={SystemDesign.Anchor}
+          renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>
     )
@@ -99,7 +106,7 @@ export async function openVideoModal(src: string | URL) {
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-video-modal"
       >
-        <mediaModal.VideoModal
+        <mediaModals.VideoModal
           animated={true}
           height={height}
           width={width}
@@ -109,7 +116,8 @@ export async function openVideoModal(src: string | URL) {
           fileName={"No File Name"}
           src={src}
           poster={poster}
-          renderLinkComponent={MegaModule.Anchor}
+          renderLinkComponent={SystemDesign.Anchor}
+          renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>
     )

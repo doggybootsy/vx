@@ -5,8 +5,8 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: "BackdropStyles:",
-    find: /(\.backdrop.+?onClick:)(.{1,3})}/g,
+    match: 'backdropFilter:"blur(',
+    find: /(\.animated\.div,{className:.+?,onClick:)(.{1,3})}/g,
     replace: "$1$self.onClick($2,()=>$enabled)}"
   },
   onClick(onClick: (event: React.MouseEvent) => void, enabled: () => boolean) {

@@ -1,4 +1,4 @@
-import { MegaModule } from "../../components";
+import { SystemDesign } from "../../components";
 
 interface ModalCloseButtonProps {
   className?: string,
@@ -40,27 +40,27 @@ interface ModalRootProps {
 
 export default {
   get ModalCloseButton(): React.FunctionComponent<ModalCloseButtonProps> { 
-    return MegaModule.ModalCloseButton;
+    return SystemDesign.ModalCloseButton;
   },
   get ModalContent(): React.FunctionComponent<ModalContentProps> { 
-    return MegaModule.ModalContent;
+    return SystemDesign.ModalContent;
   },
   get ModalFooter(): React.FunctionComponent<ModalFooterProps> { 
-    return MegaModule.ModalFooter;
+    return SystemDesign.ModalFooter;
   },
   get ModalHeader(): React.FunctionComponent<ModalHeaderProps> { 
-    return MegaModule.ModalHeader;
+    return SystemDesign.ModalHeader;
   },
   get ModalListContent(): React.FunctionComponent<any> { 
-    return MegaModule.ModalListContent;
+    return SystemDesign.ModalListContent;
   },
   get ModalRoot(): React.FunctionComponent<ModalRootProps> { 
-    return MegaModule.ModalRoot;
+    return SystemDesign.ModalRoot;
   },
   get ModalSize(): Record<"SMALL" | "MEDIUM" | "LARGE" | "DYNAMIC", string> { 
-    return MegaModule.ModalSize;
+    return SystemDesign.ModalSize;
   },
   get ModalTransitionState(): Record<"ENTERING" | "ENTERED" | "EXITING" | "EXITED" | "HIDDEN", 0 | 1 | 2 | 3 | 4> { 
-    return MegaModule.ModalTransitionState;
+    return SystemDesign.ModalTransitionState;
   }
 };

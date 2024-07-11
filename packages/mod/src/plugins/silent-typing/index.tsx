@@ -53,7 +53,7 @@ export default definePlugin({
   settings,
   requiresRestart: false,
   patches: {
-    match: ".default.isSubmitButtonEnabled)",
+    match: ".isSubmitButtonEnabled)",
     find: /return\(.+&&(.{1,3}?)\.push.+{disabled:(.{1,3}),type:(.{1,3})}/,
     replace: "$self._addButton($1,$2,$3,$enabled);$&"
   },

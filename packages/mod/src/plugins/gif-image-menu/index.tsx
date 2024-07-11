@@ -1,13 +1,13 @@
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
-import { getLazyByKeys, getProxyByStrings } from "@webpack";
+import { getLazyByProtoKeys, getProxyByStrings } from "@webpack";
 import { Injector } from "../../patcher";
 import { createAbort } from "../../util";
 import { MenuComponents, closeMenu, openMenu } from "../../api/menu";
 
 const injector = new Injector()
-const GIFPicker = getLazyByKeys([ "GIFPickerSearchItem" ]);
-const useImageActions = getProxyByStrings<(src: string) => any>([ ".AnalyticEvents.CONTEXT_MENU_LINK_OPENED", ".default.Messages.OPEN_LINK" ]);
+const GIFPicker = getLazyByProtoKeys([ "renderGIF" ], { searchExports: true });
+const useImageActions = getProxyByStrings<(src: string) => any>([ ".CONTEXT_MENU_LINK_OPENED", ".Messages.OPEN_LINK" ]);
 
 const [ abort, getSignal ] = createAbort();
 
@@ -28,7 +28,7 @@ export default definePlugin({
   requiresRestart: false,
   async start() {
     const signal = getSignal();
-    const { GIFPickerSearchItem } = await GIFPicker;
+    const GIFPickerSearchItem = await GIFPicker;    
 
     if (signal.aborted) return;
 

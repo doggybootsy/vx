@@ -120,4 +120,4 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
   }
 
   return modules.map((m) => m.value);
-};
+}

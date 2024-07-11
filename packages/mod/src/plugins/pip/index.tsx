@@ -70,7 +70,8 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    find: "this.renderVideo()",
+    match: "this.renderVideo()",
+    find: /this\.renderVideo\(\)/g,
     replace: "[$enabled&&$jsx($self.PIP),$&]"
   },
   PIP: ErrorBoundary.wrap(PIP),

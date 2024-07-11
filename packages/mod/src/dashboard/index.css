@@ -70,8 +70,9 @@
   position: relative;
 }
 #vx-home-button-inner {
+  --vx-home-button: var(--background-primary);
   transition: background-color .15s ease-out, color .15s ease-out;
-  background-color: var(--background-primary);
+  background-color: var(--vx-home-button);
   color: var(--text-normal);
   padding: 4px;
   border-radius: 4px;
@@ -80,6 +81,12 @@
   justify-content: center;
   cursor: pointer;
   font-weight: 550;
+}
+.custom-theme-background #vx-home-button-inner {
+  --vx-home-button: rgb(var(--bg-overlay-color-inverse) / var(--bg-overlay-opacity-6));
+}
+.theme-light.custom-theme-background #vx-home-button-inner {
+  --vx-home-button: rgb(var(--bg-overlay-color)/var(--bg-overlay-opacity-3));
 }
 #vx-home-button:hover #vx-home-button-inner {
   color: var(--white-500);

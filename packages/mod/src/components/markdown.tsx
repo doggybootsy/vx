@@ -5,11 +5,13 @@ import ErrorBoundary from "./boundary";
 
 const markdownWrapper = getProxyByKeys<{
   parse(text: string, state?: Record<PropertyKey, any>): React.ReactNode
-}>([ "parse", "defaultRules" ]);
+}>([ "parse", "defaultRules", "parseTopic" ]);
 
 export function Markdown(props: { text: string, state?: Record<PropertyKey, any> }) {
   const parsed = useMemo(() => {
-    return markdownWrapper.parse(props.text, props.state);
+    const state = Object.assign({}, { allowLinks: true }, props.state);
+
+    return markdownWrapper.parse(props.text, state);
   }, [ props.text, props.state ]);
 
   return <>{parsed}</>;

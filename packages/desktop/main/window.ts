@@ -12,9 +12,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     return window[preloadSymbol];
   }
   
-  constructor(opts?: BrowserWindowConstructorOptions) {
-    console.log(opts?.webPreferences?.devTools);
-    
+  constructor(opts?: BrowserWindowConstructorOptions) {    
     if (!opts || !opts.webPreferences || !opts.webPreferences.preload) {
       super(opts);
       return;

@@ -2,7 +2,7 @@ import { Children, cloneElement } from "react";
 
 import ErrorBoundary from "./boundary";
 import { PopoutAlign, PopoutPosition } from "./popout";
-import { MegaModule } from "./util";
+import { SystemDesign } from "./util";
 
 interface TooltipColors {
   PRIMARY: string,
@@ -45,7 +45,7 @@ interface TooltipProps {
 export function Tooltip(props: TooltipProps) {
   return (
     <ErrorBoundary>
-      <MegaModule.Tooltip {...props} />
+      <SystemDesign.Tooltip {...props} />
     </ErrorBoundary>
   );
 };

@@ -140,6 +140,31 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   return true;
 }
 
-export function _onWebpackModule(module: Webpack.Module) {  
+function pollyFillDefault(module: Webpack.Module) {
+  if ("default" in module.exports) return;
+
+  function ensureProperty(key: PropertyKey, value: any) {
+    if (key in module.exports) return;
+    
+    Object.defineProperty(module.exports, key, { value });
+  }
+
+  if ("Z" in module.exports || "ZP" in module.exports) {
+    Object.defineProperty(module.exports, "default", {
+      get: () => module.exports.Z || module.exports.ZP,
+      set: (v) => {
+        if ("Z" in module.exports) module.exports.Z = v;
+        if ("ZP" in module.exports) module.exports.ZP = v;
+      }
+    });
+
+    ensureProperty("__esModule", true);
+    ensureProperty(Symbol.toStringTag, "Module");
+  }
+}
+
+export function _onWebpackModule(module: Webpack.Module) {
+  if (module.exports instanceof Object) pollyFillDefault(module);
+    
   for (const listener of listeners) listener(module);
 }

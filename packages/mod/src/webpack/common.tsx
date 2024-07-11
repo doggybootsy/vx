@@ -4,9 +4,9 @@ export { default as ReactDOM } from "react-dom/client";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { getLazyByKeys, getProxyByKeys } from "./filters"
+import { byKeys, byStrings, getLazyByKeys, getProxyByKeys } from "./filters"
 import { GenericStore, getProxyStore } from "./stores";
-import { getModuleIdBySource, getProxy } from "./util";
+import { getMangledProxy, getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
@@ -45,10 +45,16 @@ export interface Store {
 }
 
 type useStateFromStores = <T>(stores: FluxStore[], effect: () => T, deps?: React.DependencyList) => T;
-export const Flux = getProxyByKeys<{
+
+export const Flux = getMangledProxy<{
   useStateFromStores: useStateFromStores,
-  Store: Store
-}>([ "useStateFromStores", "Dispatcher" ]);
+  Store: Store,
+  Dispatcher: { new (...args: any[]): FluxDispatcherType, prototype: FluxDispatcherType }
+}>(m => m.default?.Store, {
+  useStateFromStores: byStrings("useStateFromStores"),
+  Store: byKeys("displayName", "getAll"),
+  Dispatcher: m => typeof m === "function" && m.prototype && m.prototype.addInterceptor
+});
 
 export const useStateFromStores = proxyCache(() => Flux.useStateFromStores);
 
@@ -64,15 +70,28 @@ interface NavigationUtil {
   // Guild Thread
   transitionToGuild(guildId: string | null, channelId: string, threadId: string, messageId?: string): void,
 
-  replace(path: string): void,
+  replaceWith(path: string): void,
 
   back(): void,
   forward(): void
 };
 
-export const NavigationUtils = getProxyByKeys<NavigationUtil>([ "back", "forward", "transitionTo" ]);
+export const NavigationUtils = getMangledProxy<NavigationUtil>("transitionTo - Transitioning to", {
+  transitionTo: byStrings("\"transitionTo - Transitioning to \""),
+  replaceWith: byStrings("\"Replacing route with \""),
+  back: byStrings(".goBack()"),
+  forward: byStrings(".goForward()"),
+  transitionToGuild: byStrings("\"transitionToGuild - Transitioning to \"")
+});
+
+const FluxDispatcherPromise = getLazyByKeys([ "subscribe", "dispatch" ]);
+
+let FluxDispatcherExists = false;
+FluxDispatcherPromise.then(() => { FluxDispatcherExists = true; })
 
 export function dirtyDispatch(event: DispatchEvent): Promise<void> {
+  if (!FluxDispatcherExists) return Promise.resolve();
+  
   return new Promise((resolve) => {
     FluxDispatcher.wait(() => {
       resolve(FluxDispatcher.dispatch(event));
@@ -80,7 +99,6 @@ export function dirtyDispatch(event: DispatchEvent): Promise<void> {
   });
 }
 
-const FluxDispatcherPromise = getLazyByKeys([ "subscribe", "dispatch" ]);
 export function subscribeToDispatch<T extends DispatchEvent = DispatchEvent>(eventName: string, listener: (event: T) => void) {
   const controller = new AbortController();
 
@@ -109,8 +127,15 @@ interface i18n {
 export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
 
 export const ComponentDispatch = proxyCache(() => {
-  const id = getModuleIdBySource("ComponentDispatcher:", "ComponentDispatch:")!;
-  return webpackRequire!(id).ComponentDispatch;
+  const id = getModuleIdBySource("ComponentDispatchUtils")!;
+  const module = webpackRequire!(id);
+
+  for (const key in module) {
+    if (Object.prototype.hasOwnProperty.call(module, key)) {
+      const element = module[key];
+      if (typeof element === "object") return element;
+    }
+  }
 });
 
 const userUploadActions = getProxyByKeys([ "promptToUpload" ]);
@@ -178,9 +203,18 @@ export const LayerManager = createNullObject({
 }, "LayerManager");
 
 const cachedUserFetches = new Map<string, Promise<User>>();
-const fetchUserModule = getProxyByKeys<{
-  getUser: (userId: string) => Promise<User>
-}>([ "fetchCurrentUser", "getUser" ]);
+
+const fetchUserModule = getMangledProxy<{
+  getUser(userId: string): Promise<User>,
+  fetchProfile(userId: string): Promise<any>
+}>('type:"USER_PROFILE_FETCH_START"', {
+  fetchProfile: byStrings("USER_PROFILE_FETCH_START"),
+  getUser: byStrings("USER_UPDATE", "Promise.resolve")
+});
+
+export function fetchProfile(userId: string): Promise<any> {
+  return fetchUserModule.fetchProfile(userId);
+}
 
 export function fetchUser(userId: string): Promise<User> {
   if (cachedUserFetches.has(userId)) return cachedUserFetches.get(userId)!;
@@ -201,9 +235,12 @@ export const ExternalWindow = getProxyByKeys<{
   isLinkTrusted(link: string): boolean
 }>([ "isLinkTrusted" , "handleClick" ]);
 
-const openMenuModule = getProxyByKeys<{
+const openUserMenuModule = getMangledProxy<{
   openUserContextMenu(event: React.MouseEvent, user: User, channel: Channel): void
-}>([ "openUserContextMenu", "openModerateUserContextMenu" ]);
+}>(",showMute:!1,targetIsUser:!0", {
+  openUserContextMenu: byStrings(".isGroupDM()?")
+})
+
 export function openUserContextMenu(event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) {
   if (typeof user === "string") user = UserStore.getUser(user);
   
@@ -216,7 +253,7 @@ export function openUserContextMenu(event: React.MouseEvent, user: User | string
 
   const channel = !useCurrentChannel ? dummyChannel : currentChannel || dummyChannel;
 
-  openMenuModule.openUserContextMenu(event, user, channel);
+  openUserMenuModule.openUserContextMenu(event, user, channel);
 }
 
 interface KnownPermssionBits {
@@ -275,7 +312,9 @@ interface Constants {
   Permissions: KnownPermssionBits & Record<string, bigint>
 };
 
-export const Constants = getProxyByKeys<Omit<Record<string, any>, keyof Constants> & Constants>([ "Accessibility", "AVATAR_SIZE", "Permissions" ]);
+export const Constants = getMangledProxy<Constants>(".PAYMENT_REQUEST=99]", {
+  Permissions: byKeys("CHANGE_NICKNAME", "STREAM")
+});
 
 interface Invite {
   approximate_member_count: number,

@@ -2,8 +2,8 @@ import { ModalComponents, ModalProps, openCodeModal, openImageModal, openModal, 
 import JSZip from "jszip";
 import { useAbortEffect } from "../../hooks";
 import { Fragment, useMemo, useState } from "react";
-import { Button, Flex, Icons, MegaModule, Spinner, Tooltip } from "../../components";
-import { getProxyByKeys } from "@webpack";
+import { Button, Flex, Icons, SystemDesign, Spinner, Tooltip } from "../../components";
+import { getMangledProxy, getProxyByKeys } from "@webpack";
 import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "vx:uncompress";
 import { isArchive } from ".";
@@ -23,8 +23,14 @@ type FileTypeDir = { children: { [key in string]: FileType }, name: string, dir:
 type FileTypeFile = { name: string, dir: false, getContent: GetContent, path: string, is: { image: boolean, video: boolean, code: boolean, zip: boolean } };
 type FileType = FileTypeDir | FileTypeFile;
 
-const mediaFileUtils = getProxyByKeys<{ isImageFile(name: string): boolean, isVideoFile(name: string): boolean }>([ "isImageFile", "isVideoFile" ]);
-const textFileUtils = getProxyByKeys<{ isPlaintextPreviewableFile(name: string): boolean }>([ "isPlaintextPreviewableFile" ]);
+const textFileUtils = getMangledProxy<{ isPlaintextPreviewableFile: (name: string) => boolean, plaintextPreviewableFiles: Set<string> }>('"powershell","ps","ps1"', {
+  plaintextPreviewableFiles: (m) => m instanceof Set,
+  isPlaintextPreviewableFile: (m) => m instanceof Function
+});
+
+const isVideoFile = (file: string) => /\.(mp4|mov)$/i.test(file.split("?")[0]);
+const isImageFile = (file: string) => /\.(png|jpe?g|webp|gif|heic|heif|dng)$/i.test(file.split("?")[0]);
+
 const scrollerClasses = getProxyByKeys([ "thin", "customTheme" ]);
 
 function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { file: FileType, onClick(): void, disabled?: boolean, selected?: boolean, onSelect?(state: boolean): void, onDownload?(): void }) {
@@ -72,7 +78,7 @@ function ZipFile({ file, onClick, disabled, selected, onSelect, onDownload }: { 
                 </div>
               )}
             </Tooltip>
-            <MegaModule.Checkbox 
+            <SystemDesign.Checkbox 
               value={selected}
               type="inverted"
               onChange={(event: React.ChangeEvent, newState: boolean) => {
@@ -165,8 +171,8 @@ function ZipModal(props: ZipModalProps) {
                 },
                 path,
                 is: {
-                  image: mediaFileUtils.isImageFile(key),
-                  video: mediaFileUtils.isVideoFile(key),
+                  image: isImageFile(key),
+                  video: isVideoFile(key),
                   code: textFileUtils.isPlaintextPreviewableFile(key),
                   zip: isArchive(key)
                 }

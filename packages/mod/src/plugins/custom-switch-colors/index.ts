@@ -21,7 +21,19 @@ const settings = createSettings("CustomSwitchColors", {
     props: {
       hideBorder: true
     },
+    onChange(state) {
+      settings.demoSwitch2.set(state);
+    },
     title: "Demo Switch"
+  },
+  demoSwitch2: {
+    type: SettingType.SWITCH,
+    default: true,
+    props: {
+      hideBorder: true
+    },
+    disabled() { return true; },
+    title: "Disabled Demo Switch"
   }
 });
 
@@ -33,11 +45,11 @@ export default definePlugin({
     match: ".unsafe_rawColors.PRIMARY_400).spring()",
     replacements: [
       {
-        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.GREEN_360\)\.spring\(\)),/,
+        find: /=(\(0,.{1,3}\..{1,3}\)\(.{1,3}\.Z\.unsafe_rawColors\.GREEN_360\)\.spring\(\)),/,
         replace: "=((n,o)=>$enabled?n:o)($self.useColor('on'),$1),"
       },
       {
-        find: /=(\(0,.{1,3}\.useToken\)\(.{1,3}\.default\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\)),/,
+        find: /=(\(0,.{1,3}\..{1,3}\)\(.{1,3}\.Z\.unsafe_rawColors\.PRIMARY_400\)\.spring\(\)),/,
         replace: "=((n,o)=>$enabled?n:o)($self.useColor('off'),$1),"
       }
     ]

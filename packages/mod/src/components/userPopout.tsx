@@ -1,6 +1,6 @@
 import { User } from "discord-types/general";
 import { Popout, PopoutProps, RenderPopoutProps } from "./popout";
-import { byStrings, getProxy, getProxyByKeys, webpackRequire } from "@webpack";
+import { byStrings, getMangledProxy, getProxy, getProxyByKeys, webpackRequire } from "@webpack";
 import { UserStore, fetchUser } from "@webpack/common";
 import { Component } from "react";
 import { Spinner } from "./spinner";
@@ -11,9 +11,11 @@ interface UserPopoutProps extends Omit<PopoutProps, "renderPopout"> {
   channelId?: string;
 }
 
-const preloader = getProxyByKeys([ "maybeFetchUserProfileForPopout" ]);
+const preloader = getMangledProxy<{ maybeFetchUserProfileForPopout(user: User, data: any): Promise<void> }>("withMutualFriends:null", {
+  maybeFetchUserProfileForPopout: byStrings("withMutualFriends:null")
+})
 
-const UserPopoutModule = getProxy<any>(byStrings(".useSimplifiedProfileExperiment", ".isNonUserBot()", "basicsEnabled"));
+const UserPopoutModule = getProxy<any>(byStrings("UserPopoutExperimentWrapper"));
 
 class RenderPopout extends Component<RenderPopoutProps & { userId: string, channelId?: string, guildId?: string }, { loaded: boolean }> {
   state = { loaded: false };

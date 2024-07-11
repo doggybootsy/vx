@@ -1,8 +1,8 @@
-import { getLazyByKeys } from "@webpack";
+import { getLazyByProtoKeys } from "@webpack";
 import { LocaleCodes } from "@webpack/common";
 
 let FormatableMessageApi: any;
-getLazyByKeys([ "FormattedMessage" ]).then(api => FormatableMessageApi = api);
+getLazyByProtoKeys([ "astFormat", "getContext" ], { searchExports: true }).then(api => FormatableMessageApi = api);
 
 export class FormattedMessage {
   constructor(message: string, locale: LocaleCodes, hasMarkdown: boolean) {
@@ -15,7 +15,7 @@ export class FormattedMessage {
   #formattedMessage?: FormattedMessage;
   #ensure() {
     if (!FormatableMessageApi) return;
-    this.#formattedMessage = new FormatableMessageApi.FormattedMessage(this.message, this.#locale, this.hasMarkdown);
+    this.#formattedMessage = new FormatableMessageApi(this.message, this.#locale, this.hasMarkdown);
     return this.#formattedMessage!;
   }
 

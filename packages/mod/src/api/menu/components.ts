@@ -1,4 +1,4 @@
-import { MegaModule } from "../../components";
+import { SystemDesign } from "../../components";
 import { IconProps } from "../../components/icons";
 
 interface MenuProps {
@@ -93,33 +93,33 @@ interface MenuRadioItemProps extends MenuCheckboxItemProps {
 
 export default {
   get Menu(): React.FunctionComponent<MenuProps> { 
-    return MegaModule.Menu;
+    return SystemDesign.Menu;
   },
   get MenuCheckboxItem(): React.FunctionComponent<MenuCheckboxItemProps> { 
-    return MegaModule.MenuCheckboxItem;
+    return SystemDesign.MenuCheckboxItem;
   },
   get MenuControlItem(): React.FunctionComponent<MenuControlItemProps> { 
-    return MegaModule.MenuControlItem;
+    return SystemDesign.MenuControlItem;
   },
   get MenuGroup(): React.FunctionComponent<MenuGroupProps> { 
-    return MegaModule.MenuGroup;
+    return SystemDesign.MenuGroup;
   },
   get MenuItem(): React.FunctionComponent<MenuItemProps> { 
-    return MegaModule.MenuItem;
+    return SystemDesign.MenuItem;
   },
   get MenuRadioItem(): React.FunctionComponent<MenuRadioItemProps> { 
-    return MegaModule.MenuRadioItem;
+    return SystemDesign.MenuRadioItem;
   },
   get MenuSearchControl(): React.FunctionComponent<MenuSearchControlProps> { 
-    return MegaModule.MenuSearchControl;
+    return SystemDesign.MenuSearchControl;
   },
   get MenuSeparator(): React.FunctionComponent { 
-    return MegaModule.MenuSeparator;
+    return SystemDesign.MenuSeparator;
   },
   get MenuSliderControl(): React.FunctionComponent<MenuSliderControlProps> { 
-    return MegaModule.MenuSliderControl;
+    return SystemDesign.MenuSliderControl;
   },
   get MenuSpinner(): React.FunctionComponent { 
-    return MegaModule.MenuSpinner;
+    return SystemDesign.MenuSpinner;
   }
 };

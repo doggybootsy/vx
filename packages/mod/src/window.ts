@@ -104,6 +104,8 @@ const encryption = {
 }
 
 export function vxRequire(path: string) {
+  if (webpack.webpackRequire && path in webpack.webpackRequire.m) return webpack.webpackRequire(path);
+  
   switch (path) {
     case "vx:i18n": return require("vx:i18n");
     case "vx:logger": return require("vx:logger");
@@ -192,7 +194,7 @@ export const VX = () => ({
     TitlebarButton,
     getSrc(getSrc: (...args: any[]) => string) {
       return (...args: any[]) => {
-        const url = getSrc.apply(this, args);
+        const url = getSrc.apply(this, args);        
         if (url.startsWith("blob:")) return url.split("?").at(0);
         if (url.startsWith("data:")) return url.split("?").at(0);
         return url;

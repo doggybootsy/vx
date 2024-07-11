@@ -14,7 +14,7 @@ function getID(embedLink: string) {
   return embedLink.split("/").at(-1)!.split("?").at(0)!;
 };
 
-const filter = byStrings(".default.minWidth", ".default.Types.VIDEO", ".MAX_VIDEO_HEIGHT||");
+const filter = byStrings(".minWidth", ".Types.VIDEO", ".MAX_VIDEO_HEIGHT||");
 const MediaPlayer = getProxy<React.FunctionComponent<any>>((m) => filter(m.prototype?.render))
 const ImageDetails = getProxyByKeys<{
   MEDIA_MOSAIC_MAX_WIDTH: number,
