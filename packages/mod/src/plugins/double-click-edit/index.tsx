@@ -6,7 +6,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: "getElementFromMessage:",
+    match: ".interactionSending]:",
     find: /"li",{id:.{1,3},/,
     replace: "$&onClick:$self.onClick.bind(null,()=>$enabled),"
   },

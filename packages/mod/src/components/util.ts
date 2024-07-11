@@ -1,3 +1,3 @@
 import { getProxyByKeys } from "@webpack";
 
-export const MegaModule = getProxyByKeys([ "Button", "Tooltip" ]);
+export const SystemDesign = getProxyByKeys([ "Button", "Tooltip" ]);

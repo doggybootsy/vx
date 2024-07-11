@@ -1,6 +1,25 @@
 try {
   if (typeof require("electron") === "object") {
-    require("./app");
+    try {
+      require("./app");
+    }
+    catch (e) {
+      const electron = require("electron");
+      const Notification = electron.Notification;
+  
+      electron.app.whenReady().then(() => {
+        const notification = new Notification({
+          title: "Compile VX",
+          body: "VX does not a have compiled version installed",
+          urgency: "critical"
+        });
+    
+        notification.show();
+    
+        notification.on("close", () => electron.app.quit());
+      });
+    }
+    
     return;
   }
 }

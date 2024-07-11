@@ -102,7 +102,7 @@ export default definePlugin({
     patchUser();
     patchGuildMember();
 
-    patch("LocalNicknames", "user-context", (props, res) => {      
+    patch("LocalNicknames", "user-context", (props, res) => {            
       const menu = useMenu(props.user);
       if (!menu) return;
 

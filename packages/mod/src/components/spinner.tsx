@@ -1,6 +1,6 @@
 import { className } from "../util";
 import ErrorBoundary from "./boundary";
-import { MegaModule } from "./util";
+import { SystemDesign } from "./util";
 
 type HTMLDivProps = GetComponentProps<"div">;
 
@@ -25,7 +25,7 @@ export function Spinner(props: SpinnerProps) {
 
   return (
     <ErrorBoundary>
-      <MegaModule.Spinner {...props} className={cn} />
+      <SystemDesign.Spinner {...props} className={cn} />
     </ErrorBoundary>
   )
 }

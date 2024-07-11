@@ -1,5 +1,5 @@
 import { getProxyByKeys } from "@webpack";
-import { MegaModule } from "../../components";
+import { SystemDesign } from "../../components";
 
 export interface ModalProps {
   transitionState: 0 | 1 | 2 | 3 | 4 | null,
@@ -21,7 +21,7 @@ export function openModal(Component: ModalComponent, options: ModalOptions = {})
 
   if (typeof Component !== "function") () => Component;
 
-  MegaModule.openModal((props: ModalProps) => (
+  SystemDesign.openModal((props: ModalProps) => (
     <Component {...props} />
   ), options);
 
@@ -31,11 +31,11 @@ export function openModal(Component: ModalComponent, options: ModalOptions = {})
   };
 };
 export function closeModal(id: string) {  
-  MegaModule.closeModal(id);
+  SystemDesign.closeModal(id);
 };
 export function closeAllModals() {
-  MegaModule.closeAllModals();
+  SystemDesign.closeAllModals();
 };
 export function hasModalOpen(id: string) {
-  return MegaModule.hasModalOpen(id);
+  return SystemDesign.hasModalOpen(id);
 };

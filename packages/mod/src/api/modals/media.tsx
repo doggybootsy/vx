@@ -1,7 +1,7 @@
 import { ModalComponents } from ".";
 import { addPlainTextPatch, byStrings, getMangledProxy, getProxyByKeys, not } from "@webpack";
 import { openModal } from "./actions";
-import { MegaModule } from "../../components";
+import { SystemDesign } from "../../components";
 
 function getImageSize(src: string) {  
   return new Promise<{ height: number, width: number }>((resolve, reject) => {
@@ -54,9 +54,6 @@ const mediaModals = getMangledProxy<{
   ImageModal: not(byStrings(".videoWrapper),"))
 });
 
-console.log(mediaModals);
-
-
 addPlainTextPatch({
   identifier: "VX(image-blob-support)",
   match: "this.unobserveVisibility",
@@ -87,7 +84,7 @@ export async function openImageModal(src: string | URL) {
           shouldAnimate={true}
           shouldHideMediaOptions={false}
           src={src}
-          renderLinkComponent={MegaModule.Anchor}
+          renderLinkComponent={SystemDesign.Anchor}
           renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>
@@ -119,7 +116,7 @@ export async function openVideoModal(src: string | URL) {
           fileName={"No File Name"}
           src={src}
           poster={poster}
-          renderLinkComponent={MegaModule.Anchor}
+          renderLinkComponent={SystemDesign.Anchor}
           renderForwardComponent={() => null}
         />
       </ModalComponents.ModalRoot>

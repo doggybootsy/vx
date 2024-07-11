@@ -11,7 +11,7 @@ export function isObject(item: any): item is Object {
   return false;
 }
 
-export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false): T {
+export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false, debugName: string = "Name not provided"): T {
   const handlers: ProxyHandler<T> = {};
 
   const cFactory = cache(factory);
@@ -50,7 +50,7 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
       return handler.apply(this, [ cacheFactory(), ...args ]);
     }
   }
-
+  
   const proxy = new Proxy(Object.assign(typeofIsObject ? {} : function() {}, {
     [Symbol.for("vx.proxy.cache")]: cFactory
   }) as T, handlers);

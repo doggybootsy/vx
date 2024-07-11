@@ -2,14 +2,11 @@ import { Messages } from "vx:i18n";
 import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
-import { getProxy, getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
+import { getProxyByKeys, getProxyStore } from "@webpack";
 import { useStateFromStores } from "@webpack/common";
 import { useDiscordLocale } from "../../hooks";
 
 const Components = getProxyByKeys([ "Heading", "Text" ]);
-const Section = getProxyByStrings<React.FunctionComponent<{ children: React.ReactNode }>>([ ",lastSection:", ".lastSection]:" ]);
-
-const sectionClasses = getProxy(m => m.body && m.title && Object.keys(m).length === 2);
 
 const RelationshipStore = getProxyStore("RelationshipStore");
 
@@ -23,7 +20,7 @@ function getCreatedAt(value: Date | string | number, lang?: string) {
   })
 }
 
-function FriendsSince({ userId, headingClassName, textClassName }: { userId: string, headingClassName: string, textClassName: string }) {
+function FriendsSince({ userId, Section }: { userId: string, Section: React.ComponentType<React.PropsWithChildren<{ title: string }>> }) {  
   const local = useDiscordLocale(false);
 
   const since = useStateFromStores([ RelationshipStore ], () => {
@@ -36,42 +33,21 @@ function FriendsSince({ userId, headingClassName, textClassName }: { userId: str
   if (!since) return null;
 
   return (
-    <div>
-      <Components.Heading variant="eyebrow" className={headingClassName}>
-        {Messages.FRIENDS_SINCE}
-      </Components.Heading>
-      <Components.Text variant="text-sm/normal" className={textClassName}>
+    <Section title={Messages.FRIENDS_SINCE}>
+      <Components.Text variant="text-sm/normal">
         {since}
       </Components.Text>
-    </div>
-  )
-}
-
-function FriendsSinceSection({ userId }: { userId: string }) {  
-  return (
-    <Section>
-      <FriendsSince userId={userId} headingClassName={sectionClasses.title} textClassName={sectionClasses.body} />
     </Section>
-  )
+  );
 }
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
-  patches: [
-    {
-      identifier: "popout",
-      match: "isUsingGuildBio:null",
-      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.(?:default|Z|ZP),{user:(.{1,3}),guild:.{1,3},guildMember:.{1,3},showBorder:.+?}\),/,
-      replace: "$enabled&&$jsx($self.FriendsSinceSection,{userId:$1.id}),$&"
-    },
-    {
-      identifier: "modal",
-      match: ".ConnectedUserAccounts,",
-      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.(?:default|Z|ZP),({userId:.{1,3}\.id,headingClassName:.{1,3}\.userInfoSectionHeader,textClassName:.{1,3}\.userInfoText})\)/,
-      replace: "$&,$enabled&&$jsx($self.FriendsSince,$1)"
-    }
-  ],
-  FriendsSinceSection: ErrorBoundary.wrap(FriendsSinceSection),
+  patches: {
+    match: ".appsConnections,applicationRoleConnection",
+    find: /\(0,.{1,3}\.jsx\)\((.{1,3}\.Z),{title:.{1,3}.Z.Messages.USER_PROFILE_MEMBER_SINCE,children:\(0,.{1,3}.jsx\)\(.{1,3}\..{1,3},{userId:(.{1,3})\.id,guildId:null==.{1,3}?void 0:.{1,3}.guildId,tooltipDelay:.{1,3}\..{1,3}}\)}\)/,
+    replace: "$&,$enabled&&$jsx($self.FriendsSince,{Section:$1,userId:$2.id})"
+  },
   FriendsSince: ErrorBoundary.wrap(FriendsSince)
 });

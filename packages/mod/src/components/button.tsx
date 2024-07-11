@@ -1,6 +1,6 @@
 import { className } from "../util"
 import ErrorBoundary from "./boundary"
-import { MegaModule } from "./util"
+import { SystemDesign } from "./util"
 
 interface ButtonSizes {
   ICON: string,
@@ -100,25 +100,25 @@ function WrappedButton(props: ButtonProps) {
 
   return (
     <ErrorBoundary>
-      <MegaModule.Button {...props} />
+      <SystemDesign.Button {...props} />
     </ErrorBoundary>
   )
 }
 Object.defineProperties(WrappedButton, {
   BorderColors: {
-    get: () => MegaModule.Button.BorderColors
+    get: () => SystemDesign.Button.BorderColors
   },
   Colors: {
-    get: () => MegaModule.Button.Colors
+    get: () => SystemDesign.Button.Colors
   },
   Hovers: {
-    get: () => MegaModule.Button.Hovers
+    get: () => SystemDesign.Button.Hovers
   },
   Looks: {
-    get: () => MegaModule.Button.Looks
+    get: () => SystemDesign.Button.Looks
   },
   Sizes: {
-    get: () => MegaModule.Button.Sizes
+    get: () => SystemDesign.Button.Sizes
   }
 });
 

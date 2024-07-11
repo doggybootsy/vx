@@ -1,5 +1,5 @@
 import ErrorBoundary from "./boundary";
-import { MegaModule } from "./util";
+import { SystemDesign } from "./util";
 
 interface SwitchProps {
   id?: string,
@@ -12,7 +12,7 @@ interface SwitchProps {
 export function Switch(props: SwitchProps) {
   return (
     <ErrorBoundary>
-      <MegaModule.Switch {...props} />
+      <SystemDesign.Switch {...props} />
     </ErrorBoundary>
   )
 }
@@ -32,7 +32,7 @@ export interface FormSwitchProps {
 export function FormSwitch(props: FormSwitchProps) {
   return (
     <ErrorBoundary>
-      <MegaModule.FormSwitch {...props} />
+      <SystemDesign.FormSwitch {...props} />
     </ErrorBoundary>
   )
 }

@@ -6,7 +6,7 @@ import { className, clipboard } from "../../util";
 import { Developers } from "../../constants";
 import { Messages } from "vx:i18n";
 
-const classes = getProxyByKeys<Record<string, string>>([ "iconItem", "summary" ]);
+const classes = getProxyByKeys<Record<string, string>>([ "iconItem", "selected" ]);
 
 function CopyButton(props: {
   guild: Guild,

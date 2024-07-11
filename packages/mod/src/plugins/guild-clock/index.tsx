@@ -36,7 +36,7 @@ export function GuildClock() {
 
   useEffect(() => {
     if (!enabled) return;
-
+    
     const id = setTimeout(() => {
       forceUpdate();
     }, 1000);

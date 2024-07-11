@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { Button, MegaModule } from "../../components";
+import { Button, SystemDesign } from "../../components";
 import { getProxyByKeys } from "@webpack";
 import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
@@ -43,10 +43,10 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
       const [ hasError, setHasError ] = useState(() => !isInputOk());
       
       return (
-        <MegaModule.Shakeable
+        <SystemDesign.Shakeable
           ref={ref}
         >
-          <MegaModule.ConfirmModal
+          <SystemDesign.ConfirmModal
             header={title}
             className="vx-modals-confirm-modal"
             confirmText={confirmText}
@@ -69,7 +69,7 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
             transitionState={props.transitionState}
             onClose={() => {}}
           >
-            <MegaModule.TextInput 
+            <SystemDesign.TextInput 
               value={state}
               placeholder={options.placeholder}
               style={{
@@ -98,8 +98,8 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
               maxLength={maxLength}
               autoFocus
             />
-          </MegaModule.ConfirmModal>
-        </MegaModule.Shakeable>
+          </SystemDesign.ConfirmModal>
+        </SystemDesign.Shakeable>
       )
     }, {
       onCloseCallback,

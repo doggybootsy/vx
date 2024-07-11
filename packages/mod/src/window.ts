@@ -104,6 +104,8 @@ const encryption = {
 }
 
 export function vxRequire(path: string) {
+  if (webpack.webpackRequire && path in webpack.webpackRequire.m) return webpack.webpackRequire(path);
+  
   switch (path) {
     case "vx:i18n": return require("vx:i18n");
     case "vx:logger": return require("vx:logger");
