@@ -3,6 +3,8 @@ import * as Icons from "./icons";
 
 const WrappedIcons = Object.fromEntries(Object.entries(Icons).map(([ key, Icon ]) => [ key, ErrorBoundary.wrap(Icon) ])) as typeof Icons;
 
+WrappedIcons.DiscordIcon.getAll = Icons.DiscordIcon.getAll;
+
 export { WrappedIcons as Icons };
 
 export * from "./tooltip";
