@@ -40,3 +40,18 @@
 .vx-bti-extra-content {
   translate: 0 -50%;
 }
+.vx-bti-popout {
+  background: var(--background-floating);
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--interactive-normal);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vx-bti-popout .vx-bti-user:hover {
+  color: var(--interactive-hover)
+}
+.vx-bti-dm {
+  padding-right: 8px;
+}

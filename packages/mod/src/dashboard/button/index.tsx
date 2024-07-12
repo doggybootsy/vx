@@ -96,7 +96,7 @@ export function HomeButton() {
       </svg>
       <div id="vx-home-button-update">
         <div id="vx-home-button-update-inner">
-          <Icons.Download />
+          <Icons.Notice />
         </div>
       </div>
     </div>
