@@ -278,3 +278,7 @@ declare namespace Intl {
 
   var ListFormat: ListFormatConstructor;
 }
+
+interface Array {
+  toSorted: this["sort"];
+}
