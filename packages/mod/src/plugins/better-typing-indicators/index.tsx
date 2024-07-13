@@ -1,7 +1,7 @@
 import { isValidElement, useEffect, useMemo, useState } from "react";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
-import { GuildMemberStore, SelectedChannelStore, UserStore, fetchUser, openUserContextMenu, useStateFromStores } from "@webpack/common";
+import { GuildMemberStore, RelationshipStore, SelectedChannelStore, UserStore, fetchUser, openUserContextMenu, useStateFromStores } from "@webpack/common";
 
 import * as styler from "./index.css?managed";
 import { ErrorBoundary, Mask, Popout, Spinner, Tooltip, UserPopout } from "../../components";
@@ -53,6 +53,7 @@ function TypingUser({ id, guildId, channelId, avatarOnly, isLast }: { id: string
   const user = useStateFromStores([ UserStore ], () => UserStore.getUser(id));
   const member = useStateFromStores([ GuildMemberStore ], () => guildId ? GuildMemberStore.getMember(guildId, id) : null);
   const hasFocus = useInternalStore(focusStore, () => focusStore.hasFocus);
+  const friendNickName = useStateFromStores([ RelationshipStore ], () => RelationshipStore.isFriend(id) && RelationshipStore.getNickname(id));
 
   useEffect(() => {
     if (!user) fetchUser(id).catch();
@@ -62,18 +63,12 @@ function TypingUser({ id, guildId, channelId, avatarOnly, isLast }: { id: string
     if (!user) return {
       username: "unknown user",
       color: null,
-      avatar: avatarModule.default.getUserAvatarURL(id)
+      avatar: avatarModule.default.getUserAvatarURL(id) as string
     }
    
-    if (member?.nick) return { 
-      username: member.nick, 
-      color: member.colorString,
-      avatar: user.getAvatarURL(guildId || undefined, 80, hasFocus)
-    };
-
     return {
-      username: (user as unknown as { globalName: string | null }).globalName || user.username, 
-      color: null,
+      username: friendNickName || member?.nick || (user as unknown as { globalName: string | null }).globalName || user.username, 
+      color: member?.colorString || null,
       avatar: user.getAvatarURL(guildId || undefined, 80, hasFocus)
     };
   }, [ user, member, hasFocus ]);
