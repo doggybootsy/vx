@@ -2,6 +2,8 @@ import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import * as styler from "./index.css?managed";
 
+const silentRegex = /^(\s*)@silent(\s|$)/;
+
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
@@ -24,21 +26,30 @@ export default definePlugin({
     if (!enabled()) return res;
 
     if (path[0] === 0 && typeof node.text === "string") {
-      if (node.text.startsWith("@silent ")) {
-        return [
+      const exec = silentRegex.exec(node.text);
+      if (exec) {
+        const ranges = [
+          {
+            type: "text",
+            text: exec[1],
+            anchor: { path, offset: 0 },
+            focus: { path, offset: exec[1].length },
+          },
           {
             silent: true,
             children: [ { text: "@silent" } ],
-            anchor: { path, offset: 0 },
-            focus: { path, offset: 7 },
+            anchor: { path, offset: exec[1].length },
+            focus: { path, offset: exec[1].length + 7 },
           },
           {
             type: "text",
-            text: " ",
-            anchor: { path, offset: 7 },
-            focus: { path, offset: 8 },
+            text: exec[2],
+            anchor: { path, offset: exec[1].length + 7 },
+            focus: { path, offset: exec[1].length + 7 + exec[2].length },
           }
         ]
+
+        return ranges;
       }
     }    
 

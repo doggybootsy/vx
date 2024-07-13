@@ -37,6 +37,7 @@ export const SelectedGuildStore = getProxyStore("SelectedGuildStore");
 export const PermissionStore = getProxyStore("PermissionStore");
 export const MessageStore = getProxyStore("MessageStore");
 export const GuildMemberStore = getProxyStore("GuildMemberStore");
+export const RelationshipStore = getProxyStore("RelationshipStore");
 
 export interface Store {
   new (dispatcher: FluxDispatcherType, handlers: Record<string, Function>, somethingIDK?: unknown): GenericStore,
