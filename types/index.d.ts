@@ -57,7 +57,9 @@ declare module Git {
     html_url: string,
     url: string,
     tag_name: string,
-    assets: Asset[]
+    assets: Asset[],
+    name: string,
+    body: string
   };
 }
 

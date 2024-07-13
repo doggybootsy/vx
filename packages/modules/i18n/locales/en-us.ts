@@ -46,6 +46,8 @@ const messages = {
   ARE_YOU_SURE: "Are you sure?",
   RESTART: "Restart",
   TRANSPARENCY: "Transparency",
+  ADD_VX_TO_TITLEBAR: "Add VX to titlebar",
+  ADD_VX_TO_TITLEBAR_NOTE: "Adds a button that allows you to quickly open the dashboard",
   TRANSPARENCY_NOTE: new FormattedMessage("Enabling transparency allows you to be able to see your desktop background. This also breaks window snapping [crbug/41395671](https://issues.chromium.org/issues/41395671) [electron/electron/2170](https://github.com/electron/electron/issues/2170)", "en-US", true),
 
   TRUST_AND_VISIT_SITE: new FormattedMessage("Visit and trust **!!{domain}!!** links from now on", "en-US", true),
@@ -116,6 +118,10 @@ const messages = {
   FORCE_EXPAND_MINIPOPOVER_DESCRIPTION: "Shows all minipopover items without needing to hold shift",
   BETTER_TYPING_INDICATORS_NAME: "Better Typing Indicators",
   BETTER_TYPING_INDICATORS_DESCRIPTION: "Enhances the typing indicators",
+  PIN_DMS_NAME: "Pin Direct Messages",
+  PIN_DMS_DESCRIPTION: "Adds the pin direct messages feature from the mobile app",
+  SILENT_NOTICE_NAME: "Silent Notice",
+  SILENT_NOTICE_DESCRIPTION: "Highlights @silent in the chatbar",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
