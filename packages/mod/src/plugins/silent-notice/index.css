@@ -1,0 +1,8 @@
+.vx-silent-notice {
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 500;
+  unicode-bidi: plaintext;
+  color: var(--mention-foreground);
+  background: var(--mention-background);
+}

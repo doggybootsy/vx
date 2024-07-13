@@ -8,13 +8,14 @@ interface ElementFactory {
 interface HTMLProps {
   factory: ElementFactory
 }
+
 // Always updates
 export function HTML({ factory }: HTMLProps) {
   return useHTML(factory);
 }
 // Never updates
-export function htmlToComponent(factory: ElementFactory) {
-  return () => useHTML(factory, [ ]);
+export function htmlToComponent<T extends object>(factory: (props: T) => HTMLElement): (props: T) => React.ReactNode {
+  return (props: T) => useHTML(() => factory(props), [ ]);
 }
 // Updates depending on deps
 export function useHTML(factory: ElementFactory, deps?: React.DependencyList) {
