@@ -244,19 +244,12 @@ function ChannelTypingIndicator(props: {
         <TypingPopout typingUsers={typingUsers} channelId={props.channel.id} guildId={props.guild?.id || null} />
       )}
     >
-      {(pprops) => props.isDmsList ? (
+      {(pprops) => (
         <div
           {...pprops}
-          className="vx-bti-dm"
-          onClick={() => shouldShow(s => !s)}
-        >
-          <Spinner type={Spinner.Type.PULSING_ELLIPSIS} />
-        </div>
-      ) : (
-        <div
-          {...pprops}
-          className={className([ classes.iconItem, classes.alwaysShown, classes.iconNoChannelInfo ])}
-          onClick={() => shouldShow(s => !s)}
+          className={className([ props.isDmsList ? "vx-bti-dm" : `${classes.iconItem} ${classes.alwaysShown} ${classes.iconNoChannelInfo}` ])}
+          onMouseOver={() => shouldShow(true)}
+          onMouseLeave={() => shouldShow(false)}
         >
           <Spinner type={Spinner.Type.PULSING_ELLIPSIS} />
         </div>

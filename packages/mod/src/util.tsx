@@ -557,6 +557,10 @@ export function iteratorFrom<T>(iterator: Iterable<T>): IterableIterator<T> {
 
 const VXNodeListPrivate = new WeakMap<VXNodeList<Node>, Node[]>();
 export class VXNodeList<T extends Node> {
+  static fromNodeList(nodeList: NodeList) {
+    return new this(Array.from(nodeList));
+  }
+  
   constructor(nodes: T[] = [ ]) {
     const nodesList = Array.from(nodes).filter((node) => node instanceof Node);
     VXNodeListPrivate.set(this, nodesList);
