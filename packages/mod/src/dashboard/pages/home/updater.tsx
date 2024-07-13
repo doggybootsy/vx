@@ -1,7 +1,7 @@
 import { env, git } from "vx:self";
 import { InternalStore } from "../../../util";
 import { updater } from "../../../native";
-import { compare } from "./semver";
+import { compare, SemverCompareState } from "./semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
 import { whenWebpackInit } from "@webpack";
@@ -26,7 +26,7 @@ export const updaterStore = new class extends InternalStore {
   displayName = "UpdaterStore";
 
   #lastFetch: Date | null = null;
-  #compared: -1 | 0 | 1 | null = null;
+  #compared: SemverCompareState | null = null;
   #release: Git.Release | null = null;
   #latest: string | null = null;
   #canCheck = true;
@@ -61,7 +61,7 @@ export const updaterStore = new class extends InternalStore {
 
     this.emit();
 
-    if (compared === -1) {
+    if (compared === SemverCompareState.OUT_OF_DATE) {
       openNotification({
         title: Messages.VX_UPDATE_AVAILABLE,
         id: "vx-update-available",
@@ -83,11 +83,11 @@ export const updaterStore = new class extends InternalStore {
       this.#canCheck = true;
       this.emit();
     }, DELAY_MIN);
-  };
+  }
   download() {
-    if (this.#compared !== -1) return;
+    if (this.#compared !== SemverCompareState.OUT_OF_DATE) return;
     updater.update(this.#release!);
-  };
+  }
 
   getState() {
     return {
@@ -99,7 +99,11 @@ export const updaterStore = new class extends InternalStore {
       latest: this.#latest
     }
   }
-};
+}
+
+function UpdatePopout() {
+  
+}
 
 export function Updater() {
   if (!git.exists) return null;
@@ -112,8 +116,8 @@ export function Updater() {
         <div className="vx-updater-notice">
           {
             typeof state.compared === "number" ? 
-              state.compared === -1 ? Messages.VX_UPDATE_AVAILABLE : 
-              state.compared === 0 ? Messages.UP_TO_DATE : Messages.ABOVE_LATEST_RELEASE : 
+              state.compared === SemverCompareState.OUT_OF_DATE ? Messages.VX_UPDATE_AVAILABLE : 
+              state.compared === SemverCompareState.UP_TO_DATE ? Messages.UP_TO_DATE : Messages.ABOVE_LATEST_RELEASE : 
               Messages.UNKNOWN
           }
         </div>
@@ -136,16 +140,16 @@ export function Updater() {
         </Button>
         <Button
           onClick={() => {
-            if (state.compared === -1) {
+            if (state.compared === SemverCompareState.OUT_OF_DATE) {
               updaterStore.download();  
               return;
-            };
+            }
     
             updaterStore.checkForUpdates();
           }} 
-          disabled={state.compared === -1 ? false : !state.canCheck}
+          disabled={state.compared === SemverCompareState.OUT_OF_DATE ? false : !state.canCheck}
         >
-          {state.fetching ? Messages.FETCHING : state.compared === -1 ? Messages.UPDATE_TO.format({ version: state.release!.tag_name.replace("v", "") }) : Messages.CHECK_FOR_UPDATES}
+          {state.fetching ? Messages.FETCHING : state.compared === SemverCompareState.OUT_OF_DATE ? Messages.UPDATE_TO.format({ version: state.release!.tag_name.replace("v", "") }) : Messages.CHECK_FOR_UPDATES}
         </Button>
       </Flex>
     </Flex>

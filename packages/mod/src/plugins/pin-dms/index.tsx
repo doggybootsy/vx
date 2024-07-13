@@ -4,7 +4,6 @@ import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
 import { getProxyStore } from "@webpack";
 import { Icons } from "../../components";
-import { useState } from "react";
 import * as styler from "./index.css?managed";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { getParents } from "../../util";

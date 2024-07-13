@@ -18,7 +18,7 @@ interface AlertModalProps {
   onClose(): void
 };
 
-const Alert = getProxyByStrings<React.FunctionComponent<AlertModalProps>>([ ".Sizes.XLARGE", ".Direction.VERTICAL", ".minorContainer" ])
+const Alert = getProxyByStrings<React.FunctionComponent<AlertModalProps>>([ ".minorContainer", "secondaryConfirmText", ".Direction.VERTICAL" ])
 
 interface AlertModalOptions {
   danger?: boolean,

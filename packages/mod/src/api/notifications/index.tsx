@@ -19,7 +19,7 @@ export interface Notification {
 
 addPlainTextPatch({
   identifier: "VX(notifications)",
-  match: "{Shakeable:function",
+  match: "!this.state.shaking)this.setState({shaking:!0},this._animate)",
   find: /let{children:.{1,3},\.{3}t}=this\.props;return\(0,.{1,3}\.jsx\)\("div",{\.{3}.{1,3},ref:this\.ref,children:.{1,3}}\)/,
   replace: "$vx.notifications._handleNotifications(this.props);$&"
 });
