@@ -1,0 +1,8 @@
+.vx-pd-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+  padding-right: 8px;
+  flex-shrink: 0;
+}
