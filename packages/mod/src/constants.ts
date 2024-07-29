@@ -3,12 +3,12 @@ export interface Developer {
   discord: string
 };
 
-export const Developers: Record<string, Developer> = {
+export const Developers = {
   doggybootsy: {
     username: "doggybootsy",
     discord: "515780151791976453"
   }
-};
+} satisfies Record<string, Developer>;
 
 export const DEBUG_SYMBOL = Symbol.for("vx.debug");
 

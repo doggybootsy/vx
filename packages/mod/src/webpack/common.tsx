@@ -313,9 +313,29 @@ interface Constants {
   Permissions: KnownPermssionBits & Record<string, bigint>
 };
 
+interface Webhooks {
+
+}
+
+export const webhooks = getProxy<Webhooks>(m => m.fetchForChannel);
+
 export const Constants = getMangledProxy<Constants>(".PAYMENT_REQUEST=99]", {
   Permissions: byKeys("CHANGE_NICKNAME", "STREAM")
 });
+
+export const Endpoints = (() => {
+  const Endpoints = getProxyByKeys<Record<string, string | ((...args: string[]) => string)>>([ "CHANNEL_WEBHOOKS", "ACTIVITIES" ], { searchExports: true });
+
+  return new Proxy({ } as Record<string, (...args: string[]) => string>, {
+    get(target, key) {
+      if (key in target) return target[key as keyof typeof target];
+      const endpoint = Endpoints[key as keyof typeof Endpoints];
+
+      if (typeof endpoint === "string") return target[key as keyof typeof target] = () => endpoint;
+      return target[key as keyof typeof target] = endpoint;
+    }
+  });
+})();
 
 interface Invite {
   approximate_member_count: number,

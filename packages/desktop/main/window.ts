@@ -52,9 +52,6 @@ export class BrowserWindow extends electron.BrowserWindow {
       event.preventDefault();
 
       electron.shell.openExternal(url, { });
-
-      // const w = new electron.BrowserWindow({ center: true });
-      // w.loadURL(url);
     });
     
     return window;
