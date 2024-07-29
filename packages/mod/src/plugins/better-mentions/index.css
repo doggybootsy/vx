@@ -1,0 +1,17 @@
+.vx-bm-textarea[data-vx-bm-has-avatar="true"] > span {
+  padding-left: 23px;
+  position: relative;
+}
+
+.vx-bm-avatar {
+  width: 17px;
+  position: absolute;
+  left: 2px;
+  border-radius: 50%;
+  top: 2px;
+}
+
+.vx-bm-chat[data-vx-bm-has-avatar="true"] {
+  padding-left: 23px;
+  position: relative;
+}

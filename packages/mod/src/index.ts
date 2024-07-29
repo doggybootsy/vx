@@ -12,6 +12,8 @@ import { IS_DESKTOP, env } from "vx:self";
 import { transparency } from "./native";
 import { compileFunction } from "./util";
 
+import "./notrack";
+
 console.log(`Welcome to VX v${env.VERSION}`);
 
 // fetch('https://media0.giphy.com/media/3og0IFrHkIglEOg8Ba/giphy.gif', {

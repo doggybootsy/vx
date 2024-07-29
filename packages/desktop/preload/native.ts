@@ -267,6 +267,14 @@ const native = {
     setVolume(volume: number) {
       ipcRenderer.invoke("@vx/spotify-embed-volume/set", volume);
     }
+  },
+  adblock: {
+    getState() {
+      return ipcRenderer.sendSync("@vx/adblock/get");
+    },
+    setState(state: boolean) {
+      ipcRenderer.invoke("@vx/adblock/set", state);
+    }
   }
 };
 

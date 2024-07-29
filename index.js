@@ -28,7 +28,7 @@ catch (e) {
 }
 
 const esbuild = require("esbuild");
-const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync, readdirSync, readFileSync } = require("fs");
+const { existsSync, rmSync, mkdirSync, writeFileSync, copyFileSync, statSync, readFileSync } = require("fs");
 const { readFile, readdir } = require("fs/promises");
 const path = require("path");
 const asar = require("asar")

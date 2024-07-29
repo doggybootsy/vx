@@ -16,7 +16,7 @@ interface TooltipColors {
   PREMIUM: string
 };
 
-interface PassedChildrenProps {
+export interface PassedChildrenProps {
   ["aria-label"]: string,
   onBlur(): void,
   onFocus(): void,
@@ -26,7 +26,7 @@ interface PassedChildrenProps {
   onMouseLeave(): void
 };
 
-interface TooltipProps {
+export interface TooltipProps {
   allowOverflow?: boolean,
   color?: string,
   forceOpen?: boolean,

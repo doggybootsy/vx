@@ -6,6 +6,7 @@ import { TextOverflowScroller } from "../../components";
 import { openImageModal } from "../../api/modals";
 import { Messages } from "vx:i18n";
 import { getDefaultAvatar } from "../../util";
+import { NumberFormat } from "../../intl";
 
 function SpotifyTopMenu({ track }: { track: Spotify.Track }) {
   return (
@@ -34,6 +35,8 @@ function SpotifyTopMenu({ track }: { track: Spotify.Track }) {
     </div>
   )
 }
+
+const numberFormat = new NumberFormat();
 
 export function SpotifyMenu(props: MenuRenderProps) {  
   const track = useInternalStore(spotifyStore, () => spotifyStore.track);
@@ -89,7 +92,7 @@ export function SpotifyMenu(props: MenuRenderProps) {
                       {artist.name}
                     </div>
                     <div className="vx-spotify-menu-artist-followers">
-                      {Messages.FOLLOWERS.format({ followers: artists[artist.id].followers.total })}
+                      {Messages.FOLLOWERS.format({ followers: numberFormat.format(artists[artist.id].followers.total) })}
                     </div>
                   </div>
                 )}

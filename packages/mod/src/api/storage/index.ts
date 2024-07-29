@@ -38,6 +38,10 @@ export interface DataStoreOptions<T extends Record<string, any>> {
 const cache = new Map<string, DataStore<any>>();
 
 class DataStore<T extends Record<string, any> = Record<string, any>> extends InternalStore {
+  public static get<T extends Record<string, any> = Record<string, any>>(name: string): DataStore<T> | undefined {
+    return cache.get(name);
+  }
+
   constructor(public readonly name: string, opts: DataStoreOptions<T> = {}) {
     if (cache.has(name)) return cache.get(name)!;
 

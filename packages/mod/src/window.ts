@@ -169,7 +169,6 @@ export const VX = () => ({
   intl,
   storage: {
     DataStore: storage.DataStore,
-    internalDataStore: storage.internalDataStore,
     create<T extends Record<string, any> = Record<string, any>>(name: string, opts: storage.DataStoreOptions<T> = {}): storage.DataStore<T> {
       return new storage.DataStore<T>(name, opts);
     }

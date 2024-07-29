@@ -164,8 +164,8 @@ export function className(classNames: classNameValueTypes["array"] | classNameVa
     }
   }
 
-  return Array.from(new Set(flattenedString)).join(" ");
-};
+  return Array.from(new Set(flattenedString.join(" ").split(" "))).join(" ");
+}
 
 type ClassNameType = classNameValueTypes["array"] | classNameValueTypes["object"] | string | void | false | ClassName;
 
@@ -768,7 +768,7 @@ type Accessor<T> = (forceNoUseHook?: boolean) => T;
 type SetterArg<T> = ((prev: T) => T) | T;
 type Setter<T> = (value: SetterArg<T>) => T;
 type OnChange<T> = (callback: (value: T) => void) => void;
-type State<T> = Readonly<[ get: Accessor<T>, set: Setter<T>, addListener: OnChange<T> ]>;
+type State<T> = Readonly<[ accessor: Accessor<T>, setter: Setter<T>, addChangeListener: OnChange<T> ]>;
 
 // SolidJS like thing
 export function createState<T>(initialState: T): State<T> {
@@ -799,7 +799,7 @@ export function createState<T>(initialState: T): State<T> {
     return currentState;
   }
   
-  function onChange(callback: (state: T) => void): () => void {
+  function addChangeListener(callback: (state: T) => void): () => void {
     function callbackWrapper() {
       try {
         callback(currentState);
@@ -814,7 +814,7 @@ export function createState<T>(initialState: T): State<T> {
   const state: State<T> = [
     accessor,
     setter,
-    onChange
+    addChangeListener
   ];
 
   return state;
@@ -895,7 +895,7 @@ export function getCSSVarColor(variable: `--${string}`, node: Element = document
   const color = getComputedStyle(div).color;
   div.remove();
   
-  return color as any;
+  return color;
 }
 
 export const focusStore = new class FocusStore extends InternalStore {

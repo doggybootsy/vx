@@ -122,6 +122,10 @@ const messages = {
   PIN_DMS_DESCRIPTION: "Adds the pin direct messages feature from the mobile app",
   SILENT_NOTICE_NAME: "Silent Notice",
   SILENT_NOTICE_DESCRIPTION: "Highlights @silent in the chatbar",
+  YOUTUBE_ADBLOCK_NAME: "Youtube Adblock",
+  YOUTUBE_ADBLOCK_DESCRIPTION: "Adds a adblock that removes ads off of youtube",
+  BETTER_MENTIONS_NAME: "Better Mentions",
+  BETTER_MENTIONS_DESCRIPTION: "Makes user mentions better",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",

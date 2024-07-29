@@ -7,6 +7,7 @@ import * as styler from "./index.css?managed";
 import { SettingType, createSettings } from "../settings";
 import { spotifyStore } from "./store";
 import { SpotifyPanel } from "./panel";
+import { forwardRef } from "react";
 
 export const settings = createSettings("SpotifyControls", {
   altSkipBackwards: {
@@ -39,7 +40,7 @@ export default definePlugin({
   patches: [
     {
       identifier: "panel",
-      find: /\("section",({className:.{1,3}\.panels,"aria-label":.{1,3}\.(?:default|Z|ZP)\.Messages\.ACCOUNT_A11Y_LABEL,)/,
+      find: /\("section",({(ref:.{1,3},)?className:.{1,3}\.panels,"aria-label":.{1,3}\.(?:default|Z|ZP)\.Messages\.ACCOUNT_A11Y_LABEL,)/,
       replace: "($self.Section,$1"
     },
     {
@@ -50,17 +51,17 @@ export default definePlugin({
     }
   ],
   styler,
-  Section(props: { children: React.ReactElement[] }) {
+  Section: forwardRef((props: { children: React.ReactElement[] }, ref: React.ForwardedRef<HTMLElement>) => {
     props.children.splice(
       props.children.length - 1, 
       0,
       <ErrorBoundary>
         <SpotifyPanel />
       </ErrorBoundary>
-    );
+    );    
 
-    return <section {...props} />;
-  },
+    return <section {...props} ref={ref} />;
+  }),
   fluxEvents: {
     SPOTIFY_PLAYER_STATE(data) {      
       if (data.currentlyPlayingType === "unknown") return;
