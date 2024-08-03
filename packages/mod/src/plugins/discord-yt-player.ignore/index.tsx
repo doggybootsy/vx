@@ -34,9 +34,7 @@ function OverlayContent({ src, filename }: { src: string, filename: string }) {
       {CAN_DOWNLOAD && (
         <div className="vx-yt-button"
           onClick={async () => {
-            const request = await window.fetch(src);
-
-            download(filename, await request.blob());
+            download(filename, (await request.blob(src)).blob);
           }}
         >
           <Icons.Download />
@@ -56,8 +54,7 @@ const cache = new Map<string, { video: string, pfp: string }>();
 async function getYoutubeData(id: string) {
   if (cache.has(id)) return cache.get(id)!;
 
-  const response = await window.fetch(`https://www.youtube.com/watch?v=${id}`);
-  const text = await response.text();
+  const text = (await request.text(`https://www.youtube.com/watch?v=${id}`)).text;
   const DOM = new DOMParser().parseFromString(text, "text/html");
   
   const scripts = Array.from(DOM.getElementsByTagName("script"));
@@ -86,7 +83,7 @@ async function getYoutubeData(id: string) {
 
   // Cache Video, but stil let it to attempt to play at first, this takes to long
   (async () => {
-    const res = await window.fetch(data.video);
+    const res = await request(data.video);
     if (res.status >= 400 && res.status < 500) {
       cache.delete(id);      
       return;

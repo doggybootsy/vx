@@ -3,7 +3,7 @@ import { className } from "../util";
 import { Tooltip } from "./tooltip";
 
 const minipopoverClasses = getProxyByKeys([ "button", "dangerous", "selected", "separator", "wrapper" ]);
-const innerClasses = getProxyByKeys([ "icon", "isHeader" ]);
+const innerClasses = getProxyByKeys([ "icon", "buttonContent" ]);
 
 interface MiniPopoverButtonProps {
   icon(props: { width: number, height: number, className: string }): React.ReactNode,
@@ -13,7 +13,8 @@ interface MiniPopoverButtonProps {
   danger?: boolean,
   className?: string,
   disabled?: boolean,
-  selected?: boolean
+  selected?: boolean,
+  hideOnClick?: boolean
 };
 
 export function Button(props: MiniPopoverButtonProps) {
@@ -21,7 +22,7 @@ export function Button(props: MiniPopoverButtonProps) {
     <Tooltip
       text={props.text}
       spacing={8}
-      hideOnClick={true}
+      hideOnClick={props.hideOnClick ?? true}
       children={(tprops) => (
         <div 
           {...tprops} 

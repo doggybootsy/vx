@@ -34,6 +34,8 @@ import { pluginStore } from "./addons/plugins";
 import * as hooks from "./hooks";
 import * as intl from "./intl";
 
+import * as commands from "./api/commands";
+
 class AddonApi {
   #store: typeof themeStore | typeof pluginStore;
   constructor(store: typeof themeStore | typeof pluginStore) {    
@@ -167,6 +169,11 @@ export const VX = () => ({
   util,
   components,
   intl,
+  commands: {
+    add: commands.addCommand,
+    remove: commands.removeCommand,
+    has: commands.hasCommand
+  },
   storage: {
     DataStore: storage.DataStore,
     create<T extends Record<string, any> = Record<string, any>>(name: string, opts: storage.DataStoreOptions<T> = {}): storage.DataStore<T> {
@@ -209,5 +216,6 @@ export const VX = () => ({
     getLoadPromise: I18n.getLoadPromise,
     FormattedMessage: I18n.FormattedMessage
   },
+  request,
   jsx: __jsx__
 });

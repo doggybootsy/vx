@@ -1,8 +1,9 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
 import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
 import { useState } from "react";
+import { debounce } from "common/util";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   const [, forceUpdate] = useForceUpdate();
@@ -82,4 +83,8 @@ export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
   }, [ ]);
 
   return locale;
+}
+
+export function useDebounce(handler: (this: any, ...args: any[]) => any, deps: React.DependencyList, timeout?: number | undefined) {
+  return useMemo(() => debounce(handler, timeout), deps);
 }

@@ -89,7 +89,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
 
     const controller = new AbortController();
 
-    const fetch = window.fetch(generateFaviconURL(website), { mode: "no-cors" });
+    const fetch = request(generateFaviconURL(website), { mode: "no-cors" });
 
     fetch.then((res) => {
       if (controller.signal.aborted) return;

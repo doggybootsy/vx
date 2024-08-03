@@ -120,7 +120,7 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
 
     url.searchParams.set("device_id", this.device!.id);
 
-    const request = await window.fetch(url, {
+    const res = await request(url, {
       method: method.toUpperCase(),
       headers: {
         Authorization: `Bearer ${this.accessToken}`,
@@ -128,7 +128,7 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
     });
 
     // 401 === Token Expired
-    if (request.status === 401) {
+    if (res.status === 401) {
       // Give it 3 tries
       if (this.#requests++ <= 3) {
         this.accessToken = null;
@@ -143,14 +143,14 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
       });
 
       this.#requests = 0;
-      return request;
+      return res;
     }
-    if (!request.ok) {
-      const { error } = await request.json();
+    if (!res.ok) {
+      const { error } = await res.json();
       
       openNotification({
-        id: `spotify-bad-${request.status}`,
-        title: `${request.status} Bad Request`,
+        id: `spotify-bad-${res.status}`,
+        title: `${res.status} Bad Request`,
         icon: Icons.Spotify,
         type: "danger",
         description: error.message
@@ -158,7 +158,7 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
     }
 
     this.#requests = 0;
-    return request;
+    return res;
   }
 
   private getURL(type: Spotify.PageType, id: string) {

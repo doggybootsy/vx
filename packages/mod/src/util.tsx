@@ -1,9 +1,10 @@
 import React, { Suspense, Component, useSyncExternalStore } from "react";
-import { getLazyByKeys, getProxyByKeys } from "@webpack";
+import { getLazy, getLazyByKeys, getProxyByKeys, getProxyByStrings } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
 import { Fiber } from "react-reconciler";
 import { FunctionType } from "typings";
+import { Injector } from "./patcher";
 
 export function isObject(item: any): item is Object {
   if (typeof item === "object" && item !== null) return true;
@@ -907,4 +908,39 @@ export const focusStore = new class FocusStore extends InternalStore {
   }
 
   get hasFocus() { return document.hasFocus(); }
+}
+
+getLazy<{
+  default: {
+    getUserAvatarURL(user: any): string
+  }
+}>(m => m.default?.getUserAvatarURL).then((module) => {
+  new Injector().after(module.default, "getUserAvatarURL", (that, args, res) => {    
+    if (typeof args[0] === "object" && args[0].avatar === "vx") {
+      return Injector.return("https://raw.githubusercontent.com/doggybootsy/vx/main/assets/256.png");
+    }
+  });
+});
+
+const createMessage = getProxyByStrings([ "createMessage: author cannot be undefined" ]);
+export function sendVXSystemMessage(channelId: string, content: string) {
+  const message = (createMessage as any)({
+    channelId: channelId,
+    type: 0,
+    content: content,
+    flags: 64,
+    author: {
+      id: "1",
+      username: "VX",
+      discriminator: "0000",
+      avatar: "vx",
+      bot: true
+    }
+  });
+
+  window.VX.webpack.common.MessageActions.receiveMessage(channelId, {
+    ...message,
+    state: "SENT",
+    channel_id: channelId
+  }, !0)
 }

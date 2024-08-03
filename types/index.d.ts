@@ -281,6 +281,14 @@ declare namespace Intl {
   var ListFormat: ListFormatConstructor;
 }
 
-interface Array {
-  toSorted: this["sort"];
+interface FetchRequest extends Function {
+  (input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  
+  text(input: RequestInfo | URL, init?: RequestInit): Promise<{ text: string, ok: boolean, response: Response }>;
+  json<T>(input: RequestInfo | URL, init?: RequestInit): Promise<{ json: T, ok: boolean, response: Response }>;
+  blob(input: RequestInfo | URL, init?: RequestInit): Promise<{ blob: Blob, ok: boolean, response: Response }>;
+  arrayBuffer(input: RequestInfo | URL, init?: RequestInit): Promise<{ arrayBuffer: ArrayBuffer, ok: boolean, response: Response }>;
+  formData(input: RequestInfo | URL, init?: RequestInit): Promise<{ formData: FormData, ok: boolean, response: Response }>;
 }
+
+declare const request: FetchRequest;

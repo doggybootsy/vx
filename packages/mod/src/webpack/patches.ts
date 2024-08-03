@@ -83,8 +83,8 @@ addPlainTextPatch(
   {
     identifier: "VX(lazy-store)",
     match: "Store.waitFor(...)",
-    find: /,.{1,3}\.push\(this\),/,
-    replace: "$&$vx.webpack.__raw._lazyStore(this),"
+    find: /,.{1,3}\.push\(this\)/,
+    replace: "$&,$vx.webpack.__raw._lazyStore(this)"
   }
 );
 

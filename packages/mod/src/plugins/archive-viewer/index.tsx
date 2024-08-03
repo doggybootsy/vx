@@ -6,7 +6,7 @@ import { ZipButton } from "./button";
 import * as styler from "./index.css?managed";
 
 export function isArchive(filename: string) {
-  return /\.(zip|rar|tar)($|\?|#)/.test(filename);
+  return /\.(zip|rar|tar|asar)($|\?|#)/.test(filename);
 }
 
 export default definePlugin({

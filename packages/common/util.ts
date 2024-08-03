@@ -4,6 +4,8 @@ type ParametersWithThis<T extends anyFN> = T extends (this: any, ...args: infer 
 
 export interface Debouncer<F extends anyFN> {
   (this: ThisParameterType<F>, ...args: ParametersWithThis<F>): void;
+  isPending(): boolean;
+  stop(): void
 };
 
 export function debounce<F extends anyFN>(handler: F, timeout?: number | undefined): Debouncer<F> {
@@ -13,8 +15,14 @@ export function debounce<F extends anyFN>(handler: F, timeout?: number | undefin
     clearTimeout(timer!);
 
     timer = setTimeout(() => {
+      timer = null;
       handler.apply(this, args);
     }, timeout);
+  }
+  debouncer.isPending = () => timer !== null;
+  debouncer.stop = () => {
+    clearTimeout(timer!);
+    timer = null;
   }
   
   return debouncer;

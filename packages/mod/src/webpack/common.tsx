@@ -8,9 +8,9 @@ import { byKeys, byStrings, getLazyByKeys, getProxyByKeys } from "./filters"
 import { GenericStore, getProxyStore } from "./stores";
 import { getMangledProxy, getModuleIdBySource, getProxy } from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
-import { Channel, User } from "discord-types/general";
+import { Channel, User, UserJSON } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
-import { webpackRequire } from "@webpack";
+import { getModule, webpackRequire } from "@webpack";
 import { ErrorBoundary } from "../components";
 
 type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses";
@@ -38,6 +38,11 @@ export const PermissionStore = getProxyStore("PermissionStore");
 export const MessageStore = getProxyStore("MessageStore");
 export const GuildMemberStore = getProxyStore("GuildMemberStore");
 export const RelationshipStore = getProxyStore("RelationshipStore");
+export const WebhooksStore = getProxyStore<{
+  getWebhooksForChannel(guildId: string, channelId: string): Webhook[],
+  getWebhooksForGuild(guildId: string): Webhook[],
+  isFetching(guildId: string, channelId?: string): boolean
+}>("WebhooksStore");
 
 export interface Store {
   new (dispatcher: FluxDispatcherType, handlers: Record<string, Function>, somethingIDK?: unknown): GenericStore,
@@ -45,7 +50,7 @@ export interface Store {
   prototype: GenericStore
 }
 
-type useStateFromStores = <T>(stores: FluxStore[], effect: () => T, deps?: React.DependencyList) => T;
+type useStateFromStores = <T>(stores: FluxStore[], getStateFromStores: () => T, deps?: React.DependencyList, areStatesEqual?: (oldState: T, newState: T) => boolean) => T;
 
 export const Flux = getMangledProxy<{
   useStateFromStores: useStateFromStores,
@@ -313,12 +318,6 @@ interface Constants {
   Permissions: KnownPermssionBits & Record<string, bigint>
 };
 
-interface Webhooks {
-
-}
-
-export const webhooks = getProxy<Webhooks>(m => m.fetchForChannel);
-
 export const Constants = getMangledProxy<Constants>(".PAYMENT_REQUEST=99]", {
   Permissions: byKeys("CHANGE_NICKNAME", "STREAM")
 });
@@ -333,7 +332,8 @@ export const Endpoints = (() => {
 
       if (typeof endpoint === "string") return target[key as keyof typeof target] = () => endpoint;
       return target[key as keyof typeof target] = endpoint;
-    }
+    },
+    ownKeys: () => Reflect.ownKeys(Endpoints)
   });
 })();
 
@@ -366,6 +366,21 @@ export const InviteActions = getProxyByKeys<{
 
 export const MessageActions = getProxyByKeys([ "sendMessage", "_sendMessage" ]);
 
+let uploadActions: { instantBatchUpload: Function };
+export function instantBatchUpload(channelId: string, files: File[]) {
+  if (!uploadActions) uploadActions = getModule<typeof uploadActions>(m => m.upload && m.instantBatchUpload)!;
+
+  // Theres 2 'instantBatchUpload' one that uses 3 args and one that uses 1
+  if (uploadActions.instantBatchUpload.length === 3) uploadActions.instantBatchUpload(channelId, files, false);
+  else uploadActions.instantBatchUpload({
+    channelId,
+    files: files,
+    draftType: 0,
+    isThumbnail: false,
+    isClip: false
+  });
+};
+
 export function sendMessage(message?: string, channelId: string = SelectedChannelStore.getChannelId()) {
   if (!arguments.length) {
     message = TextAreaInput.getText();
@@ -383,3 +398,26 @@ export function sendMessage(message?: string, channelId: string = SelectedChanne
     resolve(ok);
   });
 }
+
+export enum WebhookType {
+  INCOMING = 1,
+  CHANNEL_FOLLOWER = 2,
+  APPLICATION = 3
+}
+
+export interface Webhook {
+  application_id: string | null,
+  avatar: string | null,
+  channel_id: string,
+  guild_id: string | null,
+  id: string,
+  name: string | null,
+  token: string | null,
+  type: WebhookType,
+  user: UserJSON | null
+}
+
+export const WebhooksActions = getProxyByKeys<{
+  fetchForChannel(guildId: string, channelId: string): void,
+  fetchForGuild(guildId: string): void,
+}>([ "fetchForChannel", "fetchForGuild" ]);

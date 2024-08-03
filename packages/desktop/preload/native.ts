@@ -139,9 +139,9 @@ const native = {
       return electron.ipcRenderer.sendSync("@vx/extensions/get-all");
     },
     async downloadRDT() {      
-      const res = await fetch(env.RDT.DOWNLOAD_URL, { cache: "force-cache" });
+      const blob = (await request.blob(env.RDT.DOWNLOAD_URL, { cache: "force-cache" })).blob;
 
-      const zip = await new JSZip().loadAsync(await res.blob());
+      const zip = await new JSZip().loadAsync(blob);
 
       const extensionsDir = getAndEnsureVXPath("extensions", (path) => mkdirSync(path));
       const dir = join(extensionsDir, env.RDT.ID);

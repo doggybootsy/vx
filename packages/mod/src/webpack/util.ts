@@ -2,7 +2,7 @@ import { DEBUG_SYMBOL, addDebug } from "../constants";
 import { proxyCache } from "../util";
 import { bySource, byStrings } from "./filters";
 import { getModule } from "./searching";
-import { webpackRequire } from "@webpack";
+import { getLazy, webpackRequire } from "@webpack";
 
 export function getProxy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter, opts?: Webpack.FilterOptions): T {
   return proxyCache(() => getModule(filter, opts)!);
@@ -35,6 +35,39 @@ export function getMangled<T extends Record<PropertyKey, any>>(filter: Webpack.F
   
   if (!module) return returnValue;
 
+  const entries = Object.entries(mangled) as [ string, Webpack.ExportedOnlyFilter ][];
+
+  for (const searchKey in module) {
+    if (!Object.prototype.hasOwnProperty.call(module, searchKey)) continue;
+    for (const [ key, filter ] of entries) {
+      if (key in returnValue) continue;
+
+      if (filter(module[searchKey])) {
+        Object.defineProperty(returnValue, key, {
+          get() { return module[searchKey]; },
+          set(v) { return module[searchKey] = v; },
+          enumerable: true,
+          configurable: false
+        });
+      }
+    }
+  }
+
+  return returnValue;
+}
+
+export async function getMangledLazy<T extends Record<PropertyKey, any>>(filter: Webpack.Filter | string | RegExp, mangled: Record<keyof T, Webpack.ExportedOnlyFilter>): Promise<T extends never ? Record<string, any> : T> {
+  if (typeof filter === "string" || filter instanceof RegExp) filter = bySource(filter);
+
+  const returnValue = {} as T extends never ? Record<string, any> : T;
+
+  const module = await getLazy<Record<string, any>>((exports, module, id) => {
+    if (!(exports instanceof Object)) return;
+    return (filter as Webpack.Filter).call(module, exports, module, id);
+  }, { searchDefault: false, searchExports: false });
+
+  addDebug(returnValue, module);
+  
   const entries = Object.entries(mangled) as [ string, Webpack.ExportedOnlyFilter ][];
 
   for (const searchKey in module) {
