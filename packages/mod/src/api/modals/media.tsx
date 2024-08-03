@@ -61,7 +61,13 @@ addPlainTextPatch({
   replace: "$vx._self.getSrc.call(this,$&)"
 });
 
-export async function openImageModal(src: string | URL) {
+interface ImageModalOptions {
+  scale?: number
+}
+
+export async function openImageModal(src: string | URL, options?: ImageModalOptions) {
+  const { scale = 1 } = Object.assign({}, options);
+
   if (src instanceof URL) src = src.href;
   
   if (typeof src !== "string") throw new TypeError(`Argument 'src' must be type 'string' not type '${typeof src}' or be a instance of URL!`);
@@ -77,8 +83,8 @@ export async function openImageModal(src: string | URL) {
       >
         <mediaModals.ImageModal
           animated={true}
-          height={height}
-          width={width}
+          height={height * scale}
+          width={width * scale}
           original={src}
           placeholder={src}
           shouldAnimate={true}

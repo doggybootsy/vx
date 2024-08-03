@@ -1,0 +1,15 @@
+.vx-bsp {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  top: 4px;
+  z-index: 1;
+  color: var(--interactive-normal);
+  cursor: pointer;
+}
+.vx-bsp:hover {
+  color: var(--interactive-hover);
+}
+.vx-bsp:hover:active {
+  color: var(--interactive-active);
+}
