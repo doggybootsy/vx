@@ -33,9 +33,7 @@ export const updater = {
 
     const endpoint = `https://api.github.com/repos/${git.url.split("/").slice(-2).join("/")}/releases/latest`;
 
-    const response = await window.fetch(endpoint, { cache: "no-cache" });
-
-    return await response.json();
+    return (await request.json<Git.Release>(endpoint, { cache: "no-cache" })).json;
   },
   update(release: Git.Release) {
     if (window.VXExtension) window.VXExtension.update(release);

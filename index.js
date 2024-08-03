@@ -10,7 +10,7 @@ try {
       electron.app.whenReady().then(() => {
         const notification = new Notification({
           title: "Compile VX",
-          body: "VX does not a have compiled version installed",
+          body: String(e),
           urgency: "critical"
         });
     
@@ -273,7 +273,8 @@ const plugins = (desktop) => [
 
 const injections = [
   "./injections/global.js",
-  "./injections/jsx.js"
+  "./injections/jsx.js",
+  "./injections/request.ts"
 ];
 
 (async function() {

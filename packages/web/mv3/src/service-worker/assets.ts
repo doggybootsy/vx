@@ -6,7 +6,7 @@ let release: Promise<Git.Release>;
 async function getRelease(): Promise<Git.Release> {
   if (release) return release;
       
-  return release = fetch("https://api.github.com/repos/doggybootsy/vx/releases/latest", { cache: "no-cache" }).then(r => r.json());
+  return release = request("https://api.github.com/repos/doggybootsy/vx/releases/latest", { cache: "no-cache" }).then(r => r.json());
 }
 
 async function getAsset(type: "js" | "css", release: Promise<Git.Release> | Git.Release = getRelease()) {
@@ -14,7 +14,7 @@ async function getAsset(type: "js" | "css", release: Promise<Git.Release> | Git.
 
   const asset = release.assets.find((asset) => asset.name.endsWith(`.${type}`))!;
 
-  const response = await fetch(asset.browser_download_url, { cache: "no-cache" });
+  const response = await request(asset.browser_download_url, { cache: "no-cache" });
   return response.text();
 }
 

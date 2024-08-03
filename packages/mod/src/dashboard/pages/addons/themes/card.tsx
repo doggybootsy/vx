@@ -65,7 +65,7 @@ export function ThemeCard({ id }: { id: string }) {
 
     const controller = new AbortController();
 
-    const fetch = window.fetch(generateFaviconURL(meta.website), { cache: "force-cache" });
+    const fetch = request(generateFaviconURL(meta.website), { cache: "force-cache" });
 
     fetch.then((res) => {
       if (controller.signal.aborted) return;      

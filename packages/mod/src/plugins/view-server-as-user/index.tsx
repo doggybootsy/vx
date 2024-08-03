@@ -1,10 +1,12 @@
 import { definePlugin } from "..";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Developers } from "../../constants";
-import { getProxyByKeys } from "@webpack";
+import { byRegex, byStrings, combine, getMangledProxy, getProxyByKeys } from "@webpack";
 import { GuildMemberStore, GuildStore } from "@webpack/common";
 
-const impersonationModule = getProxyByKeys([ "startImpersonating", "stopImpersonating" ]);
+const impersonationModule = getMangledProxy<any>('dispatch({type:"IMPERSONATE_UPDATE",', {
+  startImpersonating: combine(byStrings(".VIEW_AS_ROLES_SELECTED"), byRegex(/data:.{1,3}\}\),/))
+});
 
 export default definePlugin({
   authors: [ Developers.doggybootsy ],

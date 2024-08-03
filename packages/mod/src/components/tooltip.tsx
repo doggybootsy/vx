@@ -28,7 +28,7 @@ export interface PassedChildrenProps {
 
 export interface TooltipProps {
   allowOverflow?: boolean,
-  color?: string,
+  color?: Lowercase<keyof TooltipColors>,
   forceOpen?: boolean,
   hide?: boolean,
   hideOnClick?: boolean,

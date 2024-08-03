@@ -8,12 +8,11 @@ export default definePlugin({
   patches: {
     match: ".interactionSending]:",
     find: /"li",{id:.{1,3},/,
-    replace: "$&onClick:$self.onClick.bind(null,()=>$enabled),"
+    replace: "$&onDoubleClick:$self.onDoubleClick.bind(null,()=>$enabled),"
   },
-  onClick(enabled: () => boolean, event: React.MouseEvent<HTMLElement>) {
+  onDoubleClick(enabled: () => boolean, event: React.MouseEvent<HTMLElement>) {
     if (!enabled()) return;
-    
-    if (event.detail !== 2) return;
+    if (event.currentTarget.querySelector("[class^='channelTextArea_']")) return;
 
     const [ channelId, messageId ] = event.currentTarget.id.split("-").slice(-2);
 

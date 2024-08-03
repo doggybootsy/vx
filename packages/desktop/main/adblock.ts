@@ -8,30 +8,22 @@ export function adblock(state?: boolean): boolean {
   return isEnabled;
 }
 
-class ScriptStore {
-  public url = "https://raw.githubusercontent.com/AdguardTeam/BlockYouTubeAdsShortcut/master/dist/index.js";
+function fetchScript() {
+  if (fetchScript._fetch) return fetchScript._fetch;
 
-  private async _fetch() {
-    await electron.app.whenReady();
-
-    const request = await electron.session.defaultSession.fetch(this.url);
-
-    return await request.text();
+  async function getScript() {
+    return (await request.text("https://raw.githubusercontent.com/AdguardTeam/BlockYouTubeAdsShortcut/master/dist/index.js")).text;
   }
-  public async fetch() {
-    const fetch = this._fetch();
-    this.fetch = () => fetch;
-    return fetch;
-  }
+
+  return fetchScript._fetch = getScript();
 }
-
-const scriptStore = new ScriptStore();
+fetchScript._fetch = null as null | Promise<string>;
 
 electron.app.on("browser-window-created", (event, window) => {
   window.webContents.on("frame-created", (event, { frame }) => {
     frame.once("dom-ready", () => {
       if (frame?.url.includes("www.youtube.com") && isEnabled) {
-        scriptStore.fetch().then((script) => frame.executeJavaScript(script));
+        fetchScript().then((script) => frame.executeJavaScript(script));
       }
     });
   });

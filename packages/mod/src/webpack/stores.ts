@@ -81,7 +81,7 @@ function makeStorePredicate(filter: string | StorePredicate): StorePredicate {
 }
 
 export function getStore<S extends keyof KnownStores>(filter: S): KnownStores[S]
-export function getStore<S extends keyof KnownStores>(filter: S | string | StorePredicate): GenericStore
+export function getStore<T extends object>(store: string | StorePredicate): GenericStore & T
 export function getStore(filter: string | StorePredicate): GenericStore | void  {
   if (!Store) Store = getByKeys<Store>([ "getAll", "destroy", "initialize" ]);
   if (!Store) return;
@@ -90,7 +90,7 @@ export function getStore(filter: string | StorePredicate): GenericStore | void  
 }
 
 export function getProxyStore<S extends keyof KnownStores>(store: S): KnownStores[S]
-export function getProxyStore<S extends keyof KnownStores>(store: S | string | StorePredicate): GenericStore
+export function getProxyStore<T extends object>(store: string | StorePredicate): GenericStore & T
 export function getProxyStore(store: string | StorePredicate): GenericStore {
   return proxyCache(() => getStore(store)!);
 }
@@ -103,7 +103,7 @@ export function _lazyStore(store: GenericStore) {
 }
 
 export function getLazyStore<S extends keyof KnownStores>(filter: S, options?: Webpack.SignalOption): Promise<KnownStores[S]>
-export function getLazyStore<S extends keyof KnownStores>(filter: S | string | StorePredicate, options?: Webpack.SignalOption): Promise<GenericStore>
+export function getLazyStore<T extends object>(store: string | StorePredicate, options?: Webpack.SignalOption): Promise<GenericStore & T>
 export function getLazyStore(filter: string | StorePredicate, options?: Webpack.SignalOption): Promise<GenericStore> {  
   const cache = getStore(filter);
   if (cache) return Promise.resolve(cache);

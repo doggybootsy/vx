@@ -128,11 +128,9 @@ function ZipModal(props: ZipModalProps) {
   useAbortEffect(async (signal) => {
     let file: File;
     if (typeof props.src === "string") {
-      const res = await fetch(props.src, { cache: "force-cache" });
+      const blob = await request.blob(props.src, { cache: "force-cache" });
       if (signal.aborted) return;
-      const blob = await res.blob();
-      if (signal.aborted) return;
-      file = new File([ blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
+      file = new File([ blob.blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
     }
     else file = props.src;    
 
@@ -289,7 +287,7 @@ function ZipModal(props: ZipModalProps) {
                         }
                         if (file.is.image || file.is.video) {
                           const data = await file.getContent("uint8array");
-                          const url = URL.createObjectURL(new Blob([ data ]));
+                          const url = URL.createObjectURL(new Blob([ data ]));                          
 
                           if (file.is.image) openImageModal(url);
                           else openVideoModal(url);
