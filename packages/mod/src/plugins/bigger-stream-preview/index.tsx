@@ -12,8 +12,9 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    find: "this.renderPreview",
-    replace: "$enabled&&$jsx($self.PreviewButton,{component:this}),this.renderPreview"
+    match: "this.renderPreview",
+    find: /this.renderPreview\(.{1,3}\)/,
+    replace: "$&,$enabled&&$jsx($self.PreviewButton,{component:this})"
   },
   styler,
   PreviewButton({ component }: { component: React.Component<any, any> }) {

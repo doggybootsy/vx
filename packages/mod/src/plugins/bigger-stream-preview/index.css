@@ -1,3 +1,7 @@
+[class^="streamPreview_"] > [class^="previewContainer_"]:not(:hover) ~ .vx-bsp:not(:hover) {
+  opacity: 0;
+}
+
 .vx-bsp {
   position: absolute;
   right: 4px;
@@ -6,9 +10,14 @@
   z-index: 1;
   color: var(--interactive-normal);
   cursor: pointer;
+  opacity: 1;
+  transition: opacity 200ms linear;
+  padding: 4px;
+  border-radius: 4px;
 }
 .vx-bsp:hover {
   color: var(--interactive-hover);
+  background-color: hsl(var(--black-500-hsl)/.6);
 }
 .vx-bsp:hover:active {
   color: var(--interactive-active);
