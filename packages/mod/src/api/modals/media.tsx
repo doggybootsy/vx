@@ -96,14 +96,23 @@ export async function openImageModal(src: string | URL, options?: ImageModalOpti
       </ModalComponents.ModalRoot>
     )
   });
-};
+}
 
-export async function openVideoModal(src: string | URL) {
+interface VideoModalOptions {
+  scale?: number,
+  poster?: string
+}
+
+export async function openVideoModal(src: string | URL, options?: VideoModalOptions) {
+  const { scale = 1, poster: posterOption } = Object.assign({}, options);
+
   if (src instanceof URL) src = src.href;
   
   if (typeof src !== "string") throw new TypeError(`Argument 'src' must be type 'string' not type '${typeof src}' or be a instance of URL!`);
 
-  const { width, height, poster } = await getVideoDetails(src);
+  const { width, height, poster: videoPoster } = await getVideoDetails(src);
+
+  const poster = posterOption || videoPoster;
 
   return openModal((props) => {
     return (
@@ -114,10 +123,10 @@ export async function openVideoModal(src: string | URL) {
       >
         <mediaModals.VideoModal
           animated={true}
-          height={height}
-          width={width}
-          naturalHeight={height}
-          naturalWidth={width}
+          height={height * scale}
+          width={width * scale}
+          naturalHeight={height * scale}
+          naturalWidth={width * scale}
           fileSize={0}
           fileName={"No File Name"}
           src={src}
