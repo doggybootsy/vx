@@ -55,6 +55,14 @@ function PIP() {
     };
   }, [ active, video ]);
 
+  useEffect(() => {
+    return () => {
+      if (!document.pictureInPictureElement) return;
+      
+      if (document.pictureInPictureElement.isEqualNode(video)) document.exitPictureInPicture();
+    }
+  }, [ video ]);
+
   return (
     <div 
       ref={ref} 

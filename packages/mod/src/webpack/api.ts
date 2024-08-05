@@ -1,4 +1,4 @@
-import { getProxyStore, getStore, getLazyStore, webpackReady, whenWebpackInit, getModuleIdBySource, getMangled, getMangledProxy } from ".";
+import { getProxyStore, getStore, getLazyStore, webpackReady, whenWebpackInit, getModuleIdBySource, getMangled, getMangledProxy, getMangledLazy } from ".";
 import { byKeys, byProtoKeys, byRegex, bySource, byStrings, combine, getByKeys, getByProtoKeys, getByRegex, getByStrings, getLazyByKeys, getLazyByProtoKeys, getLazyByRegex, getLazyByStrings, getProxyByKeys, getProxyByProtoKeys, getProxyByRegex, getProxyByStrings, not } from "./filters";
 import { getLazy } from "./lazy";
 import { getBulk, getModule, getAllModules } from "./searching";
@@ -36,6 +36,7 @@ export const api = {
 
   getMangled,
   getMangledProxy,
+  getMangledLazy,
 
   whenReady: whenWebpackInit,
   whenInit: whenWebpackInit,

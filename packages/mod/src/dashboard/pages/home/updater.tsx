@@ -1,7 +1,7 @@
 import { env, git } from "vx:self";
 import { InternalStore } from "../../../util";
 import { updater } from "../../../native";
-import { compare, SemverCompareState } from "./semver";
+import { compare, SemverCompareState } from "../../../semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
 import { whenWebpackInit } from "@webpack";

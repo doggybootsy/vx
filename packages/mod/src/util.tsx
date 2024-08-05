@@ -917,7 +917,7 @@ getLazy<{
 }>(m => m.default?.getUserAvatarURL).then((module) => {
   new Injector().after(module.default, "getUserAvatarURL", (that, args, res) => {    
     if (typeof args[0] === "object" && args[0].avatar === "vx") {
-      return Injector.return("https://raw.githubusercontent.com/doggybootsy/vx/main/assets/256.png");
+      return Injector.return("https://raw.githubusercontent.com/doggybootsy/vx/main/assets/avatar.png");
     }
   });
 });

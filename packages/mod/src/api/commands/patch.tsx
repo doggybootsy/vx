@@ -25,7 +25,9 @@ async function addBuiltinSection() {
   
   module.BUILTIN_SECTIONS[section.id] = section;
 
-  injector.after(module, "getBuiltInCommands", (that, args, res) => {
+  injector.after(module, "getBuiltInCommands", (that, [ type ], res) => {    
+    if (type !== 1) return;
+    
     if (!Array.isArray(res)) res = [];    
 
     return injector.return([ ...res, ...commands.values() ]);
@@ -83,7 +85,9 @@ async function patchApplication() {
     key: byStrings(".getScoreWithoutLoadingLatest")
   });
 
-  injector.after(module, "key", (that, args, res) => {    
+  injector.after(module, "key", (that, args, res) => {  
+    if (args[2].commandType !== 1) return;
+      
     for (const sectionedCommand of res.sectionedCommands) {
       if (sectionedCommand.section.id !== "-1") continue;
 

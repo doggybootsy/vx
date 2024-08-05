@@ -10,6 +10,7 @@ import { env } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
 import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
+import { GuildDmTypingIndicator } from "../plugins/better-typing-indicators";
 
 addPlainTextPatch(
   {
@@ -82,7 +83,8 @@ export const _addHomeButton = cache(() => {
         0, 
         <HomeButton />, 
         // No need to make a new patch
-        <GuildClock />
+        <GuildClock />,
+        <GuildDmTypingIndicator />
       );
     }
     
