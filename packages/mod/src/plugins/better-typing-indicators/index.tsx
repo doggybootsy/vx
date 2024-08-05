@@ -8,7 +8,7 @@ import { ErrorBoundary, Mask, Popout, Spinner, Tooltip, UserPopout } from "../..
 import { SettingType, createSettings } from "../settings";
 import { getProxy, getProxyByKeys, getProxyStore } from "@webpack";
 import { useInternalStore } from "../../hooks";
-import { className, focusStore } from "../../util";
+import { className, createState, focusStore } from "../../util";
 import { ListFormat } from "../../intl";
 import { Messages } from "vx:i18n";
 import { Channel, Guild } from "discord-types/general";
@@ -36,6 +36,12 @@ const settings = createSettings("better-typing-indicators", {
     type: SettingType.SWITCH,
     title: "Channel Indicators",
     description: "Tells you if someone is typing in a channel",
+    default: true
+  },
+  dmsGuildsList: {
+    type: SettingType.SWITCH,
+    title: "DM Typing Indicator",
+    description: "Tells you if someone is typing in a dm from the guilds list",
     default: true
   }
 });
@@ -253,6 +259,36 @@ function ChannelTypingIndicator(props: {
   )
 }
 
+const PrivateChannelSortStore = getProxyStore("PrivateChannelSortStore");
+
+const [ isPluginEnabled, setPluginState ] = createState(false);
+export function GuildDmTypingIndicator() {
+  const isEnabled = isPluginEnabled();
+  const showing = settings.dmsGuildsList.use();
+
+  const shouldShow = useStateFromStores([ PrivateChannelSortStore, TypingStore, SelectedChannelStore ], () => {
+    if (!isEnabled) return false;
+    if (!showing) return false;
+
+    const channelId = SelectedChannelStore.getChannelId();
+
+    for (const privateChannelId of PrivateChannelSortStore.getPrivateChannelIds()) {
+      if (channelId === privateChannelId) continue;
+      if (Object.keys(TypingStore.getTypingUsers(privateChannelId)).length) return true;
+    }
+
+    return false;
+  }, [ isEnabled, showing ]);
+
+  if (!shouldShow) return;
+
+  return (
+    <div className="vx-bti-guilds">
+      <Spinner type={Spinner.Type.PULSING_ELLIPSIS} />
+    </div>
+  )
+}
+
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
@@ -310,5 +346,11 @@ export default definePlugin({
     newRender.__vx__ = true;
 
     component.render = newRender;
+  },
+  start() {
+    setPluginState(true);
+  },
+  stop() {
+    setPluginState(false);
   }
 });
