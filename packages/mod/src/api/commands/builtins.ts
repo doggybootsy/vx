@@ -7,6 +7,7 @@ import { openConfirmModal } from "../modals";
 import { OptionType } from "./types";
 import { instantBatchUpload } from "@webpack/common";
 import { sendVXSystemMessage } from "../../util";
+import { env, IS_DESKTOP } from "vx:self";
 
 const $ = (choices: string[]) => choices.map((choice) => ({ name: choice, value: choice }));
 
@@ -153,5 +154,23 @@ addCommand({
       default:
         break;
     }
+  }
+});
+
+addCommand({
+  id: "internal/debug",
+  name: "debug",
+  description: "Sends a message with some debug info",
+  async execute(options, { channel }) {
+    const info: BlobPart[] = [];
+
+    info.push(`VX v${env.VERSION}${env.IS_DEV ? " (dev)" : ""} desktop(${IS_DESKTOP})\n`);
+    info.push(`discord release(${(window as any).GLOBAL_ENV.RELEASE_CHANNEL})\n`);
+    info.push(`\n`);
+    info.push(`internal plugins: ${Object.values(plugins).map((plugin) => `${plugin.id}(${plugin.isEnabled()})`).join(" ")}\n`);
+    info.push(`plugins: ${pluginStore.keys().map((plugin) => `${plugin}(${pluginStore.isEnabled(plugin)})`).join(" ")}\n`);
+    info.push(`themes: ${themeStore.keys().map((theme) => `${theme}(${themeStore.isEnabled(theme)})`).join(" ")}\n`);
+
+    instantBatchUpload(channel.id, [ new File(info, "debug.txt") ]);
   }
 });
