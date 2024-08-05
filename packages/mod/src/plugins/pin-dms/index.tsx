@@ -5,7 +5,7 @@ import { Developers } from "../../constants";
 import { getProxyStore } from "@webpack";
 import { Icons } from "../../components";
 import * as styler from "./index.css?managed";
-import { MenuComponents, patch, unpatch } from "../../api/menu";
+import {MenuComponents, MenuProps, patch, unpatch} from "../../api/menu";
 import { getParents } from "../../util";
 
 class PinDataStore extends DataStore<Record<string, Record<string, boolean>>> {
@@ -57,11 +57,11 @@ export default definePlugin({
       replace: "$1,$enabled&&$jsx($self.Indicator,arguments[0])]"
     }
   ],
-  Indicator(props: any) {    
+  Indicator(props: any) {
     if (!pinStore.isPinned(props.channel.id)) return;
 
     return (
-      <span className="vx-pd-icon">
+        <span className="vx-pd-icon">
         <Icons.Pin size={16} />
       </span>
     );
@@ -86,28 +86,33 @@ export default definePlugin({
   start() {
     lastInstance?.forceUpdate();
 
-    patch("pin-dms", "user-context", (props, res) => {
+    patch("pin-dms", "user-context", StartFavorites);
+    patch("pin-dms-gdm", "gdm-context", StartFavorites);
+
+    function StartFavorites(props: MenuProps, res: { props: { children: React.JSX.Element[]; }; }) {
       const li = getParents(props.target).querySelector("li[class^=channel_]");
       if (!li) return;
 
-      const channelId = li.querySelector("a[data-list-item-id]")!.getAttribute("data-list-item-id")?.split("_").at(-1)!;      
-      
+      const channelId = li.querySelector("a[data-list-item-id]")!.getAttribute("data-list-item-id")?.split("_").at(-1)!;
+
       res.props.children.push(
-        <MenuComponents.MenuGroup>
-          <MenuComponents.MenuItem 
-            label={pinStore.isPinned(channelId) ? "Unfavorite" : "Favorite"}
-            id="vx-pin-dms"
-            action={() => {
-              if (pinStore.isPinned(channelId)) pinStore.unpin(channelId);
-              else pinStore.pin(channelId);
-            }}
-          />
-        </MenuComponents.MenuGroup>
+          <MenuComponents.MenuGroup>
+            <MenuComponents.MenuItem
+                label={pinStore.isPinned(channelId) ? "Unfavorite" : "Favorite"}
+                id="vx-pin-dms"
+                action={() => {
+                  if (pinStore.isPinned(channelId)) pinStore.unpin(channelId);
+                  else pinStore.pin(channelId);
+                }}
+            />
+          </MenuComponents.MenuGroup>
       )
-    });
+    }
+
   },
   stop() {
     lastInstance?.forceUpdate();
     unpatch("pin-dms");
+    unpatch("pin-dms-gdm");
   }
 });
