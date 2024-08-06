@@ -186,7 +186,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
                     }
                     
                     openConfirmModal("Are you sure?", [
-                      `Are you sure you wan't to delete \`${plugin.name}\` (\`${plugin.id}\`)`,
+                      `Are you sure you want to delete \`${plugin.name}\` (\`${plugin.id}\`)`,
                       "You cannot recover deleted Themes"
                     ], {
                       confirmText: "Delete",

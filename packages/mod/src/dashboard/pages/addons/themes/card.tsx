@@ -119,7 +119,7 @@ export function ThemeCard({ id }: { id: string }) {
                 }
                 
                 openConfirmModal("Are you sure?", [
-                  `Are you sure you wan't to delete \`${name}\` (\`${id}\`)`,
+                  `Are you sure you want to delete \`${name}\` (\`${id}\`)`,
                   "You cannot recover deleted Themes"
                 ], {
                   confirmText: "Delete",

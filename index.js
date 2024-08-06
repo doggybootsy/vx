@@ -15,8 +15,6 @@ try {
         });
     
         notification.show();
-    
-        notification.on("close", () => electron.app.quit());
       });
     }
     

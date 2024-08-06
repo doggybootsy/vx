@@ -34,7 +34,7 @@ addCommand({
     switch (action.value) {
       case "delete": {
         openConfirmModal("Are you sure?", [
-          `Are you sure you wan't to delete \`${themeStore.getAddonName(theme.value)}\` (\`${theme.value}\`)`,
+          `Are you sure you want to delete \`${themeStore.getAddonName(theme.value)}\` (\`${theme.value}\`)`,
           "You cannot recover deleted Themes"
         ], {
           confirmText: "Delete",
@@ -109,7 +109,7 @@ addCommand({
         }
 
         openConfirmModal("Are you sure?", [
-          `Are you sure you wan't to delete \`${pluginStore.getAddonName(plugin.value)}\` (\`${plugin.value}\`)`,
+          `Are you sure you want to delete \`${pluginStore.getAddonName(plugin.value)}\` (\`${plugin.value}\`)`,
           "You cannot recover deleted plugins"
         ], {
           confirmText: "Delete",

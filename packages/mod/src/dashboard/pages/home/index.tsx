@@ -69,7 +69,7 @@ export function Home() {
           value={transparency.get()}
           onChange={(value) => {
             openConfirmModal(Messages.ARE_YOU_SURE, [
-              "Do you wan't to restart Discord to toggle transparency?"
+              "Do you want to restart Discord to toggle transparency?"
             ], {
               confirmText: "Restart",
               onConfirm: () => {
