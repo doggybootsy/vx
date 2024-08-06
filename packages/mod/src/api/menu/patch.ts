@@ -35,7 +35,7 @@ addPlainTextPatch({
   replace: "render:window.VX.menus._handleMenu($1,false),renderLazy:VX.menus._handleMenu($2,true),"
 });
 
-interface MenuProps extends MenuRenderProps {
+export interface MenuProps extends MenuRenderProps {
   [key: PropertyKey]: any
 }
 
