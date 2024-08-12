@@ -46,4 +46,32 @@ request.formData = async (input, init) => {
   return { formData: await res.formData(), ok: res.ok, response: res };
 }
 
-export { request };
+function cache<T>(factory: () => T): Cache<T> {
+  const value = { } as { current: T } | { };
+
+  function cache() {
+    if ("current" in value) return value.current;
+    
+    const current = factory();
+    (value as { current: T }).current = current;
+
+    return current;
+  }
+
+  cache.__internal__ = value;
+
+  cache.hasValue = () => "current" in value;
+
+  cache.reset = () => {
+    // @ts-expect-error
+    if ("current" in value) delete value.current;
+  };
+
+  Object.defineProperty(cache, "get", {
+    get: () => cache()
+  });
+
+  return cache as unknown as Cache<T>;
+}
+
+export { request, cache };

@@ -156,6 +156,8 @@ interface ExtensionNative {
   update(release: Git.Release): void
 }
 
+type NativeObject = import("../packages/desktop/preload/native").NativeObject;
+
 interface DiscordWindow {
   webpackChunkdiscord_app?: Webpack.AppObject,
   VXNative?: NativeObject,
@@ -164,7 +166,6 @@ interface DiscordWindow {
   VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>
 }
 
-type NativeObject = import("../packages/desktop/preload/native").NativeObject;
 declare global {
   interface Window extends DiscordWindow {};
 }
@@ -292,3 +293,12 @@ interface FetchRequest extends Function {
 }
 
 declare const request: FetchRequest;
+
+interface Cache<T> {
+  (): T,
+  get: T,
+  hasValue(): boolean,
+  reset(): void
+}
+
+declare function cache<T>(factory: () => T): Cache<T>;

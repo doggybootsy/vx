@@ -4,7 +4,7 @@ import { Panel } from "../..";
 import { internalDataStore } from "../../../api/storage";
 import { Button, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
-import { app, transparency } from "../../../native";
+import { app, nativeFrame, transparency } from "../../../native";
 import { Updater } from "./updater";
 import { Messages } from "vx:i18n";
 import { openConfirmModal } from "../../../api/modals";
@@ -64,7 +64,8 @@ export function Home() {
           {Messages.CONTENT_PROTECTION}
         </FormSwitch>
       )}
-      {IS_DESKTOP && (
+      {/* Maybe do a platform check? Windows 11 is horrible */}
+      {(false && IS_DESKTOP) && (
         <FormSwitch
           value={transparency.get()}
           onChange={(value) => {
@@ -81,6 +82,25 @@ export function Home() {
           note={Messages.TRANSPARENCY_NOTE.format({ })}
         >
           {Messages.TRANSPARENCY}
+        </FormSwitch>
+      )}
+      {IS_DESKTOP && (
+        <FormSwitch
+          value={nativeFrame.get()}
+          onChange={(value) => {
+            openConfirmModal(Messages.ARE_YOU_SURE, [
+              "Do you want to restart Discord to toggle native frame?"
+            ], {
+              confirmText: "Restart",
+              onConfirm: () => {
+                nativeFrame.set(value);
+              }
+            });
+          }}
+          style={{ marginTop: 20 }}
+          note={Messages.NATIVE_FRAME_NOTE}
+        >
+          {Messages.NATIVE_FRAME}
         </FormSwitch>
       )}
 

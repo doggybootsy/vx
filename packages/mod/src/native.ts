@@ -52,6 +52,17 @@ export const transparency = {
   }
 };
 
+export const nativeFrame = {
+  set(state: boolean) {
+    if (!IS_DESKTOP) return;
+    return window.VXNative!.nativeFrame.set(state);
+  },
+  get() {
+    if (!IS_DESKTOP) return false;
+    return window.VXNative!.nativeFrame.get();
+  }
+};
+
 type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
 const addonStateStore = new DataStore<Record<string, boolean>>("VXI-Addon-States");
 

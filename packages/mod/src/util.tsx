@@ -59,41 +59,6 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
   return proxy;
 }
 
-interface Cache<T> {
-  (): T,
-  get: T,
-  hasValue(): boolean,
-  reset(): void
-}
-
-export function cache<T>(factory: () => T): Cache<T> {
-  const value = { } as { current: T } | { };
-
-  function cache() {
-    if ("current" in value) return value.current;
-    
-    const current = factory();
-    (value as { current: T }).current = current;
-
-    return current;
-  }
-
-  cache.__internal__ = value;
-
-  cache.hasValue = () => "current" in value;
-
-  cache.reset = () => {
-    // @ts-expect-error
-    if ("current" in value) delete value.current;
-  };
-
-  Object.defineProperty(cache, "get", {
-    get: () => cache()
-  });
-
-  return cache as unknown as Cache<T>;
-}
-
 export function cacheComponent<P extends {}>(factory: () => React.JSXElementConstructor<P>): React.JSXElementConstructor<P> {
   const cacheFactory = cache(factory);
 

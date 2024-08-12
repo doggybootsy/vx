@@ -3,14 +3,15 @@ import { forwardRef, isValidElement, useLayoutEffect, useState } from "react";
 import { isDashboardOpen, openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
-import { cache, className } from "../util";
+import { className } from "../util";
 import { byStrings, getByKeys, webpackRequire, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
-import { env } from "vx:self";
+import { env, IS_DESKTOP } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
 import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
 import { GuildDmTypingIndicator } from "../plugins/better-typing-indicators";
+import { nativeFrame } from "../native";
 
 addPlainTextPatch(
   {
@@ -28,8 +29,18 @@ addPlainTextPatch(
   {
     identifier: "VX(titlebar)",
     match: ".wordmarkWindows,",
-    find: /(,.{1,3}=(.{1,3})=>{let.+?\.(?:default|Z|ZP),{}\)}\),.+?)\]/,
-    replace: "$1,$jsx($vx._self.TitlebarButton,$2)]"
+    replacements: [
+      {
+        find: /(,.{1,3}=(.{1,3})=>{let.+?\.(?:default|Z|ZP),{}\)}\),.+?)\]/,
+        replace: "$1,$jsx($vx._self.TitlebarButton,$2)]"
+      },
+      // this patch is impossible to undo so it, it breaks the normal rules
+      {
+        find: /(function .{1,3}\(.{1,3}\){)(let{focused:.{1,3},)/,
+        replace: "$1return null;$2",
+        predicate: () => nativeFrame.get()
+      }
+    ]
   }
 );
 

@@ -49,6 +49,9 @@ const messages = {
   ADD_VX_TO_TITLEBAR: "Add VX to titlebar",
   ADD_VX_TO_TITLEBAR_NOTE: "Adds a button that allows you to quickly open the dashboard",
   TRANSPARENCY_NOTE: new FormattedMessage("Enabling transparency allows you to be able to see your desktop background. This also breaks window snapping [crbug/41395671](https://issues.chromium.org/issues/41395671) [electron/electron/2170](https://github.com/electron/electron/issues/2170)", "en-US", true),
+  NATIVE_FRAME: "Native OS Frame",
+  NATIVE_FRAME_NOTE: "Makes discord use the Native OS Frame",
+
 
   TRUST_AND_VISIT_SITE: new FormattedMessage("Visit and trust **!!{domain}!!** links from now on", "en-US", true),
   

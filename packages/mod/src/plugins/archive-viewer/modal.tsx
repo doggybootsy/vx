@@ -302,6 +302,7 @@ function ZipModal(props: ZipModalProps) {
                           
                           openZipModal(new File([ blob ], file.name));
                         }
+                        await file.getContent("uint8array")
 
                         return;
                       }

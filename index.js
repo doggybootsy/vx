@@ -272,7 +272,7 @@ const plugins = (desktop) => [
 const injections = [
   "./injections/global.js",
   "./injections/jsx.js",
-  "./injections/request.ts"
+  "./injections/vars.ts"
 ];
 
 (async function() {

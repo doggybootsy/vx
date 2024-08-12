@@ -138,6 +138,16 @@ electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) 
   electron.app.relaunch();
 });
 
+electron.ipcMain.on("@vx/native-frame/get-state", (event) => {
+  event.returnValue = Storage.window.get("native-frame", false);
+});
+electron.ipcMain.handle("@vx/native-frame/set-state", (event, enabled: boolean) => {
+  Storage.window.set("native-frame", enabled);
+
+  electron.app.quit();
+  electron.app.relaunch();
+});
+
 electron.ipcMain.on("@vx/safestorage/encrypt", (event, string) => {
   event.returnValue = safeStorage.encryptString(string).toString("base64");
 });

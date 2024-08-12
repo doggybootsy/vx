@@ -59,6 +59,10 @@ export class BrowserWindow extends electron.BrowserWindow {
     }
     else if (originalPreload.includes("main")) {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
+      // Only apply if it is the main window
+      if (Storage.window.get<boolean>("native-frame", false)) {
+        opts.frame = true;
+      }  
     }
 
     const transparent = Storage.window.get<boolean>("transparent", false);

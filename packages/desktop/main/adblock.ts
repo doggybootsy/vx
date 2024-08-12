@@ -1,4 +1,7 @@
 import electron from "electron";
+import { existsSync } from "node:fs";
+import fs from "node:fs/promises";
+import { join } from "node:path";
 
 let isEnabled = false;
 
@@ -8,22 +11,33 @@ export function adblock(state?: boolean): boolean {
   return isEnabled;
 }
 
-function fetchScript() {
-  if (fetchScript._fetch) return fetchScript._fetch;
+const ADBLOCK_URL = "https://raw.githubusercontent.com/AdguardTeam/BlockYouTubeAdsShortcut/master/dist/index.js";
 
-  async function getScript() {
-    return (await request.text("https://raw.githubusercontent.com/AdguardTeam/BlockYouTubeAdsShortcut/master/dist/index.js")).text;
-  }
+const fetchScript = cache(async () => {
+  const path = join(electron.app.getPath("appData"), ".vx", "adblock.js");
+  if (existsSync(path)) return fs.readFile(path, { encoding: "binary" });
 
-  return fetchScript._fetch = getScript();
-}
-fetchScript._fetch = null as null | Promise<string>;
+  const res = await request.text(ADBLOCK_URL);
+
+  await fs.writeFile(path, res.text);
+
+  return res.text;
+});
+
+const allowedHostnames = [
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+  "www.youtube-nocookie.com"
+];
 
 electron.app.on("browser-window-created", (event, window) => {
   window.webContents.on("frame-created", (event, { frame }) => {
-    frame.once("dom-ready", () => {
-      if (frame?.url.includes("www.youtube.com") && isEnabled) {
-        fetchScript().then((script) => frame.executeJavaScript(script));
+    frame.once("dom-ready", async () => {
+      if (!frame?.url) return;
+
+      if (isEnabled && allowedHostnames.includes(new URL(frame.url).hostname)) {
+        frame.executeJavaScript(await fetchScript());
       }
     });
   });

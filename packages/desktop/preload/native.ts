@@ -184,6 +184,14 @@ const native = {
       electron.ipcRenderer.invoke("@vx/transparency/set-state", state);
     }
   },
+  nativeFrame: {
+    get(): boolean {
+      return electron.ipcRenderer.sendSync("@vx/native-frame/get-state");
+    },
+    set(state: boolean) {
+      electron.ipcRenderer.invoke("@vx/native-frame/set-state", state);
+    }
+  },
   safestorage: {
     decrypt(string: string): string {
       if (!native.safestorage.isAvailable()) throw new DOMException("SafeStorage is not available!");

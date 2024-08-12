@@ -21,6 +21,8 @@ electron.app.whenReady().then(() => {
     const headers = normalizeHeaders(responseHeaders);
 
     delete headers["Content-Security-Policy"];
+    delete headers["Content-Security-Policy-Report-Only"];
+    delete headers["X-Frame-Options"];
     
     if (frame && frame.url) {      
       headers["Access-Control-Allow-Origin"] = [
