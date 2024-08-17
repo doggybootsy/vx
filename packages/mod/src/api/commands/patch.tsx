@@ -17,16 +17,16 @@ export const commands: Map<string, Command> = new Map();
 async function addBuiltinSection() {
   const module = await getMangledLazy<{
     BUILTIN_SECTIONS: Record<string, any>,
-    getBuiltInCommands(type: number, idk1: boolean, idk2: boolean): any[]
+    getBuiltInCommands(types: number[], idk1: boolean, idk2: boolean): any[]
   }>(".Messages.COMMAND_SECTION_BUILT_IN_NAME", {
     BUILTIN_SECTIONS: m => typeof m === "object",
     getBuiltInCommands: m => typeof m === "function"
-  });  
-  
+  });    
+
   module.BUILTIN_SECTIONS[section.id] = section;
 
-  injector.after(module, "getBuiltInCommands", (that, [ type ], res) => {    
-    if (type !== 1) return;
+  injector.after(module, "getBuiltInCommands", (that, [ types ], res) => {        
+    if (!types.includes(1)) return;
     
     if (!Array.isArray(res)) res = [];    
 
@@ -83,10 +83,10 @@ async function patchApplication() {
     key(...args: any): any
   }>("Failed to select application descriptor", {
     key: byStrings(".getScoreWithoutLoadingLatest")
-  });
+  });  
 
-  injector.after(module, "key", (that, args, res) => {  
-    if (args[2].commandType !== 1) return;
+  injector.after(module, "key", (that, args, res) => {     
+    if (!args[2].commandTypes.includes(1)) return;    
       
     for (const sectionedCommand of res.sectionedCommands) {
       if (sectionedCommand.section.id !== "-1") continue;

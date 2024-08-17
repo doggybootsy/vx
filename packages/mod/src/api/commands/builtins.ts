@@ -174,3 +174,26 @@ addCommand({
     instantBatchUpload(channel.id, [ new File(info, "debug.txt") ]);
   }
 });
+
+addCommand({
+  id: "internal/spotify-volume",
+  name: "spotify-volume",
+  description: "Sets the spotify embed volume",
+  predicate: () => IS_DESKTOP,
+  options: [
+    {
+      type: OptionType.INTEGER,
+      name: "percent",
+      maxValue: 100,
+      minValue: 0,
+      choices: Array.from({ length: 101 }, (v, i) => ({ name: `${i}%`, value: i / 100 }))
+    }
+  ],
+  execute([ percent ], { channel }) {
+    if (percent) {
+      window.VXNative!.spotify.setVolume(percent.value);
+    }
+  
+    sendVXSystemMessage(channel.id, `Spotify volume is set to ${(percent ? percent.value : window.VXNative!.spotify.getVolume()) * 100}%`);
+  }
+})

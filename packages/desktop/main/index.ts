@@ -1,5 +1,3 @@
-console.log("Welcome to VX");
-
 import electron from "electron";
 
 import { replaceNodeModuleExports } from "common/node";
@@ -10,6 +8,9 @@ import "./ipc";
 import "./request";
 import "./colors";
 import "./spotify";
+import { env } from "vx:self";
+
+console.log(`Welcome to VX v${env.VERSION}`);
 
 replaceNodeModuleExports("electron", { ...electron, BrowserWindow });
 

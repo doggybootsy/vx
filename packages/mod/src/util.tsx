@@ -875,19 +875,25 @@ export const focusStore = new class FocusStore extends InternalStore {
   get hasFocus() { return document.hasFocus(); }
 }
 
+const AVATARS: Record<string, string> = {
+  vx: "https://raw.githubusercontent.com/doggybootsy/vx/main/assets/avatar.png",
+  spotify: "/assets/6daf7db5db0d4a895afa.svg"
+}
+
 getLazy<{
   default: {
     getUserAvatarURL(user: any): string
   }
 }>(m => m.default?.getUserAvatarURL).then((module) => {
   new Injector().after(module.default, "getUserAvatarURL", (that, args, res) => {    
-    if (typeof args[0] === "object" && args[0].avatar === "vx") {
-      return Injector.return("https://raw.githubusercontent.com/doggybootsy/vx/main/assets/avatar.png");
+    if (typeof args[0] === "object" && args[0].avatar in AVATARS) {
+      return Injector.return(AVATARS[args[0].avatar]);
     }
   });
 });
 
 const createMessage = getProxyByStrings([ "createMessage: author cannot be undefined" ]);
+
 export function sendVXSystemMessage(channelId: string, content: string) {
   const message = (createMessage as any)({
     channelId: channelId,
@@ -895,7 +901,7 @@ export function sendVXSystemMessage(channelId: string, content: string) {
     content: content,
     flags: 64,
     author: {
-      id: "1",
+      id: "vx",
       username: "VX",
       discriminator: "0000",
       avatar: "vx",

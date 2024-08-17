@@ -154,7 +154,7 @@ electron.ipcMain.on("@vx/safestorage/encrypt", (event, string) => {
 electron.ipcMain.on("@vx/safestorage/decrypt", (event, encrypted) => {
   event.returnValue = safeStorage.decryptString(Buffer.from(encrypted, "base64"));
 });
-electron.ipcMain.on("@vx/safestorage/is-available", (event) => {
+electron.ipcMain.on("@vx/safestorage/is-available", (event) => {  
   event.returnValue = safeStorage.isEncryptionAvailable();
 });
 

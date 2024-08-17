@@ -5,6 +5,8 @@ import { join } from "node:path";
 
 let isEnabled = false;
 
+export function adblock(): boolean
+export function adblock(state: boolean): boolean
 export function adblock(state?: boolean): boolean {
   if (arguments.length === 0) return isEnabled;
   if (typeof state === "boolean") return isEnabled = state!;

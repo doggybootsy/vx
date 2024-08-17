@@ -1,7 +1,24 @@
 # Transparency
-VX has a option to enable transparency in the BrowserWindow. 
+VX has a setting to enable transparency in the BrowserWindow. 
 
 This allows themes to make it so you can see you own desktop wallpaper / any app behind discord
+
+## Enabling
+This option is not available in settings as of `1.0.37` due complications that come up when using transparency
+
+Go to 
+* Windows: `%appdata%\.vx`
+* OSX: `~/Library/Application Support/.vx`
+* OSX: `~/.config/.vx`
+
+Then open the `window.json` and a custom property named `transparent` and set it to `true` and to disable it set it to `false`
+
+It should look something like 
+```json
+{
+	  "transparent": true
+}
+```
 
 ## Detecting
 Themes have the option to detect transparency in 2 ways. 
@@ -61,6 +78,7 @@ VX doesn't provide a easy to way to enable bluring. But you can enable it by doi
 
 * Windows: `%appdata%\.vx`
 * OSX: `~/Library/Application Support/.vx`
+* OSX: `~/.config/.vx`
 
 Then open the `window.json` and a custom property named either `backgroundMaterial` for windows or `vibrancy` for MacOS
 

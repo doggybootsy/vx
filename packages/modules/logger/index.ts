@@ -12,7 +12,7 @@ interface LoggerOptions {
 
 function createLogArguments(logger: Logger, type: string, color: [ number, number, number ], icon: string) {
   if (!logger.useWebLogger()) return [
-    `\x1b[48;2${color.map((color) => `;${color}`)}m\x1b[30m${type}\x1b[0m \x1b[34m[${logger.name}]:`
+    `\x1b[48;2${color.map((color) => `;${color}`)}m\x1b[30m${type}\x1b[0m \x1b[34m[${logger.name}]\x1b[0m:`
   ];
 
   if (!logger.options.showIcon) return [

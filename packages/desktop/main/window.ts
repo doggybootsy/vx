@@ -32,11 +32,12 @@ const script = `(async function() {
   const header = deepQuerySelector(document, ".tabbed-pane-header");
 
   const icon = document.createElement("div");
-  icon.innerHTML = '<svg class="vx-icon vx-icon-logo" width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentcolor" d="M51.4697 27.0801L38.96 74.6582L22.0068 75.6152L6.62598 27.5586L22.8271 26.0547L29.3896 54.082L35.7471 26.0547L51.4697 27.0801ZM93.75 27.0801L80.4199 50.2539L91.7676 70.4199L77.4805 74.8633L71.3281 60.918L64.082 74.9316L49.3164 69.5996L61.8945 49.7754L50.4102 28.9258L66.0645 25.166L71.6699 38.9062L77.6172 25.166L93.75 27.0801Z"></path></svg>';
+  icon.innerHTML = '<svg class="vx-icon vx-icon-logo" width="22" height="22" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentcolor" d="M51.4697 27.0801L38.96 74.6582L22.0068 75.6152L6.62598 27.5586L22.8271 26.0547L29.3896 54.082L35.7471 26.0547L51.4697 27.0801ZM93.75 27.0801L80.4199 50.2539L91.7676 70.4199L77.4805 74.8633L71.3281 60.918L64.082 74.9316L49.3164 69.5996L61.8945 49.7754L50.4102 28.9258L66.0645 25.166L71.6699 38.9062L77.6172 25.166L93.75 27.0801Z"></path></svg>';
   icon.title = "VX v${env.VERSION}";
   icon.style.display = "flex";
   icon.style.alignItems = "center";
   icon.style.padding = "0 2px";
+  icon.style.minWidth = "22px";
 
   header.insertBefore(icon, header.firstChild);
 })();`
@@ -59,6 +60,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     }
     else if (originalPreload.includes("main")) {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
+
       // Only apply if it is the main window
       if (Storage.window.get<boolean>("native-frame", false)) {
         opts.frame = true;
@@ -95,6 +97,13 @@ export class BrowserWindow extends electron.BrowserWindow {
     window.webContents.on("devtools-opened", () => {
       window.webContents.devToolsWebContents?.executeJavaScript(script);
     });
+
+    // Open devtools in devtools
+    // const devtools = new electron.BrowserWindow();
+    // devtools.webContents.openDevTools({ mode: "right" });
+
+    // window.webContents.setDevToolsWebContents(devtools.webContents);
+    // window.webContents.openDevTools();
     
     return window;
   }

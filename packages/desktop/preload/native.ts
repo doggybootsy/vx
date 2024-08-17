@@ -219,10 +219,7 @@ const native = {
       const data = readFileSync(file, "binary");
       const match = data.match(/^vx-(0|1):([\s\S]+)$/);
 
-      if (!match) {
-        native.storage.delete(key)
-        return null;
-      }
+      if (!match) return null;
 
       const [, type, contents ] = match;
 
@@ -234,10 +231,14 @@ const native = {
         return data;
       }
       if (native.safestorage.isAvailable()) {
-        const data = native.safestorage.decrypt(contents);
-        storageCache.set(key, data);
-        
-        return data;
+        try {
+          const data = native.safestorage.decrypt(contents);
+          storageCache.set(key, data);
+          
+          return data;
+        } catch (error) {
+          console.warn("[vx]:", `unable to parse content for '${basename(key)}'`, error);
+        }
       }
       return null;
     },
@@ -249,11 +250,7 @@ const native = {
 
       const file = join(path, `${basename(key)}.vxs`);
 
-      const isAvailable = native.safestorage.isAvailable();
-
-      const data = isAvailable ? native.safestorage.encrypt(value) : Buffer.from(value, "binary").toString("base64");
-
-      writeFileSync(file, `vx-${isAvailable ? 1 : 0}:${data}`, "binary");
+      writeFileSync(file, `vx-0:${Buffer.from(value, "binary").toString("base64")}`, "binary");
     },
     delete(key: string) {
       storageCache.delete(key);
@@ -261,7 +258,7 @@ const native = {
       getAndEnsureVXPath("storage", (path) => mkdirSync(path));
       const path = getAndEnsureVXPath(`storage/${native.release}`, (path) => mkdirSync(path));
 
-      const file = join(path, `${key}.vxs`);
+      const file = join(path, `${basename(key)}.vxs`);
       
       if (!existsSync(file)) return;
 

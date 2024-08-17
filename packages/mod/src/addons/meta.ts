@@ -1,4 +1,5 @@
-import { I18n, LocaleCodes } from "@webpack/common";
+import { LocaleCodes } from "@webpack/common";
+import { getLocale } from "vx:i18n";
 
 const META_REGEX = /^\/\*\*([\s\S]+?)\*\//;
 const META_TAG_REGEX = /\*\s*@(?<key>\w+)(?::(?<lang>(\w|-)+))?\s+(?<body>.+)/g;
@@ -24,7 +25,7 @@ export function getMetaProperty(meta: Meta, key: keyof Meta, defaultValue: strin
     return value as string;
   }
 
-  const locale = I18n.getLocale().toLowerCase() as Lowercase<LocaleCodes>;
+  const locale = getLocale().toLowerCase() as Lowercase<LocaleCodes>;
   if (locale in value.i18n) return value.i18n[locale]!;
   return value.default ?? defaultValue;
 }
@@ -34,7 +35,7 @@ export function getMetaUsagePropertyKey(meta: Meta, key: SupportsI18n) {
 
   if (!value) return null;
 
-  const locale = I18n.getLocale().toLowerCase() as Lowercase<LocaleCodes>;
+  const locale = getLocale().toLowerCase() as Lowercase<LocaleCodes>;
   if (locale in value.i18n) return locale;
   if (typeof value.default === "string") return "default";
   return null;
