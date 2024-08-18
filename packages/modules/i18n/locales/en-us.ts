@@ -129,6 +129,8 @@ const messages = {
   YOUTUBE_ADBLOCK_DESCRIPTION: "Adds a adblock that removes ads off of youtube",
   BETTER_MENTIONS_NAME: "Better Mentions",
   BETTER_MENTIONS_DESCRIPTION: "Makes user mentions better",
+  FREE_APPEARANCE_NAME: "Free Appearance",
+  FREE_APPEARANCE_DESCRIPTION: "Gives access to nitro themes / app icon for free",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
