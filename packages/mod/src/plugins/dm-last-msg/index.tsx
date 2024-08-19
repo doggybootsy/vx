@@ -81,7 +81,7 @@ export default definePlugin({
       }
 
       // Is a call
-      if (props.channel.type === 3) return Messages.NUM_USERS.format({ count: props.channel.recipients.length });
+      if (props.channel.type === 3) return Messages.NUM_USERS.format({ users: props.channel.recipients.length });
     }, [ lastMessage, lastMsgAuthor, isInCall ]);
 
     if (!enabled) return original;
