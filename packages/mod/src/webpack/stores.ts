@@ -1,4 +1,4 @@
-import { User, Guild, Channel, Role } from "discord-types/general";
+import { User, Guild, Channel, Role, Message } from "discord-types/general";
 import { ChannelStore, FluxStore, GuildMemberStore, MessageStore, RelationshipStore, SelectedChannelStore, SelectedGuildStore, GuildStore, UserStore } from "discord-types/stores";
 import { proxyCache } from "../util";
 import { getByKeys } from "./filters";
@@ -41,12 +41,16 @@ interface CorrectGuildStore extends GuildStore {
   getRole(guildId: string, roleId: string): Role;
 }
 
+interface CorrectMessageStore extends MessageStore {
+  getLastMessage(channelId: string): Message | undefined
+}
+
 interface KnownStores {
   UserStore: UserStore,
   ChannelStore: CorrectChannelStore,
   SelectedChannelStore: SelectedChannelStore,
   GuildMemberStore: GuildMemberStore,
-  MessageStore: MessageStore,
+  MessageStore: CorrectMessageStore,
   RelationshipStore: CorrectRelationshipStore,
   SelectedGuildStore: SelectedGuildStore,
   GuildStore: CorrectGuildStore,

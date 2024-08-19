@@ -55,6 +55,24 @@
   color: var(--text-normal);
   user-select: text;
 }
+.vx-addon-new {
+  height: .9375rem;
+  padding: 0 .275rem;
+  border-radius: 4px;
+  top: .1rem;
+  background: var(--status-danger-background);
+  color: var(--status-danger-text);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-indent: 0;
+  font-size: .8rem;
+  line-height: .9375rem;
+  position: relative;
+  font-weight: 600;
+  vertical-align: top;
+}
 .vx-addon-name {
   color: var(--text-primary);
   font-size: larger;

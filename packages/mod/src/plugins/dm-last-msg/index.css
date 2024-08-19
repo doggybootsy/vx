@@ -1,0 +1,21 @@
+.vx-dmlm {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.vx-dmlm[data-is-call-ongoing="true"] {
+  color: var(--status-positive);
+}
+
+.vx-dmlm-popout {
+  background: var(--background-floating);
+  padding: 8px;
+  border-radius: 8px;
+}

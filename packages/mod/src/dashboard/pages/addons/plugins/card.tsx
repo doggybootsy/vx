@@ -9,6 +9,7 @@ import { pluginStore } from "../../../../addons/plugins";
 import { internalDataStore } from "../../../../api/storage";
 import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";
+import { markPluginAsSeen } from "../../../../plugins";
 
 function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
@@ -102,7 +103,14 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
   const shouldShowCustomIcon = useMemo(() => Boolean(plugin.type === "custom" && showCustomIcon && icon), [ plugin, showCustomIcon, icon ]);
 
   return (
-    <div className="vx-addon-card" data-vx-type={`${plugin.type}-plugin`} data-vx-addon-id={plugin.id}>
+    <div 
+      className="vx-addon-card" 
+      data-vx-type={`${plugin.type}-plugin`} 
+      data-vx-addon-id={plugin.id}
+      onMouseOver={() => {
+        if (plugin.type === "internal") markPluginAsSeen(plugin.id);
+      }}
+    >
       <div className="vx-addon-top">
         <div 
           className={className([ "vx-addon-icon-wrapper", shouldShowCustomIcon && "vx-addon-icon-img" ])}
@@ -122,6 +130,11 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
             <span>
               {plugin.name}
             </span>
+            {plugin.isNew && (
+              <span className="vx-addon-new">
+                {Messages.NEW}
+              </span>
+            )}
             {plugin.requiresRestart && (
               <Tooltip text={Messages.PLUGIN_REQUIRES_RESTART}>
                 {(props) => (

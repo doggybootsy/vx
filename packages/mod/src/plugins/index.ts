@@ -167,8 +167,27 @@ export function isPluginEnabled(id: string) {
   return false;
 }
 
-if (env.IS_DEV) {
-  const plugins = require("@plugins");
-  logger.debug(plugins);
+export const newPlugins = new Set<string>();
+
+export function markPluginAsSeen(plugin: string) {
+  const known = new Set(internalDataStore.get("known-plugins")!);
+
+  newPlugins.delete(plugin);
+  known.add(plugin);
+
+  internalDataStore.set("known-plugins", [ ...known ]);
 }
-else require("@plugins");
+
+(function() {
+  require("@plugins");
+  
+  if (env.IS_DEV) console.log(plugins);
+  
+  internalDataStore.ensure("known-plugins", Object.keys(plugins));
+  const known = internalDataStore.get("known-plugins")!;
+
+  for (const id of Object.keys(plugins)) {
+    if (known.includes(id)) continue;
+    newPlugins.add(id);
+  }
+})();

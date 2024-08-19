@@ -232,7 +232,8 @@ interface InternalData {
   "vx-titlebar": boolean,
   "show-favicon": boolean,
   "last-loaded-locale": LocaleCodes,
-  "trusted-domains": string[]
+  "trusted-domains": string[],
+  "known-plugins": string[]
 };
 
 const internalDataStore = new DataStore<InternalData>("Internal", {

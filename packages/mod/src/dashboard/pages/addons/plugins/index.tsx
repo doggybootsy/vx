@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { Panel } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
-import { Plugin, plugins } from "../../../../plugins";
+import { newPlugins, Plugin, plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
 import { pluginStore } from "../../../../addons/plugins";
@@ -23,7 +23,8 @@ export interface SafePlugin {
   name: string,
   description: string,
   settings: (() => void) | null,
-  id: string
+  id: string,
+  isNew: boolean
 };
 
 function getCustomPlugin(id: string): SafePlugin {
@@ -49,7 +50,8 @@ function getCustomPlugin(id: string): SafePlugin {
     name,
     description: pluginStore.getMetaProperty(id, "description", Messages.NO_DESCRIPTION_PROVIDED),
     authors: pluginStore.getMeta(id).authors ?? [],
-    settings: Settings ? (() => openPluginSettingsModal(name, Settings!)) : null
+    settings: Settings ? (() => openPluginSettingsModal(name, Settings!)) : null,
+    isNew: false
   }
 }
 function convertToSafePlugin(plugin: Plugin): SafePlugin {
@@ -66,7 +68,8 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     name: Messages[`${id}_NAME`],
     description: Messages[`${id}_DESCRIPTION`],
     authors: plugin.authors,
-    settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null
+    settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null,
+    isNew: newPlugins.has(plugin.id)
   }
 }
 
@@ -86,7 +89,13 @@ export function Plugins() {
     plugins.push(...customPlugins);
     plugins.push(...internalPlugins);
 
-    return plugins.sort((a, b) => a[1].name.localeCompare(b[1].name));
+    return plugins.sort((a, b) => {
+      if (a[1].isNew && b[1].isNew) return 0;
+      if (b[1].isNew) return 1;
+      if (a[1].isNew) return -1;
+
+      return a[1].name.localeCompare(b[1].name);
+    });
   }, [ customPlugins, internalPlugins ]);
 
   const [ query, setQuery ] = useState(() => queryStore.get("plugins"));
@@ -176,7 +185,7 @@ export function Plugins() {
           ))
         ) : (
           <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
-          )}
+        )}
       </Flex>
     </Panel>
   )

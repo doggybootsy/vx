@@ -63,7 +63,7 @@ export function getLocale(): LocaleCodes {
   return internalDataStore.get("last-loaded-locale") ?? "en-US";
 }
 
-type KnownFormmatableStrings = KeysMatching<ALL_KNOWN_MESSAGES, FormattedMessage>;
+type KnownFormmatableStrings = "NUM_IMAGES" | "NUM_ATTACHMENTS" | "NUM_USERS" | KeysMatching<ALL_KNOWN_MESSAGES, FormattedMessage>;
 type KnownStrings = "DOWNLOAD" | "EDIT" | "DELETE" | "HELP" | KeysMatching<ALL_KNOWN_MESSAGES, string>;
 
 type MessagesType = Omit<Record<Uppercase<string>, string>, KnownStrings | KnownFormmatableStrings> & Record<KnownStrings, string> & Record<KnownFormmatableStrings, FormattedMessage>;

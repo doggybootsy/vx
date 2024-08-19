@@ -4,7 +4,7 @@ import { logger } from "vx:logger";
 import { injectOSVars } from "common/preloads";
 
 import logo from "./logo.html";
-import { appendTo as customCSSAppendTo } from "./css";
+import { appendTo as customCSSAppendTo, enqueAppResize } from "./css";
 
 import "./keybinds";
 
@@ -17,7 +17,7 @@ waitForNode("body").then((body) => {
   if (electron.ipcRenderer.sendSync("@vx/transparency/get-state")) document.body.classList.add("transparent");
 });
 
-waitForNode("head").then((head) => {
+waitForNode("body").then((body) => {
   const { appendTo } = createStyle("vx-logo-css", `#vx-logo {
     position: fixed;
     bottom: 4px;
@@ -26,8 +26,12 @@ waitForNode("head").then((head) => {
     z-index: 30000;
   }`);
 
-  appendTo(head);
-  customCSSAppendTo(head);
+  document.documentElement.style.setProperty("--default-splash-width", "300px", "important");
+  document.documentElement.style.setProperty("--default-splash-height", process.platform === "darwin" ? "300px" : "350px", "important");
+
+  appendTo(body);
+  customCSSAppendTo(body);
+  enqueAppResize();
 });
 
 try {

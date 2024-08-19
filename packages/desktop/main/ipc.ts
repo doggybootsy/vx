@@ -75,8 +75,17 @@ electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
 electron.ipcMain.handle("@vx/splash/no-close", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender)!;
 
-  window.close = () => {};
-  window.hide = () => {};
+  Object.defineProperty(window, "close", { value: () => {} });
+  Object.defineProperty(window, "hide", { value: () => {} });
+});
+electron.ipcMain.handle("@vx/splash/resize", (event, { width, height }) => {
+  const window = BrowserWindow.fromWebContents(event.sender)!;
+
+  window.setResizable(true);
+  window.setSize(width, height, false);
+  window.setResizable(false);
+
+  console.log([ width, height ]);
 });
 
 electron.ipcMain.handle("@vx/devtools/toggle", async (event, options: OpenDevToolsOptions = { }) => {
