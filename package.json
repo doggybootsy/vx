@@ -1,6 +1,6 @@
 {
   "name": "vx",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "description": "A Discord mod that provides Plugins and a easy way to load Themes",
   "main": "index.js",
   "scripts": {
