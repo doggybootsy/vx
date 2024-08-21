@@ -141,8 +141,8 @@ export function Home() {
       </FormSwitch>
 
       <FormSwitch
-        disabled={window.VXNative?.app.platform !== "win32"}
-        value={addVXTitleBarButton}
+        disabled={nativeFrame.get() || window.VXNative?.app.platform !== "win32"}
+        value={nativeFrame.get() ? false : addVXTitleBarButton}
         onChange={(value) => {
           setVXTitleBarButton(value);
           internalDataStore.set("vx-titlebar", value);

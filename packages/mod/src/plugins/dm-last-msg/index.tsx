@@ -48,6 +48,8 @@ export default definePlugin({
       
       const $ = (...content: React.ReactNode[]) => [ lastMsgAuthor, ": ", content ];
 
+      if (isInCall) return Messages.ONGOING_CALL;
+
       if (lastMessage.content) return $(lastMessage.content);
 
       if (lastMessage.attachments.length) {
@@ -73,14 +75,18 @@ export default definePlugin({
           <Icons.File size={16} />
         );
       }
+      
+      // is call
+      if (lastMessage.type === 3) return Messages.CALL_ENDED;
 
-      // Is a call
-      if (lastMessage.type === 3) {
-        if (isInCall) return Messages.ONGOING_CALL;
-        return Messages.CALL_ENDED;
+      if (lastMessage.stickerItems.length) {
+        return $(
+          lastMessage.stickerItems[0]!.name, 
+          <Icons.Sticker size={16} />
+        );
       }
 
-      // Is a call
+      // Is group dm
       if (props.channel.type === 3) return Messages.NUM_USERS.format({ users: props.channel.recipients.length });
     }, [ lastMessage, lastMsgAuthor, isInCall ]);
 

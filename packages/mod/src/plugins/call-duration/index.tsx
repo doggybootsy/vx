@@ -4,16 +4,52 @@ import { definePlugin } from "..";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys } from "@webpack";
-import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore } from "@webpack/common";
+import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore, subscribeToDispatch } from "@webpack/common";
 
 import * as styler from "./index.css?managed";
 import { Messages } from "vx:i18n";
-import { simpleFormatTime } from "../../util";
+import { InternalStore, simpleFormatTime } from "../../util";
+import { useInternalStore } from "../../hooks";
 
 const Components = getProxyByKeys([ "Tooltip", "Text" ]);
 
+class CallDurationStore extends InternalStore {
+  constructor() {
+    super();
+
+    subscribeToDispatch("RTC_CONNECTION_STATE", (event) => {
+      if (event.context !== "default") return;
+
+      if (event.state === "RTC_CONNECTED") {
+        if (this.lastChannelId === event.channelId) return;
+        this.then = Date.now();
+        this.lastChannelId = event.channelId;
+
+        this.emit();
+
+        return;
+      }
+
+      if (event.state === "DISCONNECTED") {
+        this.then = null;
+        this.lastChannelId = null;
+
+        this.emit();
+
+        return;
+      }
+    });
+  }
+
+  private lastChannelId: string | null = null;
+  public then: number | null = null;
+}
+
+const store = new CallDurationStore();
+
 function CallDuration() {
-  const [ then, setThen ] = useState(Date.now);
+  const then = useInternalStore(store, () => store.then!);
+
   const [ elapsed, setElapsed ] = useState(0);
 
   useEffect(() => {
@@ -22,18 +58,6 @@ function CallDuration() {
     }, 450);
     return () => clearTimeout(timer);
   }, [ elapsed, then ]);
-
-  useLayoutEffect(() => {
-    function actionHandler(event: any) {
-      if (!(event.state === "RTC_DISCONNECTED" && !Reflect.has(event, "streamKey"))) return;
-  
-      setThen(Date.now);
-    };
-
-    FluxDispatcher.subscribe("RTC_CONNECTION_STATE", actionHandler);
-
-    return () => FluxDispatcher.unsubscribe("RTC_CONNECTION_STATE", actionHandler);
-  }, [ ]);
 
   return (
     <Components.Text 
