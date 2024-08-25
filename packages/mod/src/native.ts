@@ -35,7 +35,7 @@ export const updater = {
 
     const { json, ok } = await request.json<Git.Release>(endpoint, { cache: "no-cache" });
 
-    if (ok) return null;
+    if (!ok) return null;
     return json;
   },
   update(release: Git.Release) {
