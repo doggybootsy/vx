@@ -116,7 +116,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
   }
 }
 
-export const plugins: Record<string, Plugin> = {};
+export const plugins: Record<string, Plugin> = __addSelf("plugins", {});
 
 export function getPlugin(id: string) {
   for (const plugin of Object.values(plugins)) {
@@ -125,6 +125,8 @@ export function getPlugin(id: string) {
 
   return null;
 }
+
+__addSelf("getPlugin", getPlugin);
 
 export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {  
   const plugin = new Plugin(exports);
@@ -137,7 +139,7 @@ export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {
     if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
     
     for (const patch of exports.patches) {
-      const self = `window.VX._self.getPlugin(${JSON.stringify(plugin.id)})`;
+      const self = `$vxi.getPlugin(${JSON.stringify(plugin.id)})`;
 
       patch._self = Object.assign({}, patch._self, {
         plugin: self,

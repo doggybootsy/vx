@@ -205,7 +205,6 @@ declare module "vx:self" {
   interface Enviroment {
     IS_DEV: boolean,
     VERSION: string,
-    VERSION_HASH: string,
     RDT: {
       DOWNLOAD_URL: string,
       ID: string
@@ -302,3 +301,9 @@ interface Cache<T> {
 }
 
 declare function cache<T>(factory: () => T): Cache<T>;
+
+declare interface InternalSelfObject {
+  <T>(key: string, value: T): T;
+  __self__: Record<string, any>;
+}
+declare const __addSelf: InternalSelfObject;

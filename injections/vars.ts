@@ -74,4 +74,10 @@ function cache<T>(factory: () => T): Cache<T> {
   return cache as unknown as Cache<T>;
 }
 
-export { request, cache };
+function __addSelf<T>(key: string, value: T): T {
+  __addSelf.__self__[key] = value;
+  return value;
+}
+__addSelf.__self__ = {} as Record<string, any>;
+
+export { request, cache, __addSelf };

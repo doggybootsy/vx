@@ -50,6 +50,23 @@ export const updaterStore = new class extends InternalStore {
 
     const release = await updater.getLatestRelease();
 
+    if (!release) {
+      openNotification({
+        title: "Updater Failed",
+        id: "vx-updater-error",
+        icon: Icons.Warn,
+        type: "error",
+        description: "Failed to fetch latest version"
+      });
+      
+      setTimeout(() => {
+        this.#canCheck = true;
+        this.emit();
+      }, DELAY_MIN);
+
+      return;
+    }
+
     const version = release.tag_name.replace(/v/i, "");
         
     const compared = compare(release.tag_name, env.VERSION);
@@ -101,10 +118,6 @@ export const updaterStore = new class extends InternalStore {
   }
 }
 
-function UpdatePopout() {
-  
-}
-
 export function Updater() {
   if (!git.exists) return null;
 
@@ -126,18 +139,18 @@ export function Updater() {
         </div>
       </div>
       <Flex className="vx-updater-buttonrow" gap={6} align={Flex.Align.CENTER} justify={Flex.Justify.END}>
-        <Button 
-          disabled={state.lastFetch === null}
-          size={Button.Sizes.ICON}
-          look={Button.Looks.BLANK} 
-          onClick={(event) => {
-            if (!state.release) return;
-
-            openExternalWindowModal(state.release.html_url);
-          }}
-        >
-          <Icons.Github />
-        </Button>
+        {state.release && (
+          <Button 
+            disabled={state.lastFetch === null}
+            size={Button.Sizes.ICON}
+            look={Button.Looks.BLANK} 
+            onClick={(event) => {
+              openExternalWindowModal(state.release!.html_url);
+            }}
+          >
+            <Icons.Github />
+          </Button>
+        )}
         <Button
           onClick={() => {
             if (state.compared === SemverCompareState.OUT_OF_DATE) {

@@ -184,9 +184,10 @@ input.vx-addon-input:not(:focus) {
   -webkit-mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
   mask: url(https://discord.com/assets/abb68ef84648ccf3be81.svg) 0 0 / 100% 100%;
 }
-.vx-home-logo img {
+.vx-home-logo video {
   height: 100px;
   width: 100px;
+  object-fit: cover;
 }
 .vx-home-logo .vx-icon-logo {
   color: white;

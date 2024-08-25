@@ -12,6 +12,8 @@ import { Extensions } from "./pages/extension";
 import { Community } from "./pages/community";
 import { Messages } from "vx:i18n";
 
+import "./patches";
+
 export function Panel(props: {
   title: React.ReactNode,
   buttons?: React.ReactNode,
@@ -55,7 +57,7 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
         <span>{`${Messages.VX} ${env.VERSION} `}</span>
         <Tooltip shouldShow={env.IS_DEV} text="VX is in dev mode">
           {(props) => (
-            <span {...props} className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>({env.VERSION_HASH})</span>
+            <span {...props} className={className([ "vx-section-hash", env.IS_DEV && "vx-section-devmode" ])}>(space)</span>
           )}
         </Tooltip>
       </div>

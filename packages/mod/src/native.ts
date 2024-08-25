@@ -28,12 +28,15 @@ export const app = {
 };
 
 export const updater = {
-  async getLatestRelease(): Promise<Git.Release> {
+  async getLatestRelease(): Promise<Git.Release | null> {
     if (!git.exists) throw new Error("No Git Details Exist");
 
     const endpoint = `https://api.github.com/repos/${git.url.split("/").slice(-2).join("/")}/releases/latest`;
 
-    return (await request.json<Git.Release>(endpoint, { cache: "no-cache" })).json;
+    const { json, ok } = await request.json<Git.Release>(endpoint, { cache: "no-cache" });
+
+    if (ok) return null;
+    return json;
   },
   update(release: Git.Release) {
     if (window.VXExtension) window.VXExtension.update(release);

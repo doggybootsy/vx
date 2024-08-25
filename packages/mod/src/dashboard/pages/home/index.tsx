@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { IS_DESKTOP } from "vx:self";
 import { Panel } from "../..";
 import { internalDataStore } from "../../../api/storage";
@@ -8,6 +8,25 @@ import { app, nativeFrame, transparency } from "../../../native";
 import { Updater } from "./updater";
 import { Messages } from "vx:i18n";
 import { openConfirmModal } from "../../../api/modals";
+import { getRandomItem } from "../../../util";
+
+const backgrounds = [
+  "3og0IFrHkIglEOg8Ba",
+  "3ohzAN9PzGgxpQaiM8",
+  "sJvz8Qnfly3BOuotGx",
+  "3og0INtldac8gncQO4",
+  "WUyQbeKHhpaHrrKJu6",
+  "l1KXtGiWieAhji91u",
+  "l3c614V12UA82q1vG",
+  "TZf4ZyXb0lXXi",
+  "3og0IV7MOCfnm85iRa",
+  "xT9IgusfDcqpPFzjdS",
+  "xT39CTrFW4nHLdBPpu",
+  "Fbox1ygIqnga5dLinz",
+  "l5JbspfwZ0yjHjlJ0K",
+  "xUPGcfzaX9hFFQJYre",
+  "aN9GqoR7OD3nq"
+];
 
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
@@ -16,11 +35,20 @@ export function Home() {
   const [ showFavicon, setShowFavicon ] = useState(() => internalDataStore.get("show-favicon") ?? true);
   const [ addVXTitleBarButton, setVXTitleBarButton ] = useState(() => internalDataStore.get("vx-titlebar") ?? false);
 
+  const [ background, setBackground ] = useState(() => getRandomItem(backgrounds));
+
+  const changeBackground = useCallback(() => {
+    const newBackgrounds = new Set(backgrounds);
+    newBackgrounds.delete(background);
+
+    setBackground(getRandomItem([ ...newBackgrounds ]));
+  }, [ background ]);
+
   return (
     <Panel title="Home">
       <div className="vx-home-header">
-        <div className="vx-home-logo">
-          <img src="https://media0.giphy.com/media/3og0IFrHkIglEOg8Ba/giphy.gif" />
+        <div className="vx-home-logo" onClick={changeBackground}>
+          <video src={`https://media0.giphy.com/media/${background}/giphy.mp4`} muted autoPlay loop />
           <Icons.Logo size={60} />
         </div>
         <Flex className="vx-home-body" justify={Flex.Justify.BETWEEN} direction={Flex.Direction.VERTICAL}>

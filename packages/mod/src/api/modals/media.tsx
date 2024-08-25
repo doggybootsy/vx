@@ -58,7 +58,7 @@ addPlainTextPatch({
   identifier: "VX(image-blob-support)",
   match: "this.unobserveVisibility",
   find: /this\.getSrc/g,
-  replace: "$vx._self.getSrc.call(this,$&)"
+  replace: "$vxi.getSrc.call(this,$&)"
 });
 
 interface ImageModalOptions {

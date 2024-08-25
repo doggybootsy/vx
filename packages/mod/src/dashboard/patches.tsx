@@ -6,7 +6,7 @@ import { Icons } from "../components";
 import { className } from "../util";
 import { byStrings, getByKeys, webpackRequire, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
-import { env, IS_DESKTOP } from "vx:self";
+import { env } from "vx:self";
 import { GuildClock } from "../plugins/guild-clock";
 import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
@@ -18,13 +18,13 @@ addPlainTextPatch(
     identifier: "VX(home-button)",
     match: ".Messages.GUILDS_BAR_A11Y_LABEL",
     find: /\((.{1,3}\.AdvancedScrollerNone)/,
-    replace: "($vx._self._addHomeButton()"
+    replace: "($vxi._addHomeButton()"
   },
   {
     identifier: "VX(settings-button)",
     match: ".Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format({webBuildOverride",
     find: /USER_SETTINGS,onClick:(.{1,3}),onContextMenu:(.{1,3}),/,
-    replace: "USER_SETTINGS,onClick:$vx._self._settingButtonActionWrapper($1,false),onContextMenu:$vx._self._settingButtonActionWrapper($2,true),"
+    replace: "USER_SETTINGS,onClick:$vxi._settingButtonActionWrapper($1,false),onContextMenu:$vxi._settingButtonActionWrapper($2,true),"
   },
   {
     identifier: "VX(titlebar)",
@@ -32,7 +32,7 @@ addPlainTextPatch(
     replacements: [
       {
         find: /(,.{1,3}=(.{1,3})=>{let.+?\.(?:default|Z|ZP),{}\)}\),.+?)\]/,
-        replace: "$1,$jsx($vx._self.TitlebarButton,$2)]"
+        replace: "$1,$jsx($vxi.TitlebarButton,$2)]"
       },
       // this patch is impossible to undo so it, it breaks the normal rules
       {
@@ -44,7 +44,7 @@ addPlainTextPatch(
   }
 );
 
-export function TitlebarButton(props: { windowKey?: string }) {
+__addSelf("TitlebarButton", function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");
   const isOpen = isDashboardOpen();
 
@@ -77,9 +77,9 @@ export function TitlebarButton(props: { windowKey?: string }) {
       <Icons.Logo size={20} />
     </div>
   )
-}
+});
 
-export const _addHomeButton = cache(() => {
+__addSelf("_addHomeButton", cache(() => {
   const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 
@@ -105,9 +105,9 @@ export const _addHomeButton = cache(() => {
       </Components.AdvancedScrollerNone>
     );
   });
-});
+}));
 
-export function _settingButtonActionWrapper(action: (event: React.MouseEvent) => void, isOnContextMenu: boolean) {
+__addSelf("_settingButtonActionWrapper", function _settingButtonActionWrapper(action: (event: React.MouseEvent) => void, isOnContextMenu: boolean) {
   const shouldOpen = () => internalDataStore.get("user-setting-shortcut") ?? true;
   
   return (event: React.MouseEvent) => {
@@ -124,4 +124,4 @@ export function _settingButtonActionWrapper(action: (event: React.MouseEvent) =>
 
     return action(event);
   }
-}
+});

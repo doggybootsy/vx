@@ -64,6 +64,15 @@ function toStringFunction(fn: Function) {
   return stringed.replace(match[1], "function");
 }
 
+function updateReplacer(replacer: string): string {
+  return replacer
+    .replace(/\$react/g, "globalThis.VX.React")
+    .replace(/\$jsx/g, "globalThis.VX.jsx")
+    .replace(/\$fragment/g, "globalThis.VX.jsx.Fragment")
+    .replace(/\$vxi/g, "globalThis.VX[globalThis.VX.internal]")
+    .replace(/\$vx/g, "globalThis.VX");
+}
+
 function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, module: Webpack.RawModule): boolean {
   let stringedModule = toStringFunction(module).replace(/[\n]/g, "");
   const orignal = stringedModule;
@@ -80,16 +89,12 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
       if (replace.predicate && !replace.predicate()) continue;
       
       if (typeof replace.replace === "string") {
-        let replacer = replace.replace
-          .replace(/\$react/g, "globalThis.VX.React")
-          .replace(/\$jsx/g, "globalThis.VX.jsx")
-          .replace(/\$fragment/g, "globalThis.VX.jsx.Fragment")
-          .replace(/\$vx/g, "globalThis.VX");
+        let replacer = updateReplacer(replace.replace);   
 
         if (patch._self) {
           for (const key in patch._self) {
             if (Object.prototype.hasOwnProperty.call(patch._self, key)) {
-              replacer = replacer.replace(escapeRegex(`$${key}`, "g"), patch._self[key]);
+              replacer = replacer.replace(escapeRegex(`$${key}`, "g"), updateReplacer(patch._self[key]));
             }
           }
         }
@@ -107,7 +112,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
   const path = isNaN(nid) ? `nan/${id}.js` : `${Math.floor(nid / 1_000)}/${id}.js`;
 
   if (orignal === stringedModule) {
-    const moduleFN = compileFunction<(__WEBPACK_MODULE__: Webpack.RawModule) => Webpack.RawModule & { __VXOriginal: Webpack.RawModule }>(`/*\n Module Id: ${id} (unpatched)\n*/\nreturn function() {\n\t__WEBPACK_MODULE__.apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);};\n\n//# sourceURL=vx://VX/webpack-modules/unpatched/${path}`, [ "__WEBPACK_MODULE__" ]);
+    const moduleFN = compileFunction<(__WEBPACK_MODULE__: Webpack.RawModule) => Webpack.RawModule & { __VXOriginal: Webpack.RawModule }>(`/*\n Module Id: ${id} (unpatched)\n*/\nreturn function() {\n\t__WEBPACK_MODULE__.apply(this, arguments);\n\twindow.VX[window.VX.internal]._onWebpackModule.apply(this, arguments);};\n\n//# sourceURL=vx://VX/webpack-modules/unpatched/${path}`, [ "__WEBPACK_MODULE__" ]);
     
     const webpackModule = moduleFN(module);
 
@@ -118,7 +123,7 @@ function set(modules: Record<PropertyKey, Webpack.RawModule>, key: PropertyKey, 
     return true;
   }
   
-  stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string match identifiers '${Array.from(identifiers).join("', '")}'\n This doesn't mean they actually patched anything, just means they matched to it` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX._self._onWebpackModule.apply(this, arguments);\n})()\n//# sourceURL=vx://VX/webpack-modules/patched/${path}`;
+  stringedModule = `(()=>\n/*\n Module Id: ${id}${identifiers.size ? `\n Known string match identifiers '${Array.from(identifiers).join("', '")}'\n This doesn't mean they actually patched anything, just means they matched to it` : ""}\n*/\nfunction(){\n\t(${stringedModule}).apply(this, arguments);\n\twindow.VX[window.VX.internal]._onWebpackModule.apply(this, arguments);\n})()\n//# sourceURL=vx://VX/webpack-modules/patched/${path}`;
 
   const error = isInvalidSyntax(stringedModule);
   if (error) {
@@ -163,8 +168,8 @@ function pollyFillDefault(module: Webpack.Module) {
   }
 }
 
-export function _onWebpackModule(module: Webpack.Module) {
+__addSelf("_onWebpackModule", function(module: Webpack.Module) {
   if (module.exports instanceof Object) pollyFillDefault(module);
     
   for (const listener of listeners) listener(module);
-}
+});

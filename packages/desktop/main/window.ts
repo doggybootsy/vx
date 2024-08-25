@@ -98,7 +98,6 @@ export class BrowserWindow extends electron.BrowserWindow {
       window.webContents.devToolsWebContents?.executeJavaScript(script);
     });
 
-    window.webContents.openDevTools();
     // Open devtools in devtools
     // const devtools = new electron.BrowserWindow();
     // devtools.webContents.openDevTools({ mode: "right" });

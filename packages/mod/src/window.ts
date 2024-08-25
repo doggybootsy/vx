@@ -13,11 +13,7 @@ import * as storage from "./api/storage";
 import * as webpack from "@webpack";
 import * as popoutWindows from "./api/window";
 
-import { getPlugin, plugins } from "./plugins";
-
 import { waitForNode } from "common/dom";
-
-import { TitlebarButton, _addHomeButton, _settingButtonActionWrapper } from "./dashboard/patches";
 
 import { Editor } from "./editor";
 import { Injector } from "./patcher";
@@ -160,62 +156,63 @@ export function vxRequire(path: string) {
   }
 }
 
-export const VX = () => ({
-  webpack: api,
-  menus,
-  notifications,
-  minipopover: mp,
-  React,
-  util,
-  components,
-  intl,
-  commands: {
-    add: commands.addCommand,
-    remove: commands.removeCommand,
-    has: commands.hasCommand
-  },
-  storage: {
-    DataStore: storage.DataStore,
-    create<T extends Record<string, any> = Record<string, any>>(name: string, opts: storage.DataStoreOptions<T> = {}): storage.DataStore<T> {
-      return new storage.DataStore<T>(name, opts);
-    }
-  },
-  modals,
-  windows: popoutWindows,
-  Editor,
-  Injector,
-  Styler,
-  Logger,
-  themes: { ...new AddonApi(themeStore) },
-  plugins: { ...new AddonApi(pluginStore) },
-  hooks,
-  require: vxRequire,
-  _self: {
-    plugins,
-    getPlugin,
-    _onWebpackModule: webpack._onWebpackModule,
-    waitForNode,
-    _addHomeButton,
-    _settingButtonActionWrapper,
-    TitlebarButton,
-    getSrc(getSrc: (...args: any[]) => string) {
-      return (...args: any[]) => {
-        const url = getSrc.apply(this, args);        
-        if (url.startsWith("blob:")) return url.split("?").at(0);
-        if (url.startsWith("data:")) return url.split("?").at(0);
-        return url;
-      }
-    }
-  },
-  encryption,
-  self,
-  i18n: {
-    Messages: I18n.Messages,
-    onLocaleChange: I18n.onLocaleChange,
-    getLocale: I18n.getLocale,
-    getLoadPromise: I18n.getLoadPromise,
-    FormattedMessage: I18n.FormattedMessage
-  },
-  request,
-  jsx: __jsx__
+const internal = Symbol("vx.internal.self");
+
+__addSelf("getSrc", function(this: any, getSrc: (...args: any[]) => string) {
+  return (...args: any[]) => {
+    const url = getSrc.apply(this, args);        
+    if (url.startsWith("blob:")) return url.split("?").at(0);
+    if (url.startsWith("data:")) return url.split("?").at(0);
+    return url;
+  }
 });
+
+export const VX = () => {
+  const vx = {
+    webpack: api,
+    menus,
+    notifications,
+    minipopover: mp,
+    React,
+    util,
+    components,
+    intl,
+    commands: {
+      add: commands.addCommand,
+      remove: commands.removeCommand,
+      has: commands.hasCommand
+    },
+    storage: {
+      DataStore: storage.DataStore,
+      create<T extends Record<string, any> = Record<string, any>>(name: string, opts: storage.DataStoreOptions<T> = {}): storage.DataStore<T> {
+        return new storage.DataStore<T>(name, opts);
+      }
+    },
+    modals,
+    windows: popoutWindows,
+    Editor,
+    Injector,
+    Styler,
+    Logger,
+    themes: { ...new AddonApi(themeStore) },
+    plugins: { ...new AddonApi(pluginStore) },
+    hooks,
+    require: vxRequire,
+    encryption,
+    self,
+    i18n: {
+      Messages: I18n.Messages,
+      onLocaleChange: I18n.onLocaleChange,
+      getLocale: I18n.getLocale,
+      getLoadPromise: I18n.getLoadPromise,
+      FormattedMessage: I18n.FormattedMessage
+    },
+    request,
+    jsx: __jsx__
+  };
+
+  Object.defineProperty(vx, internal, { value: __addSelf.__self__ });
+  Object.defineProperty(vx, "internal", { value: internal });
+
+  return vx;
+};

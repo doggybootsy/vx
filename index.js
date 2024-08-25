@@ -190,7 +190,6 @@ const SelfPlugin = (desktop) => ({
     const env = {
       IS_DEV: !IS_PROD,
       VERSION: version,
-      VERSION_HASH: hashCode(version).toString(36).toUpperCase(),
       RDT: {
         DOWNLOAD_URL: "https://web.archive.org/web/20221207185248/https://polypane.app/fmkadmapgofadopljbjfkapdkoienihi.zip",
         ID: "fmkadmapgofadopljbjfkapdkoienihi"
