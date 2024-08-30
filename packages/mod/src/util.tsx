@@ -915,3 +915,9 @@ export function sendVXSystemMessage(channelId: string, content: string) {
     channel_id: channelId
   }, !0)
 }
+
+export const suffixNumber = (v: number) =>
+    v >= 1e9 ? (v / 1e9).toFixed(1).replace(/\.0$/, '') + 'B' :
+        v >= 1e6 ? (v / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' :
+            v >= 1e3 ? (v / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' :
+                v.toString(); // We do NOT need Trillion

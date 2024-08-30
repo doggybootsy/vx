@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { Header, Page } from "../../..";
 import { Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip } from "../../../../components";
 import { Messages } from "vx:i18n";
-import { className, InternalStore } from "../../../../util";
+import {className, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
 import { useInternalStore } from "../../../../hooks";
 import { openInviteModal } from "../../../../api/modals";
@@ -260,11 +260,11 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
         <div className="vx-community-card-info">
           <div className="vx-community-card-info-likes">
             <div className="vx-community-card-info-dot"></div>
-            <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: addon.likes })}</div>
+            <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: suffixNumber(addon.likes) })}</div>
           </div>
           <div className="vx-community-card-info-downloads">
             <div className="vx-community-card-info-dot"></div>
-            <div>{addon.downloads} Downloads</div>
+            <div>{suffixNumber(addon.downloads)} Downloads</div>
           </div>
         </div>
         <div className="vx-community-card-actions">
