@@ -3,13 +3,14 @@ import { Panel } from "../../..";
 import { Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip } from "../../../../components";
 import { Messages } from "vx:i18n";
 import { className, InternalStore } from "../../../../util";
-import { queryStore } from "../../addons/shared";
+import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
 import { useInternalStore } from "../../../../hooks";
 import { openInviteModal } from "../../../../api/modals";
 import { closeMenu, MenuComponents, MenuRenderProps, openMenu } from "../../../../api/menu";
 import { addons } from "../../../../native";
 import { themeStore } from "../../../../addons/themes";
 import { openNotification } from "../../../../api/notifications";
+import { LayerManager, NavigationUtils } from "@webpack/common";
 
 const BETTERDISCORD_API_VERSION = 1;
 const BETTERDISCORD_API = `https://api.betterdiscord.app/v${BETTERDISCORD_API_VERSION}`;
@@ -80,6 +81,7 @@ class Addon {
     this.guild = addon.guild || addon.author.guild || null;
 
     this.id = addon.id;
+    this.author = addon.author.display_name;
 
     this.#addon = addon;
   }
@@ -93,6 +95,7 @@ class Addon {
   public readonly tags: string[];
   public readonly likes: number;
   public readonly downloads: number;
+  public readonly author: string;
 
   public readonly guild: BetterDiscord.Guild | null;
 
@@ -101,6 +104,11 @@ class Addon {
   }
   public getAuthorImage() {
     return `https://avatars.githubusercontent.com/u/${this.#addon.author.github_id}?v=4`;
+
+    const gitHubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/;
+    const match = this.#addon.latest_source_url.match(gitHubPattern);
+    
+    return `https://github.com/${match![1]}.png`;
   }
   public openPreview() {
     const gitHubPattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/;
@@ -141,6 +149,18 @@ class Addon {
   public openInBrowser() {
     window.open(`https://betterdiscord.app/theme?id=${this.id}`, "_blank");
   }
+  public openAuthorPage() {
+    window.open(`https://betterdiscord.app/developer/${encodeURIComponent(this.#addon.author.display_name)}`, "_blank")
+  }
+  public async openInviteModal() {
+    if (!this.guild) return false;
+
+    const joined = await openInviteModal(this.guild!.invite_link.replace("https://discord.gg/", ""));
+    if (!joined) return false;
+
+    NavigationUtils.transitionToGuild(this.guild!.snowflake);
+    LayerManager.pop();
+  }
 }
 
 const tagsContext = createContext<[ tags: string[], setTags: (tags: string[]) => void ]>([ [], () => {} ]);
@@ -166,7 +186,7 @@ function CommunityAddonMenu({ addon, props }: { addon: Addon, props: MenuRenderP
             id="support"
             label={Messages.JOIN_SUPPORT_SERVER}
             icon={Icons.Help}
-            action={() => openInviteModal(addon.guild!.invite_link.replace("https://discord.gg/", ""))}
+            action={() => addon.openInviteModal()}
           />
         )}
         <MenuComponents.MenuItem 
@@ -194,19 +214,23 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
         <div className="vx-community-card-preview">
           <img src={addon.getSplashImage()} className="vx-community-card-preview-img" loading="lazy" />
         </div>
-        <div className="vx-community-card-author">
-          <svg width="48" height="48" className="vx-community-card-author-svg" viewBox="0 0 48 48">
-            <foreignObject x="0" y="0" width="48" height="48" overflow="visible" mask="url(#svg-mask-squircle)">
-              <div className="vx-community-card-author-mask">
-                <svg width="40" height="40" className="vx-community-card-author-svg" viewBox="0 0 40 40">
-                  <foreignObject x="0" y="0" width="40" height="40" overflow="visible" mask="url(#svg-mask-squircle)">
-                    <img src={addon.getAuthorImage()} alt="" className="vx-community-card-author-img" loading="lazy" />
-                  </foreignObject>
-                </svg>
-              </div>
-            </foreignObject>
-          </svg>
-        </div>
+        <Tooltip text={addon.author}>
+          {(props) => (
+            <div className="vx-community-card-author" {...props} onClick={() => addon.openAuthorPage()}>
+              <svg width="48" height="48" className="vx-community-card-author-svg" viewBox="0 0 48 48">
+                <foreignObject x="0" y="0" width="48" height="48" overflow="visible" mask="url(#svg-mask-squircle)">
+                  <div className="vx-community-card-author-mask">
+                    <svg width="40" height="40" className="vx-community-card-author-svg" viewBox="0 0 40 40">
+                      <foreignObject x="0" y="0" width="40" height="40" overflow="visible" mask="url(#svg-mask-squircle)">
+                        <img src={addon.getAuthorImage()} alt="" className="vx-community-card-author-img" loading="lazy" />
+                      </foreignObject>
+                    </svg>
+                  </div>
+                </foreignObject>
+              </svg>
+            </div>
+          )}
+        </Tooltip>
       </div>
       <div className="vx-community-card-body">
         <div className="vx-community-card-name">{addon.name}</div>
@@ -255,7 +279,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                       {...props}
                       onClick={() => {
                         props.onClick();
-                        openInviteModal(addon.guild!.invite_link.replace("https://discord.gg/", ""));
+                        addon.openInviteModal();
                       }}
                     >
                       <Icons.Help />
@@ -365,6 +389,8 @@ export function CommunityThemes() {
   const [ showingSortMenu, isShowingSortMenu ] = useState(false);
 
   const [ showingTags, isShowingTags ] = useState(false);
+
+  const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   const filteredAddons = useMemo(() => {
     const filtered: Addon[] = [];
@@ -540,7 +566,7 @@ export function CommunityThemes() {
                       isShowingTags(!showingTags);
                     }}
                   >
-                    <Icons.DiscordIcon name="TagsIcon" />
+                    <Icons.DiscordIcon name="TagsIcon" className={className([ "vx-community-addons-tags-icon", tags.length !== 0 && "vx-community-addons-tags-notice" ])} />
                   </Button>
                 )}
               </Tooltip>
@@ -565,11 +591,21 @@ export function CommunityThemes() {
           <Spinner />
         </div>
       ) : ok ? (
-        <tagsContext.Provider value={[ tags, setTags ]}>
-          <Flex gap={20} direction={Flex.Direction.VERTICAL}>
-            {filteredAddons.map((addon) => <CommunityAddonCard addon={addon} key={addon.id} />)}
-          </Flex>
-        </tagsContext.Provider>
+        <>
+          {filteredAddons.length ? (
+            <tagsContext.Provider value={[ tags, setTags ]}>
+              <Flex gap={20} direction={Flex.Direction.VERTICAL}>
+                {filteredAddons.map((addon) => (
+                  <Flex.Child key={addon.id}>
+                    <CommunityAddonCard addon={addon} />
+                  </Flex.Child>
+                ))}
+              </Flex>
+            </tagsContext.Provider>
+          ) : (
+            <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
+          )}
+        </>
       ) : (
         <div>
           Error fetching api, please try again later

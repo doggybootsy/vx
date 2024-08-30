@@ -28,23 +28,6 @@ export function Themes() {
       buttons={
         <>
           {IS_DESKTOP && (
-            <Tooltip text="Community">
-              {(props) => (
-                <Button
-                  {...props}
-                  size={Button.Sizes.NONE}
-                  look={Button.Looks.BLANK} 
-                  className="vx-header-button"
-                  onClick={() => {
-                    props.onClick();
-                  }}
-                >
-                  <Icons.Store />
-                </Button>
-              )}
-            </Tooltip>
-          )}
-          {IS_DESKTOP && (
             <Tooltip text={Messages.OPEN_FOLDER}>
               {(props) => (
                 <Button

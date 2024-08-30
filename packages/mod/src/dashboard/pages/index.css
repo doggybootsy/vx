@@ -294,7 +294,7 @@ input.vx-addon-input:not(:focus) {
   background-color: var(--background-secondary-alt);
 }
 .theme-dark .vx-community-card:hover,
-.theme-dark .vx-community-card-author-mask:hover {
+.theme-dark .vx-community-card:hover .vx-community-card-author-mask {
   background-color: var(--background-tertiary);
 }
 .full-motion .vx-community-card {
@@ -460,4 +460,8 @@ button.vx-community-card-button {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.vx-community-addons-tags-notice > :last-child {
+  color: var(--status-danger);
 }
