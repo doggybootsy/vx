@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { Panel } from "../../..";
+import { Header, Page } from "../../..";
 import { Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip } from "../../../../components";
 import { Messages } from "vx:i18n";
 import { className, InternalStore } from "../../../../util";
@@ -258,88 +258,87 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
           ))}
         </div>
         <div className="vx-community-card-info">
-          <div className="vx-community-card-info-left">
-            <div className="vx-community-card-info-likes">
-              <div className="vx-community-card-info-dot"></div>
-              <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: addon.likes })}</div>
-            </div>
-            <div className="vx-community-card-info-downloads">
-              <div className="vx-community-card-info-dot"></div>
-              <div>{addon.downloads} Downloads</div>
-            </div>
+          <div className="vx-community-card-info-likes">
+            <div className="vx-community-card-info-dot"></div>
+            <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: addon.likes })}</div>
           </div>
-          <div className="vx-community-card-info-right">
-            {addon.guild && (
-                <Tooltip text={Messages.JOIN_SUPPORT_SERVER}>
-                  {(props) => (
-                    <Button 
-                      size={Button.Sizes.ICON} 
-                      look={Button.Looks.BLANK} 
-                      className="vx-community-card-button"
-                      {...props}
-                      onClick={() => {
-                        props.onClick();
-                        addon.openInviteModal();
-                      }}
-                    >
-                      <Icons.Help />
-                      {/* <img width={24} height={24} src={`https://cdn.discordapp.com/icons/${(addon.guild || addon.author.guild)!.snowflake}/${(addon.guild || addon.author.guild)!.avatar_hash}.webp`} /> */}
-                    </Button>
-                )}
-              </Tooltip>
+          <div className="vx-community-card-info-downloads">
+            <div className="vx-community-card-info-dot"></div>
+            <div>{addon.downloads} Downloads</div>
+          </div>
+        </div>
+        <div className="vx-community-card-actions">
+          <Tooltip text={Messages.GO_TO_SOURCE}>
+            {(props) => (
+              <Button 
+                size={Button.Sizes.ICON} 
+                look={Button.Looks.BLANK} 
+                className="vx-community-card-button" 
+                {...props}
+                onClick={() => {
+                  props.onClick();
+                  addon.openSource();
+                }}
+              >
+                <Icons.Github />
+              </Button>
             )}
-            <Tooltip text={Messages.PREVIEW}>
-              {(props) => (
-                <Button 
-                  size={Button.Sizes.ICON} 
-                  look={Button.Looks.BLANK} 
-                  className="vx-community-card-button" 
-                  {...props}
-                  onClick={() => {
-                    props.onClick();
-                    addon.openPreview();
-                  }}
-                >
-                  <Icons.DiscordIcon name="EyeIcon" />
-                </Button>
+          </Tooltip>
+          <Tooltip text={Messages.PREVIEW}>
+            {(props) => (
+              <Button 
+                size={Button.Sizes.ICON} 
+                look={Button.Looks.BLANK} 
+                className="vx-community-card-button" 
+                {...props}
+                onClick={() => {
+                  props.onClick();
+                  addon.openPreview();
+                }}
+              >
+                <Icons.DiscordIcon name="EyeIcon" />
+              </Button>
+            )}
+          </Tooltip>
+          {addon.guild && (
+              <Tooltip text={Messages.JOIN_SUPPORT_SERVER}>
+                {(props) => (
+                  <Button 
+                    size={Button.Sizes.ICON} 
+                    look={Button.Looks.BLANK} 
+                    className="vx-community-card-button"
+                    {...props}
+                    onClick={() => {
+                      props.onClick();
+                      addon.openInviteModal();
+                    }}
+                  >
+                    <Icons.Help />
+                    {/* <img width={24} height={24} src={`https://cdn.discordapp.com/icons/${(addon.guild || addon.author.guild)!.snowflake}/${(addon.guild || addon.author.guild)!.avatar_hash}.webp`} /> */}
+                  </Button>
               )}
             </Tooltip>
-            <Tooltip text={Messages.GO_TO_SOURCE}>
-              {(props) => (
-                <Button 
-                  size={Button.Sizes.ICON} 
-                  look={Button.Looks.BLANK} 
-                  className="vx-community-card-button" 
-                  {...props}
-                  onClick={() => {
-                    props.onClick();
-                    addon.openSource();
-                  }}
-                >
-                  <Icons.Github />
-                </Button>
-              )}
-            </Tooltip>
-            <Button
-              size={Button.Sizes.ICON} 
-              disabled={isDisabled} 
-              onClick={async () => {
-                setDownloadState(1);
-                try {
-                  await addon.download();
-                } catch (error) {
-                  openNotification({
-                    title: "Unable to download theme",
-                    description: String(error),
-                    type: "danger",
-                    icon: Icons.Warn
-                  });
-                }
-              }}
-            >
-              <Icons.Download />
-            </Button>
-          </div>
+          )}
+          <div className="vx-community-card-spacer" />
+          <Button
+            size={Button.Sizes.ICON} 
+            disabled={isDisabled} 
+            onClick={async () => {
+              setDownloadState(1);
+              try {
+                await addon.download();
+              } catch (error) {
+                openNotification({
+                  title: "Unable to download theme",
+                  description: String(error),
+                  type: "danger",
+                  icon: Icons.Warn
+                });
+              }
+            }}
+          >
+            <Icons.Download />
+          </Button>
         </div>
       </div>
     </div>
@@ -450,9 +449,10 @@ export function CommunityThemes() {
   }, [ tagQuery ]);
 
   return (
-    <Panel
+    <Page
       title={Messages.THEMES}
-      buttons={
+      icon={Icons.Palette}
+      toolbar={
         <>
           <Popout 
             shouldShow={showingSortMenu}
@@ -498,24 +498,14 @@ export function CommunityThemes() {
             )}
           >
             {(props) => (
-              <Tooltip text={Messages.FORUM_CHANNEL_SORT_BY}>
-                {(ttProps) => (
-                  <Button
-                    {...props}
-                    {...ttProps}
-                    size={Button.Sizes.NONE}
-                    look={Button.Looks.BLANK} 
-                    className="vx-header-button"
-                    onClick={(event) => {
-                      props.onClick(event);
-                      ttProps.onClick();
-                      isShowingSortMenu(!showingSortMenu);
-                    }}
-                  >
-                    <Icons.DiscordIcon name="ListNumberedIcon" />
-                  </Button>
-                )}
-              </Tooltip>
+              <Header.Icon 
+                icon={(props) => <Icons.DiscordIcon name="ListNumberedIcon" {...props} />}
+                tooltip={Messages.FORUM_CHANNEL_SORT_BY}
+                onClick={(event) => {
+                  props.onClick(event);
+                  isShowingSortMenu(!showingSortMenu);
+                }}
+              />
             )}
           </Popout>
           <Popout 
@@ -552,37 +542,32 @@ export function CommunityThemes() {
             )}
           >
             {(props) => (
-              <Tooltip text={Messages.TAGS}>
-                {(ttProps) => (
-                  <Button
-                    {...props}
-                    {...ttProps}
-                    size={Button.Sizes.NONE}
-                    look={Button.Looks.BLANK} 
-                    className="vx-header-button"
-                    onClick={(event) => {
-                      props.onClick(event);
-                      ttProps.onClick();
-                      isShowingTags(!showingTags);
-                    }}
-                  >
-                    <Icons.DiscordIcon name="TagsIcon" className={className([ "vx-community-addons-tags-icon", tags.length !== 0 && "vx-community-addons-tags-notice" ])} />
-                  </Button>
-                )}
-              </Tooltip>
+              <Header.Icon 
+                tooltip={Messages.TAGS}
+                icon={(props) => <Icons.DiscordIcon name="TagsIcon" {...props} />}
+                iconClassName={className([ "vx-community-addons-tags-icon", tags.length !== 0 && "vx-community-addons-tags-notice" ])}
+                onClick={(event) => {
+                  props.onClick(event);
+                  isShowingTags(!showingTags);
+                }}
+              />
             )}
           </Popout>
-          <SearchBar 
-            query={query}
-            size={SearchBar.Sizes.SMALL}
-            onQueryChange={(query) => {
-              setQuery(query);
-            }}
-            onClear={() => {
-              setQuery("");
-            }}
-            autoFocus
-          />
+          <div className="vx-searchbar">
+            <SearchBar 
+              query={query}
+              size={SearchBar.Sizes.SMALL}
+              onQueryChange={(query) => {
+                setQuery(query);
+                queryStore.set("community-themes", query);
+              }}
+              onClear={() => {
+                setQuery("");
+                queryStore.clear("community-themes");
+              }}
+              autoFocus
+            />
+          </div>
         </>
       }
     >
@@ -594,13 +579,11 @@ export function CommunityThemes() {
         <>
           {filteredAddons.length ? (
             <tagsContext.Provider value={[ tags, setTags ]}>
-              <Flex gap={20} direction={Flex.Direction.VERTICAL}>
+              <div className="vx-community-addon-cards">
                 {filteredAddons.map((addon) => (
-                  <Flex.Child key={addon.id}>
-                    <CommunityAddonCard addon={addon} />
-                  </Flex.Child>
+                  <CommunityAddonCard addon={addon} />
                 ))}
-              </Flex>
+              </div>
             </tagsContext.Provider>
           ) : (
             <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
@@ -611,6 +594,6 @@ export function CommunityThemes() {
           Error fetching api, please try again later
         </div>
       )}
-    </Panel>
+    </Page>
   )
 }

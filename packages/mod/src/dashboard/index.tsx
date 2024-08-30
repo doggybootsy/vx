@@ -1,42 +1,114 @@
 import { useEffect, useMemo, useState } from "react";
 import { IS_DESKTOP, env, git } from "vx:self";
 
-import { LayerManager } from "@webpack/common";
+import { LayerManager, NavigationUtils } from "@webpack/common";
 import { Home, Plugins, Themes } from "./pages";
 
 import "./index.css";
 import { className, createState } from "../util";
 import { openAlertModal, openExternalWindowModal } from "../api/modals";
-import { Icons, SettingsView, Tooltip } from "../components";
+import { Icons, SettingsView, Tooltip, TooltipProps } from "../components";
 import { Extensions } from "./pages/extension";
 import { Messages } from "vx:i18n";
 
 import "./patches";
 import { CommunityThemes } from "./pages/community/themes";
+import { byKeys, byStrings, combine, getProxy, getProxyByKeys, whenWebpackReady } from "@webpack";
+import { IconFullProps, IconProps } from "../components/icons";
 
-export function Panel(props: {
-  title: React.ReactNode,
-  buttons?: React.ReactNode,
-  children: React.ReactNode
+interface HeaderProps {
+  toolbar?: React.ReactNode,
+  children?: React.ReactNode,
+  childrenBottom?: React.ReactNode,
+  transparent?: boolean,
+  className?: string,
+  innerClassName?: string,
+}
+interface HeaderTitleProps {
+  className?: string, 
+  wrapperClassName?: string, 
+  children: React.ReactNode, 
+  onContextMenu?: GetComponentProps<"div">["onContextMenu"], 
+  onClick?: GetComponentProps<"div">["onClick"], 
+  id?: string, 
+  muted?: boolean, 
+  level?: number
+}
+interface HeaderIconProps {
+  className?: string, 
+  iconClassName?: string, 
+  children?: React.ReactNode, 
+  selected?: boolean, 
+  disabled?: boolean, 
+  showBadge?: boolean, 
+  badgePosition?: "top" | "bottom", 
+  color?: React.CSSProperties["color"], 
+  foreground?: React.CSSProperties["color"], 
+  background?: React.CSSProperties["background"], 
+  icon: React.ComponentType<IconFullProps>, 
+  onClick?: GetComponentProps<"div">["onClick"], 
+  onContextMenu?: GetComponentProps<"div">["onContextMenu"], 
+  tooltip?: string, 
+  tooltipColor?: TooltipProps["color"], 
+  tooltipPosition?: TooltipProps["position"], 
+  tooltipDisabled?: boolean, 
+  hideOnClick?: boolean, 
+  role?: GetComponentProps<"div">["role"], 
+  "aria-label"?: string, 
+  "aria-hidden"?: boolean, 
+  "aria-checked"?: boolean, 
+  "aria-expanded"?: boolean, 
+  "aria-haspopup"?: boolean
+}
+interface HeaderDividerProps {
+  className?: string
+}
+interface HeaderCaretProps {
+  className?: string
+}
+interface Header extends React.FunctionComponent<HeaderProps> {
+  Icon: React.FunctionComponent<HeaderIconProps>,
+  Title: React.FunctionComponent<HeaderTitleProps>,
+  Divider: React.FunctionComponent<HeaderDividerProps>,
+  Caret: React.FunctionComponent<HeaderCaretProps>
+}
+
+export const Header = getProxy<Header>(combine(byKeys("Caret", "Divider", "Icon", "Title"), byStrings(".channelType")));
+
+const scrollerClasses = getProxyByKeys([ "auto", "customTheme", "scrolling" ]);
+const contentClasses = getProxyByKeys([ "chat", "uploadArea", "threadSidebarOpen" ]);
+const pageClasses = getProxyByKeys([ "container", "inviteToolbar" ]);
+
+export function Page(props: {
+  title: string,
+  icon: React.ComponentType<IconFullProps>,
+  toolbar?: React.ReactNode,
+  transparent?: boolean,
+  children: React.ReactNode,
+  headerClassName?: string,
+  bodyClassName?: string,
+  wrapperClassName?: string,
+  className?: string,
 }) {
   return (
-    <div>
-      <div className="vx-section-header">
-        <div className="vx-section-title">
-          {props.title}
-        </div>
-        <div className="vx-section-buttons">
-          {props.buttons}
+    <div className={className([ "vx-page", pageClasses.container, props.className ])}>
+      <Header
+        toolbar={<>{props.toolbar}</>} 
+        transparent={props.transparent}
+        className={className([ "vx-page-header", props.headerClassName ])}
+      >
+        <Header.Icon icon={props.icon} />
+        <Header.Title>{props.title}</Header.Title>
+        {/* <Header.Divider /> */}
+      </Header>
+      <div className={className([ "vx-page-wrapper", contentClasses.content, props.wrapperClassName ])}>
+        <div className={className([ "vx-page-body", scrollerClasses.auto, props.bodyClassName ])}>
+          {props.children}
         </div>
       </div>
-      {props.children}
     </div>
   )
 }
-
-const [ isDashboardOpen, setDashboardState ] = createState(false);
-
-export { isDashboardOpen };
 
 export function InfoSection({ isMenu }: { isMenu: boolean }) {
   // Add electron to the list of versions | This is because discord doesn't
@@ -92,72 +164,69 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
   )
 }
 
-function Dashboard(props: { section: string }) {
-  const [ section, setSection ] = useState(() => props.section);
+const COMMUNITY_PATH = "/vx/community/:type";
+const PAGE_PATH = "/vx/:page";
 
-  useEffect(() => {
-    return () => void setDashboardState(false);
-  }, [ ]);
+function Dashboard({ match }: { match: { params: Record<string, string | void>, path: string } }) {
+  const Component = useMemo(() => {
+    const { params, path } = match;
 
-  const sections = useMemo(() => [
-    SettingsView.Sections.Header(Messages.VX),
-    SettingsView.Sections.View({
-      label: Messages.HOME,
-      section: "home",
-      element: () => <Home />
-    }),
-    SettingsView.Sections.Divider(),
-    SettingsView.Sections.Header(Messages.ADDONS),
-    SettingsView.Sections.View({
-      label: Messages.PLUGINS,
-      section: "plugins",
-      element: () => <Plugins />
-    }),
-    SettingsView.Sections.View({
-      label: Messages.THEMES,
-      section: "themes",
-      element: () => <Themes />
-    }),
-    SettingsView.Sections.Divider(),
-    SettingsView.Sections.Header({
-      label: "Community",
-      icon: Icons.Store
-    }),
-    SettingsView.Sections.View({
-      label: Messages.THEMES,
-      section: "community-themes",
-      element: () => <CommunityThemes />
-    }),
-    SettingsView.Sections.Divider(),
-    SettingsView.Sections.Header({
-      label: Messages.DESKTOP,
-      predicate: () => IS_DESKTOP
-    }),
-    SettingsView.Sections.View({
-      label: Messages.EXTENSIONS,
-      section: "extensions",
-      element: () => <Extensions />,
-      predicate: () => IS_DESKTOP
-    }),
-    SettingsView.Sections.Divider(() => IS_DESKTOP),
-    SettingsView.Sections.Custom(() => <InfoSection isMenu={false} />)
-  ], [ ]);
+    switch (path) {
+      case COMMUNITY_PATH:
+        if (params.type === "themes") return CommunityThemes;
+        break;
+    
+      default:
+        switch (params.page) {
+          case "home":
+            return Home;
+          case "plugins":
+            return Plugins;
+          case "themes":
+            return Themes;
+        
+          default:
+            break;
+        }
 
-  return (
-    <SettingsView 
-      sections={sections}
-      section={section}
-      onClose={LayerManager.pop}
-      onSetSection={setSection}
-    />
-  )
+        break;
+    }
+
+    return () => "Unknown Page";
+  }, [ match ]);
+
+  return <Component />;
 }
 
-export function openDashboard(section: string = "home") {
-  if (isDashboardOpen()) return;
-  setDashboardState(true);
+__addSelf("dashboardRouteProps", {
+  path: [ COMMUNITY_PATH, PAGE_PATH ],
+  render: (props: any) => <Dashboard {...props} />,
+  disableTrack: true
+});
 
-  LayerManager.push(() => (
-    <Dashboard section={section} />
-  ));
+{
+  let routes: { path: string[], render: React.FunctionComponent<any> }[];
+  
+  Object.defineProperty(__addSelf.__self__, "routes", {
+    get: () => routes,
+    set: (v) => {
+      routes = v;
+      for (const route of routes) {
+        if (route.path.length > 15) {
+          route.path.push(__addSelf.__self__.dashboardRouteProps.path);
+        }
+      }
+    }
+  })
+}
+
+export function openDashboard(path: string = "/home") {
+  NavigationUtils.transitionTo(`/vx${path}`);
+}
+
+const { search } = location;
+if (search.startsWith("?__vx_dashboard_path__=")) {
+  whenWebpackReady().then(() => {
+    NavigationUtils.transitionTo(decodeURIComponent(search.replace("?__vx_dashboard_path__=", "")));
+  });
 }

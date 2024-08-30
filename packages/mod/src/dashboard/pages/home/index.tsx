@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { IS_DESKTOP } from "vx:self";
-import { Panel } from "../..";
+import { Page } from "../..";
 import { internalDataStore } from "../../../api/storage";
 import { Button, Flex, Icons } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
@@ -45,7 +45,7 @@ export function Home() {
   }, [ background ]);
 
   return (
-    <Panel title="Home">
+    <Page title="Home" icon={Icons.Logo} transparent>
       <div className="vx-home-header">
         <div className="vx-home-logo" onClick={changeBackground}>
           <video src={`https://media0.giphy.com/media/${background}/giphy.mp4`} muted autoPlay loop />
@@ -180,6 +180,6 @@ export function Home() {
       >
         {Messages.ADD_VX_TO_TITLEBAR}
       </FormSwitch>
-    </Panel>
+    </Page>
   )
 };

@@ -163,3 +163,29 @@
     opacity: 1;
   }
 }
+
+.vx-dashboard-navigation {
+  overflow: hidden scroll;
+  padding-right: 0px;
+}
+
+.theme-dark .vx-dashboard-navigation {
+  background: var(--bg-overlay-3, var(--background-secondary));
+}
+.vx-dashboard-navigation-title {
+  margin: 16px 0 16px 16px;
+  font-weight: 700;
+  color: var(--header-primary);
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.vx-dashboard-navigation-subtitle {
+  margin: 8px 0 8px 8px;
+  font-weight: 600;
+  color: var(--header-secondary);
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.25;
+}

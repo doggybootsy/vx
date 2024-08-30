@@ -8,6 +8,9 @@ import { logger } from "vx:logger";
 import "./native";
 import "./discordnative";
 
+if (location.pathname.startsWith("/vx")) {
+  location.replace(`/channels/@me?__vx_dashboard_path__=${encodeURIComponent(location.pathname)}`);
+}
 
 waitForNode("head").then(() => {
   const script = document.createElement("script");

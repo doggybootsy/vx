@@ -14,7 +14,7 @@ export function HomeMenu() {
           id="home"
           label={Messages.HOME}
           icon={Icons.Logo}
-          action={() => openDashboard("home")}
+          action={() => openDashboard("/home")}
         />
       </MenuComponents.MenuGroup>
       <MenuComponents.MenuGroup label={Messages.ADDONS}>
@@ -22,13 +22,21 @@ export function HomeMenu() {
           id="themes"
           label={Messages.THEMES}
           icon={Icons.Palette}
-          action={() => openDashboard("themes")}
+          action={() => openDashboard("/themes")}
         />
         <MenuComponents.MenuItem 
           id="plugins"
           label={Messages.PLUGINS}
           icon={Icons.Code}
-          action={() => openDashboard("plugins")}
+          action={() => openDashboard("/plugins")}
+        />
+      </MenuComponents.MenuGroup>
+      <MenuComponents.MenuGroup label="Community">
+        <MenuComponents.MenuItem 
+          id="community-themes"
+          label={Messages.THEMES}
+          icon={Icons.Palette}
+          action={() => openDashboard("/community/themes")}
         />
       </MenuComponents.MenuGroup>
       {IS_DESKTOP && (
@@ -37,7 +45,7 @@ export function HomeMenu() {
             id="extensions"
             icon={Icons.Puzzle}
             label={Messages.EXTENSIONS}
-            action={() => openDashboard("extensions")}
+            action={() => openDashboard("/extensions")}
           />
         </MenuComponents.MenuGroup>
       )}

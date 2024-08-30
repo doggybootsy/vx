@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { Panel } from "../../..";
+import { Header, Page } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { newPlugins, Plugin, plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
@@ -104,75 +104,43 @@ export function Plugins() {
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
   
   return (
-    <Panel 
-    title={Messages.PLUGINS}
-    buttons={
+    <Page 
+      title={Messages.PLUGINS}
+      icon={Icons.Code}
+      toolbar={
         <>
           {IS_DESKTOP && (
-            <Tooltip text={Messages.OPEN_FOLDER}>
-              {(props) => (
-                <Button
-                  {...props}
-                  size={Button.Sizes.NONE}
-                  look={Button.Looks.BLANK} 
-                  className="vx-header-button"
-                  onClick={() => {
-                    props.onClick();
-                    addons.plugins.openDirectory();
-                  }}
-                >
-                  <Icons.Folder />
-                </Button>
-              )}
-            </Tooltip>
+            <Header.Icon 
+              onClick={() => addons.plugins.openDirectory()}
+              tooltip={Messages.OPEN_FOLDER}
+              icon={Icons.Folder}
+            />
           )}
-          <Tooltip text={Messages.UPLOAD}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-
-                  pluginStore.upload();
-                }}
-              >
-                <Icons.Upload />
-              </Button>
-            )}
-          </Tooltip>
-          <Tooltip text={Messages.NEW_ADDON}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-
-                  pluginStore.new();
-                }}
-              >
-                <Icons.Plus />
-              </Button>
-            )}
-          </Tooltip>
-          <SearchBar 
-            query={query}
-            size={SearchBar.Sizes.SMALL}
-            onQueryChange={(query) => {
-              setQuery(query);
-              queryStore.set("plugins", query);
-            }}
-            onClear={() => {
-              setQuery("");
-              queryStore.clear("plugins");
-            }}
-            autoFocus
+          <Header.Icon 
+            onClick={() => pluginStore.upload()}
+            tooltip={Messages.UPLOAD}
+            icon={Icons.Upload}
           />
+          <Header.Icon 
+            onClick={() => pluginStore.new()}
+            tooltip={Messages.NEW_ADDON}
+            icon={Icons.Plus}
+          />
+          <div className="vx-searchbar">
+            <SearchBar 
+              query={query}
+              size={SearchBar.Sizes.SMALL}
+              onQueryChange={(query) => {
+                setQuery(query);
+                queryStore.set("plugins", query);
+              }}
+              onClear={() => {
+                setQuery("");
+                queryStore.clear("plugins");
+              }}
+              autoFocus
+            />
+          </div>
         </>
       }
     >
@@ -187,6 +155,6 @@ export function Plugins() {
           <NoAddons message={Messages.NO_RESULTS_FOUND} img={alt ? NO_RESULTS_ALT : NO_RESULTS} />
         )}
       </Flex>
-    </Panel>
+    </Page>
   )
 }

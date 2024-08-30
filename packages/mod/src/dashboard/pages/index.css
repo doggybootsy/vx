@@ -321,18 +321,17 @@ input.vx-addon-input:not(:focus) {
   transition: box-shadow.2s ease-out,transform.2s ease-out,background.2s ease-out;
 }
 .vx-community-card-info {
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-}
-.vx-community-card-info-right {
-  display: flex;
-  gap: 8px;
-}
-.vx-community-card-info-left {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-bottom: 8px;
+}
+.vx-community-card-actions {
+  display: flex;
+  gap: 8px;
+}
+.vx-community-card-spacer {
+  width: 100%;
 }
 .vx-community-card-info-downloads,
 .vx-community-card-info-likes {
@@ -427,6 +426,8 @@ input.vx-addon-input:not(:focus) {
 }
 .vx-community-card-tags {
   margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
 }
 .vx-community-card-tag {
   margin-right: 4px;
@@ -464,4 +465,27 @@ button.vx-community-card-button {
 
 .vx-community-addons-tags-notice > :last-child {
   color: var(--status-danger);
+}
+
+.vx-page {
+  width: 100%;
+  background: var(--background-primary);
+}
+.vx-page-body {
+  padding: 16px 12px;
+  overflow: hidden scroll;
+}
+
+.vx-community-addon-cards {
+  display: grid;
+  grid-gap: var(--custom-discover-featured-guilds-section-gutter-size);
+  grid-template-columns: repeat(auto-fill, minmax(var(--custom-discover-featured-guilds-section-min-card-width), 1fr));
+}
+
+.vx-searchbar {
+  margin: 0 8px;
+}
+
+.vx-dashboard-navigation-spacer {
+  margin-top: 12px;
 }

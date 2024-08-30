@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { Panel } from "../../..";
+import { Header, Page } from "../../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { useInternalStore } from "../../../../hooks";
 import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
@@ -23,75 +23,43 @@ export function Themes() {
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   return (
-    <Panel
+    <Page
       title={Messages.THEMES}
-      buttons={
+      icon={Icons.Palette}
+      toolbar={
         <>
           {IS_DESKTOP && (
-            <Tooltip text={Messages.OPEN_FOLDER}>
-              {(props) => (
-                <Button
-                  {...props}
-                  size={Button.Sizes.NONE}
-                  look={Button.Looks.BLANK} 
-                  className="vx-header-button"
-                  onClick={() => {
-                    props.onClick();
-                    addons.themes.openDirectory();
-                  }}
-                >
-                  <Icons.Folder />
-                </Button>
-              )}
-            </Tooltip>
+            <Header.Icon 
+              onClick={() => addons.themes.openDirectory()}
+              tooltip={Messages.OPEN_FOLDER}
+              icon={Icons.Folder}
+            />
           )}
-          <Tooltip text={Messages.UPLOAD}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-
-                  themeStore.upload();
-                }}
-              >
-                <Icons.Upload />
-              </Button>
-            )}
-          </Tooltip>
-          <Tooltip text={Messages.NEW_ADDON}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-
-                  themeStore.new();
-                }}
-              >
-                <Icons.Plus />
-              </Button>
-            )}
-          </Tooltip>
-          <SearchBar 
-            query={query}
-            size={SearchBar.Sizes.SMALL}
-            onQueryChange={(query) => {
-              setQuery(query);
-              queryStore.set("themes", query);
-            }}
-            onClear={() => {
-              setQuery("");
-              queryStore.clear("themes");
-            }}
-            autoFocus
+          <Header.Icon 
+            onClick={() => themeStore.upload()}
+            tooltip={Messages.UPLOAD}
+            icon={Icons.Upload}
           />
+          <Header.Icon 
+            onClick={() => themeStore.new()}
+            tooltip={Messages.NEW_ADDON}
+            icon={Icons.Plus}
+          />
+          <div className="vx-searchbar">
+            <SearchBar 
+              query={query}
+              size={SearchBar.Sizes.SMALL}
+              onQueryChange={(query) => {
+                setQuery(query);
+                queryStore.set("themes", query);
+              }}
+              onClear={() => {
+                setQuery("");
+                queryStore.clear("themes");
+              }}
+              autoFocus
+            />
+          </div>
         </>
       }
     >
@@ -110,6 +78,6 @@ export function Themes() {
           <NoAddons message={Messages.NO_ADDONS_FOUND.format({ type: Messages.THEMES }) as string} img={NO_ADDONS} />
         )}
       </Flex>
-    </Panel>
+    </Page>
   );
 };

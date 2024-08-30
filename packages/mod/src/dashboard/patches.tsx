@@ -1,6 +1,6 @@
 import { forwardRef, isValidElement, useLayoutEffect, useState } from "react";
 
-import { isDashboardOpen, openDashboard } from ".";
+import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
 import { Icons } from "../components";
 import { className } from "../util";
@@ -12,6 +12,7 @@ import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
 import { GuildDmTypingIndicator } from "../plugins/better-typing-indicators";
 import { nativeFrame } from "../native";
+import { NavigationPanel } from "./navigational";
 
 addPlainTextPatch(
   {
@@ -41,12 +42,36 @@ addPlainTextPatch(
         predicate: () => nativeFrame.get()
       }
     ]
+  },
+  {
+    identifier: "VX(routes)",
+    match: '.SETTINGS(":section",":subsection?")',
+    find: /(let .{1,3})=(\[{path:\[.{1,3}\..{1,3}\.APP_WITH_INVITE_AND_GUILD_ONBOARDING)/,
+    replace: "$1=$vxi.routes=$2"
+  }, 
+  {
+    identifier: "VX(route)",
+    match: "app view user trigger debugging",
+    find: /(children:)\[(\(0,.{1,3}\.jsx\)\((.{1,3}\..{1,3}),{path:.{1,3}\..{1,3}\.ACTIVITY,disableTrack)/,
+    replace: "$1[$jsx($3,$vxi.dashboardRouteProps),$2"
+  }, 
+  {
+    identifier: "VX(navigation)",
+    match: "app view user trigger debugging",
+    find: /(\.hidden\]:.{1,3}}\),children:)\[(\(0,.{1,3}\.jsx\)\(.{1,3},{}\))/,
+    replace: "$1[$jsx($vxi.NavigationPanel,{panel:$2})"
   }
 );
 
+__addSelf("NavigationPanel", function({ panel }: { panel: React.ReactNode }) {
+  if (location.pathname.startsWith("/vx")) {
+    return <NavigationPanel />;
+  }
+  return panel;
+});
+
 __addSelf("TitlebarButton", function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");
-  const isOpen = isDashboardOpen();
 
   useLayoutEffect(() => {
     const controller = new AbortController();
@@ -64,7 +89,7 @@ __addSelf("TitlebarButton", function TitlebarButton(props: { windowKey?: string 
 
   return (
     <div 
-      className={className([ "vx-titlebar-button", loading && "vx-titlebar-loading", (loading || isOpen) && "vx-titlebar-disabled" ])}
+      className={className([ "vx-titlebar-button", loading && "vx-titlebar-loading", (loading) && "vx-titlebar-disabled" ])}
       aria-label="Open VX Dashboard" 
       title={`VX v${env.VERSION}`}
       tabIndex={-1} 
