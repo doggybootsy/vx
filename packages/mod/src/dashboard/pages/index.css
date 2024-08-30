@@ -279,3 +279,185 @@ input.vx-addon-input:not(:focus) {
 .vx-sidebar-icon {
   display: flex;
 }
+
+.vx-community-card {
+  display: flex;
+  flex-direction: column;
+  /* height: var(--custom-guild-discovery-card-card-height); */
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+  background-color: var(--activity-card-background);
+}
+.theme-dark .vx-community-card {
+  background-color: var(--background-secondary-alt);
+}
+.theme-dark .vx-community-card:hover,
+.theme-dark .vx-community-card-author-mask:hover {
+  background-color: var(--background-tertiary);
+}
+.full-motion .vx-community-card {
+  transition: box-shadow .2s ease-out, transform .2s ease-out, background .2s ease-out, opacity .2s ease-in;
+}
+.full-motion .vx-community-card:hover {
+  transform: translatey(-1px);
+  box-shadow: var(--elevation-high);
+}
+
+.vx-community-card-author {
+  position: absolute;
+  bottom: -21px;
+  left: 12px;
+}
+.vx-community-card-author-mask {
+  padding: 4px;
+  background-color: var(--activity-card-background);
+}
+.theme-dark .vx-community-card-author-mask {
+  background-color: var(--background-secondary-alt);
+}
+.full-motion .vx-community-card-author-mask {
+  transition: box-shadow.2s ease-out,transform.2s ease-out,background.2s ease-out;
+}
+.vx-community-card-info {
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+.vx-community-card-info-right {
+  display: flex;
+  gap: 8px;
+}
+.vx-community-card-info-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.vx-community-card-info-downloads,
+.vx-community-card-info-likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: var(--header-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  line-height: 1.3333333333333333;
+  font-weight: 400;
+}
+.vx-community-card-info-dot {
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  background-color: var(--green-360);
+}
+.vx-community-card-info-downloads .vx-community-card-info-dot {
+  background-color: var(--primary-300);
+}
+
+.vx-community-card-author-svg {
+  contain: paint;
+}
+.vx-community-card-author-img {
+  width: 100%;
+  height: 100%;
+}
+.vx-community-card-splash {
+  height: 143px;
+  position: relative;
+  display: block;
+  overflow: visible;
+  margin-bottom: 32px;
+}
+.vx-community-card-preview {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.vx-community-card-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vx-community-card-body {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  padding: 0 16px 16px;
+  overflow: hidden;
+}
+.vx-community-card-name {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--header-primary);
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+.vx-community-card-description {
+  color: var(--header-secondary);
+  flex: 1 1 auto;
+  overflow: hidden;
+  margin: 4px 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  line-height: 1.2857142857142858;
+  font-weight: 400;
+  user-select: text;
+}
+.vx-community-card-tags {
+  margin-bottom: 8px;
+}
+.vx-community-card-tag {
+  margin-right: 4px;
+  color: var(--interactive-normal);
+  background: var(--background-tertiary);
+  border: 1px solid var(--background-secondary);
+  padding: 2px 5px;
+  border-radius: 8px;
+  transition: border-color 200ms linear, color 200ms linear;
+}
+.vx-community-card-tag:hover {
+  color: var(--interactive-hover)
+}
+.vx-community-card-tag-selected,
+.vx-community-card-tag:hover:active {
+  border-color: var(--brand-500);
+  color: var(--interactive-active);
+}
+button.vx-community-card-button {
+  color: var(--interactive-normal);
+}
+.vx-community-card-button:hover {
+  color: var(--interactive-hover);
+}
+.vx-community-card-button:hover:active {
+  color: var(--interactive-active);
+}
+
+.vx-community-loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

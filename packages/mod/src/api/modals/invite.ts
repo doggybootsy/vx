@@ -28,7 +28,7 @@ export async function openInviteModal(code: string) {
   
   if (GuildStore.getGuild(invite.guild.id)) return Promise.resolve(true);
 
-  return new Promise<Boolean>((resolve) => {
+  return new Promise<boolean>((resolve) => {
     function onAccept(data: { code: string }) {
       if (data.code !== code) return;
 

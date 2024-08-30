@@ -9,10 +9,10 @@ import { className, createState } from "../util";
 import { openAlertModal, openExternalWindowModal } from "../api/modals";
 import { Icons, SettingsView, Tooltip } from "../components";
 import { Extensions } from "./pages/extension";
-import { Community } from "./pages/community";
 import { Messages } from "vx:i18n";
 
 import "./patches";
+import { CommunityThemes } from "./pages/community/themes";
 
 export function Panel(props: {
   title: React.ReactNode,
@@ -93,7 +93,6 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
 }
 
 function Dashboard(props: { section: string }) {
-  const [ SHOW_COMMUNITY ] = useState(() => "$$_VX" in String && Boolean((String as any).$$_VX.SHOW_COMMUNITY_TABS_CONCEPT));
   const [ section, setSection ] = useState(() => props.section);
 
   useEffect(() => {
@@ -122,22 +121,14 @@ function Dashboard(props: { section: string }) {
     SettingsView.Sections.Divider(),
     SettingsView.Sections.Header({
       label: "Community",
-      icon: Icons.Store,
-      predicate: () => SHOW_COMMUNITY
-    }),
-    SettingsView.Sections.View({
-      label: Messages.PLUGINS,
-      section: "community-plugins",
-      element: () => <Community title={Messages.PLUGINS} />,
-      predicate: () => SHOW_COMMUNITY
+      icon: Icons.Store
     }),
     SettingsView.Sections.View({
       label: Messages.THEMES,
       section: "community-themes",
-      element: () => <Community title={Messages.THEMES} />,
-      predicate: () => SHOW_COMMUNITY
+      element: () => <CommunityThemes />
     }),
-    SettingsView.Sections.Divider(() => SHOW_COMMUNITY),
+    SettingsView.Sections.Divider(),
     SettingsView.Sections.Header({
       label: Messages.DESKTOP,
       predicate: () => IS_DESKTOP

@@ -30,7 +30,7 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
     return (lastMessage.author as any).globalName || lastMessage.author.username;
   });
 
-  useLayoutEffect(() => preload(props.channel.id), []);
+  useLayoutEffect(() => enabled ? preload(props.channel.id) : void 0, [ enabled ]);
 
   const isInCall = useStateFromStores([ CallStore ], () => CallStore.isCallActive(props.channel.id));
 

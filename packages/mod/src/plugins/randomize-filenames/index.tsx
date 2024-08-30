@@ -29,7 +29,6 @@ const settings = createSettings("randomize-filenames", {
               <div>
                 <SystemDesign.TextInput 
                   minLength={1}
-                  autoFocus
                   disabled={settings.timestamp.get()}
                   value={props.state}
                   onChange={(value: string) => props.setState(value)}
@@ -60,8 +59,6 @@ const settings = createSettings("randomize-filenames", {
               <div>
                 <SystemDesign.TextInput 
                   minLength={1}
-                  autoFocus
-                  disabled={settings.timestamp.get()}
                   value={props.state}
                   onChange={(value: string) => props.setState(value)}
                 />

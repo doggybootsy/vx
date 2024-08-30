@@ -281,6 +281,38 @@ declare namespace Intl {
   var ListFormat: ListFormatConstructor;
 }
 
+declare namespace BetterDiscord {
+  interface Addon {
+    id: number,
+    name: string,
+    type: "theme" | "plugin",
+    description: string,
+    author: Author,
+    likes: number,
+    downloads: number,
+    tags: string[],
+    thumbnail_url: string,
+    latest_source_url: string,
+    release_date: string,
+    guild: Guild | null ,
+    version: string
+  }
+  interface Author {
+    github_id: string,
+    github_name: string,
+    display_name: string,
+    discord_name: string,
+    discord_avatar_hash: string,
+    guild: Guild | null
+  }
+  interface Guild {
+    name: string,
+    snowflake: string,
+    invite_link: string,
+    avatar_hash: string
+  }
+}
+
 interface FetchRequest extends Function {
   (input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
   
