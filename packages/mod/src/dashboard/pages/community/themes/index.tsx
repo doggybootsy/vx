@@ -11,25 +11,30 @@ import { addons } from "../../../../native";
 import { themeStore } from "../../../../addons/themes";
 import { openNotification } from "../../../../api/notifications";
 import { LayerManager, NavigationUtils } from "@webpack/common";
-
-const BETTERDISCORD_API_VERSION = 1;
-const BETTERDISCORD_API = `https://api.betterdiscord.app/v${BETTERDISCORD_API_VERSION}`;
-const BETTERDISCORD_API_THEMES = `${BETTERDISCORD_API}/store/themes`;
+import { BETTERDISCORD_API_THEMES } from "common/constants";
 
 const themeCommunityStore = new class ThemeCommunityStore extends InternalStore {
-  constructor() {
-    super();
-
-  }
-
   #ok = false;
   #loading = true;
   #initialized = false;
   #addons: Addon[] | null = null;
 
+  async #initializeExtension() {
+    const data = await window.VXExtension!.getCommunityThemes();
+
+    this.#ok = true;
+    this.#loading = false;
+    this.#addons = data.map((addon) => new Addon(addon));
+
+    this.emit();
+  }
   async initialize() {
     if (this.#initialized) return;
     this.#initialized = true;
+
+    if (window.VXExtension) {
+      return this.#initializeExtension();
+    }
 
     const { ok, json } = await request.json<BetterDiscord.Addon[]>(BETTERDISCORD_API_THEMES, {
       cache: "reload"

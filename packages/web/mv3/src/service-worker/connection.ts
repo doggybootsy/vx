@@ -1,6 +1,6 @@
 import { Logger, logger } from "vx:logger";
 import { browser } from "vx:self";
-import { ipc } from "./events";
+import { assets } from "./assets";
 
 interface BrowserEventTarget<T extends (...args: any[]) => void> {
   addListener(listener: (this: BrowserEventTarget<T>, ...args: Parameters<T>) => void): void,
@@ -10,18 +10,11 @@ interface BrowserEventTarget<T extends (...args: any[]) => void> {
   dispatch(...args: unknown[]): unknown
 }
 
-let js: string;
-let css: string;
-ipc.addEventListener("code-ready", (event) => {  
-  js = event.data.js;
-  css = event.data.css;
-});
-
 function executeScript(connection: Connection) {
-  if (!js || !css) {
+  if (!assets.isReady()) {
     logger.warn("Code isn't ready! Adding listener...");
 
-    ipc.addEventListener("code-ready", () => {
+    assets.whenReady(() => {
       connection.reload();
     });
     
@@ -31,6 +24,26 @@ function executeScript(connection: Connection) {
   logger.log(`Injecting script on tab id '${connection.tabId}'`);
 
   connection.eval((id: string, js: string) => {
+    function getCommunityThemes(): Promise<BetterDiscord.Addon[]> {
+      return new Promise((resolve) => {
+        function listener(event: MessageEvent) {
+          if (typeof event.data !== "object") return;
+          if (event.data.from !== "vx") return;
+          if (event.data.type === "community-themes") {
+            resolve(event.data.data);
+            globalThis.removeEventListener("message", listener);
+          }
+        }
+
+        globalThis.addEventListener("message", listener);
+        
+        postMessage({
+          type: "get-community-themes", 
+          from: "vx"
+        });
+      });
+    }
+
     (globalThis as typeof window).VXExtension = {
       id,
       update(release) {
@@ -39,7 +52,8 @@ function executeScript(connection: Connection) {
           from: "vx", 
           release
         });
-      }
+      },
+      getCommunityThemes
     };
 
     if (location.pathname.startsWith("/vx")) {
@@ -56,9 +70,9 @@ function executeScript(connection: Connection) {
     }
 
     (0, eval)(js);
-  }, { id: browser.runtime.id, js });
+  }, { id: browser.runtime.id, js: assets.getAsset("js") });
 
-  connection.insertCSS(css);
+  connection.insertCSS(assets.getAsset("css"));
 }
 
 export class Connection {
@@ -79,10 +93,8 @@ export class Connection {
       this.#connected = false;
       Connection.conections.delete(this.tabId);
     });
-
-    queueMicrotask(() => {
-      executeScript(this);
-    });
+    
+    executeScript(this);
   }
 
   private readonly logger: Logger;

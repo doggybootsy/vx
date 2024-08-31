@@ -1,6 +1,5 @@
 import { browser } from "vx:self";
 import { Connection } from "./connection";
-import { VXMessageEvent, ipc } from "./events";
 import { logger } from "vx:logger";
 
 let release: Promise<Git.Release>;
@@ -23,45 +22,87 @@ async function getAsset(type: "js" | "css", release: Promise<Git.Release> | Git.
   return response.text();
 }
 
-export async function install() {
-  logger.log("Starting install process");
-
-  const data = await browser.storage.local.get([ "js", "css" ]);
-
-  let didChangeAnything = false;
-  if (!data.js) {
-    didChangeAnything = true;
-    data.js = await getAsset("js");
+class AssetStore {
+  constructor() {
+    this.whenReadyAsync().then(() => logger.log("AssetStore is initialized"));
   }
-  if (!data.css) {
-    didChangeAnything = true;
-    data.css = await getAsset("css");
+  private css?: string;
+  private js?: string;
+
+  private listeners = new Set<() => void>();
+  public addListener(listener: () => void) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
-  logger.log(`Did make any changes '${didChangeAnything}'`);
-
-  if (didChangeAnything) await browser.storage.local.set(data);
-
-  ipc.dispatchEvent(new VXMessageEvent("code-ready", data));
-    
-  browser.tabs.query({ url: "*://*.discord.com/*" }, (tabs: { id: number }[]) => {
-    for (const tab of tabs) {
-      if (Connection.conections.has(tab.id)) continue;
-      browser.tabs.reload(tab.id);
-      logger.log(`Reloading tab id ${tab.id}`);
+  public async initialize() {
+    logger.log("Starting install process");
+  
+    const data = await browser.storage.local.get([ "js", "css" ]);
+  
+    let didChangeAnything = false;
+    if (!data.js) {
+      didChangeAnything = true;
+      data.js = await getAsset("js");
     }
-  });
+    if (!data.css) {
+      didChangeAnything = true;
+      data.css = await getAsset("css");
+    }
+  
+    logger.log(`Did make any changes '${didChangeAnything}'`);
+  
+    if (didChangeAnything) await browser.storage.local.set(data);
+
+    this.css = data.css;
+    this.js = data.js;
+
+    for (const listener of this.listeners) {
+      try {
+        listener();
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    browser.tabs.query({ url: "*://*.discord.com/*" }, (tabs: { id: number }[]) => {
+      for (const tab of tabs) {
+        if (Connection.conections.has(tab.id)) continue;
+        browser.tabs.reload(tab.id);
+        logger.log(`Reloading tab id ${tab.id}`);
+      }
+    });
+  }
+
+  public async update(release: Git.Release) {
+    const data = {
+      js: await getAsset("js", release),
+      css: await getAsset("css", release)
+    };
+  
+    await browser.storage.local.set(data);
+    
+    Connection.reloadAll();
+  }
+
+  public isReady() {
+    return typeof this.css === "string" && typeof this.css === "string";
+  }
+  public whenReady(callback: () => void) {
+    if (this.isReady()) return void callback();
+    this.addListener(() => callback());
+  }
+  public whenReadyAsync() {
+    if (this.isReady()) return Promise.resolve();
+    return new Promise<void>(r => this.addListener(r));
+  }
+
+  public getAsset(type: "css" | "js") {
+    if (!this.isReady()) throw new Error("Assets are still loading");
+
+    if (type === "css") return this.css!;
+    return this.js!;
+  }
 }
 
-export async function update(release: Git.Release) {
-  const data = {
-    js: await getAsset("js", release),
-    css: await getAsset("css", release)
-  };
-
-  await browser.storage.local.set(data);
-
-  ipc.dispatchEvent(new VXMessageEvent("code-ready", data));
-
-  Connection.reloadAll();
-}
+export const assets = new AssetStore();

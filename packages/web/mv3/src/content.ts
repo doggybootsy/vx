@@ -17,4 +17,21 @@ addEventListener("message", async (event) => {
     
     return;
   }
+  if (data.type === "get-community-themes") {  
+    connection.postMessage({
+      type: "get-community-themes"
+    });
+    
+    return;
+  }
+});
+
+connection.onMessage.addListener((msg: any) => {
+  if (msg.type === "community-themes") {
+    postMessage({
+      from: "vx",
+      type: "community-themes",
+      data: msg.data
+    });
+  }
 });

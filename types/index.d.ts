@@ -153,7 +153,8 @@ interface DiscordNative {
 
 interface ExtensionNative {
   id: string,
-  update(release: Git.Release): void
+  update(release: Git.Release): void,
+  getCommunityThemes(): Promise<BetterDiscord.Addon[]>
 }
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;
