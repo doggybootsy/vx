@@ -19,10 +19,10 @@ const request: FetchRequest = async (input, init) => {
     return electron.session.defaultSession.fetch(isURL(input) ? input.href : input, init);
   }
 
-  if (!document.body) {
+  if (typeof document === "object" && !document.body) {
     await new Promise(r => document.addEventListener("readystatechange", () => { r(true); }))
   }
-  return fetch.call(window, input, init);
+  return fetch.call(globalThis, input, init);
 }
 
 request.text = async (input, init) => {

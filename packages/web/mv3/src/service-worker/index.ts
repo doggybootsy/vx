@@ -14,4 +14,6 @@ browser.runtime.onConnect.addListener((_connection: any) => {
   });
 });
 
-browser.runtime.onInstalled.addListener(install);
+browser.runtime.onInstalled.addListener(() => {  
+  install();
+});

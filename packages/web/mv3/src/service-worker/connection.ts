@@ -10,19 +10,6 @@ interface BrowserEventTarget<T extends (...args: any[]) => void> {
   dispatch(...args: unknown[]): unknown
 }
 
-function native(id: string) {
-  window.VXExtension = {
-    id,
-    update(release) {
-      postMessage({
-        type: "update", 
-        from: "vx", 
-        release
-      });
-    }
-  };
-}
-
 let js: string;
 let css: string;
 ipc.addEventListener("code-ready", (event) => {  
@@ -41,19 +28,35 @@ function executeScript(connection: Connection) {
     return;
   }
 
-  connection.eval(native, { id: browser.runtime.id });
+  logger.log(`Injecting script on tab id '${connection.tabId}'`);
 
-  connection.eval(`
-if (location.pathname === "/popout") {
-  console.log("VX Skipping, is a popout");
-  return;
-}
-if (typeof webpackChunkdiscord_app === "object") {
-  console.log("VX loaded to late aborting!");
-  console.log(Array.from(webpackChunkdiscord_app));
-  return;
-}
-${js}`);
+  connection.eval((id: string, js: string) => {
+    (globalThis as typeof window).VXExtension = {
+      id,
+      update(release) {
+        postMessage({
+          type: "update", 
+          from: "vx", 
+          release
+        });
+      }
+    };
+
+    if (location.pathname.startsWith("/vx")) {
+      location.replace(`/channels/@me?__vx_dashboard_path__=${encodeURIComponent(location.pathname)}`);
+      return;
+    }
+    if (location.pathname === "/popout") {
+      console.log("VX Skipping, is a popout");
+      return;
+    }
+    if (typeof (globalThis as typeof window).webpackChunkdiscord_app === "object") {
+      console.log("VX loaded to late aborting!");
+      return;
+    }
+
+    (0, eval)(js);
+  }, { id: browser.runtime.id, js });
 
   connection.insertCSS(css);
 }
@@ -77,7 +80,9 @@ export class Connection {
       Connection.conections.delete(this.tabId);
     });
 
-    executeScript(this);
+    queueMicrotask(() => {
+      executeScript(this);
+    });
   }
 
   private readonly logger: Logger;

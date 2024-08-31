@@ -1,7 +1,7 @@
 import { bySource, getLazy } from "@webpack";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
-import { createAbort } from "../../util";
+import { createAbort, focusStore } from "../../util";
 import { Injector } from "../../patcher";
 import { isValidElement } from "react";
 
@@ -44,12 +44,10 @@ const plugin = definePlugin({
     
     if (signal.aborted) return;
 
-    injector.after(ImageModule.default.prototype, "render", (that, args, res) => {
-      if (that.props.animated && isValidElement(res)) {
-        res.props.renderAccessory = function() {
-          if (that.state.hasMouseOver || that.state.hasFocus) {
-            return that.props.renderAccessory();
-          }
+    injector.after(ImageModule.default.prototype, "render", (that, args, res) => {      
+      if (!that.props.animated && isValidElement(res)) {
+        res.props.renderAccessory = function() {          
+          return that.props.renderAccessory?.();
         }
       }
     });

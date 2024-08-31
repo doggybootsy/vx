@@ -462,7 +462,9 @@ button.vx-community-card-button {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
+.vx-community-addons-tags-icon > :last-child {
+  transition: color .2s linear;
+}
 .vx-community-addons-tags-notice > :last-child {
   color: var(--status-danger);
 }

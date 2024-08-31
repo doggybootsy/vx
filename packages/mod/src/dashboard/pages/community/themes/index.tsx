@@ -5,7 +5,7 @@ import { Messages } from "vx:i18n";
 import {className, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
 import { useInternalStore } from "../../../../hooks";
-import { openInviteModal } from "../../../../api/modals";
+import { openImageModal, openInviteModal } from "../../../../api/modals";
 import { closeMenu, MenuComponents, MenuRenderProps, openMenu } from "../../../../api/menu";
 import { addons } from "../../../../native";
 import { themeStore } from "../../../../addons/themes";
@@ -212,7 +212,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
     <div className="vx-community-card" onContextMenu={(event) => openMenu(event, (props) => <CommunityAddonMenu props={props} addon={addon} />)}>
       <div className="vx-community-card-splash">
         <div className="vx-community-card-preview">
-          <img src={addon.getSplashImage()} className="vx-community-card-preview-img" loading="lazy" />
+          <img src={addon.getSplashImage()} className="vx-community-card-preview-img" loading="lazy" onClick={() => openImageModal(addon.getSplashImage(), { scale: 5 })} />
         </div>
         <Tooltip text={addon.author}>
           {(props) => (
