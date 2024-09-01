@@ -10,7 +10,7 @@ interface BrowserEventTarget<T extends (...args: any[]) => void> {
   dispatch(...args: unknown[]): unknown
 }
 
-function executeScript(connection: Connection) {
+function executeVXScript(connection: Connection) {
   if (!assets.isReady()) {
     logger.warn("Code isn't ready! Adding listener...");
 
@@ -67,10 +67,10 @@ function executeScript(connection: Connection) {
     if (typeof (globalThis as typeof window).webpackChunkdiscord_app === "object") {
       console.log("VX loaded to late aborting!");
       return;
-    }
+    }    
 
     (0, eval)(js);
-  }, { id: browser.runtime.id, js: assets.getAsset("js") });
+  }, [ browser.runtime.id, assets.getAsset("js") ]);
 
   connection.insertCSS(assets.getAsset("css"));
 }
@@ -94,7 +94,7 @@ export class Connection {
       Connection.conections.delete(this.tabId);
     });
     
-    executeScript(this);
+    executeVXScript(this);
   }
 
   private readonly logger: Logger;
@@ -121,7 +121,7 @@ export class Connection {
     browser.tabs.reload(this.tabId);
   }
 
-  public eval(code: string | Function, args: Record<string, any> = { }) {
+  public eval(code: string | Function, args: any[] = []) {
     if (!this.isConnected()) return;
 
     this.logger.debug("Eval", { code, args, connection: this });
@@ -135,11 +135,8 @@ export class Connection {
       world: browser.scripting.ExecutionWorld.MAIN,
       injectImmediately: true,
       args: [ code, args ],
-      func: (code: string, args: Record<string, any>) => {
-        const keys = Object.keys(args);
-        const values = Object.values(args);
-
-        new Function(...keys, code).apply(this, values);
+      func: (code: string, args: any[]) => {        
+        new Function(code).apply(this, args);
       }
     });
   }

@@ -2,6 +2,7 @@ import electron, { BrowserWindowConstructorOptions } from "electron";
 import path from "node:path";
 import { UndefinedSymbol, Storage } from "./storage";
 import { env } from "vx:self";
+import { setupWindow } from "./addons";
 
 const preloadSymbol = Symbol.for("vx.browserwindow.preload");
 
@@ -64,7 +65,7 @@ export class BrowserWindow extends electron.BrowserWindow {
       // Only apply if it is the main window
       if (Storage.window.get<boolean>("native-frame", false)) {
         opts.frame = true;
-      }  
+      }
     }
 
     const transparent = Storage.window.get<boolean>("transparent", false);
@@ -97,6 +98,10 @@ export class BrowserWindow extends electron.BrowserWindow {
     window.webContents.on("devtools-opened", () => {
       window.webContents.devToolsWebContents?.executeJavaScript(script);
     });
+
+    if (originalPreload.includes("main")) {
+      setupWindow(window.webContents);
+    }
 
     // Open devtools in devtools
     // const devtools = new electron.BrowserWindow();

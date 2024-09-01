@@ -18,7 +18,7 @@ export function NoAddons(props: { message: string, img: string }) {
   )
 }
 
-type Pages = "plugins" | "themes" | "community-themes";
+type Pages = "plugins" | "themes" | "extensions" | "community-themes";
 
 class QueryStore extends InternalStore {
   isPreserving() {

@@ -3,6 +3,7 @@ import { className } from "../util";
 import { Icons } from "../components";
 import { NavigationUtils } from "@webpack/common";
 import { InfoSection } from ".";
+import { IS_DESKTOP } from "vx:self";
 
 const scrollerClasses = getProxyByKeys([ "auto", "customTheme", "scrolling" ]);
 
@@ -115,6 +116,32 @@ export function NavigationPanel() {
           NavigationUtils.transitionTo("/vx/community/themes");
         }}
       />
+      {IS_DESKTOP && (
+        <>
+          <h2 className="vx-dashboard-navigation-subtitle">
+            Desktop
+          </h2>
+          <CategoryItem.default
+            wrapContent
+            avatar={<Icons.Puzzle />}
+            name="Extensions"
+            focusProps={{
+              offset: {
+                right: 4,
+                top: 1,
+                bottom: 1
+              }
+            }}
+            selected={location.pathname === "/vx/extensions"}
+            className={categoryClasses.categoryItem}
+            selectedClassName={categoryClasses.selectedCategoryItem}
+            innerClassName={categoryClasses.innerClassName}
+            onClick={() => {
+              NavigationUtils.transitionTo("/vx/extensions");
+            }}
+          />
+        </>
+      )}
       <div className="vx-dashboard-navigation-spacer" />
       <InfoSection isMenu={false} />
     </div>

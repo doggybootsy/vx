@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from "react";
-import { Panel } from "../..";
+import { Header, Page } from "../..";
 import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../components";
 import { internalDataStore } from "../../../api/storage";
-import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons } from "../addons/shared";
+import { NO_ADDONS, NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../addons/shared";
 import { openImageModal } from "../../../api/modals";
 import { getDefaultAvatar } from "../../../util";
 import { extensions } from "../../../native";
@@ -57,79 +57,46 @@ function Extension({ extension }: { extension: Electron.Extension }) {
   )
 };
 
-let search = "";
 export function Extensions() {
   const allExtensions = useMemo(() => extensions.getAll(), [ ]);
 
-  const [ query, setQuery ] = useState(() => (internalDataStore.get("preserve-query") ?? true) ? search : "");
+  const [ query, setQuery ] = useState(() => queryStore.get("extensions"));
   const quered = useMemo(() => allExtensions.filter((extension) => extension.name.toLowerCase().includes(query.toLowerCase())), [ query ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
 
   return (
-    <Panel
+    <Page
       title="Extensions"
-      buttons={
+      icon={Icons.Puzzle}
+      toolbar={
         <>
-          {/* <Tooltip text="Restart Discord">
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-                  app.restart();
-                }}
-              >
-                <Icons.Reload />
-              </Button>
-            )}
-          </Tooltip> */}
-          <Tooltip text={Messages.DOWNLOAD_RDT}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                disabled={"__REACT_DEVTOOLS_GLOBAL_HOOK__" in window}
-                onClick={() => extensions.downloadRDT()}
-              >
-                <Icons.React />
-              </Button>
-            )}
-          </Tooltip>
-          <Tooltip text={Messages.OPEN_FOLDER}>
-            {(props) => (
-              <Button
-                {...props}
-                size={Button.Sizes.NONE}
-                look={Button.Looks.BLANK} 
-                className="vx-header-button"
-                onClick={() => {
-                  props.onClick();
-                  extensions.open();
-                }}
-              >
-                <Icons.Folder />
-              </Button>
-            )}
-          </Tooltip>
-          <SearchBar 
-            query={query}
-            size={SearchBar.Sizes.SMALL}
-            onQueryChange={(query) => {
-              setQuery(query);
-              search = query;
-            }}
-            onClear={() => {
-              setQuery("");
-              search = "";
-            }}
-            autoFocus
+          <Header.Icon 
+            icon={Icons.React}
+            disabled={"__REACT_DEVTOOLS_GLOBAL_HOOK__" in window}
+            onClick={() => extensions.downloadRDT()}
+            tooltip={Messages.DOWNLOAD_RDT}
           />
+          <Header.Icon 
+            icon={Icons.Folder}
+            onClick={() => extensions.open()}
+            tooltip={Messages.OPEN_FOLDER}
+          />
+          <div className="vx-searchbar">
+            <SearchBar 
+              query={query}
+              size={SearchBar.Sizes.SMALL}
+              onQueryChange={(query) => {
+                setQuery(query);
+                queryStore.set("extensions", query);
+              }}
+              onClear={() => {
+                setQuery("");
+                queryStore.clear("extensions");
+              }}
+              autoFocus
+            />
+          </div>
         </>
       }
     >
@@ -154,6 +121,6 @@ export function Extensions() {
           <NoAddons message={Messages.NO_ADDONS_FOUND.format({ type: Messages.EXTENSIONS }) as string} img={NO_ADDONS} />
         )}
       </Flex>
-    </Panel>
+    </Page>
   );
 };

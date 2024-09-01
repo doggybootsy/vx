@@ -110,6 +110,16 @@ export function Page(props: {
   )
 }
 
+function Page404({ url }: { url: string }) {
+  return (
+    <Page title="Unknown Page" icon={Icons.Warn}>
+      <div>
+        Page '{url}' is unknown
+      </div>
+    </Page>
+  )
+}
+
 export function InfoSection({ isMenu }: { isMenu: boolean }) {
   // Add electron to the list of versions | This is because discord doesn't
   const electronVersionSection = useMemo(() => {
@@ -167,35 +177,34 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
 const COMMUNITY_PATH = "/vx/community/:type";
 const PAGE_PATH = "/vx/:page";
 
-function Dashboard({ match }: { match: { params: Record<string, string | void>, path: string } }) {
-  const Component = useMemo(() => {
-    const { params, path } = match;
+function Dashboard({ match }: { match: { params: Record<string, string | void>, path: string, url: string } }) {
+  const node = useMemo(() => {
+    const { params, path } = match;    
 
     switch (path) {
       case COMMUNITY_PATH:
-        if (params.type === "themes") return CommunityThemes;
+        if (params.type === "themes") return <CommunityThemes />;
         break;
     
       default:
         switch (params.page) {
           case "home":
-            return Home;
+            return <Home />;
           case "plugins":
-            return Plugins;
+            return <Plugins />;
           case "themes":
-            return Themes;
-        
-          default:
-            break;
+            return <Themes />;
+          case "extensions":
+            return <Extensions />;
         }
 
         break;
     }
 
-    return () => "Unknown Page";
+    return <Page404 url={match.url} />;
   }, [ match ]);
 
-  return <Component />;
+  return node;
 }
 
 __addSelf("dashboardRouteProps", {

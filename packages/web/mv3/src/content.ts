@@ -34,4 +34,9 @@ connection.onMessage.addListener((msg: any) => {
       data: msg.data
     });
   }
+  if (msg.type === "pong") {
+    setTimeout(() => connection.postMessage({ type: "ping" }), 20_000);
+  }
 });
+
+connection.postMessage({ type: "ping" });

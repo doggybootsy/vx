@@ -8,6 +8,10 @@
         {
           "header": "content-security-policy",
           "operation": "remove"
+        },
+        {
+          "header": "content-security-policy-report-only",
+          "operation": "remove"
         }
       ]
     },

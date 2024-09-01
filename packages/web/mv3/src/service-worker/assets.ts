@@ -36,6 +36,16 @@ class AssetStore {
   }
 
   public async initialize() {
+    logger.log("Initializing AssetStore");
+
+    const hasPersistence = await this.hasPersistence();
+
+    logger.log(`Has persistence '${hasPersistence}'`);
+    
+    if (hasPersistence) {
+      if (await this.usePersistence()) return;
+    }
+
     logger.log("Starting install process");
   
     const data = await browser.storage.local.get([ "js", "css" ]);
@@ -57,11 +67,15 @@ class AssetStore {
     this.css = data.css;
     this.js = data.js;
 
+    await this.updatePersistence();
+
     for (const listener of this.listeners) {
       try {
         listener();
       } catch (error) {
         continue;
+      } finally {
+        this.listeners.delete(listener);
       }
     }
     
@@ -81,8 +95,47 @@ class AssetStore {
     };
   
     await browser.storage.local.set(data);
+
+    await this.updatePersistence();
     
     Connection.reloadAll();
+  }
+
+  public async hasPersistence() {
+    // const a = await browser.storage.session.get([ "js", "css" ]);
+
+    return await browser.storage.session.getBytesInUse() > 0;
+  }
+
+  public async updatePersistence() {
+    logger.log("Updating session storage");
+    
+    await browser.storage.session.set({ css: this.css, js: this.js });
+  }
+
+  public async usePersistence() {
+    logger.log("Using session storage");
+
+    const { css, js } = await browser.storage.session.get();
+
+    this.css = css;
+    this.js = js;    
+
+    if (this.isReady()) {
+      for (const listener of this.listeners) {
+        try {
+          listener();
+        } catch (error) {
+          continue;
+        } finally {
+          this.listeners.delete(listener);
+        }
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   public isReady() {

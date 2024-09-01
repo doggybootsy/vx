@@ -1,47 +1,44 @@
 import { expose, getAndEnsureVXPath } from "common/preloads";
-import electron, { ipcRenderer } from "electron";
+import electron, { ipcRenderer, IpcRendererEvent } from "electron";
 import JSZip from "jszip";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { env } from "vx:self";
 import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
-import { watch } from "chokidar";
 
 type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
 
-function createAddonAPI(type: "themes" | "plugins") {
+function createAddonAPI(type: "themes" | "plugins") {  
   const path = getAndEnsureVXPath(type, (path) => mkdirSync(path));
-  
-  const watcher = watch(path, {
-    awaitWriteFinish: true,
-    ignoreInitial: true,
-    atomic: true
-  });
 
-  const listeners = new Set<AddonListener>();
+  const map = new WeakMap<AddonListener, (event: IpcRendererEvent, eventName: ChokidarFileEvent, filename: string) => void>();
+  function wrapListener(listener: AddonListener) {
+    if (map.has(listener)) return map.get(listener)!;
 
-  const requireExt = type === "themes" ? ".css" : ".js";
-
-  watcher.on("all", (eventName, path) => {
-    const filename = basename(path);
-    const ext = extname(path);
-    if (ext !== requireExt) return;
-
-    for (const listener of listeners) {
+    function wrappedListener(event: IpcRendererEvent, eventName: ChokidarFileEvent, filename: string) {
       listener(eventName, filename);
     }
-  });
+
+    map.set(listener, wrappedListener);
+
+    return wrappedListener;
+  }
+
+  electron.ipcRenderer.on(`@vx/addons/${type}`, console.log);
 
   return {
     type,
     addListener(listener: AddonListener) {
-      listeners.add(listener);
+      const wrapped = wrapListener(listener);
+
+      electron.ipcRenderer.on(`@vx/addons/${type}`, wrapped);
+
       return () => {
-        listeners.delete(listener)
+        electron.ipcRenderer.off(`@vx/addons/${type}`, wrapped);
       };
     },
     removeListener(listener: AddonListener) {
-      listeners.delete(listener);
+      electron.ipcRenderer.off(`@vx/addons/${type}`, map.get(listener)!);
     },
     getAll() {
       const ext = type === "themes" ? ".css" : ".js";

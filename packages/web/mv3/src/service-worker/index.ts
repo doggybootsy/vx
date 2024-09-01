@@ -17,8 +17,8 @@ async function getCommunityThemes(connection: Connection) {
   logger.log("Found community themes");
 }
 
-browser.runtime.onConnect.addListener((_connection: any) => {
-  const connection = new Connection(_connection);  
+browser.runtime.onConnect.addListener((_connection: any) => {  
+  const connection = new Connection(_connection);
 
   connection.onMessage.addListener((msg) => {    
     switch (msg.type) {
@@ -28,14 +28,19 @@ browser.runtime.onConnect.addListener((_connection: any) => {
       case "get-community-themes":
         getCommunityThemes(connection);
         break;
+      case "ping":
+        logger.log(`Received ping from '${connection.tabId}'`)
+        connection.postMessage({ type: "pong" });
+        break;
     }
   });
 });
 
-browser.runtime.onInstalled.addListener(() => {  
+setTimeout(() => {  
   assets.initialize();
 });
 
+// Defining because of typing lol
 Object.defineProperty(window, "VX", {
   value: {
     Connection,
