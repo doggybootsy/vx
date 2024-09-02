@@ -44,6 +44,8 @@ declare module Webpack {
     Record<PropertyKey, RawModule>
   ];
   type AppObject = Array<ModuleWithoutEffect | ModuleWithEffect>;
+
+  type ClassModule<K extends string[] = []> = Record<Exclude<string, K[number]>, string> & Record<K[number], string>; 
 };
 declare module Git {
   interface Asset {

@@ -215,6 +215,14 @@ export const themeStore = new class ThemeStore extends InternalStore {
   public delete(id: string) {
     closeWindow(`THEME_${id}`);
     addons.themes.delete(id);
+    addons.themes.setEnabledState(id, false);
+
+    this._clearCSS(id);
+
+    delete this.#themes[id];
+    metaCache.delete(id);
+
+    this.emit();
   }
   public upload() {
     showFilePicker(async (file) => {

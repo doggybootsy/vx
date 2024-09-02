@@ -12,7 +12,7 @@ const settings = createSettings("randomize-filenames", {
   timestamp: {
     type: SettingType.SWITCH,
     default: false,
-    title: "Use TimeStamp",
+    title: "Use Timestamp",
     description: "Uses the current utc timestamp"
   },
   characters: {
@@ -88,7 +88,7 @@ function randomizeName(filename: string) {
   const ext = spl.length === 1 ? "" : `${addPeriod ? "." : ""}${spl.at(-1)}`;
 
   if (settings.timestamp.get()) {
-    return format.replace("%n", new Date().toUTCString()).replace(/(\.?)%e/, ext);
+    return format.replace("%n", Date.now().toString()).replace(/(\.?)%e/, ext);
   }
 
   let name = "";

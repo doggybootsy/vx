@@ -29,7 +29,7 @@ browser.runtime.onConnect.addListener((_connection: any) => {
         getCommunityThemes(connection);
         break;
       case "ping":
-        logger.log(`Received ping from '${connection.tabId}'`)
+        logger.log(`Received ping from '${connection.tabId}'`);
         connection.postMessage({ type: "pong" });
         break;
     }

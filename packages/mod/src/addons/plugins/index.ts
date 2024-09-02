@@ -5,6 +5,7 @@ import { Meta, getMeta, getMetaProperty } from "../meta";
 import { logger } from "vx:logger";
 import { vxRequire } from "../../window";
 import { addons } from "../../native";
+import { closeWindow } from "../../api/window";
 
 export interface PluginObject {
   js: string,
@@ -253,7 +254,17 @@ export const pluginStore = new class PluginStore extends InternalStore {
     this.emit();
   }
   public delete(filename: string) {
-    return addons.plugins.delete(filename);
+    closeWindow(`PLUGIN_${filename}`);
+    addons.plugins.delete(filename);
+    addons.plugins.setEnabledState(filename, false);
+
+    this.disable(filename);
+  
+    this.runMethod(filename, "delete");
+
+    delete this.#evaledPlugins[filename];
+    delete this.#plugins[filename];
+    metaCache.delete(filename);
   }
 
   public getExports(id: string) {

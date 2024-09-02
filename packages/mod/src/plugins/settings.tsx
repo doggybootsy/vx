@@ -1,10 +1,11 @@
 import { DataStore } from "../api/storage";
-import { ColorPicker, FormBody, FormSwitch, FormSwitchProps } from "../components";
+import { ColorPicker, FormBody, FormSwitch, FormSwitchProps, SystemDesign } from "../components";
 
 export const enum SettingType {
   SWITCH,
   COLOR,
   INPUT,
+  SELECT,
   CUSTOM
 }
 
@@ -29,6 +30,15 @@ interface InputSettingType extends SettingsCommon<string> {
   placeholder: string
 }
 
+type SelectSettingValue = string | { label: string, value: string };
+type SelectSettingGetValue<T extends SelectSettingValue> = T extends { label: string, value: string } ? T["value"] : T;
+
+interface SelectSettingType<V extends SelectSettingValue[]> extends SettingsCommon<SelectSettingGetValue<V[number]>> {
+  type: SettingType.SELECT,
+  choices: V,
+  placeholder?: string
+}
+
 export interface CustomSettingType<V> {
   type: SettingType.CUSTOM,
   default: V,
@@ -36,10 +46,10 @@ export interface CustomSettingType<V> {
   onChange?(settings: V): void
 }
 
-type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | CustomSettingType<any>;
+type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | SelectSettingType<string[]> | CustomSettingType<any>;
 
 type GetCustomSettingType<T extends CustomSettingType<any>> = T extends CustomSettingType<infer P> ? P : never;
-type GetSettingType<T extends SettingTypes> = T extends SwitchSettingType ? boolean : T extends ColorSettingType ? number : T extends InputSettingType ? string : T extends CustomSettingType<any> ? GetCustomSettingType<T> : unknown;
+type GetSettingType<T extends SettingTypes> = T extends SwitchSettingType ? boolean : T extends ColorSettingType ? number : T extends InputSettingType ? string : T extends SelectSettingType<string[]> ? SelectSettingGetValue<T["choices"][number]> : T extends CustomSettingType<any> ? GetCustomSettingType<T> : unknown;
 
 export interface CreatedSetting<T extends SettingTypes> {
   use(): GetSettingType<T>,
@@ -107,10 +117,54 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
       )
     };
   }
+  if (element.type === SettingType.SELECT) {
+    const $setting = element as SelectSettingType<string[]>;
+
+    const options = $setting.choices.map((choice) => ({ label: choice, value: choice }));
+
+    return () => {
+      const value = setting.use() as string;
+      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled(settings) : false;
+
+      return (
+        <FormBody title={element.title} description={element.description}>
+          <SystemDesign.Select 
+            options={options}
+            placeholder={$setting.placeholder}
+            select={set}
+            serialize={(m: any) => String(m)}
+            isSelected={(item: string) => item === value}
+            value={value}
+            isDisabled={isDisabled}
+            closeOnSelect
+          />
+        </FormBody>
+      )
+    };
+  }
+  if (false && element.type === SettingType.INPUT) {
+    const $setting = element as InputSettingType;
+
+    return () => {
+      const value = setting.use() as string;
+      const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled(settings) : false;
+
+      return (
+        <FormBody title={element.title} description={element.description}>
+          <SystemDesign.TextInput 
+            placeholder={$setting.placeholder}
+            value={value}
+            isDisabled={isDisabled}
+            onChange={set}
+          />
+        </FormBody>
+      )
+    };
+  }
 
   return () => (
     <div>
-      Setting Type '{element.type}' doesn't have a render!
+      Setting Type '{(element as any).type}' doesn't have a render!
     </div>
   );
 }

@@ -24,8 +24,6 @@ function createAddonAPI(type: "themes" | "plugins") {
     return wrappedListener;
   }
 
-  electron.ipcRenderer.on(`@vx/addons/${type}`, console.log);
-
   return {
     type,
     addListener(listener: AddonListener) {

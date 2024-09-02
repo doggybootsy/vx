@@ -26,6 +26,11 @@ addEventListener("message", async (event) => {
   }
 });
 
+function ping() {
+  setTimeout(() => connection.postMessage({ type: "ping" }), ping.DELAY);
+}
+ping.DELAY = 15_000;
+
 connection.onMessage.addListener((msg: any) => {
   if (msg.type === "community-themes") {
     postMessage({
@@ -35,8 +40,8 @@ connection.onMessage.addListener((msg: any) => {
     });
   }
   if (msg.type === "pong") {
-    setTimeout(() => connection.postMessage({ type: "ping" }), 20_000);
+    ping();
   }
 });
 
-connection.postMessage({ type: "ping" });
+ping();
