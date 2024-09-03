@@ -7,6 +7,10 @@ export const Developers = {
   doggybootsy: {
     username: "doggybootsy",
     discord: "515780151791976453"
+  },
+  kaan: {
+    username: "kaan",
+    discord: "" // keep this here. 
   }
 } satisfies Record<string, Developer>;
 

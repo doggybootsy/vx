@@ -1,0 +1,8 @@
+.vx-translation {
+    color: var(--text-normal);;
+}
+
+.vx-translation + div {
+    font-size: 13px;
+    color: gray;
+}
