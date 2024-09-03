@@ -1,13 +1,15 @@
-import electron, { safeStorage } from "electron";
-import { BrowserWindow } from "./window";
-import { request } from "https";
+import electron, {ipcMain, safeStorage} from "electron";
+import {BrowserWindow} from "./window";
+import {request} from "https";
 import fs from "original-fs";
 import path from "node:path";
-import { waitFor } from "common/util";
-import { KnownDevToolsPages, OpenDevToolsOptions } from "typings";
-import { Storage } from "./storage";
-import { getVolume, setVolume } from "./spotify";
-import { adblock } from "./adblock";
+import {waitFor} from "common/util";
+import {KnownDevToolsPages, OpenDevToolsOptions} from "typings";
+import {Storage} from "./storage";
+import {getVolume, setVolume} from "./spotify";
+import {adblock} from "./adblock";
+// @ts-ignore
+import {translate} from "deeplx";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -179,4 +181,13 @@ electron.ipcMain.on("@vx/adblock/get", (event) => {
 });
 electron.ipcMain.handle("@vx/adblock/set", (event, state) => {
   adblock(state);
+});
+
+ipcMain.handle("@vx/translate", async (event, object) => {
+  const text = object[0]
+  const to = object[2]
+  const from = object[1]
+  
+  const translatedText = from ? await translate(text, to, from) : await translate(text, to);
+  return JSON.stringify(translatedText);
 });

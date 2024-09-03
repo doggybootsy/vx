@@ -145,6 +145,8 @@ const messages = {
   RANDOMIZE_FILENAMES_DESCRIPTION: "Randomizes the filename of uploads",
   REVEAL_ALL_SPOILERS_NAME: "Reveal All Spoilers",
   REVEAL_ALL_SPOILERS_DESCRIPTION: "Reveals all spoilers when ctrl clicking a spoiler",
+  TRANSLATOR_NAME: "Translator",
+  TRANSLATOR_DESCRIPTION: "Allows you to translate any message to a range of languages",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
