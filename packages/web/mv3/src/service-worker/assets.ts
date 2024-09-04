@@ -24,8 +24,11 @@ async function getAsset(type: "js" | "css", release: Promise<Git.Release> | Git.
 
 class AssetStore {
   constructor() {
-    this.whenReadyAsync().then(() => logger.log("AssetStore is initialized"));
+    this.whenReadyAsync().then(() => this.logger.log("AssetStore is initialized"));
   }
+  
+  private logger = logger.createChild("AssetStore");
+
   private css?: string;
   private js?: string;
 
@@ -36,17 +39,17 @@ class AssetStore {
   }
 
   public async initialize() {
-    logger.log("Initializing AssetStore");
+    this.logger.log("Initializing AssetStore");
 
     const hasPersistence = await this.hasPersistence();
 
-    logger.log(`Has persistence '${hasPersistence}'`);
+    this.logger.log(`Has persistence '${hasPersistence}'`);
     
     if (hasPersistence) {
       if (await this.usePersistence()) return;
     }
 
-    logger.log("Starting install process");
+    this.logger.log("Starting install process");
   
     const data = await browser.storage.local.get([ "js", "css" ]);
   
@@ -60,7 +63,7 @@ class AssetStore {
       data.css = await getAsset("css");
     }
   
-    logger.log(`Did make any changes '${didChangeAnything}'`);
+    this.logger.log(`Did make any changes '${didChangeAnything}'`);
   
     if (didChangeAnything) await browser.storage.local.set(data);
 
@@ -83,7 +86,7 @@ class AssetStore {
       for (const tab of tabs) {
         if (Connection.conections.has(tab.id)) continue;
         browser.tabs.reload(tab.id);
-        logger.log(`Reloading tab id ${tab.id}`);
+        this.logger.log(`Reloading tab id ${tab.id}`);
       }
     });
   }
@@ -108,13 +111,13 @@ class AssetStore {
   }
 
   public async updatePersistence() {
-    logger.log("Updating session storage");
+    this.logger.log("Updating session storage");
     
     await browser.storage.session.set({ css: this.css, js: this.js });
   }
 
   public async usePersistence() {
-    logger.log("Using session storage");
+    this.logger.log("Using session storage");
 
     const { css, js } = await browser.storage.session.get();
 

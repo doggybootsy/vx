@@ -5,10 +5,13 @@ import { CreatedSetting } from "./settings";
 import { FluxDispatcher } from "@webpack/common";
 import { logger } from "vx:logger";
 import { env } from "vx:self";
+import { Command } from "../api/commands/types";
+import { addCommand } from "../api/commands";
 
 export interface PluginType {
   authors: Developer[],
   patches?: PlainTextPatchType | PlainTextPatchType[],
+  commands?: Command | Command[],
   settings?: Record<string, CreatedSetting<any>> | React.ComponentType,
   requiresRestart?: boolean,
   start?(): void,
@@ -152,6 +155,22 @@ export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {
     }
     // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
     if (isEnabled || !plugin.requiresRestart) addPlainTextPatch(...exports.patches);
+  }
+  if (exports.commands) {
+    if (!Array.isArray(exports.commands)) exports.commands = [ exports.commands ];
+
+    for (const command of exports.commands) {
+      const predicate = command.predicate ?? (() => true);
+
+      command.predicate = () => {
+        if (plugin.getActiveState() && predicate()) return true;
+        return false;
+      }
+
+      command.id = `${plugin.id}(${command.id})`;
+
+      addCommand(command);
+    }
   }
 
   if (isEnabled) {

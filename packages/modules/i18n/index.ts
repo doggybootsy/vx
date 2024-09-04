@@ -87,6 +87,6 @@ export const Messages = new Proxy<MessagesType>({} as MessagesType, {
 export function getLocaleName(local: string) {
   local = local.slice(0, 2).toLowerCase() + local.slice(2).toUpperCase();
   
-  if (i18nModuleLoaded) return I18n.Messages[local as Uppercase<string>] || local;
+  if (i18nModuleLoaded) return (I18n.Messages[local as Uppercase<string>] || local).split(",")[0];
   return local;
 }

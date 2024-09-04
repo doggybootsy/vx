@@ -8,7 +8,7 @@ import { useForceUpdate } from "../../hooks";
 import * as styler from "./index.css?managed";
 import { SettingType, createSettings } from "../settings";
 
-const settings = createSettings("GuildClock", {
+const settings = createSettings("guild-clock", {
   hour12: {
     type: SettingType.SWITCH,
     default: true,

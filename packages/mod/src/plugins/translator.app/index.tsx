@@ -11,6 +11,7 @@ import { MessageStore } from "@webpack/common";
 import { useMemo } from "react";
 import { getLocaleName } from "vx:i18n";
 import {Message} from "discord-types/general";
+import { DataStore } from "../../api/storage";
 
 const injector = new Injector();
 
@@ -46,29 +47,28 @@ interface Translation {
     language: typeof LANGUAGE_CODES[number];
     content: string;
     translation: string;
-    resynced: boolean;
 }
 
+const storage = new DataStore<{ lastTranslatedLanguage: typeof LANGUAGE_CODES[number] }>("translator");
 
 class TranslatedMessageStore extends InternalStore {
     #translations: Record<string, Record<string, Translation>> = {};
     public getTranslation(channelId: string, messageId: string): Translation | null {
         return this.#translations[channelId]?.[messageId] || null;
     }
-    public getLanguage(channelId: string, messageId: string): string  {
-        return this.#translations[channelId]?.[messageId].language;
-    }
+    
     public resyncTranslation(channelId: string, messageId: string) {
         const translation = this.#translations[channelId]?.[messageId];
         if (!translation) return;
 
-        translation.resynced = true;
-        this.translate(channelId, messageId, translation.language);
+        return this.translate(channelId, messageId, translation.language);
     }
 
     public async translate(channelId: string, messageId: string, language: typeof LANGUAGE_CODES[number]) {
         const message: Message = MessageStore.getMessage(channelId, messageId);
         if (!message || !message.content) return;
+
+        storage.set("lastTranslatedLanguage", language);
 
         const translation = await window.VXNative!.translate(message.content, language);
 
@@ -76,8 +76,7 @@ class TranslatedMessageStore extends InternalStore {
         this.#translations[channelId][messageId] = {
             translation,
             content: message.content,
-            language,
-            resynced: false,
+            language
         };
 
         this.emit();
@@ -104,45 +103,63 @@ export default definePlugin({
     async start() {
         const signal = getSignal();
 
-        patch("vx-translator", "message", (props, res) => {            
+        patch("vx-translator", "message", (props, res) => {
             const translation = useInternalStore(translatedMessageStore, () => translatedMessageStore.getTranslation(props.channel.id, props.message.id));
         
+            const isOutOfDate = useMemo(() => {
+                if (!translation) return false;
+                return translation.content !== props.message.content;
+            }, [ translation, props.message.content ]);
+
             res.props.children.push(
                 <MenuComponents.MenuGroup key="translation-menu-group">
-                    <MenuComponents.MenuItem label="Translate" id="vx-translate">
-                        {LANGUAGE_CODES.map((lang) => (
-                            <MenuComponents.MenuRadioItem
-                                key={lang}
-                                label={`Translate to ${getLocaleName(lang)}`}
-                                id={`vx-translate-${lang}`}
+                    <MenuComponents.MenuItem
+                        label="Translate" 
+                        id="vx-translate"
+                        action={() => {
+                            if (!storage.has("lastTranslatedLanguage")) return;
+                            translatedMessageStore.translate(props.channel.id, props.message.id, storage.get("lastTranslatedLanguage")!);
+                        }}
+                    >
+                        <MenuComponents.MenuGroup>
+                            {LANGUAGE_CODES.map((lang) => (
+                                <MenuComponents.MenuRadioItem
+                                    key={lang}
+                                    label={`Translate to ${getLocaleName(lang)}`}
+                                    id={`vx-translate-${lang}`}
+                                    action={() => {
+                                        translatedMessageStore.translate(props.channel.id, props.message.id, lang);
+                                    }}
+                                    group="translation-group"
+                                    checked={translation?.language === lang}
+                                />
+                            ))}
+                        </MenuComponents.MenuGroup>
+                        <MenuComponents.MenuGroup>
+                            {isOutOfDate && (
+                                <MenuComponents.MenuItem
+                                    key="resync"
+                                    label="Resync Translation"
+                                    id="vx-resync"
+                                    color={"premium-gradient"}
+                                    action={() => {
+                                        translatedMessageStore.resyncTranslation(
+                                            props.channel.id,
+                                            props.message.id
+                                        );
+                                    }}
+                                />
+                            )}
+                            <MenuComponents.MenuItem
+                                key="reset"
+                                label="Reset Translation"
+                                id="vx-reset"
+                                color={"danger"}
                                 action={() => {
-                                    translatedMessageStore.translate(props.channel.id, props.message.id, lang);
+                                    translatedMessageStore.deleteTranslation(props.channel.id, props.message.id);
                                 }}
-                                group="translation-group"
-                                checked={translation?.language === lang}
                             />
-                        ))}
-                        <MenuComponents.MenuItem
-                            key="reset"
-                            label="Reset Translation"
-                            id="vx-reset"
-                            color={"danger"}
-                            action={() => {
-                                translatedMessageStore.deleteTranslation(props.channel.id, props.message.id);
-                            }}
-                        />
-                        <MenuComponents.MenuItem
-                            key="resync"
-                            label="Resync Translation"
-                            id="vx-resync"
-                            color={"premium-gradient"}
-                            action={() => {
-                                translatedMessageStore.resyncTranslation(
-                                    props.channel.id,
-                                    props.message.id
-                                );
-                            }}
-                        />
+                        </MenuComponents.MenuGroup>
                     </MenuComponents.MenuItem>
                 </MenuComponents.MenuGroup>
             );

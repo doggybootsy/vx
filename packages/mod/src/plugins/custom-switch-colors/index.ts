@@ -4,7 +4,7 @@ import { definePlugin } from "../";
 import { Developers } from "../../constants";
 import { SettingType, createSettings } from "../settings";
 
-const settings = createSettings("CustomSwitchColors", {
+const settings = createSettings("custom-switch-colors", {
   on: {
     type: SettingType.COLOR,
     default: 0x23A55A,

@@ -6,10 +6,11 @@ import { SettingType, createSettings } from "../settings";
 
 import { KeyboardButton } from "./button";
 import * as styler from "./index.css?managed"
+import { sendVXSystemMessage } from "../../util";
 
 const injector = new Injector();
 
-export const settings = createSettings("SilentTyping", {
+export const settings = createSettings("silent-typing", {
   shouldShowTyping: {
     type: SettingType.CUSTOM,
     default: false
@@ -32,13 +33,12 @@ export const settings = createSettings("SilentTyping", {
   }
 });
 
-let enabled = false;
 async function patchSilentTyping() {
   const typing = await getLazyByKeys<{
     startTyping: (channelId: string) => void
   }>([ "startTyping", "stopTyping" ]);
 
-  if (!enabled) return;
+  if (!plugin.getActiveState()) return;
 
   injector.instead(typing, "startTyping", (that, args, startTyping) => {
     if (!settings.button.get()) return;
@@ -48,7 +48,7 @@ async function patchSilentTyping() {
   });
 }
 
-export default definePlugin({
+const plugin = definePlugin({
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
@@ -57,12 +57,20 @@ export default definePlugin({
     find: /return\(.+&&(.{1,3}?)\.push.+{disabled:(.{1,3}),type:(.{1,3})}/,
     replace: "$self._addButton($1,$2,$3,$enabled);$&"
   },
+  commands: {
+    id: "toggle",
+    get name() { return "toggle-silent-typing" },
+    predicate: () => settings.button.get(),
+    execute([], { channel }) {
+      settings.shouldShowTyping.set(!settings.shouldShowTyping.get());
+
+      sendVXSystemMessage(channel.id, `Silent Typing is ${settings.shouldShowTyping.get() ? "Disabled" : "Enabled"}`);
+    }
+  },
   start() {
-    enabled = true;
     patchSilentTyping();
   },
   stop() {
-    enabled = false;
     injector.unpatchAll();
   },
   styler,

@@ -9,7 +9,7 @@ import { spotifyStore } from "./store";
 import { SpotifyPanel } from "./panel";
 import { forwardRef } from "react";
 
-export const settings = createSettings("SpotifyControls", {
+export const settings = createSettings("spotify-controls", {
   altSkipBackwards: {
     type: SettingType.SWITCH,
     default: false,
