@@ -136,20 +136,19 @@ export default definePlugin({
                             ))}
                         </MenuComponents.MenuGroup>
                         <MenuComponents.MenuGroup>
-                            {isOutOfDate && (
-                                <MenuComponents.MenuItem
-                                    key="resync"
-                                    label="Resync Translation"
-                                    id="vx-resync"
-                                    color={"premium-gradient"}
-                                    action={() => {
-                                        translatedMessageStore.resyncTranslation(
-                                            props.channel.id,
-                                            props.message.id
-                                        );
-                                    }}
-                                />
-                            )}
+                            <MenuComponents.MenuItem
+                                key="resync"
+                                label="Resync Translation"
+                                id="vx-resync"
+                                color={"premium-gradient"}
+                                disabled={!isOutOfDate}
+                                action={() => {
+                                    translatedMessageStore.resyncTranslation(
+                                        props.channel.id,
+                                        props.message.id
+                                    );
+                                }}
+                            />
                             <MenuComponents.MenuItem
                                 key="reset"
                                 label="Reset Translation"
