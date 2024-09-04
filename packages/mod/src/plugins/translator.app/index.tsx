@@ -10,6 +10,7 @@ import { useInternalStore } from "../../hooks";
 import { MessageStore } from "@webpack/common";
 import { useMemo } from "react";
 import { getLocaleName } from "vx:i18n";
+import {Message} from "discord-types/general";
 
 const injector = new Injector();
 
@@ -42,29 +43,46 @@ export const LANGUAGE_CODES: readonly string[] = [
 ];
 
 interface Translation {
-    language: typeof LANGUAGE_CODES[number], 
-    content: string, 
-    translation: string
+    language: typeof LANGUAGE_CODES[number];
+    content: string;
+    translation: string;
+    resynced: boolean;
 }
+
 
 class TranslatedMessageStore extends InternalStore {
     #translations: Record<string, Record<string, Translation>> = {};
     public getTranslation(channelId: string, messageId: string): Translation | null {
         return this.#translations[channelId]?.[messageId] || null;
     }
+    public getLanguage(channelId: string, messageId: string): string  {
+        return this.#translations[channelId]?.[messageId].language;
+    }
+    public resyncTranslation(channelId: string, messageId: string) {
+        const translation = this.#translations[channelId]?.[messageId];
+        if (!translation) return;
+
+        translation.resynced = true;
+        this.translate(channelId, messageId, translation.language);
+    }
+
     public async translate(channelId: string, messageId: string, language: typeof LANGUAGE_CODES[number]) {
-        const message = MessageStore.getMessage(channelId, messageId);
+        const message: Message = MessageStore.getMessage(channelId, messageId);
         if (!message || !message.content) return;
 
         const translation = await window.VXNative!.translate(message.content, language);
 
         this.#translations[channelId] ??= {};
         this.#translations[channelId][messageId] = {
-            translation, content: message.content, language
+            translation,
+            content: message.content,
+            language,
+            resynced: false,
         };
 
         this.emit();
     }
+
     public deleteTranslation(channelId: string, messageId: string) {
         this.#translations[channelId] ??= {};
         delete this.#translations[channelId][messageId];
@@ -111,6 +129,18 @@ export default definePlugin({
                             color={"danger"}
                             action={() => {
                                 translatedMessageStore.deleteTranslation(props.channel.id, props.message.id);
+                            }}
+                        />
+                        <MenuComponents.MenuItem
+                            key="resync"
+                            label="Resync Translation"
+                            id="vx-resync"
+                            color={"premium-gradient"}
+                            action={() => {
+                                translatedMessageStore.resyncTranslation(
+                                    props.channel.id,
+                                    props.message.id
+                                );
                             }}
                         />
                     </MenuComponents.MenuItem>
