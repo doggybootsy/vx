@@ -35,16 +35,8 @@ export default definePlugin({
     },
     {
       match: ".Messages.STREAM_VOLUME:",
-      replacements: [
-        {
-          find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.MenuControlItem,{.+}\)}\)/,
-          replace: "$self.addTextInput($&,$enabled,...arguments)"
-        },
-        {
-          find: ".isPlatformEmbedded?200:100",
-          replace: ".isPlatformEmbedded?$enabled?1000:200:100"
-        }
-      ]
+      find: /\(0,.{1,3}\.jsx\)\(.{1,3}\.MenuControlItem,{.+}\)}\)/,
+      replace: "$self.addTextInput($&,$enabled,...arguments)"
     }
   ],
   addTextInput(children: React.ReactNode, enabled: boolean, userId: string, context: any) {
@@ -52,7 +44,7 @@ export default definePlugin({
 
     const [ isEmpty, setIsEmpty ] = useState(false);
     
-    if (!enabled || !children) return;
+    if (!enabled || !children) return children;
 
     return [
       children,
@@ -66,7 +58,7 @@ export default definePlugin({
               type="number"
               size={SystemDesign.TextInput.Sizes.MINI}
               placeholder="100"
-              max={1000}
+              max={window.VXNative ? 200 : 100}
               min={0}
               onChange={(value: string) => {
                 setIsEmpty(!value.length);

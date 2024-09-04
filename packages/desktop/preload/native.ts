@@ -71,9 +71,9 @@ const native = {
   release: electron.ipcRenderer.sendSync("DISCORD_APP_GET_RELEASE_CHANNEL_SYNC") as string,
   themes: createAddonAPI("themes"),
   plugins: createAddonAPI("plugins"),
-  translate: async function (a: any, b: any, c: any) {
-    const stringArgs = Array.from(arguments).map(arg => String(arg));
-    const result = await electron.ipcRenderer.invoke("@vx/translate", stringArgs);
+  translate: async function (text: string, to: string, from?: string): Promise<string> {
+    const result = await electron.ipcRenderer.invoke("@vx/translate", [ text, to, from ]);
+    
     try {
       return JSON.parse(result);
     } catch (e) {

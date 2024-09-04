@@ -4,5 +4,30 @@
 
 .vx-translation + div {
     font-size: 13px;
-    color: gray;
+    color: var(--text-muted);
+}
+
+.vx-translation-languaage {
+  height: .9375rem;
+  padding: 0 .275rem;
+  border-radius: 4px;
+  top: .1rem;
+  background-color: var(--status-positive-background);
+  color: var(--status-positive-text);
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-indent: 0;
+  font-size: .8rem;
+  line-height: .9375rem;
+  position: relative;
+  font-weight: 600;
+  vertical-align: top;
+  margin-right: 1ch;
+  transition: background-color .2s linear, color .2 linear;
+}
+.vx-translation-languaage[data-vx-is-out-of-date="true"] {
+    background-color: var(--status-danger-background);
+    color: var(--status-danger-text);
 }

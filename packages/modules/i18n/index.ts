@@ -71,7 +71,7 @@ type MessagesType = Omit<Record<Uppercase<string>, string>, KnownStrings | Known
 export const Messages = new Proxy<MessagesType>({} as MessagesType, {
   get(target, p) {
     if (typeof p !== "string") throw new TypeError(`Can not get a property key with typeof '${typeof p}'`);
-    const prop = p.toUpperCase() as Uppercase<string>;
+    let prop = p.toUpperCase() as Uppercase<string>;
 
     const message = getMessage(prop as any, getLocale());
     // Add to target for devtools
@@ -83,3 +83,10 @@ export const Messages = new Proxy<MessagesType>({} as MessagesType, {
   deleteProperty() { return false },
   defineProperty() { return false }
 });
+
+export function getLocaleName(local: string) {
+  local = local.slice(0, 2).toLowerCase() + local.slice(2).toUpperCase();
+  
+  if (i18nModuleLoaded) return I18n.Messages[local as Uppercase<string>] || local;
+  return local;
+}

@@ -2,7 +2,7 @@ import { Component } from "react";
 import { MenuRenderProps } from ".";
 import { addPlainTextPatch } from "@webpack";
 
-type MenuCallback = (props: MenuProps, res: React.ReactElement) => void;
+export type MenuCallback = (props: MenuProps, res: React.ReactElement) => void;
 const menuPatches = new Map<string, Map<string, Set<MenuCallback>>>();
 export function patch(caller: string, menuId: string, callback: MenuCallback) {
   if (!menuPatches.has(caller)) menuPatches.set(caller, new Map());

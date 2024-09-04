@@ -183,11 +183,7 @@ electron.ipcMain.handle("@vx/adblock/set", (event, state) => {
   adblock(state);
 });
 
-ipcMain.handle("@vx/translate", async (event, object) => {
-  const text = object[0]
-  const to = object[2]
-  const from = object[1]
-  
-  const translatedText = from ? await translate(text, to, from) : await translate(text, to);
-  return JSON.stringify(translatedText);
+ipcMain.handle("@vx/translate", async (event, [ text, to, from ]) => {
+  const translatedText = from ? translate(text, to, from) : translate(text, to);
+  return JSON.stringify(await translatedText);
 });

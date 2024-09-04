@@ -1,30 +1,17 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
-import { MenuComponents, MenuProps, patch } from "../../api/menu";
-import React, { useState } from "react";
+import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Injector } from "../../patcher";
 import { bySource, getLazy } from "@webpack";
-import {Markdown} from "../../components";
-import './translate.css';
+import {Markdown, Tooltip} from "../../components";
+import * as styler from "./translate.css?managed";
+import { createAbort, InternalStore } from "../../util";
+import { useInternalStore } from "../../hooks";
+import { MessageStore } from "@webpack/common";
+import { useMemo } from "react";
+import { getLocaleName } from "vx:i18n";
 
-interface Translations {
-    [key: string]: string;
-}
-interface MessageArgs {
-    message: {
-        id: string;
-    };
-}
-interface TranslatedMessages {
-    [key: string | number]: {
-        original: any;
-        translated: any;
-        current: any;
-    };
-}
-
-const messageStore: TranslatedMessages = {};
-const inj = new Injector();
+const injector = new Injector();
 
 export const LANGUAGE_CODES: readonly string[] = [
     "BG",
@@ -54,97 +41,115 @@ export const LANGUAGE_CODES: readonly string[] = [
     "TR"
 ];
 
+interface Translation {
+    language: typeof LANGUAGE_CODES[number], 
+    content: string, 
+    translation: string
+}
 
-let selectedLangCache: string | null = null
-function StartTranslation(
-    props: MenuProps,
-    res: { props: { children: React.ReactNode[] } }
-) {
-    const [selectedLanguage, setSelectedLanguage] = useState<string>(selectedLangCache ?? "ja");
-    const [messageId, setMessageId] = useState<string>(props.message.id);
-    const { message } = props;
+class TranslatedMessageStore extends InternalStore {
+    #translations: Record<string, Record<string, Translation>> = {};
+    public getTranslation(channelId: string, messageId: string): Translation | null {
+        return this.#translations[channelId]?.[messageId] || null;
+    }
+    public async translate(channelId: string, messageId: string, language: typeof LANGUAGE_CODES[number]) {
+        const message = MessageStore.getMessage(channelId, messageId);
+        if (!message || !message.content) return;
 
-    const handleLanguageChange = async (lang: string) => {
-        selectedLangCache = lang;
-        setSelectedLanguage(lang);
-        
-        if (!window.VXNative) return;
-        
-        const translatedContent = await window.VXNative.translate(message.content, null, lang);
+        const translation = await window.VXNative!.translate(message.content, language);
 
-        messageStore[messageId] = {
-            original: message.content,
-            translated: translatedContent,
-            current: `${translatedContent}\n${message.content}`,
+        this.#translations[channelId] ??= {};
+        this.#translations[channelId][messageId] = {
+            translation, content: message.content, language
         };
-        
-        setMessageId(messageId);
-    };
 
-    const languageItems = LANGUAGE_CODES.map((lang) => (
-        <MenuComponents.MenuRadioItem
-            key={lang}
-            label={`Translate to ${lang}`}
-            id={`vx-translate-${lang}`}
-            action={() => handleLanguageChange(lang)}
-            group="translation-group"
-            checked={selectedLanguage === lang}
-        />
-    ));
+        this.emit();
+    }
+    public deleteTranslation(channelId: string, messageId: string) {
+        this.#translations[channelId] ??= {};
+        delete this.#translations[channelId][messageId];
 
-    const resetItem = (
-        <MenuComponents.MenuItem
-            key="reset"
-            label="Reset Translation"
-            id="vx-reset"
-            color={"danger"}
-            action={() => {
-                selectedLangCache = "RESET_CODE";
-                setSelectedLanguage("RESET_CODE");
-                if (messageStore[messageId]) {
-                    delete messageStore[messageId].translated;
-                    setMessageId(messageId);
-                }
-            }}
-        />
-    );
-
-    res.props.children.push(
-        <MenuComponents.MenuGroup key="translation-menu-group">
-            <MenuComponents.MenuItem label="Translate" id="vx-translate">
-                {languageItems}
-                {resetItem}
-            </MenuComponents.MenuItem>
-        </MenuComponents.MenuGroup>
-    );
+        this.emit();
+    }
 }
 
+const translatedMessageStore = new TranslatedMessageStore();
 
-function getMessageById(messageId: string | number): { translated: string } | undefined {
-    const message = messageStore[messageId];
-    return message ? { translated: message.translated } : undefined;
-}
+const MessageContent = getLazy(bySource('VOICE_HANGOUT_INVITE?""'), { searchDefault: false });
 
+const [ abort, getSignal ] = createAbort();
 
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    styler,
     async start() {
-        patch("vx-translator", "message", StartTranslation);
-        const something = await getLazy(bySource('VOICE_HANGOUT_INVITE?""'));
-        inj.after(something.default, "type", (_, args: any, c) => {
-            if (!args || !args[0] || !args[0].message) return;
+        const signal = getSignal();
 
-            const messageIdObject = getMessageById(args[0].message.id);
-            if (!messageIdObject) return;
+        patch("vx-translator", "message", (props, res) => {            
+            const translation = useInternalStore(translatedMessageStore, () => translatedMessageStore.getTranslation(props.channel.id, props.message.id));
+        
+            res.props.children.push(
+                <MenuComponents.MenuGroup key="translation-menu-group">
+                    <MenuComponents.MenuItem label="Translate" id="vx-translate">
+                        {LANGUAGE_CODES.map((lang) => (
+                            <MenuComponents.MenuRadioItem
+                                key={lang}
+                                label={`Translate to ${getLocaleName(lang)}`}
+                                id={`vx-translate-${lang}`}
+                                action={() => {
+                                    translatedMessageStore.translate(props.channel.id, props.message.id, lang);
+                                }}
+                                group="translation-group"
+                                checked={translation?.language === lang}
+                            />
+                        ))}
+                        <MenuComponents.MenuItem
+                            key="reset"
+                            label="Reset Translation"
+                            id="vx-reset"
+                            color={"danger"}
+                            action={() => {
+                                translatedMessageStore.deleteTranslation(props.channel.id, props.message.id);
+                            }}
+                        />
+                    </MenuComponents.MenuItem>
+                </MenuComponents.MenuGroup>
+            );
+        });
 
-            const { translated } = messageIdObject;
+        const module = await MessageContent;
 
-            return inj.return([
-                translated && <div className="vx-translation"><Markdown text={translated} /></div>,
-                c
+        if (signal.aborted) return;
+
+        injector.after(module.default, "type", (_, [ props ]: any[], res) => {
+            const translation = useInternalStore(translatedMessageStore, () => translatedMessageStore.getTranslation(props.message.channel_id, props.message.id));
+            const isOutOfDate = useMemo(() => {
+                if (!translation) return false;
+                return translation.content !== props.message.content;
+            }, [ translation, props.message.content ]);
+
+            if (!translation) return;
+
+            return injector.return([
+                <div className="vx-translation">
+                    <Tooltip text={`Translated into ${getLocaleName(translation.language)}${isOutOfDate ? "\nTranslation is out of date!" : ""}`}>
+                        {(props) => (
+                            <span {...props} className="vx-translation-languaage" data-vx-is-out-of-date={Boolean(isOutOfDate)}>
+                                {translation.language}
+                            </span>
+                        )}
+                    </Tooltip>
+                    <Markdown text={translation.translation} />
+                </div>,
+                res
             ]);
         });
 
     },
+    stop() {
+        injector.unpatchAll();
+        abort();
+        unpatch("vx-translator");
+    }
 });

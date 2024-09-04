@@ -104,7 +104,7 @@ const messages = {
   ALWAYS_SHOW_CROWN_NAME: "Always Show Crown",
   ALWAYS_SHOW_CROWN_DESCRIPTION: "Always shows the server owners crown",
   BETTER_VOLUME_NAME: "Better Volume",
-  BETTER_VOLUME_DESCRIPTION: "Increases the amount you increase a persons volume and allows for more precise adjustments",
+  BETTER_VOLUME_DESCRIPTION: "Adds a slider for more precise adjustments",
   GIF_IMAGE_MENU_NAME: "Gif Image Menu",
   GIF_IMAGE_MENU_DESCRIPTION: "Adds the image action menu to the GIF picker",
   SUGGEST_MORE_REACTIONS_NAME: "Suggest More Reactions",
