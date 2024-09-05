@@ -1,18 +1,27 @@
 import { definePlugin } from "../index";
-import { subscribeToDispatch } from "@webpack/common";
 import { Developers } from "../../constants";
 import { openNotification } from "../../api/notifications";
-import { bySource, getModule } from "@webpack";
+import { bySource, getModule, whenWebpackReady } from "@webpack";
 import { UserSession } from "./types";
-import { Icons } from "../../components";
+import { Icons, Markdown } from "../../components";
+import { DataStore } from "../../api/storage";
+import { openConfirmModal } from "../../api/modals";
+import { Messages } from "vx:i18n";
+import { createAbort } from "../../util";
 
-const timeLimit = 20000;
+const timeLimit = 20_000;
 
-async function fetchCity(): Promise<string | undefined> {
-    const response = await fetch("https://ipinfo.io/json");
-    const data = await response.json();
-    return data.city;
-}
+const fetchCity = cache(async () => {
+    try {
+        const { json } = await request.json<{ city: string }>("https://ipinfo.io/json");
+        return json.city;
+    } 
+    catch (error) {
+        
+    }
+});
+// After 10 calls let it refetch it
+fetchCity.CALL_LIMIT = 10;
 
 function formatMessage(session: UserSession, city: string | undefined): string {
     const { client_info } = session;
@@ -21,19 +30,19 @@ function formatMessage(session: UserSession, city: string | undefined): string {
     const locationInfo = location ? location : "Unknown location";
 
     return `
-        **New Session Detected!**
+**New Session Detected!**
 
-        A new device session has been detected on your account. Please verify if this was you.
+A new device session has been detected on your account. Please verify if this was you.
 
-        **Session Details:**
-        - **Operating System:** ${osDescription}
-        - **Location:** ||${locationInfo}||
+**Session Details:**
+- **Operating System:** ${osDescription}
+- **Location:** ||${locationInfo}||
 
-        ${city && location && !location.includes(city)
-        ? `**Warning:** The location of this device ||(${locationInfo})|| does not match your current city ||(${city})||. 
-        ***Please take appropriate action if this is not your activity.***`
-        : ''}
-    `;
+${city && location && !location.includes(city)
+    ? `**Warning:** The location of this device ||(${locationInfo})|| does not match your current city ||(${city})||. 
+    ***Please take appropriate action if this is not your activity.***`
+: ''}
+    `.trim();
 }
 
 function capitalize(text: string | undefined): string {
@@ -56,7 +65,10 @@ async function notifyUserIfSessionRecent(userSessions: UserSession[], city: stri
                 id: "new-device-notification",
                 title: "New Device Session",
                 description: message,
-                footer: "***City and Location are hidden for safety and security reasons. \nPlease verify this location OFF stream***",
+                footer: [
+                    <Markdown text="***City and Location are hidden for safety and security reasons***" />,
+                    <Markdown text="***Please verify this location OFF stream***" />
+                ],
                 duration: Infinity,
                 type: "danger",
                 icon: Icons.Notice,
@@ -72,22 +84,46 @@ async function fetchUserSessions(): Promise<UserSession[]> {
     return response.body?.user_sessions || [];
 }
 
-async function handleSessionReplacement(): Promise<void> {
-    const city = await fetchCity();
-    const userSessions = await fetchUserSessions();
-    await notifyUserIfSessionRecent(userSessions, city);
-}
+const storage = new DataStore<{ isNotFirstRun: boolean }>("session-notify");
 
-let unsubscribe: () => void;
+const [ abort, getSignal ] = createAbort();
 
-// noinspection JSUnusedGlobalSymbols
-export default definePlugin({
+const plugin = definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
-    start(): void {
-        unsubscribe = subscribeToDispatch("SESSIONS_REPLACE", handleSessionReplacement);
+    fluxEvents: {
+        async SESSIONS_REPLACE() {            
+            const city = await fetchCity();
+            const userSessions = await fetchUserSessions();
+            await notifyUserIfSessionRecent(userSessions, city);
+        }
     },
-    stop(): void {
-        unsubscribe();
+    // Warn the user of the ip usage
+    warnUser() {
+        if (storage.has("isNotFirstRun")) return;
+        storage.set("isNotFirstRun", true);
+
+        openConfirmModal("Warning", [
+            `**${Messages.SESSION_NOTIFY_NAME}** uses your **IP Address** to get your city`,
+            "It does not share your location",
+            "If you don't want this, disable this plugin"
+        ], {
+            danger: true,
+            confirmText: Messages.DISABLE,
+            onConfirm() {
+                plugin.disable();
+            }
+        });
     },
+    async start() {
+        const signal = getSignal();
+        await whenWebpackReady();
+
+        if (signal.aborted) return;
+
+        this.warnUser();
+    },
+    stop() {
+        abort();
+    }
 });

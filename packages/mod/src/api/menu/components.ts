@@ -23,7 +23,7 @@ interface MenuItemRenderProps {
 
 type MenuItemLabelAndRenderProps = { label: React.ReactNode } | { render(props: MenuItemRenderProps): React.ReactNode };
 
-interface BaseMenuItemProps extends Record<string, any> {
+export interface BaseMenuItemProps extends Record<string, any> {
   id: string,
   disabled?: boolean,
   action?(event: React.MouseEvent): void,
@@ -38,9 +38,9 @@ interface BaseMenuItemProps extends Record<string, any> {
   imageUrl?(props: unknown): string
 };
 
-type MenuItemProps = BaseMenuItemProps & MenuItemLabelAndRenderProps
+export type MenuItemProps = BaseMenuItemProps & MenuItemLabelAndRenderProps
 
-interface MenuCheckboxItemProps {
+export interface MenuCheckboxItemProps {
   id: string,
   label: string,
   disabled?: boolean,
@@ -49,25 +49,25 @@ interface MenuCheckboxItemProps {
   checked: boolean
 };
 
-interface MenuControlProps {
+export interface MenuControlProps {
   disabled?: boolean,
   isFocused: boolean,
   onClose(): void
 };
-interface MenuControlRef {
+export interface MenuControlRef {
   activate(): void,
   blur(): void,
   focus(): void
 };
 
-interface MenuControlItemProps {
+export interface MenuControlItemProps {
   id: string,
   label?: string,
   disabled?: boolean,
   control(props: MenuControlProps, ref: { ref: null | void | MenuControlRef }): React.ReactElement
 };
 
-interface MenuSliderControlProps extends MenuControlProps {
+export interface MenuSliderControlProps extends MenuControlProps {
   value: number,
   maxValue?: number,
   minValue?: number
@@ -75,7 +75,7 @@ interface MenuSliderControlProps extends MenuControlProps {
   renderValue?(value: number): React.ReactNode,
   ref: { ref: null | void | MenuControlRef }
 };
-interface MenuSearchControlProps extends MenuControlProps {
+export interface MenuSearchControlProps extends MenuControlProps {
   query: string,
   onChange(value: string): void,
   loading?: boolean,
@@ -83,11 +83,11 @@ interface MenuSearchControlProps extends MenuControlProps {
   ref: { ref: null | void | MenuControlRef }
 }
 
-interface MenuGroupProps {
+export interface MenuGroupProps {
   label?: string,
   children?: React.ReactNode
 };
-interface MenuRadioItemProps extends MenuCheckboxItemProps {
+export interface MenuRadioItemProps extends MenuCheckboxItemProps {
   group: string
 };
 

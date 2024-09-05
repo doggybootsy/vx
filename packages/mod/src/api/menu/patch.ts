@@ -15,17 +15,22 @@ export function patch(caller: string, menuId: string, callback: MenuCallback) {
 
   return () => void menusPatches.delete(callback);
 }
-export function unpatch(caller: string, menuId?: string) {
+export function unpatch(caller: string, menuId?: string, callback?: MenuCallback) {
   if (!menuPatches.has(caller)) return;
 
   const callerPatches = menuPatches.get(caller)!;
-  if (typeof menuId !== "string") {
-    callerPatches.clear();
+  if (typeof callback === "function") {
+    const menusPatches = callerPatches.get(menuId!)!;
+    menusPatches.delete(callback);
+    return;
+  }
+  if (typeof menuId === "string") {
+    const menusPatches = callerPatches.get(menuId)!;
+    menusPatches.clear();
     return;
   }
 
-  const menusPatches = callerPatches.get(menuId)!;
-  menusPatches.clear();
+  callerPatches.clear();
 }
 
 addPlainTextPatch({

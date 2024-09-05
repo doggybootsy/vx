@@ -14,8 +14,10 @@ function addCommand(command: Command) {
     },
     get name() { return command.name },
     get displayName() { return command.name },
+    get untranslatedName() { return command.name },
     get description() { return command.description || "" },
     get displayDescription() { return command.description || "" },
+    get untranslatedDescription() { return command.description || "" },
     isVX: true
   }
 

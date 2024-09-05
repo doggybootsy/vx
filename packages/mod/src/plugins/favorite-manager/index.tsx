@@ -11,7 +11,7 @@ import { Styler } from "vx:styler";
 const styler = new Styler("", "favorite-manager");
 
 // For older browsers
-const isHasSupported = cache(() => {let has;
+const isHasSupported = cache(() => {
   try { document.querySelector(":has(*)"); return true; }
   catch (e) { return false; }
 });

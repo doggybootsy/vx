@@ -166,7 +166,8 @@ interface DiscordWindow {
   VXNative?: NativeObject,
   VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative,
-  VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>
+  VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>,
+  BdApi: typeof import("../packages/mod/src/betterdiscord/index")["BdApi"]
 }
 
 declare global {
@@ -329,10 +330,28 @@ interface FetchRequest extends Function {
 declare const request: FetchRequest;
 
 interface Cache<T> {
+  /**
+   * Calls the factory function
+   * If only the value hasn't been set or if the call count is over {@link LIMIT}
+   */
   (): T,
-  get: T,
-  hasValue(): boolean,
-  reset(): void
+  /**
+   * Calls the factory function
+   * If only the value hasn't been set or if the call count is over {@link LIMIT}
+   */
+  readonly get: T,
+  /**
+   * Checks to see if a value has been cached
+   */
+  readonly hasValue(): boolean,
+  /**
+   * Completly resets the cache factory
+   */
+  readonly reset(): void,
+  /**
+   * Sets the call limit until it resets
+   */
+  CALL_LIMIT: number
 }
 
 declare function cache<T>(factory: () => T): Cache<T>;

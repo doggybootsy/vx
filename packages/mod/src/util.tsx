@@ -12,10 +12,11 @@ export function isObject(item: any): item is Object {
   return false;
 }
 
-export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false, debugName: string = "Name not provided"): T {
+export function proxyCache<T extends object>(factory: () => T, typeofIsObject: boolean = false, CALL_LIMIT: number = Infinity): T {
   const handlers: ProxyHandler<T> = {};
 
   const cFactory = cache(factory);
+  cFactory.CALL_LIMIT = CALL_LIMIT;
 
   const cacheFactory = () => {
     if (!cFactory.hasValue()) return cFactory();
@@ -181,8 +182,15 @@ export class ClassName {
     return this.#classes.join(" ");
   }
 
+  map<T>(callbackfn: (value: string, index: number, array: string[]) => T, thisArg?: any): T[] {
+    return this.#classes.splice(0).map(callbackfn, thisArg);
+  }
+  forEach(callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any) {
+    return this.#classes.splice(0).forEach(callbackfn, thisArg);
+  }
+
   toJSON() {
-    return this.keys();
+    return this.#classes.splice(0);
   }
   [Symbol.iterator]() {
     return iteratorFrom(this.#classes);
@@ -921,3 +929,6 @@ export const suffixNumber = (v: number) =>
         v >= 1e6 ? (v / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' :
             v >= 1e3 ? (v / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' :
                 v.toString(); // We do NOT need Trillion
+
+const $cache = cache;
+export { $cache as cache };

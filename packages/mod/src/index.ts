@@ -13,6 +13,7 @@ import { transparency } from "./native";
 import { compileFunction } from "./util";
 
 import "./notrack";
+import { BdApi } from "./betterdiscord";
 
 console.log(`Welcome to VX v${env.VERSION}`);
 
@@ -46,7 +47,10 @@ document.addEventListener("readystatechange", () => {
   }
 });
 
-whenWebpackInit().then(() => pluginStore.initPlugins("webpack-ready"));
+whenWebpackInit().then(() => {
+  window.BdApi = BdApi;
+  pluginStore.initPlugins("webpack-ready");
+});
 
 waitForNode<HTMLBodyElement>("body").then((body) => {
   body.classList.add("vx");

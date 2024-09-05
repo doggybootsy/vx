@@ -8,6 +8,7 @@ import "./ipc";
 import "./request";
 import "./colors";
 import "./spotify";
+import "./addons";
 import { env } from "vx:self";
 
 console.log(`Welcome to VX v${env.VERSION}`);

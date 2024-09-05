@@ -47,13 +47,14 @@ request.formData = async (input, init) => {
 }
 
 function cache<T>(factory: () => T): Cache<T> {
-  const value = { } as { current: T } | { };
+  const value = { count: 0 } as { current: T, count: number } | { count: number };
 
   function cache() {
+    if (value.count++ > (limit - 1)) cache.reset();
     if ("current" in value) return value.current;
     
     const current = factory();
-    (value as { current: T }).current = current;
+    (value as { current: T, count: number }).current = current;
 
     return current;
   }
@@ -65,7 +66,21 @@ function cache<T>(factory: () => T): Cache<T> {
   cache.reset = () => {
     // @ts-expect-error
     if ("current" in value) delete value.current;
+    value.count = 0;
   };
+
+  let limit = Infinity;
+  Object.defineProperty(cache, "CALL_LIMIT", {
+    get: () => limit,
+    set: (v) => {
+      if (typeof v !== "number" || isNaN(v) || v <= 0 || Math.round(v) !== v) {
+        throw new Error("Unable to set max call threshould. Value is not a positive int");
+      }
+
+      limit = v;
+      cache.reset();
+    }
+  })
 
   Object.defineProperty(cache, "get", {
     get: () => cache()

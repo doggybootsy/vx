@@ -41,13 +41,7 @@ class AssetStore {
   public async initialize() {
     this.logger.log("Initializing AssetStore");
 
-    const hasPersistence = await this.hasPersistence();
-
-    this.logger.log(`Has persistence '${hasPersistence}'`);
-    
-    if (hasPersistence) {
-      if (await this.usePersistence()) return;
-    }
+    if (await this.tryPersistence()) return;
 
     this.logger.log("Starting install process");
   
@@ -92,6 +86,8 @@ class AssetStore {
   }
 
   public async update(release: Git.Release) {
+    this.logger.log("Updating", release);
+    
     const data = {
       js: await getAsset("js", release),
       css: await getAsset("css", release)
@@ -104,20 +100,14 @@ class AssetStore {
     Connection.reloadAll();
   }
 
-  public async hasPersistence() {
-    // const a = await browser.storage.session.get([ "js", "css" ]);
-
-    return await browser.storage.session.getBytesInUse() > 0;
-  }
-
   public async updatePersistence() {
     this.logger.log("Updating session storage");
     
     await browser.storage.session.set({ css: this.css, js: this.js });
   }
 
-  public async usePersistence() {
-    this.logger.log("Using session storage");
+  public async tryPersistence() {
+    this.logger.log("Trying session storage");
 
     const { css, js } = await browser.storage.session.get();
 
