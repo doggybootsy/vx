@@ -147,6 +147,8 @@ const messages = {
   REVEAL_ALL_SPOILERS_DESCRIPTION: "Reveals all spoilers when ctrl clicking a spoiler",
   TRANSLATOR_NAME: "Translator",
   TRANSLATOR_DESCRIPTION: "Allows you to translate any message to a range of languages",
+  SESSION_NOTIFY_NAME: "Session Notice",
+  SESSION_NOTIFY_DESCRIPTION: "Notifies you when a new session is found.",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
