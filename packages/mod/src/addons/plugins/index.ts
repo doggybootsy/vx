@@ -6,6 +6,7 @@ import { logger } from "vx:logger";
 import { vxRequire } from "../../window";
 import { addons } from "../../native";
 import { closeWindow } from "../../api/window";
+import { IconFullProps } from "../../components/icons";
 
 export interface PluginObject {
   js: string,
@@ -14,6 +15,7 @@ export interface PluginObject {
 
 interface PluginExport {
   Settings?: React.ComponentType,
+  Icon?: React.ComponentType<IconFullProps>,
   start?(): void,
   stop?(): void,
   delete?(): void
@@ -354,6 +356,19 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
     const Settings = exports.Settings;
     if (typeof Settings === "function") return Settings;
+
+    return null;
+  }
+  getIcon(id: string): React.ComponentType<IconFullProps> | null {
+    const exports = this.getExports(id);
+
+    if ("__esModule" in exports && exports.default) {
+      const Icon = exports.default.Icon;
+      if (typeof Icon === "function") return Icon;
+    }
+
+    const Icon = exports.Icon;
+    if (typeof Icon === "function") return Icon;
 
     return null;
   }

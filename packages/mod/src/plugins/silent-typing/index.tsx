@@ -4,7 +4,7 @@ import { Injector } from "../../patcher";
 import { getLazyByKeys } from "@webpack";
 import { SettingType, createSettings } from "../settings";
 
-import { KeyboardButton } from "./button";
+import { KeyboardButton, KeyboardSlash } from "./button";
 import * as styler from "./index.css?managed"
 import { sendVXSystemMessage } from "../../util";
 
@@ -52,6 +52,7 @@ const plugin = definePlugin({
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
+  icon: KeyboardSlash,
   patches: {
     match: ".isSubmitButtonEnabled)",
     find: /return\(.+&&(.{1,3}?)\.push.+{disabled:(.{1,3}),type:(.{1,3})}/,

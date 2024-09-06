@@ -7,9 +7,11 @@ import { logger } from "vx:logger";
 import { env } from "vx:self";
 import { Command } from "../api/commands/types";
 import { addCommand } from "../api/commands";
+import type { IconFullProps } from "../components/icons";
 
 export interface PluginType {
   authors: Developer[],
+  icon?: React.ComponentType<IconFullProps>,
   patches?: PlainTextPatchType | PlainTextPatchType[],
   commands?: Command | Command[],
   settings?: Record<string, CreatedSetting<any>> | React.ComponentType,

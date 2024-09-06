@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import { className } from "../util";
 import { SystemDesign } from "./util";
+import ErrorBoundary from "./boundary";
 
 export interface IconFullProps {
   width?: React.CSSProperties["width"],
@@ -66,6 +67,9 @@ export function DiscordIcon(props: IconProps & { name: string }) {
   return __jsx__(DiscordIcons[props.name], ensureProps(props, props.name));
 }
 
+DiscordIcon.from = function from(name: string): React.ComponentType<IconProps> {
+  return ErrorBoundary.wrap((props) => <DiscordIcon name={name} {...props} />);
+}
 DiscordIcon.getAll = function getAll() {
   const $SystemDesign = SystemDesign[Symbol.for("vx.proxy.cache")]();
 
@@ -614,6 +618,15 @@ export function WindowLaunchIcon(props: IconProps) {
     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" className={className} width={width} height={height} viewBox="0 0 24 24">
       <path fill={color} d="M15 2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V4.41l-4.3 4.3a1 1 0 1 1-1.4-1.42L19.58 3H16a1 1 0 0 1-1-1Z" />
       <path fill={color} d="M5 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 1 0-2 0v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 1 0 0-2H5Z" />
+    </svg>
+  )
+}
+export function DeepL(props: IconProps) {
+  const { color, height, width, className } = ensureProps(props, "DeepL");
+
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width={width} height={height} viewBox="0 0 68 68" fill="none">
+      <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M7.1875 17.2741V44.0848C7.1875 45.4775 7.91781 46.7542 9.10938 47.4506L32.1719 60.8366C32.227 60.8688 32.2827 60.8996 32.339 60.9288L43.7031 67.5303L43.6647 61.7271L43.688 58.4908L43.7029 58.5546V57.4713C43.7029 56.8265 44.0324 56.2481 44.5389 55.8895L45.2151 55.497L45.6248 55.2661L45.6033 55.2717L59.0781 47.4506C60.2697 46.7542 61 45.4775 61 44.0848V17.2741C61 15.8813 60.2697 14.6046 59.0781 13.9083L36.0156 0.522285C34.8241 -0.174095 33.3634 -0.174095 32.1719 0.522285L9.10938 13.947C7.91781 14.6433 7.1875 15.92 7.1875 17.2741ZM24.7904 18.4744C26.3279 16.9656 28.7879 16.9656 30.3254 18.4744C31.4305 19.535 31.7967 21.0625 31.424 22.4326L42.0323 28.6254C42.0407 28.617 42.0493 28.6085 42.0578 28.6002C42.0625 28.5956 42.0672 28.5911 42.0718 28.5865L42.0873 28.5716C43.6248 27.0627 46.0848 27.0627 47.6223 28.5716C49.2751 30.1578 49.2751 32.7885 47.6223 34.3747C46.0848 35.8836 43.6248 35.8836 42.0873 34.3747C40.9272 33.2614 40.5814 31.6336 41.0498 30.2135L41.0117 30.2349L30.4794 24.1217C30.4298 24.1747 30.3784 24.2267 30.3254 24.2776C28.7879 25.7864 26.3279 25.7864 24.7904 24.2776C23.1376 22.6914 23.1376 20.0606 24.7904 18.4744ZM30.3254 39.2498C28.7879 37.741 26.3279 37.741 24.7904 39.2498C23.1376 40.836 23.1376 43.4668 24.7904 45.053C26.3279 46.5618 28.7879 46.5618 30.3254 45.053C31.4128 44.0094 31.7848 42.5137 31.4414 41.1608L41.7805 35.1482L39.8586 34.0649L30.5267 39.4571C30.4626 39.3862 30.3955 39.3171 30.3254 39.2498Z" fill={color} />
     </svg>
   )
 }

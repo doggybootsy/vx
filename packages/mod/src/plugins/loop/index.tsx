@@ -52,6 +52,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   settings,
   requiresRestart: false,
+  icon: Icons.Loop,
   patches: [
     {
       find: "this.renderPlayIcon()",

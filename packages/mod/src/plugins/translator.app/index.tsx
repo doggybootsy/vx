@@ -2,16 +2,17 @@ import { definePlugin } from "../index";
 import { Developers } from "../../constants";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Injector } from "../../patcher";
-import { bySource, getLazy } from "@webpack";
-import {Markdown, Tooltip} from "../../components";
+import { bySource, getLazy, getProxyByKeys } from "@webpack";
+import {Button, ErrorBoundary, Flex, Icons, Markdown, Popout, Tooltip} from "../../components";
 import * as styler from "./translate.css?managed";
 import { createAbort, InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
-import { MessageStore } from "@webpack/common";
-import { useMemo } from "react";
+import { MessageStore, TextAreaInput } from "@webpack/common";
+import { useMemo, useState } from "react";
 import { getLocaleName } from "vx:i18n";
-import {Message} from "discord-types/general";
+import {Channel, Message} from "discord-types/general";
 import { DataStore } from "../../api/storage";
+import { ModalComponents, ModalProps } from "../../api/modals";
 
 const injector = new Injector();
 
@@ -96,10 +97,34 @@ const MessageContent = getLazy(bySource('VOICE_HANGOUT_INVITE?""'), { searchDefa
 
 const [ abort, getSignal ] = createAbort();
 
+const buttonClasses = getProxyByKeys<Record<string, string>>([ "buttonWrapper", "pulseButton" ]);
+
+function TranslateModal({ transitionState, onClose, channel }: ModalProps & { channel: Channel }) {
+    return (
+        <ModalComponents.ModalRoot>
+            <ModalComponents.ModalHeader separator={false} justify={Flex.Justify.BETWEEN}>
+                <div className="vx-modal-title">
+                    Translate
+                </div>
+                <ModalComponents.ModalCloseButton onClick={onClose} />
+            </ModalComponents.ModalHeader>
+            <ModalComponents.ModalContent>
+                
+            </ModalComponents.ModalContent>
+        </ModalComponents.ModalRoot>
+    )
+}
+
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    icon: Icons.DeepL,
     styler,
+    patches: {
+        match: ".isSubmitButtonEnabled)",
+        find: /return\(.+&&(.{1,3}?)\.push.+{disabled:.{1,3},type:.{1,3}}/,
+        replace: "$self._addButton($1,arguments[0],$enabled);$&"
+    },
     async start() {
         const signal = getSignal();
 
@@ -197,5 +222,85 @@ export default definePlugin({
         injector.unpatchAll();
         abort();
         unpatch("vx-translator");
+    },
+    _addButton(buttons: React.ReactNode[], props: { type: { analyticsName: string }, channel: Channel, disabled: boolean }, enabled: boolean) {
+        const [ isShowing, shouldShow ] = useState(false);
+
+        if (props.type.analyticsName !== "normal") return;
+        if (props.disabled) return;
+        if (!enabled) return;
+    
+        buttons.push(
+            <ErrorBoundary>
+                <Popout
+                    shouldShow={isShowing} 
+                    renderPopout={() => (
+                        <MenuComponents.Menu navId="vx-translate" onClose={() => shouldShow(false)}>
+                            <MenuComponents.MenuGroup>
+                                {LANGUAGE_CODES.map((lang) => (
+                                    <MenuComponents.MenuItem
+                                        key={lang}
+                                        label={`Translate to ${getLocaleName(lang)}`}
+                                        id={`vx-translate-${lang}`}
+                                        action={async () => {
+                                            storage.set("lastTranslatedLanguage", lang);
+                                            const result = await window.VXNative!.translate(TextAreaInput.getText(), lang);
+                                            
+                                            TextAreaInput.clearText();
+                                            TextAreaInput.insertText(result);
+                                        }}
+                                        group="translation-group"
+                                    />
+                                ))}
+                            </MenuComponents.MenuGroup>
+                        </MenuComponents.Menu>
+                    )}
+                >
+                    {(props) => (
+                        <div
+                            {...props}
+                            className="vx-textarea-button-container"
+                            onClick={async (event) => {
+                                props.onClick(event);
+                                
+                                if (event.shiftKey) {
+                                    shouldShow(false);
+                                    
+                                    if (!storage.has("lastTranslatedLanguage")) return;
+                                    const last = storage.get("lastTranslatedLanguage")!;
+
+                                    storage.set("lastTranslatedLanguage", last);
+                                    const result = await window.VXNative!.translate(TextAreaInput.getText(), last);
+                                    
+                                    TextAreaInput.clearText();
+                                    TextAreaInput.insertText(result);
+
+
+                                    return;
+                                }
+
+                                shouldShow(!isShowing);
+                            }}
+                        >
+                            <Button
+                            look={Button.Looks.BLANK}
+                            size={Button.Sizes.NONE}
+                            className={buttonClasses.active}
+                            innerClassName="vx-textarea-button-inner"
+                            // @ts-expect-error idk the typings for this, so
+                            focusProps={{
+                                offset: {
+                                top: 4,
+                                bottom: 4
+                                }
+                            }}
+                            >
+                            <Icons.DeepL />
+                            </Button>
+                        </div>
+                    )}    
+                </Popout>
+            </ErrorBoundary>
+        );
     }
 });

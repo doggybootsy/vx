@@ -122,7 +122,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
           {shouldShowCustomIcon ? (
             <img src={icon!} onError={() => setShowCustomIcon(false)} className="vx-addon-icon" />
           ) : (
-            <Icons.Code className="vx-addon-icon" height={32} width={32} />
+            <plugin.icon className="vx-addon-icon" height={32} width={32} />
           )}
         </div>
         <div className="vx-addon-details">

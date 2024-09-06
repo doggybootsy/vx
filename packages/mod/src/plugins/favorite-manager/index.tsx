@@ -7,6 +7,7 @@ import { isValidElement } from "react";
 import { MenuComponents, closeMenu, openMenu } from "../../api/menu";
 import { createSettings, SettingType } from "../settings";
 import { Styler } from "vx:styler";
+import { Icons } from "../../components";
 
 const styler = new Styler("", "favorite-manager");
 
@@ -112,6 +113,7 @@ const plugin = definePlugin({
       replace: "$1:$self.makeImageAccessoryClassName($2,$3),$4"
     }
   ],
+  icon: Icons.DiscordIcon.from("StarIcon"),
 
   get IMAGE_GIF_RE() { return IMAGE_GIF_RE; },
   set IMAGE_GIF_RE(value: RegExp) {

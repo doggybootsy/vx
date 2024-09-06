@@ -1,9 +1,14 @@
+import { Tooltip } from "../components";
 import { ContextMenu } from "./context-menu";
 import { Patcher } from "./patcher";
 
 const contextMenuApi = new ContextMenu();
 
 const bounded = new Map<string, BdApi>();
+
+const components = {
+  Tooltip
+}
 
 export class BdApi {
   #name!: string;
@@ -22,5 +27,6 @@ export class BdApi {
   readonly ContextMenu = contextMenuApi;
   static readonly Patcher = Patcher;
   readonly Patcher!: Patcher;
-
+  static readonly Components = components;
+  readonly Components = components;
 }

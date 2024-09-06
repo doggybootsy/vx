@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { Header, Page } from "../../..";
-import { Button, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
+import { Button, ErrorBoundary, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
 import { newPlugins, Plugin, plugins } from "../../../../plugins";
 import { PluginCard } from "./card";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
@@ -11,6 +11,7 @@ import { openPluginSettingsModal } from "./modal";
 import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";
 import { IS_DESKTOP } from "vx:self";
+import type { IconFullProps } from "../../../../components/icons";
 
 export interface SafePlugin {
   type: "internal" | "custom",
@@ -24,11 +25,13 @@ export interface SafePlugin {
   description: string,
   settings: (() => void) | null,
   id: string,
-  isNew: boolean
+  isNew: boolean,
+  icon: React.ComponentType<IconFullProps>
 };
 
 function getCustomPlugin(id: string): SafePlugin {
   const Settings = pluginStore.getSettings(id);
+  const Icon = pluginStore.getIcon(id);
 
   const name = pluginStore.getAddonName(id);
 
@@ -51,7 +54,12 @@ function getCustomPlugin(id: string): SafePlugin {
     description: pluginStore.getMetaProperty(id, "description", Messages.NO_DESCRIPTION_PROVIDED),
     authors: pluginStore.getMeta(id).authors ?? [],
     settings: Settings ? (() => openPluginSettingsModal(name, Settings!)) : null,
-    isNew: false
+    isNew: false,
+    icon: Icon ? (props) => (
+      <ErrorBoundary fallback={<Icons.Code />}>
+        <Icon {...props} />
+      </ErrorBoundary>
+    ) : Icons.Code
   }
 }
 function convertToSafePlugin(plugin: Plugin): SafePlugin {
@@ -69,7 +77,8 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     description: Messages[`${id}_DESCRIPTION`],
     authors: plugin.authors,
     settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null,
-    isNew: newPlugins.has(plugin.id)
+    isNew: newPlugins.has(plugin.id),
+    icon: plugin.exports.icon || Icons.Code
   }
 }
 

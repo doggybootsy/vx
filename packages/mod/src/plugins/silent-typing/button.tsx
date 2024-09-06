@@ -1,14 +1,15 @@
 import { settings } from ".";
 import { Button, ErrorBoundary } from "../../components";
 import { getProxyByKeys } from "@webpack";
+import { IconFullProps } from "../../components/icons";
 
-function KeyboardSlash() {
+export function KeyboardSlash(props: IconFullProps) {
   return (
     <svg
-      width={24}
-      height={24}
+      width={props.width}
+      height={props.height}
       viewBox="0 0 24 24"
-      className="vx-st-icon"
+      className={props.className}
     >
       <path 
         fillRule="evenodd"
@@ -49,7 +50,7 @@ export function KeyboardButton() {
   return (
     <ErrorBoundary>
       <div
-        className="vx-st-container"
+        className="vx-textarea-button-container"
         onClick={() => {
           settings.shouldShowTyping.set(!shouldShowTyping);
         }}
@@ -58,7 +59,7 @@ export function KeyboardButton() {
           look={Button.Looks.BLANK}
           size={Button.Sizes.NONE}
           className={buttonClasses.active}
-          innerClassName="vx-st-inner"
+          innerClassName="vx-textarea-button-inner"
           // @ts-expect-error idk the typings for this, so
           focusProps={{
             offset: {
@@ -67,7 +68,7 @@ export function KeyboardButton() {
             }
           }}
         >
-          {shouldShowTyping ? <KeyboardFull /> : <KeyboardSlash />}
+          {shouldShowTyping ? <KeyboardFull /> : <KeyboardSlash width={24} height={24} className="vx-st-icon" />}
         </Button>
       </div>
     </ErrorBoundary>

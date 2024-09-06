@@ -1,5 +1,5 @@
 import { definePlugin } from "..";
-import { ErrorBoundary } from "../../components";
+import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 
 import * as styler from "./index.css?managed";
@@ -37,6 +37,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   settings,
+  icon: Icons.Spotify,
   patches: [
     {
       identifier: "panel",

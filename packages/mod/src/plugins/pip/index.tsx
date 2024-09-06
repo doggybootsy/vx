@@ -77,6 +77,7 @@ function PIP() {
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
+  icon: Icons.PIP,
   patches: {
     match: "this.renderVideo()",
     find: /this\.renderVideo\(\)/g,
