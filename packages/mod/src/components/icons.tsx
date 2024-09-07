@@ -19,7 +19,7 @@ export interface IconSizeProps {
 export type IconProps = IconFullProps | IconSizeProps;
 
 function isSizeStyle(props: IconProps): props is IconSizeProps {
-  return "size" in props;
+  return "size" in props && props.size !== "custom";
 }
 
 function ensureProps(props: IconProps, name: string): Required<IconFullProps> {
@@ -38,33 +38,8 @@ function ensureProps(props: IconProps, name: string): Required<IconFullProps> {
   return { color, height, width, className: classNameProp }
 }
 
-const DiscordIcons = new Proxy<Record<string, any>>({}, {
-  get(target, prop) {
-    const name = String(prop).toLowerCase();
-
-    if (name in target) return target[name];
-    
-    try {
-      const $SystemDesign = SystemDesign[Symbol.for("vx.proxy.cache")]();    
-  
-      for (const key in $SystemDesign) {
-        if (!Object.prototype.hasOwnProperty.call($SystemDesign, key)) continue;
-        
-        if (key.toLowerCase() === name || key.toLowerCase() === `${name}icon`) {
-          return target[name] = $SystemDesign[key];
-        }
-      }
-    } 
-    catch (error) {
-      
-    }
-
-    return Warn;
-  }
-})
-
-export function DiscordIcon(props: IconProps & { name: string }) {
-  return __jsx__(DiscordIcons[props.name], ensureProps(props, props.name));
+export function DiscordIcon(props: IconProps & { name: string }) {  
+  return __jsx__(SystemDesign[props.name], { ...ensureProps(props, props.name), size: "custom" });
 }
 
 const cache: Record<string, React.ComponentType<IconProps>> = {};
