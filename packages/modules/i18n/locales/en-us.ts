@@ -149,6 +149,8 @@ const messages = {
   SESSION_NOTIFY_DESCRIPTION: "Notifies you when a new session is found.",
   DEVTOOLS_NAME: "DevTools",
   DEVTOOLS_DESCRIPTION: "Opens Discords Built-in DevTools; Please enable only if you know what you are doing.",
+  DM_LAST_MSG_NAME: "DM Last Message",
+  DM_LAST_MSG_DESCRIPTION: "Shows you the last message sent in a DM on your DMs list.",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",

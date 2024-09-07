@@ -116,7 +116,7 @@ function TranslateModal({ transitionState, onClose, channel }: ModalProps & { ch
 }
 
 export default definePlugin({
-    authors: [Developers.kaan],
+    authors: [Developers.kaan, Developers.doggybootsy],
     requiresRestart: false,
     icon: Icons.DeepL,
     styler,
