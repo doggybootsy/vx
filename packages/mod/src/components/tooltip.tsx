@@ -38,8 +38,9 @@ export interface TooltipProps {
   align?: PopoutAlign,
   shouldShow?: boolean
   spacing?: number,
-  text: React.ReactElement | string | null,
-  children: (props: PassedChildrenProps) => React.ReactNode
+  text: React.ReactNode | string | null,
+  children: (props: PassedChildrenProps) => React.ReactNode,
+  "aria-label"?: string
 };
 
 export function Tooltip(props: TooltipProps) {

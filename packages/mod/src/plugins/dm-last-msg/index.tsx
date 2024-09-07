@@ -11,30 +11,57 @@ import {createSettings, SettingType} from "../settings";
 const CallStore = getProxyStore("CallStore");
 const chanelActions = getProxyByKeys([ "preload", "ensurePrivateChannel" ]);
 const settings = createSettings("dm-last-message", {
-  removeNameInMessage: {
-    type: SettingType.SWITCH,
-    default: false,
-    title: "Remove Username in Tooltip",
-    description: "Removes the `username` (e.g.. Username: hello world!) in the tooltip.",
-  },
   showTooltipWithMessage: {
     type: SettingType.SWITCH,
     default: true,
     title: "Show Tooltip on messages",
     description: "Toggles mimicking statuses",
+  },
+  removeNameInMessage: {
+    type: SettingType.SWITCH,
+    default: false,
+    disabled(settings) {
+      return !settings.showTooltipWithMessage.get();
+    },
+    title: "Remove Username in Tooltip",
+    description: "Removes the `username` (e.g.. Username: hello world!) in the tooltip.",
   }
-})
-const seen = new Set();
+});
+
+const seen = new Set<string>();
+const queue: string[] = [];
+const BATCH_SIZE = 15;
+const DELAY = 1_500;
+
 function preload(channelId: string) {
   if (seen.has(channelId)) return;
 
-  seen.add(chanelActions);
-  chanelActions.preload(null, channelId);
+  seen.add(channelId);
+  queue.push(channelId);
+
+  if (queue.length === 1) {
+    processQueue();
+  }
 }
+
+function processQueue() {
+  if (queue.length === 0) return;
+
+  const batch = queue.splice(0, BATCH_SIZE);
+  batch.forEach(channelId => {
+    // Replace this with your actual API call
+    chanelActions.preload(null, channelId);
+  });
+
+  if (queue.length > 0) {
+    setTimeout(processQueue, DELAY);
+  }
+}
+
 
 function LastMessage({ props, original, enabled }: { props: any, original: JSX.Element, enabled: boolean }) {
   const lastMessage = useStateFromStores([ MessageStore ], () => MessageStore.getLastMessage(props.channel.id));
-  const lastMsgAuthor = useStateFromStores([ RelationshipStore ], () => {
+  const lastMsgAuthor = useStateFromStores<string>([ RelationshipStore ], () => {
     if (!lastMessage) return null;
 
     if (lastMessage.author.id === UserStore.getCurrentUser().id) return Messages.YOU;
@@ -48,12 +75,15 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
 
   const isInCall = useStateFromStores([ CallStore ], () => CallStore.isCallActive(props.channel.id));
 
-  const content = useMemo(() => {
-    if (!lastMessage) return;
-    
-    const $ = (...content: React.ReactNode[]) => [ lastMsgAuthor, ": ", content ];
+  const removeNameInMessage = settings.removeNameInMessage.use();
+  const showTooltip = settings.showTooltipWithMessage.use();
 
-    if (isInCall) return Messages.ONGOING_CALL;
+  const content = useMemo(() => {
+    if (!lastMessage) return [];
+    
+    const $ = (...content: React.ReactNode[]): React.ReactNode[] => [ `${lastMsgAuthor}: `, content ];
+
+    if (isInCall) return [ Messages.ONGOING_CALL ];
 
     if (lastMessage.content) return $(lastMessage.content);
 
@@ -82,7 +112,7 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
     }
     
     // is call
-    if (lastMessage.type === 3) return Messages.CALL_ENDED;
+    if (lastMessage.type === 3) return [ Messages.CALL_ENDED ];
 
     if (lastMessage.stickerItems.length) {
       return $(
@@ -92,20 +122,20 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
     }
 
     // Is group dm
-    if (props.channel.type === 3) return Messages.NUM_USERS.format({ num: props.channel.recipients.length });
+    if (props.channel.type === 3) return [
+      Messages.NUM_USERS.format({ num: props.channel.recipients.length })
+    ];
+
+    return [];
   }, [ lastMessage, lastMsgAuthor, isInCall ]);
+
 
   if (!enabled) return original;
   if (original && props.channel.type !== 3) return original;
   if (!lastMessage) return;
 
-  const removedUserName = String(content).replace(/(.+?:) /, "").replace(",", "");
-  const displayName = settings.removeNameInMessage.get() ? removedUserName : content;
-
-  const showTooltip = settings.showTooltipWithMessage.get();
-
   return showTooltip ? (
-    <Tooltip text={String(displayName)}>
+    <Tooltip text={(removeNameInMessage && content[0] === `${lastMsgAuthor}: `) ? content.slice(1) : content} aria-label={String(content)}>
       {({ ...tooltipProps }) => (
           <span className="vx-dmlm" data-is-call-ongoing={isInCall} {...tooltipProps}>
             {content}

@@ -11,7 +11,7 @@ import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";
 import { markPluginAsSeen } from "../../../../plugins";
 
-function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string }, isLast: boolean }) {
+function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string, github?: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
 
   const randomDefaultAvatar = useMemo(() => getDefaultAvatar(dev.discord), [ ]);
@@ -20,6 +20,7 @@ function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string
     const wrapURL = (url: string) => `url(${JSON.stringify(url)})`;
 
     if (user) return wrapURL(user.getAvatarURL(undefined, 120, true));
+    if (dev.github) return wrapURL(`https://github.com/${encodeURIComponent(dev.github)}.png`);
     return wrapURL(randomDefaultAvatar);
   }, [ user ]);
 
@@ -34,8 +35,10 @@ function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string
           <div 
             {...props}
             onClick={() => {
-              if (!dev.discord) return;
-              openUserModal(dev.discord);
+              if (dev.discord) openUserModal(dev.discord);
+              else if (dev.github) {
+                openExternalWindowModal(`https://github.com/${encodeURIComponent(dev.github)}`);
+              }
             }}
             onContextMenu={(event) => {
               props.onContextMenu();
