@@ -214,7 +214,7 @@ export function Home() {
 
       <Category
         title="Notifications"
-        subtitle="Configue notifications here"
+        subtitle="Configure notifications here"
         icon={Icons.DiscordIcon.from("EnvelopeIcon")}
         onOpen={() => dummyNotification.open()}
         onClose={() => dummyNotification.close()}
