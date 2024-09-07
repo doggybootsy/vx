@@ -149,6 +149,8 @@ const messages = {
   TRANSLATOR_DESCRIPTION: "Allows you to translate any message to a range of languages",
   SESSION_NOTIFY_NAME: "Session Notice",
   SESSION_NOTIFY_DESCRIPTION: "Notifies you when a new session is found.",
+  DEVTOOLS_NAME: "DevTools",
+  DEVTOOLS_DESCRIPTION: "Opens Discords Built-in DevTools; Please enable only if you know what you are doing.",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",
