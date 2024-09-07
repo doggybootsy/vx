@@ -5,11 +5,25 @@ import * as styler from "./index.css?managed";
 import { Messages } from "vx:i18n";
 import { useLayoutEffect, useMemo } from "react";
 import { getProxyByKeys, getProxyStore } from "@webpack";
-import { ErrorBoundary, Icons } from "../../components";
+import {ErrorBoundary, Icons, Tooltip} from "../../components";
+import {createSettings, SettingType} from "../settings";
 
 const CallStore = getProxyStore("CallStore");
 const chanelActions = getProxyByKeys([ "preload", "ensurePrivateChannel" ]);
-
+const settings = createSettings("dm-last-message", {
+  removeNameInMessage: {
+    type: SettingType.SWITCH,
+    default: false,
+    title: "Remove Username in Tooltip",
+    description: "Removes the `username` (e.g.. Username: hello world!) in the tooltip.",
+  },
+  showTooltipWithMessage: {
+    type: SettingType.SWITCH,
+    default: true,
+    title: "Show Tooltip on messages",
+    description: "Toggles mimicking statuses",
+  }
+})
 const seen = new Set();
 function preload(channelId: string) {
   if (seen.has(channelId)) return;
@@ -85,17 +99,31 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
   if (original && props.channel.type !== 3) return original;
   if (!lastMessage) return;
 
-  return (
-    <span className="vx-dmlm" data-is-call-ongoing={String(isInCall)}>
+  const removedUserName = String(content).replace(/(.+?:) /, "").replace(",", "");
+  const displayName = settings.removeNameInMessage.get() ? removedUserName : content;
+
+  const showTooltip = settings.showTooltipWithMessage.get();
+
+  return showTooltip ? (
+    <Tooltip text={String(displayName)}>
+      {({ ...tooltipProps }) => (
+          <span className="vx-dmlm" data-is-call-ongoing={isInCall} {...tooltipProps}>
+            {content}
+         </span>
+      )}
+    </Tooltip>
+  ) : (
+    <span className="vx-dmlm" data-is-call-ongoing={isInCall}>
       {content}
     </span>
   );
 }
 
 export default definePlugin({
-  authors: [ Developers.doggybootsy ],
+  authors: [Developers.doggybootsy ],
   requiresRestart: false,
   styler,
+  settings: settings,
   patches: {
     match: "PrivateChannel.renderAvatar",
     find: /subText:(.{1,3}\(\)),/,
