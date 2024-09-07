@@ -180,182 +180,181 @@ export function Home() {
   }, [ ]);
 
   return (
-    <Page title="Home" icon={Icons.Logo} transparent>
-      <div className="vx-home-header">
-        <div className="vx-home-logo" onClick={changeBackground}>
-          <video src={`https://media0.giphy.com/media/${background}/giphy.mp4`} muted autoPlay loop />
-          <Icons.Logo size={60} />
-        </div>
-        <Flex className="vx-home-body" justify={Flex.Justify.BETWEEN} direction={Flex.Direction.VERTICAL}>
-          <div className="vx-home-welcome">
-            {Messages.WELCOME}
+    <Page title="Home" icon={Icons.Logo}>
+      <RainbowText>
+        <div className="vx-home-header">
+          <div className="vx-home-logo" onClick={changeBackground}>
+            <video src={`https://media0.giphy.com/media/${background}/giphy.mp4`} muted autoPlay loop />
+            <Icons.Logo size={60} />
           </div>
-          <Flex justify={Flex.Justify.START} gap={6} grow={0}>
-            <Button onClick={() => location.reload()}>
-              {Messages.RELOAD_DISCORD}
-            </Button>
-            {IS_DESKTOP && (
-              <Button onClick={() => app.restart()}>
-                {Messages.RESTART_DISCORD}
+          <Flex className="vx-home-body" justify={Flex.Justify.BETWEEN} direction={Flex.Direction.VERTICAL}>
+            <div className="vx-home-welcome">
+              {Messages.WELCOME}
+            </div>
+            <Flex justify={Flex.Justify.START} gap={6} grow={0}>
+              <Button onClick={() => location.reload()}>
+                {Messages.RELOAD_DISCORD}
               </Button>
-            )}
-            {IS_DESKTOP && (
-              // Web api prevents you from closing current window
-              <Button onClick={() => app.quit()}>
-                {Messages.QUIT_DISCORD}
-              </Button>
-            )}
+              {IS_DESKTOP && (
+                <Button onClick={() => app.restart()}>
+                  {Messages.RESTART_DISCORD}
+                </Button>
+              )}
+              {IS_DESKTOP && (
+                // Web api prevents you from closing current window
+                <Button onClick={() => app.quit()}>
+                  {Messages.QUIT_DISCORD}
+                </Button>
+              )}
+            </Flex>
           </Flex>
-        </Flex>
-      </div>
-
-      <Updater />
-
-      <div style={{ marginTop: 10 }} />
-
-      <Category
-        title="Notifications"
-        subtitle="Configure notifications here"
-        icon={Icons.DiscordIcon.from("EnvelopeIcon")}
-        onOpen={() => dummyNotification.open()}
-        onClose={() => dummyNotification.close()}
-      >
-        <div className="vx-notification-position-wrapper">
-          <div className="vx-notification-position">
-            <NotificationSettings 
-              onChange={(event, position) => {
-                setNotificationPosition(position);
-                internalDataStore.set("notification-position", position);
-              }} 
-              position={notificationPosition} 
-            />
-          </div>
         </div>
-      </Category>
 
-      {IS_DESKTOP && (
-        <>
-          <div style={{ marginTop: 10 }} />
+        <Updater />
 
-          <Category
-            title="Window Settings"
-            subtitle="Settings for the browser window"
-            icon={Icons.DiscordIcon.from("BrowserIcon")}
-          >
-            <FormSwitch
-              // idk if this is everywhere 
-              disabled={!window.DiscordNative!.window.supportsContentProtection?.()}
-              value={contentProtection}
-              onChange={(value) => {
-                setContentProtection(value);
-                internalDataStore.set("content-protection", value);
-                window.DiscordNative!.window.setContentProtection!(value);
-              }}
-              style={{ marginTop: 20 }}
-              note={Messages.CONTENT_PROTECTION_NOTE}
-            >
-              {Messages.CONTENT_PROTECTION}
-            </FormSwitch>
-            <FormSwitch
-              value={nativeFrame.get()}
-              onChange={(value) => {
-                openConfirmModal(Messages.ARE_YOU_SURE, [
-                  "Do you want to restart Discord to toggle native frame?"
-                ], {
-                  confirmText: "Restart",
-                  onConfirm: () => {
-                    nativeFrame.set(value);
-                  }
-                });
-              }}
-              style={{ marginTop: 20 }}
-              note={Messages.NATIVE_FRAME_NOTE}
-            >
-              {Messages.NATIVE_FRAME}
-            </FormSwitch>
-            <FormSwitch
-              hideBorder
-              value={transparency.get()}
-              onChange={(value) => {
-                openConfirmModal(Messages.ARE_YOU_SURE, [
-                  "Do you want to restart Discord to toggle transparency?"
-                ], {
-                  confirmText: "Restart",
-                  onConfirm: () => {
-                    transparency.set(value);
-                  }
-                });
-              }}
-              style={{ marginTop: 20 }}
-              note={Messages.TRANSPARENCY_NOTE.format({ })}
-            >
-              {Messages.TRANSPARENCY}
-            </FormSwitch>
-          </Category>
-        </>
-      )}
+        <div style={{ marginTop: 10 }} />
 
-      <div style={{ marginTop: 10 }} />
-      
-      <Category
-        title="VX Settings"
-        subtitle="Miscellaneous settings for VX"
-        icon={Icons.Logo}
-      >
+        <Category
+          title="Notifications"
+          subtitle="Configure notifications here"
+          icon={Icons.DiscordIcon.from("EnvelopeIcon")}
+          onOpen={() => dummyNotification.open()}
+          onClose={() => dummyNotification.close()}
+        >
+          <div className="vx-notification-position-wrapper">
+            <div className="vx-notification-position">
+              <NotificationSettings 
+                onChange={(event, position) => {
+                  setNotificationPosition(position);
+                  internalDataStore.set("notification-position", position);
+                }} 
+                position={notificationPosition} 
+              />
+            </div>
+          </div>
+        </Category>
+
+        {IS_DESKTOP && (
+          <>
+            <div style={{ marginTop: 10 }} />
+
+            <Category
+              title="Window Settings"
+              subtitle="Settings for the browser window"
+              icon={Icons.DiscordIcon.from("BrowserIcon")}
+            >
+              <FormSwitch
+                // idk if this is everywhere 
+                disabled={!window.DiscordNative!.window.supportsContentProtection?.()}
+                value={contentProtection}
+                onChange={(value) => {
+                  setContentProtection(value);
+                  internalDataStore.set("content-protection", value);
+                  window.DiscordNative!.window.setContentProtection!(value);
+                }}
+                style={{ marginTop: 20 }}
+                note={Messages.CONTENT_PROTECTION_NOTE}
+              >
+                {Messages.CONTENT_PROTECTION}
+              </FormSwitch>
+              <FormSwitch
+                value={nativeFrame.get()}
+                onChange={(value) => {
+                  openConfirmModal(Messages.ARE_YOU_SURE, [
+                    "Do you want to restart Discord to toggle native frame?"
+                  ], {
+                    confirmText: "Restart",
+                    onConfirm: () => {
+                      nativeFrame.set(value);
+                    }
+                  });
+                }}
+                style={{ marginTop: 20 }}
+                note={Messages.NATIVE_FRAME_NOTE}
+              >
+                {Messages.NATIVE_FRAME}
+              </FormSwitch>
+              <FormSwitch
+                hideBorder
+                value={transparency.get()}
+                onChange={(value) => {
+                  openConfirmModal(Messages.ARE_YOU_SURE, [
+                    "Do you want to restart Discord to toggle transparency?"
+                  ], {
+                    confirmText: "Restart",
+                    onConfirm: () => {
+                      transparency.set(value);
+                    }
+                  });
+                }}
+                style={{ marginTop: 20 }}
+                note={Messages.TRANSPARENCY_NOTE.format({ })}
+              >
+                {Messages.TRANSPARENCY}
+              </FormSwitch>
+            </Category>
+          </>
+        )}
+
+        <div style={{ marginTop: 10 }} />
         
-        <FormSwitch
-          value={userSettingShortcut}
-          onChange={(value) => {
-            setUserSettingShortcut(value);
-            internalDataStore.set("user-setting-shortcut", value);
-          }}
-          style={{ marginTop: 20 }}
-          note={Messages.USER_SETTINGS_SHORTCUT_NOTE}
+        <Category
+          title="VX Settings"
+          subtitle="Miscellaneous settings for VX"
+          icon={Icons.Logo}
         >
-          {Messages.USER_SETTINGS_SHORTCUT}
-        </FormSwitch>
+          
+          <FormSwitch
+            value={userSettingShortcut}
+            onChange={(value) => {
+              setUserSettingShortcut(value);
+              internalDataStore.set("user-setting-shortcut", value);
+            }}
+            style={{ marginTop: 20 }}
+            note={Messages.USER_SETTINGS_SHORTCUT_NOTE}
+          >
+            {Messages.USER_SETTINGS_SHORTCUT}
+          </FormSwitch>
 
-        <FormSwitch
-          value={preserveQuery}
-          onChange={(value) => {
-            setPreserveQuery(value);
-            internalDataStore.set("preserve-query", value);
-          }}
-          style={{ marginTop: 20 }}
-          note={Messages.PRESERVE_ADDON_QUERY_NOTE}
-        >
-          {Messages.PRESERVE_ADDON_QUERY}
-        </FormSwitch>
+          <FormSwitch
+            value={preserveQuery}
+            onChange={(value) => {
+              setPreserveQuery(value);
+              internalDataStore.set("preserve-query", value);
+            }}
+            style={{ marginTop: 20 }}
+            note={Messages.PRESERVE_ADDON_QUERY_NOTE}
+          >
+            {Messages.PRESERVE_ADDON_QUERY}
+          </FormSwitch>
 
-        <FormSwitch
-          value={showFavicon}
-          onChange={(value) => {
-            setShowFavicon(value);
-            internalDataStore.set("show-favicon", value);
-          }}
-          style={{ marginTop: 20 }}
-          note={Messages.SHOW_FAVICON_NOTE}
-        >
-          {Messages.SHOW_FAVICON}
-        </FormSwitch>
+          <FormSwitch
+            value={showFavicon}
+            onChange={(value) => {
+              setShowFavicon(value);
+              internalDataStore.set("show-favicon", value);
+            }}
+            style={{ marginTop: 20 }}
+            note={Messages.SHOW_FAVICON_NOTE}
+          >
+            {Messages.SHOW_FAVICON}
+          </FormSwitch>
 
-        <FormSwitch
-          disabled={nativeFrame.get() || window.VXNative?.app.platform !== "win32"}
-          value={nativeFrame.get() ? false : addVXTitleBarButton}
-          onChange={(value) => {
-            setVXTitleBarButton(value);
-            internalDataStore.set("vx-titlebar", value);
-          }}
-          style={{ marginTop: 20 }}
-          note={Messages.ADD_VX_TO_TITLEBAR_NOTE}
-          hideBorder
-        >
-          {Messages.ADD_VX_TO_TITLEBAR}
-        </FormSwitch>
-      </Category>
-
-      <RainbowText/>
-      
+          <FormSwitch
+            disabled={nativeFrame.get() || window.VXNative?.app.platform !== "win32"}
+            value={nativeFrame.get() ? false : addVXTitleBarButton}
+            onChange={(value) => {
+              setVXTitleBarButton(value);
+              internalDataStore.set("vx-titlebar", value);
+            }}
+            style={{ marginTop: 20 }}
+            note={Messages.ADD_VX_TO_TITLEBAR_NOTE}
+            hideBorder
+          >
+            {Messages.ADD_VX_TO_TITLEBAR}
+          </FormSwitch>
+        </Category>   
+      </RainbowText>   
     </Page>
   )
 };

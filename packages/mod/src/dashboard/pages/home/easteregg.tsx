@@ -13,7 +13,7 @@ const SECRET_CODE: string[] = [
     'b',
     'Enter',
 ];
-const RainbowText: React.FC = () => {
+const RainbowText: React.FC<React.PropsWithChildren> = ({ children }) => {
     const [sequence, setSequence] = useState<string[]>([]);
     const [showMessage, setShowMessage] = useState<boolean>(false);
 
@@ -44,19 +44,23 @@ const RainbowText: React.FC = () => {
     };
 
     const containerStyle: React.CSSProperties = {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
     };
 
-    return (
-        showMessage && (
-            <div style={containerStyle}>
-                <div style={rainbowStyle}>The cake is a lie</div>
-            </div>
-        )
+    if (showMessage) return (
+        <div style={containerStyle} onClick={() => {setShowMessage(false); setSequence([])}}>
+            <div style={rainbowStyle}>The cake is a lie</div>
+        </div>
     );
+
+    return children;
 };
 
 export default RainbowText;

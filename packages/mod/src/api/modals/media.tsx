@@ -49,7 +49,7 @@ function getVideoDetails(src: string){
 const mediaModals = getMangledProxy<{
   VideoModal: React.FunctionComponent<any>,
   ImageModal: React.FunctionComponent<any>
-}>(".videoWrapper),", {
+}>(/\.videoWrapper\),.+isObscured/, {
   VideoModal: byStrings(".videoWrapper),"),
   ImageModal: not(byStrings(".videoWrapper),"))
 });
