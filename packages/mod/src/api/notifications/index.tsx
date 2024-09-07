@@ -14,7 +14,8 @@ export interface Notification {
   duration?: number,
 
   // events
-  ref?(div: HTMLDivElement): void
+  ref?(div: HTMLDivElement): void,
+  onClose?(reason: "user" | "timeout" | "api"): void
 };
 
 addPlainTextPatch({
@@ -42,10 +43,10 @@ export function openNotification(notification: Notification) {
 
   notificationStore.add(notification.id, notification);
 
-  return () => notificationStore.delete(notification.id!);
+  return () => notificationStore.delete(notification.id!, "api");
 }
 export function closeNotification(id: string) {
-  notificationStore.delete(id);
+  notificationStore.delete(id, "api");
 }
 
 // CSS ClassName normalizing breaks this so, add a check for a normalized name

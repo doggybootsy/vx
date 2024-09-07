@@ -168,8 +168,8 @@ function pollyFillDefault(module: Webpack.Module) {
   }
 }
 
-__addSelf("_onWebpackModule", function(module: Webpack.Module) {
+__self__._onWebpackModule = function(module: Webpack.Module) {
   if (module.exports instanceof Object) pollyFillDefault(module);
     
   for (const listener of listeners) listener(module);
-});
+};

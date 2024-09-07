@@ -10,6 +10,7 @@ import { SystemDesign } from "../../components";
 import { useForceUpdate } from "../../hooks";
 
 import * as styler from "./index.css?managed";
+import { IS_DESKTOP } from "vx:self";
 
 const MediaEngineStore = getProxyStore("MediaEngineStore");
 
@@ -58,7 +59,7 @@ export default definePlugin({
               type="number"
               size={SystemDesign.TextInput.Sizes.MINI}
               placeholder="100"
-              max={window.VXNative ? 200 : 100}
+              max={IS_DESKTOP ? 200 : 100}
               min={0}
               onChange={(value: string) => {
                 setIsEmpty(!value.length);

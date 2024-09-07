@@ -190,3 +190,8 @@ export function SettingsView(props: SettingsViewProps) {
 }
 
 SettingsView.Sections = sections;
+
+__self__.preloadSettingsView = () => {
+  WrappedSettingsView.init();
+  return WrappedSettingsView.promise;
+}

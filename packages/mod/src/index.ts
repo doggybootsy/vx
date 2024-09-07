@@ -9,7 +9,7 @@ import { VX } from "./window";
 import { pluginStore } from "./addons/plugins";
 import { whenWebpackInit } from "@webpack";
 import { IS_DESKTOP, env } from "vx:self";
-import { transparency } from "./native";
+import { nativeFrame, transparency } from "./native";
 import { compileFunction } from "./util";
 
 import "./notrack";
@@ -48,13 +48,14 @@ document.addEventListener("readystatechange", () => {
 });
 
 whenWebpackInit().then(() => {
-  window.BdApi = BdApi;
   pluginStore.initPlugins("webpack-ready");
 });
 
 waitForNode<HTMLBodyElement>("body").then((body) => {
   body.classList.add("vx");
   if (transparency.get()) body.classList.add("transparent");
+
+  document.body.setAttribute("data-native-frame", String(nativeFrame.get()));
 });
 
 const debug = compileFunction<() => void>("/*\n\tThis is the Debugger (F8)\n\tIf you didn't mean to active it you press F8 again to leave\n\tYou get dragged to this screen because Discord disables the Debugger so VX adds a custom prollyfill\n*/\ndebugger;\n//# sourceURL=vx://VX/debugger.js", []);

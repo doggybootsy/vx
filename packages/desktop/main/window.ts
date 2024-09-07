@@ -58,7 +58,7 @@ export class BrowserWindow extends electron.BrowserWindow {
     if (originalPreload.includes("splash")) {
       opts.webPreferences.preload = path.join(__dirname, "splash.js");
     }
-    else if (originalPreload.includes("main")) {
+    else if (originalPreload.includes("main") || originalPreload.includes("betterdiscord")) {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
 
       // Only apply if it is the main window

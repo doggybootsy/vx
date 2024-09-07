@@ -63,14 +63,14 @@ addPlainTextPatch(
   }
 );
 
-__addSelf("NavigationPanel", function({ panel }: { panel: React.ReactNode }) {
+__self__.NavigationPanel = function({ panel }: { panel: React.ReactNode }) {
   if (location.pathname.startsWith("/vx")) {
     return <NavigationPanel />;
   }
   return panel;
-});
+};
 
-__addSelf("TitlebarButton", function TitlebarButton(props: { windowKey?: string }) {
+__self__.TitlebarButton = function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");
 
   useLayoutEffect(() => {
@@ -102,9 +102,9 @@ __addSelf("TitlebarButton", function TitlebarButton(props: { windowKey?: string 
       <Icons.Logo size={20} />
     </div>
   )
-});
+};
 
-__addSelf("_addHomeButton", cache(() => {
+__self__._addHomeButton = cache(() => {
   const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 
@@ -130,9 +130,9 @@ __addSelf("_addHomeButton", cache(() => {
       </Components.AdvancedScrollerNone>
     );
   });
-}));
+});
 
-__addSelf("_settingButtonActionWrapper", function _settingButtonActionWrapper(action: (event: React.MouseEvent) => void, isOnContextMenu: boolean) {
+__self__._settingButtonActionWrapper = function _settingButtonActionWrapper(action: (event: React.MouseEvent) => void, isOnContextMenu: boolean) {
   const shouldOpen = () => internalDataStore.get("user-setting-shortcut") ?? true;
   
   return (event: React.MouseEvent) => {
@@ -149,4 +149,4 @@ __addSelf("_settingButtonActionWrapper", function _settingButtonActionWrapper(ac
 
     return action(event);
   }
-});
+};

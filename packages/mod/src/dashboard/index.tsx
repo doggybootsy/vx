@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { IS_DESKTOP, env, git } from "vx:self";
 
 import { LayerManager, NavigationUtils } from "@webpack/common";
@@ -177,7 +177,7 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
 const COMMUNITY_PATH = "/vx/community/:type";
 const PAGE_PATH = "/vx/:page";
 
-function Dashboard({ match }: { match: { params: Record<string, string | void>, path: string, url: string } }) {
+const Dashboard = memo(function Dashboard({ match }: { match: { params: Record<string, string | void>, path: string, url: string } }) {
   const node = useMemo(() => {
     const { params, path } = match;    
 
@@ -205,24 +205,24 @@ function Dashboard({ match }: { match: { params: Record<string, string | void>, 
   }, [ match ]);
 
   return node;
-}
+})
 
-__addSelf("dashboardRouteProps", {
+__self__.dashboardRouteProps = {
   path: [ COMMUNITY_PATH, PAGE_PATH ],
   render: (props: any) => <Dashboard {...props} />,
   disableTrack: true
-});
+};
 
 {
   let routes: { path: string[], render: React.FunctionComponent<any> }[];
   
-  Object.defineProperty(__addSelf.__self__, "routes", {
+  Object.defineProperty(__self__, "routes", {
     get: () => routes,
     set: (v) => {
       routes = v;
       for (const route of routes) {
         if (route.path.length > 15) {
-          route.path.push(__addSelf.__self__.dashboardRouteProps.path);
+          route.path.push(__self__.dashboardRouteProps.path);
         }
       }
     }
@@ -236,6 +236,8 @@ export function openDashboard(path: string = "/home") {
 const { search } = location;
 if (search.startsWith("?__vx_dashboard_path__=")) {
   whenWebpackReady().then(() => {
-    NavigationUtils.transitionTo(decodeURIComponent(search.replace("?__vx_dashboard_path__=", "")));
+    setTimeout(() => {
+      NavigationUtils.transitionTo(decodeURIComponent(search.replace("?__vx_dashboard_path__=", "")));
+    });
   });
 }

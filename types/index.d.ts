@@ -166,8 +166,7 @@ interface DiscordWindow {
   VXNative?: NativeObject,
   VXExtension?: ExtensionNative,
   DiscordNative?: DiscordNative,
-  VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>,
-  BdApi: typeof import("../packages/mod/src/betterdiscord/index")["BdApi"]
+  VX: ReturnType<typeof import("../packages/mod/src/window")["VX"]>
 }
 
 declare global {
@@ -356,8 +355,4 @@ interface Cache<T> {
 
 declare function cache<T>(factory: () => T): Cache<T>;
 
-declare interface InternalSelfObject {
-  <T>(key: string, value: T): T;
-  __self__: Record<string, any>;
-}
-declare const __addSelf: InternalSelfObject;
+declare const __self__: Record<string, any>;

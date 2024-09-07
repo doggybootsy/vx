@@ -67,8 +67,9 @@ export function DiscordIcon(props: IconProps & { name: string }) {
   return __jsx__(DiscordIcons[props.name], ensureProps(props, props.name));
 }
 
+const cache: Record<string, React.ComponentType<IconProps>> = {};
 DiscordIcon.from = function from(name: string): React.ComponentType<IconProps> {
-  return ErrorBoundary.wrap((props) => <DiscordIcon name={name} {...props} />);
+  return cache[name] ??= ErrorBoundary.wrap((props) => <DiscordIcon name={name} {...props} />);
 }
 DiscordIcon.getAll = function getAll() {
   const $SystemDesign = SystemDesign[Symbol.for("vx.proxy.cache")]();

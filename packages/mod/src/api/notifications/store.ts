@@ -24,10 +24,14 @@ export const notificationStore = new class extends InternalStore {
     });
     this.emit();
 
-    return () => this.delete(id);
+    return () => this.delete(id, "api");
   }
-  delete(id: string) {    
+  delete(id: string, reason: "api" | "user" | "timeout") {
+    const notification = this.#state.get(id);
+
     this.#state.delete(id);
     this.emit();
+
+    notification?.onClose?.(reason);
   }
 };

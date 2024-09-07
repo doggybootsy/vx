@@ -158,14 +158,14 @@ export function vxRequire(path: string) {
 
 const internal = Symbol("vx.internal.self");
 
-__addSelf("getSrc", function(this: any, getSrc: (...args: any[]) => string) {
+__self__.getSrc =function(this: any, getSrc: (...args: any[]) => string) {
   return (...args: any[]) => {
     const url = getSrc.apply(this, args);        
     if (url.startsWith("blob:")) return url.split("?").at(0);
     if (url.startsWith("data:")) return url.split("?").at(0);
     return url;
   }
-});
+};
 
 export const VX = () => {
   const vx = {
@@ -211,7 +211,7 @@ export const VX = () => {
     jsx: __jsx__
   };
 
-  Object.defineProperty(vx, internal, { value: __addSelf.__self__ });
+  Object.defineProperty(vx, internal, { value: __self__ });
   Object.defineProperty(vx, "internal", { value: internal });
 
   return vx;

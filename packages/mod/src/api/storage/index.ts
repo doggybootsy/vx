@@ -233,7 +233,8 @@ interface InternalData {
   "show-favicon": boolean,
   "last-loaded-locale": LocaleCodes,
   "trusted-domains": string[],
-  "known-plugins": string[]
+  "known-plugins": string[],
+  "notification-position": "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | "disabled"
 };
 
 const internalDataStore = new DataStore<InternalData>("Internal", {

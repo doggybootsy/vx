@@ -440,10 +440,10 @@ const injections = [
     scripts.file("service-worker.js", readFileSync(path.join(dir, "mv3", "scripts", "service-worker.js"), "binary"));
 
     const icons = zip.folder("icons");
-    icons.file("16.png", readFileSync(path.join(dir, "mv3", "icons", "16.png"), "binary"));
-    icons.file("48.png", readFileSync(path.join(dir, "mv3", "icons", "48.png"), "binary"));
-    icons.file("128.png", readFileSync(path.join(dir, "mv3", "icons", "128.png"), "binary"));
-    icons.file("256.png", readFileSync(path.join(dir, "mv3", "icons", "256.png"), "binary"));
+    icons.file("16.png", readFileSync(path.join(dir, "mv3", "icons", "16.png")));
+    icons.file("48.png", readFileSync(path.join(dir, "mv3", "icons", "48.png")));
+    icons.file("128.png", readFileSync(path.join(dir, "mv3", "icons", "128.png")));
+    icons.file("256.png", readFileSync(path.join(dir, "mv3", "icons", "256.png")));
 
     const buffer = await zip.generateAsync({ type: "nodebuffer" });
     writeFileSync(path.join(dir, "mw3.zip"), buffer);

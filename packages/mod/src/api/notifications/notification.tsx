@@ -5,12 +5,16 @@ import { transformContent } from "../../components";
 import { useInternalStore } from "../../hooks";
 import { ReactSpring } from "@webpack/common"
 import { notificationStore } from "./store"
+import { internalDataStore } from "../storage";
 
 export const Notifications = memo(function Notifications() {
   const state = useInternalStore(notificationStore, () => notificationStore.getState());
+  const position = internalDataStore.use("notification-position");
+
+  if (position === "disabled") return;
 
   return (
-    <div id="vx-notifications">
+    <div id="vx-notifications" data-position={position || "bottomRight"}>
       {state.map((notification) => (
         <Notification
           notification={notification} 
@@ -95,7 +99,7 @@ function Notification({ notification }: { notification: Notification }) {
         onMouseDown={(event) => {
           if (event.button !== MouseButtons.MIDDLE) return;
 
-          notificationStore.delete(notification.id!);
+          notificationStore.delete(notification.id!, "user");
         }}
       >
         <div className="vx-notification-info">
@@ -110,7 +114,7 @@ function Notification({ notification }: { notification: Notification }) {
         </div>
         <div 
           className="vx-notification-close"
-          onClick={() => notificationStore.delete(notification.id!)}
+          onClick={() => notificationStore.delete(notification.id!, "user")}
           onContextMenu={() => notificationStore.clear()}
         >
           <svg width={18} height={18} viewBox="0 0 24 24">
@@ -132,7 +136,7 @@ function Notification({ notification }: { notification: Notification }) {
         <Slider 
           duration={notification.duration!} 
           springRef={springRef} 
-          close={() => notificationStore.delete(notification.id!)}
+          close={() => notificationStore.delete(notification.id!, "timeout")}
         />
       )}
     </div>
