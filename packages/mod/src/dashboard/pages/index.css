@@ -495,6 +495,7 @@ button.vx-community-card-button {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 314px;
 }
 .vx-notification-position {
   width: 500px;

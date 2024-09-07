@@ -2,13 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { IS_DESKTOP } from "vx:self";
 import { Page } from "../..";
 import { internalDataStore } from "../../../api/storage";
-import { Button, Collapsable, Flex, Icons } from "../../../components";
+import { Button, Collapsable, Flex, Icons, Spinner } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
 import { app, nativeFrame, transparency } from "../../../native";
 import { Updater } from "./updater";
 import { Messages } from "vx:i18n";
 import { openConfirmModal } from "../../../api/modals";
-import { getRandomItem, lazy } from "../../../util";
+import { getRandomItem, lazy, makeLazy } from "../../../util";
 import { getLazy } from "@webpack";
 import { closeNotification, openNotification } from "../../../api/notifications";
 import { IconFullProps, IconProps } from "../../../components/icons";
@@ -46,9 +46,15 @@ const NotificationSettings = (() => {
     onChange(event: React.MouseEvent, position: Positions): void,
     position: Positions
   }
-  const NotificationSettingsLazy = lazy(async () => {
-    await __self__.preloadSettingsView();
-    return getLazy<React.ComponentType<NotificationSettingsProps>>(m => m.Positions && !m.getDerivedStateFromProps);
+
+  const NotificationSettingsLazy = makeLazy({
+    async factory() {
+      await __self__.preloadSettingsView();
+      return getLazy<React.ComponentType<NotificationSettingsProps>>(m => m.Positions && !m.getDerivedStateFromProps);
+    },
+    fallback() {
+      return <Spinner />;
+    }
   });
 
   function NotificationSettings(props: NotificationSettingsProps) {
@@ -209,7 +215,7 @@ export function Home() {
       <Category
         title="Notifications"
         subtitle="Configue notifications here"
-        icon={Icons.Image}
+        icon={Icons.DiscordIcon.from("EnvelopeIcon")}
         onOpen={() => dummyNotification.open()}
         onClose={() => dummyNotification.close()}
       >

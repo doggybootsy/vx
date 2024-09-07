@@ -20,10 +20,10 @@ export interface Notification {
 
 addPlainTextPatch({
   identifier: "VX(notifications)",
-  match: "!this.state.shaking)this.setState({shaking:!0},this._animate)",
-  find: /let{children:.{1,3},\.{3}t}=this\.props;return\(0,.{1,3}\.jsx\)\("div",{\.{3}.{1,3},ref:this\.ref,children:.{1,3}}\)/,
-  replace: "$vx.notifications._handleNotifications(this.props);$&"
-});
+  match: "Shakeable is shaken when not mounted",
+  find: /\(0,.{1,3}\.jsxs\)\(.{1,3}\.Shakeable,{ref:.{1,3},className:.{1,3}\.app,children:\[.{50,200}\.DnDKeyboardHelpBar,{}\)\]}\)/,
+  replace: "$vxi._handleNotifications($&)"
+})
 
 const allowedTypes = new Set([
   "warn", "warning",
@@ -49,12 +49,9 @@ export function closeNotification(id: string) {
   notificationStore.delete(id, "api");
 }
 
-// CSS ClassName normalizing breaks this so, add a check for a normalized name
-const appClassNameRegex = /^app_.{6}( app)?$/;
-export function _handleNotifications(props: any) {
-  if (!appClassNameRegex.test(String(props.className))) return;
-  
-  props.children.push(
+__self__._handleNotifications = function(shakeable: any) {
+  return [
+    shakeable,
     <Notifications />
-  );
+  ]
 }

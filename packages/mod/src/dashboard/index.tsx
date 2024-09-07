@@ -236,7 +236,7 @@ export function openDashboard(path: string = "/home") {
 const { search } = location;
 if (search.startsWith("?__vx_dashboard_path__=")) {
   whenWebpackReady().then(() => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       NavigationUtils.transitionTo(decodeURIComponent(search.replace("?__vx_dashboard_path__=", "")));
     });
   });
