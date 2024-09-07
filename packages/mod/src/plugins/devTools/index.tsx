@@ -10,7 +10,6 @@ import {FluxDispatcher} from "@webpack/common";
 import {createAbort} from "../../util";
 
 const Header = getProxy(byKeys("Caret", "Divider", "Icon", "Title"));
-const inj = new Injector();
 const [abort, getSignal] = createAbort();
 const VXHeader = () => {
     const [show, setShow] = useState(false);
@@ -46,7 +45,7 @@ export default definePlugin({
     patches: {
         match: "toolbar:function",
         find: /(?<=toolbar:function.{0,100}\()i.Fragment,/,
-        replace: "$self.OwO,"
+        replace: "$self.devTools,"
     },
     styler: undefined,
     async start() {
@@ -57,5 +56,5 @@ export default definePlugin({
     stop() {
         abort();
     },
-    OwO: ErrorBoundary.wrap(ToolboxButton)
+    devTools: ToolboxButton
 });
