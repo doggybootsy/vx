@@ -120,7 +120,7 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
 }
 
 export default definePlugin({
-  authors: [Developers.doggybootsy, Developers.kaan ],
+  authors: [ Developers.doggybootsy, Developers.kaan ],
   requiresRestart: false,
   styler,
   settings: settings,
