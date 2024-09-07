@@ -12,6 +12,7 @@ import { getRandomItem, lazy, makeLazy } from "../../../util";
 import { getLazy } from "@webpack";
 import { closeNotification, openNotification } from "../../../api/notifications";
 import { IconFullProps, IconProps } from "../../../components/icons";
+import RainbowText from "./easteregg";
 
 const backgrounds = [
   "3og0IFrHkIglEOg8Ba",
@@ -295,12 +296,13 @@ export function Home() {
       )}
 
       <div style={{ marginTop: 10 }} />
-
+      
       <Category
         title="VX Settings"
         subtitle="Miscellaneous settings for VX"
         icon={Icons.Logo}
       >
+        
         <FormSwitch
           value={userSettingShortcut}
           onChange={(value) => {
@@ -351,6 +353,9 @@ export function Home() {
           {Messages.ADD_VX_TO_TITLEBAR}
         </FormSwitch>
       </Category>
+
+      <RainbowText/>
+      
     </Page>
   )
 };
