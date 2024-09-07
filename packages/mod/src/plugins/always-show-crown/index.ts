@@ -12,3 +12,4 @@ export default definePlugin({
     replace: "$1:$enabled?$vx.webpack.common.GuildStore.getGuild(this.props.guildId).ownerId===this.props.user.id:$2,"
   }
 });
+    
