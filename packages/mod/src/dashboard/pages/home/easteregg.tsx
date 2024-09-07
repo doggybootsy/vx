@@ -51,9 +51,11 @@ const RainbowText: React.FC = () => {
     };
 
     return (
-        <div style={containerStyle}>
-            {showMessage && <div style={rainbowStyle}>The cake is a lie</div>}
-        </div>
+        showMessage && (
+            <div style={containerStyle}>
+                <div style={rainbowStyle}>The cake is a lie</div>
+            </div>
+        )
     );
 };
 
