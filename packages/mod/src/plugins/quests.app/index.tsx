@@ -225,14 +225,13 @@ export default definePlugin({
 
         if (signal.aborted) return;
 
-        const filter = byStrings('questContentCTA:d.jZ.DEFIBRILLATOR');
-        const module = getModuleWithKey(filter);
+        const module = bySource('questContentCTA:d.jZ.DEFIBRILLATOR');
 
         await initQuests();
 
         if (module) {
             // @ts-ignore
-            inj.after(module.exports, 'default', (_, __, returnValue) => {
+            inj.after(module, 'default', (_, __, returnValue) => {
                 const quest = __[0].quest;
                 const canComplete = isFutureDate(quest.config.expiresAt)
                 if (canComplete) {
