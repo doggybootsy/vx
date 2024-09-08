@@ -234,6 +234,7 @@ export default definePlugin({
             <ErrorBoundary>
                 <Popout
                     shouldShow={isShowing} 
+                    onRequestClose={() => shouldShow(false)}
                     renderPopout={() => (
                         <MenuComponents.Menu navId="vx-translate" onClose={() => shouldShow(false)}>
                             <MenuComponents.MenuGroup>
@@ -244,9 +245,11 @@ export default definePlugin({
                                         id={`vx-translate-${lang}`}
                                         action={async () => {
                                             storage.set("lastTranslatedLanguage", lang);
-                                            const result = await window.VXNative!.translate(TextAreaInput.getText(), lang);
                                             
+                                            const text = TextAreaInput.getText();
                                             TextAreaInput.clearText();
+
+                                            const result = await window.VXNative!.translate(text, lang);
                                             TextAreaInput.insertText(result);
                                         }}
                                         group="translation-group"
@@ -270,11 +273,12 @@ export default definePlugin({
                                     const last = storage.get("lastTranslatedLanguage")!;
 
                                     storage.set("lastTranslatedLanguage", last);
-                                    const result = await window.VXNative!.translate(TextAreaInput.getText(), last);
-                                    
-                                    TextAreaInput.clearText();
-                                    TextAreaInput.insertText(result);
 
+                                    const text = TextAreaInput.getText();
+                                    TextAreaInput.clearText();
+
+                                    const result = await window.VXNative!.translate(text, last);
+                                    TextAreaInput.insertText(result);
 
                                     return;
                                 }
@@ -285,7 +289,7 @@ export default definePlugin({
                             <Button
                             look={Button.Looks.BLANK}
                             size={Button.Sizes.NONE}
-                            className={buttonClasses.active}
+                                className={buttonClasses.active}
                             innerClassName="vx-textarea-button-inner"
                             // @ts-expect-error idk the typings for this, so
                             focusProps={{

@@ -214,7 +214,6 @@ input.vx-addon-input:not(:focus) {
   padding: 6px;
   border-radius: 4px;
   color: var(--text-normal);
-  margin-top: 8px;
   border: 1px solid var(--background-secondary-alt);
 }
 
@@ -552,4 +551,10 @@ button.vx-community-card-button {
 }
 .vx-category[data-is-open="true"] .vx-category-caret {
   rotate: -90deg;
+}
+
+.vx-home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

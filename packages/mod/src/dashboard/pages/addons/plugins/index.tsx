@@ -8,7 +8,7 @@ import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
 import { pluginStore } from "../../../../addons/plugins";
 import { useInternalStore } from "../../../../hooks";
 import { openPluginSettingsModal } from "./modal";
-import { Messages } from "vx:i18n";
+import { FormattedMessage, Messages } from "vx:i18n";
 import { addons } from "../../../../native";
 import { IS_DESKTOP } from "vx:self";
 import type { IconFullProps } from "../../../../components/icons";
@@ -56,7 +56,7 @@ function getCustomPlugin(id: string): SafePlugin {
     settings: Settings ? (() => openPluginSettingsModal(name, Settings!)) : null,
     isNew: false,
     icon: Icon ? (props) => (
-      <ErrorBoundary fallback={<Icons.Code />}>
+      <ErrorBoundary fallback={<Icons.Code {...props} />}>
         <Icon {...props} />
       </ErrorBoundary>
     ) : Icons.Code
@@ -64,6 +64,9 @@ function getCustomPlugin(id: string): SafePlugin {
 }
 function convertToSafePlugin(plugin: Plugin): SafePlugin {
   const id = plugin.id.replace(".app", "").replace(".web", "").replace(/-/g, "_").toUpperCase() as Uppercase<string>;
+
+  let description = Messages[`${id}_DESCRIPTION`] as string | FormattedMessage;
+  if (description instanceof FormattedMessage) description = description.format({ }) as string;
 
   return {
     type: "internal",
@@ -74,7 +77,7 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     getActiveState: () => plugin.getActiveState(),
     originalEnabledState: plugin.originalEnabledState,
     name: Messages[`${id}_NAME`],
-    description: Messages[`${id}_DESCRIPTION`],
+    description,
     authors: plugin.authors,
     settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null,
     isNew: newPlugins.has(plugin.id),

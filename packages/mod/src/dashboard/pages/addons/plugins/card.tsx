@@ -182,7 +182,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
           </div>
         </div>
       </div>
-      <div className="vx-addon-description"><Markdown text={plugin.description.toString()}/></div>
+      <div className="vx-addon-description">{plugin.description}</div>
       <div className="vx-addon-divider" />
       <div className="vx-addon-footer">
         {plugin.type === "custom" && (

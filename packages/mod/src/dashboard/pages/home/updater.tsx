@@ -124,7 +124,7 @@ export function Updater() {
   const state = useInternalStore(updaterStore, () => updaterStore.getState());  
 
   return (
-    <Flex className="vx-updater" justify={Flex.Justify.BETWEEN} align={Flex.Align.CENTER}>
+    <Flex className="vx-updater" justify={Flex.Justify.BETWEEN} align={Flex.Align.CENTER} grow={0}>
       <div className="vx-updater-info">
         <div className="vx-updater-notice">
           {
