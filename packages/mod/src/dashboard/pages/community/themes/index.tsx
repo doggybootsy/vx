@@ -214,11 +214,14 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
 
   const isDisabled = useMemo(() => hasTheme || downloadState !== 0, [downloadState, hasTheme]);
 
-  const isOutdated = useMemo(() => {
+  const possiblyOutdated = useMemo(() => {
     const releaseDate = new Date(addon.release);
-    const currentDate = new Date();
-    const monthDifference = (currentDate.getFullYear() - releaseDate.getFullYear()) * 12 + (currentDate.getMonth() - releaseDate.getMonth());
-    return monthDifference >= 12;
+
+    const now = new Date(); // Current date and time
+    const max = new Date();
+    max.setMonth(now.getMonth() - 18); // Date exactly 18 months (1.5 years) ago
+  
+    return releaseDate >= max && releaseDate <= now;
   }, [addon.release]);
 
   return (
@@ -346,13 +349,25 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
             <Button
                 size={Button.Sizes.ICON}
                 disabled={isDisabled}
-                color={isOutdated ? SystemDesign.Button.YELLOW : undefined}
+                color={possiblyOutdated ? SystemDesign.Button.YELLOW : undefined}
                 onClick={async () => {
                   setDownloadState(1);
-                  if (isOutdated) {
-                    openConfirmModal("Outdated Theme", "This theme may be outdated. Are you sure you want to download?", {
+                  if (possiblyOutdated) {
+                    openConfirmModal("Possibly Outdated Theme", [
+                      "This theme may be outdated.", 
+                      "Are you sure you want to download?"
+                    ], {
                       async onConfirm() {
-                        await addon.download();
+                        try {
+                          await addon.download();
+                        } catch (error) {
+                          openNotification({
+                            title: 'Unable to download theme',
+                            description: String(error),
+                            type: 'danger',
+                            icon: Icons.Warn
+                          });
+                        }
                       },
                       onCancel() {
                         setDownloadState(0);
@@ -369,13 +384,13 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                         title: 'Unable to download theme',
                         description: String(error),
                         type: 'danger',
-                        icon: Icons.Warn,
+                        icon: Icons.Warn
                       });
                     }
                   }
                 }}
             >
-              {isOutdated ? <Icons.Warn /> : <Icons.Download />}
+              {possiblyOutdated ? <Icons.Warn /> : <Icons.Download />}
             </Button>
           </div>
         </div>
