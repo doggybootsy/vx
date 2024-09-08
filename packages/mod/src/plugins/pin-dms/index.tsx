@@ -14,8 +14,12 @@ class PinDataStore extends DataStore<Record<string, Record<string, boolean>>> {
   }
 
   getPins() {
-    const id = UserStore.getCurrentUser().id;
+    const user = UserStore.getCurrentUser();
+    if (!user) return {};
+    const { id } = user;
 
+    if (!id) return null;
+    
     if (!this.has(id)) this.set(id, {});
     return this.get(id)!;
   }

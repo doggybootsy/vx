@@ -1,11 +1,11 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { Header, Page } from "../../..";
-import { Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip } from "../../../../components";
+import {Button, Flex, Icons, Popout, SearchBar, Spinner, SystemDesign, Tooltip} from "../../../../components";
 import { Messages } from "vx:i18n";
 import {className, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
 import { useInternalStore } from "../../../../hooks";
-import { openImageModal, openInviteModal } from "../../../../api/modals";
+import {openConfirmModal, openImageModal, openInviteModal} from "../../../../api/modals";
 import { closeMenu, MenuComponents, MenuRenderProps, openMenu } from "../../../../api/menu";
 import { addons } from "../../../../native";
 import { themeStore } from "../../../../addons/themes";
@@ -87,6 +87,7 @@ class Addon {
 
     this.id = addon.id;
     this.author = addon.author.display_name;
+    this.release = addon.release_date;
 
     this.#addon = addon;
   }
@@ -100,6 +101,7 @@ class Addon {
   public readonly tags: string[];
   public readonly likes: number;
   public readonly downloads: number;
+  readonly release: string;
   public readonly author: string;
 
   public readonly guild: BetterDiscord.Guild | null;
@@ -206,149 +208,181 @@ function CommunityAddonMenu({ addon, props }: { addon: Addon, props: MenuRenderP
 }
 
 function CommunityAddonCard({ addon }: { addon: Addon }) {
-  const [ tags, setTags ] = useContext(tagsContext);
+  const [tags, setTags] = useContext(tagsContext);
   const hasTheme = useInternalStore(themeStore, () => themeStore.keys().includes(addon.filename));
-  
-  const [ downloadState, setDownloadState ] = useState(0);
+  const [downloadState, setDownloadState] = useState(0);
 
-  const isDisabled = useMemo(() => hasTheme || downloadState !== 0, [ downloadState, hasTheme ]);
+  const isDisabled = useMemo(() => hasTheme || downloadState !== 0, [downloadState, hasTheme]);
+
+  const isOutdated = useMemo(() => {
+    const releaseDate = new Date(addon.release);
+    const currentDate = new Date();
+    const monthDifference = (currentDate.getFullYear() - releaseDate.getFullYear()) * 12 + (currentDate.getMonth() - releaseDate.getMonth());
+    return monthDifference >= 12;
+  }, [addon.release]);
 
   return (
-    <div className="vx-community-card" onContextMenu={(event) => openMenu(event, (props) => <CommunityAddonMenu props={props} addon={addon} />)}>
-      <div className="vx-community-card-splash">
-        <div className="vx-community-card-preview">
-          <img src={addon.getSplashImage()} className="vx-community-card-preview-img" loading="lazy" onClick={() => openImageModal(addon.getSplashImage(), { scale: 5 })} />
-        </div>
-        <Tooltip text={addon.author}>
-          {(props) => (
-            <div className="vx-community-card-author" {...props} onClick={() => addon.openAuthorPage()}>
-              <svg width="48" height="48" className="vx-community-card-author-svg" viewBox="0 0 48 48">
-                <foreignObject x="0" y="0" width="48" height="48" overflow="visible" mask="url(#svg-mask-squircle)">
-                  <div className="vx-community-card-author-mask">
-                    <svg width="40" height="40" className="vx-community-card-author-svg" viewBox="0 0 40 40">
-                      <foreignObject x="0" y="0" width="40" height="40" overflow="visible" mask="url(#svg-mask-squircle)">
-                        <img src={addon.getAuthorImage()} alt="" className="vx-community-card-author-img" loading="lazy" />
-                      </foreignObject>
-                    </svg>
-                  </div>
-                </foreignObject>
-              </svg>
-            </div>
-          )}
-        </Tooltip>
-      </div>
-      <div className="vx-community-card-body">
-        <div className="vx-community-card-name">{addon.name}</div>
-        <div className="vx-community-card-description">
-          {addon.description}
-        </div>
-        <div className="vx-community-card-tags">
-          {addon.tags.map((tag) => (
-            <span 
-              key={tag} 
-              className={className([ "vx-community-card-tag", tags.includes(tag) && "vx-community-card-tag-selected" ])}
-              onClick={() => {
-                const index = tags.indexOf(tag);
-
-                if (index === -1) {
-                  setTags([ ...tags, tag ]);
-                  return;
-                }
-                
-                const newTags = tags.concat();
-                newTags.splice(index, 1);
-                setTags(newTags);
-              }}
-            >{tag}</span>
-          ))}
-        </div>
-        <div className="vx-community-card-info">
-          <div className="vx-community-card-info-likes">
-            <div className="vx-community-card-info-dot"></div>
-            <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: suffixNumber(addon.likes) })}</div>
+      <div
+          className="vx-community-card"
+          onContextMenu={(event) => openMenu(event, (props) => <CommunityAddonMenu props={props} addon={addon} />)}
+      >
+        <div className="vx-community-card-splash">
+          <div className="vx-community-card-preview">
+            <img
+                src={addon.getSplashImage()}
+                className="vx-community-card-preview-img"
+                loading="lazy"
+                onClick={() => openImageModal(addon.getSplashImage(), { scale: 5 })}
+            />
           </div>
-          <div className="vx-community-card-info-downloads">
-            <div className="vx-community-card-info-dot"></div>
-            <div>{suffixNumber(addon.downloads)} Downloads</div>
-          </div>
-        </div>
-        <div className="vx-community-card-actions">
-          <Tooltip text={Messages.GO_TO_SOURCE}>
+          <Tooltip text={addon.author}>
             {(props) => (
-              <Button 
-                size={Button.Sizes.ICON} 
-                look={Button.Looks.BLANK} 
-                className="vx-community-card-button" 
-                {...props}
-                onClick={() => {
-                  props.onClick();
-                  addon.openSource();
-                }}
-              >
-                <Icons.Github />
-              </Button>
+                <div className="vx-community-card-author" {...props} onClick={() => addon.openAuthorPage()}>
+                  <svg width="48" height="48" className="vx-community-card-author-svg" viewBox="0 0 48 48">
+                    <foreignObject x="0" y="0" width="48" height="48" overflow="visible" mask="url(#svg-mask-squircle)">
+                      <div className="vx-community-card-author-mask">
+                        <svg width="40" height="40" className="vx-community-card-author-svg" viewBox="0 0 40 40">
+                          <foreignObject x="0" y="0" width="40" height="40" overflow="visible" mask="url(#svg-mask-squircle)">
+                            <img src={addon.getAuthorImage()} alt="" className="vx-community-card-author-img" loading="lazy" />
+                          </foreignObject>
+                        </svg>
+                      </div>
+                    </foreignObject>
+                  </svg>
+                </div>
             )}
           </Tooltip>
-          <Tooltip text={Messages.PREVIEW}>
-            {(props) => (
-              <Button 
-                size={Button.Sizes.ICON} 
-                look={Button.Looks.BLANK} 
-                className="vx-community-card-button" 
-                {...props}
-                onClick={() => {
-                  props.onClick();
-                  addon.openPreview();
-                }}
-              >
-                <Icons.DiscordIcon name="EyeIcon" />
-              </Button>
-            )}
-          </Tooltip>
-          {addon.guild && (
-              <Tooltip text={Messages.JOIN_SUPPORT_SERVER}>
-                {(props) => (
-                  <Button 
-                    size={Button.Sizes.ICON} 
-                    look={Button.Looks.BLANK} 
-                    className="vx-community-card-button"
-                    {...props}
+        </div>
+        <div className="vx-community-card-body">
+          <div className="vx-community-card-name">{addon.name}</div>
+          <div className="vx-community-card-description">{addon.description}</div>
+          <div className="vx-community-card-tags">
+            {addon.tags.map((tag) => (
+                <span
+                    key={tag}
+                    className={className([
+                      'vx-community-card-tag',
+                      tags.includes(tag) && 'vx-community-card-tag-selected',
+                    ])}
                     onClick={() => {
-                      props.onClick();
-                      addon.openInviteModal();
+                      const index = tags.indexOf(tag);
+
+                      if (index === -1) {
+                        setTags([...tags, tag]);
+                        return;
+                      }
+
+                      const newTags = tags.concat();
+                      newTags.splice(index, 1);
+                      setTags(newTags);
                     }}
+                >
+              {tag}
+            </span>
+            ))}
+          </div>
+          <div className="vx-community-card-info">
+            <div className="vx-community-card-info-likes">
+              <div className="vx-community-card-info-dot"></div>
+              <div>{Messages.CONNECTIONS_PROFILE_TIKTOK_LIKES.format({ value: suffixNumber(addon.likes) })}</div>
+            </div>
+            <div className="vx-community-card-info-downloads">
+              <div className="vx-community-card-info-dot"></div>
+              <div>{suffixNumber(addon.downloads)} Downloads</div>
+            </div>
+          </div>
+          <div className="vx-community-card-actions">
+            <Tooltip text={Messages.GO_TO_SOURCE}>
+              {(props) => (
+                  <Button
+                      size={Button.Sizes.ICON}
+                      look={Button.Looks.BLANK}
+                      className="vx-community-card-button"
+                      {...props}
+                      onClick={() => {
+                        props.onClick();
+                        addon.openSource();
+                      }}
                   >
-                    <Icons.Help />
-                    {/* <img width={24} height={24} src={`https://cdn.discordapp.com/icons/${(addon.guild || addon.author.guild)!.snowflake}/${(addon.guild || addon.author.guild)!.avatar_hash}.webp`} /> */}
+                    <Icons.Github />
                   </Button>
               )}
             </Tooltip>
-          )}
-          <div className="vx-community-card-spacer" />
-          <Button
-            size={Button.Sizes.ICON} 
-            disabled={isDisabled} 
-            onClick={async () => {
-              setDownloadState(1);
-              try {
-                await addon.download();
-              } catch (error) {
-                openNotification({
-                  title: "Unable to download theme",
-                  description: String(error),
-                  type: "danger",
-                  icon: Icons.Warn
-                });
-              }
-            }}
-          >
-            <Icons.Download />
-          </Button>
+            <Tooltip text={Messages.PREVIEW}>
+              {(props) => (
+                  <Button
+                      size={Button.Sizes.ICON}
+                      look={Button.Looks.BLANK}
+                      className="vx-community-card-button"
+                      {...props}
+                      onClick={() => {
+                        props.onClick();
+                        addon.openPreview();
+                      }}
+                  >
+                    <Icons.DiscordIcon name="EyeIcon" />
+                  </Button>
+              )}
+            </Tooltip>
+            {addon.guild && (
+                <Tooltip text={Messages.JOIN_SUPPORT_SERVER}>
+                  {(props) => (
+                      <Button
+                          size={Button.Sizes.ICON}
+                          look={Button.Looks.BLANK}
+                          className="vx-community-card-button"
+                          {...props}
+                          onClick={() => {
+                            props.onClick();
+                            addon.openInviteModal();
+                          }}
+                      >
+                        <Icons.Help />
+                      </Button>
+                  )}
+                </Tooltip>
+            )}
+            <div className="vx-community-card-spacer" />
+            <Button
+                size={Button.Sizes.ICON}
+                disabled={isDisabled}
+                color={isOutdated ? SystemDesign.Button.YELLOW : undefined}
+                onClick={async () => {
+                  setDownloadState(1);
+                  if (isOutdated) {
+                    openConfirmModal("Outdated Theme", "This theme may be outdated. Are you sure you want to download?", {
+                      async onConfirm() {
+                        await addon.download();
+                      },
+                      onCancel() {
+                        setDownloadState(0);
+                      },
+                      onCloseCallback() {
+                        setDownloadState(0);
+                      }
+                    });
+                  } else {
+                    try {
+                      await addon.download();
+                    } catch (error) {
+                      openNotification({
+                        title: 'Unable to download theme',
+                        description: String(error),
+                        type: 'danger',
+                        icon: Icons.Warn,
+                      });
+                    }
+                  }
+                }}
+            >
+              {isOutdated ? <Icons.Warn /> : <Icons.Download />}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  )
+  );
 }
+
 
 const enum SortingMethod {
   NAME, LIKES, DOWNLOADS, POPULARITY

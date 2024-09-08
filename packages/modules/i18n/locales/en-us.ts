@@ -151,6 +151,10 @@ const messages = {
   DEVTOOLS_DESCRIPTION: "Opens Discords Built-in DevTools; Please enable only if you know what you are doing.",
   DM_LAST_MSG_NAME: "DM Last Message",
   DM_LAST_MSG_DESCRIPTION: "Shows you the last message sent in a DM on your DMs list.",
+  UNLIMITED_ACCOUNTS_NAME: "Unlimited Accounts",
+  UNLIMITED_ACCOUNTS_DESCRIPTION: "Allows you to bypass the max amount of accounts for the account switcher.",
+  QUESTS_NAME: "Quests",
+  QUESTS_DESCRIPTION: "Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.",
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",

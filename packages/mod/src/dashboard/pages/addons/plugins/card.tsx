@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { openConfirmModal, openImageModal, openInviteModal, openUserModal, openExternalWindowModal } from "../../../../api/modals";
-import { Icons, Mask, Tooltip, Switch, Button } from "../../../../components";
+import {Icons, Mask, Tooltip, Switch, Button, Markdown} from "../../../../components";
 import { className, getDefaultAvatar, generateFaviconURL } from "../../../../util";
 import { LayerManager, openUserContextMenu } from "@webpack/common";
 import { useInternalStore, useUser } from "../../../../hooks";
@@ -182,7 +182,7 @@ export function PluginCard({ plugin }: { plugin: SafePlugin }) {
           </div>
         </div>
       </div>
-      <div className="vx-addon-description">{plugin.description}</div>
+      <div className="vx-addon-description"><Markdown text={plugin.description.toString()}/></div>
       <div className="vx-addon-divider" />
       <div className="vx-addon-footer">
         {plugin.type === "custom" && (
