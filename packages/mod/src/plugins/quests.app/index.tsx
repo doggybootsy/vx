@@ -207,8 +207,7 @@ function subscribeToStreamQuestProgress(quest: any, secondsNeeded: number, realF
     FluxDispatcher.subscribe("QUESTS_SEND_HEARTBEAT_SUCCESS", startingProgress);
 }
 
-async function startCompletingQuest() {
-    const quest = [...QuestsStore.quests.values()].find(isValidQuest);
+async function startCompletingQuest(quest: any) {
     await handleQuest(quest);
 }
 
@@ -239,9 +238,9 @@ export default definePlugin({
                 if (canComplete) {
                     returnValue.props.children.push(
                         <Button
-                            disabled={questManager.isQuestInProgress(quest.id) || !isUserInCall() || quest.userStatus.completedAt}
+                            disabled={questManager.isQuestInProgress(quest.id) || !isUserInCall() || quest?.userStatus?.completedAt}
                             color={SystemDesign.Button.BRAND}
-                            onClick={startCompletingQuest}
+                            onClick={() => {startCompletingQuest(quest); console.log(quest)}}
                         >
                             {questManager.getQuestProgress(quest.id) || "Complete"}
                         </Button>
