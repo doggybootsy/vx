@@ -7,5 +7,6 @@ export default definePlugin({
         match: "multiaccount_cta_tooltip_seen",
         replace: "Infinity"
     },
+    requiresRestart: true,
     authors: [Developers.kaan],
 })
