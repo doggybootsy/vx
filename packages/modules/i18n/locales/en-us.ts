@@ -152,7 +152,7 @@ const messages = {
   DM_LAST_MSG_NAME: "DM Last Message",
   DM_LAST_MSG_DESCRIPTION: "Shows you the last message sent in a DM on your DMs list.",
   QUESTS_NAME: "Quests",
-  QUESTS_DESCRIPTION: "Allows you to complete quests.app but you need to follow requirements. More Here --> (https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.",
+  QUESTS_DESCRIPTION: new FormattedMessage("Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.", "en-US", true),
 
   SPOTIFY_OPEN_TRACK: "Open Track",
   SPOTIFY_OPEN_ALBUM: "Open Album",

@@ -16,6 +16,7 @@ const ApplicationStreamingStore = getProxyStore("ApplicationStreamingStore");
 const RunningGameStore = getProxyStore("RunningGameStore");
 const QuestsStore = getProxyStore("QuestsStore");
 const ExperimentStore = getProxyStore("ExperimentStore");
+const VoiceStateStore = getProxyStore("VoiceStateStore");
 
 const inj = new Injector();
 const BLACKLISTED_QUEST_IDS = ['1248385850622869556'];
@@ -213,7 +214,7 @@ async function startCompletingQuest() {
 
 function isUserInCall()
 {
-    return getStore("VoiceStateStore").getVoiceStateForUser(UserStore.getCurrentUser().id)
+    return VoiceStateStore.getVoiceStateForUser(UserStore.getCurrentUser().id)
 }
 
 export default definePlugin({
