@@ -4,7 +4,7 @@ import { getProxy } from "./util";
 import { webpackRequire } from "@webpack";
 
 export function bySource(...sources: (string | RegExp)[]): Webpack.Filter {
-  const filter = combine(...sources.map(m => typeof m === "string" ? byStrings(m) : byRegex(m)));
+  const filter = combine(...sources.map(m => m instanceof RegExp ? byRegex(m) : byStrings(m)));
 
   return (exports, module, id) => {
     if (exports !== module.exports) return;
@@ -64,8 +64,12 @@ export function byRegex(...regexes: RegExp[]): Webpack.ExportedOnlyFilter {
   return (exports) => {
     if (!(exports instanceof Function)) return;
 
+    // Check for patch
+    let originalFunction = hook in exports ? exports[hook].original : exports;
+    if ("__VXOriginal" in originalFunction) originalFunction = originalFunction.__VXOriginal;
+
     try {
-      const stringed = Function.prototype.toString.call(exports);
+      const stringed = Function.prototype.toString.call(originalFunction);
       for (const regex of regexes) {
         if (!regex.test(stringed)) return;
       }

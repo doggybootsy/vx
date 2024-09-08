@@ -1,16 +1,18 @@
 export interface Developer {
   username: string,
-  discord: string
+  discord?: string,
+  github?: string
 };
 
 export const Developers = {
   doggybootsy: {
     username: "doggybootsy",
-    discord: "515780151791976453"
+    discord: "515780151791976453",
+    github: "doggybootsy"
   },
   kaan: {
     username: "kaan",
-    discord: "" // keep this here. 
+    github: "zrodevkaan"
   }
 } satisfies Record<string, Developer>;
 
