@@ -343,58 +343,40 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                 </Tooltip>
             )}
             <div className="vx-community-card-spacer" />
-            {!isOutdated && 
-             <Button
+            <Button
                 size={Button.Sizes.ICON}
                 disabled={isDisabled}
+                color={isOutdated ? SystemDesign.Button.YELLOW : undefined}
                 onClick={async () => {
                   setDownloadState(1);
-                  try {
-                    await addon.download();
-                  } catch (error) {
-                    openNotification({
-                      title: 'Unable to download theme',
-                      description: String(error),
-                      type: 'danger',
-                      icon: Icons.Warn,
+                  if (isOutdated) {
+                    openConfirmModal("Outdated Theme", "This theme may be outdated. Are you sure you want to download?", {
+                      async onConfirm() {
+                        await addon.download();
+                      },
+                      onCancel() {
+                        setDownloadState(0);
+                      },
+                      onCloseCallback() {
+                        setDownloadState(0);
+                      }
                     });
+                  } else {
+                    try {
+                      await addon.download();
+                    } catch (error) {
+                      openNotification({
+                        title: 'Unable to download theme',
+                        description: String(error),
+                        type: 'danger',
+                        icon: Icons.Warn,
+                      });
+                    }
                   }
                 }}
             >
-              <Icons.Download />
-            </Button>}
-            {isOutdated &&             
-                <Button
-                size={Button.Sizes.ICON}
-                disabled={isDisabled}
-                color={SystemDesign.Button.YELLOW}
-                onClick={async () => {
-                  setDownloadState(1);
-                  openConfirmModal("Outdated Theme", "This theme may be outdated. Are you sure you want to download", {
-                    async onConfirm() {
-                      await addon.download();
-                    },
-                    onCancel() {
-                      setDownloadState(0);
-                    },
-                    onCloseCallback() {
-                      setDownloadState(0);
-                    }
-                  })
-                  /*try {
-                    await addon.download();
-                  } catch (error) {
-                    openNotification({
-                      title: 'Please keep in mind that',
-                      description: String(error),
-                      type: 'danger',
-                      icon: Icons.Warn,
-                    });
-                  }*/
-                }}
-            >
-              <Icons.Warn />
-            </Button>}
+              {isOutdated ? <Icons.Warn /> : <Icons.Download />}
+            </Button>
           </div>
         </div>
       </div>
