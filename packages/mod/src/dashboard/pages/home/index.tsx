@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { IS_DESKTOP } from "vx:self";
 import { Page } from "../..";
 import { internalDataStore } from "../../../api/storage";
-import { Button, Collapsable, Flex, Icons, Spinner } from "../../../components";
+import { Button, Collapsable, Flex, Icons, Markdown, Spinner } from "../../../components";
 import { FormSwitch } from "../../../components/switch";
 import { app, nativeFrame, transparency } from "../../../native";
 import { Updater } from "./updater";
@@ -180,7 +180,7 @@ export function Home() {
   }, [ ]);
 
   return (
-    <Page title="Home" icon={Icons.Logo}>
+    <Page title="Home" icon={Icons.Logo} bodyClassName="vx-home-page">
       <RainbowText>
         <div className="vx-home-header">
           <div className="vx-home-logo" onClick={changeBackground}>
@@ -212,8 +212,6 @@ export function Home() {
 
         <Updater />
 
-        <div style={{ marginTop: 10 }} />
-
         <Category
           title="Notifications"
           subtitle="Configure notifications here"
@@ -236,8 +234,6 @@ export function Home() {
 
         {IS_DESKTOP && (
           <>
-            <div style={{ marginTop: 10 }} />
-
             <Category
               title="Window Settings"
               subtitle="Settings for the browser window"
@@ -252,7 +248,6 @@ export function Home() {
                   internalDataStore.set("content-protection", value);
                   window.DiscordNative!.window.setContentProtection!(value);
                 }}
-                style={{ marginTop: 20 }}
                 note={Messages.CONTENT_PROTECTION_NOTE}
               >
                 {Messages.CONTENT_PROTECTION}
@@ -295,8 +290,6 @@ export function Home() {
             </Category>
           </>
         )}
-
-        <div style={{ marginTop: 10 }} />
         
         <Category
           title="VX Settings"
@@ -310,7 +303,6 @@ export function Home() {
               setUserSettingShortcut(value);
               internalDataStore.set("user-setting-shortcut", value);
             }}
-            style={{ marginTop: 20 }}
             note={Messages.USER_SETTINGS_SHORTCUT_NOTE}
           >
             {Messages.USER_SETTINGS_SHORTCUT}
@@ -353,7 +345,7 @@ export function Home() {
           >
             {Messages.ADD_VX_TO_TITLEBAR}
           </FormSwitch>
-        </Category>   
+        </Category>
       </RainbowText>   
     </Page>
   )

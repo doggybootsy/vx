@@ -13,7 +13,7 @@ import { nativeFrame, transparency } from "./native";
 import { compileFunction } from "./util";
 
 import "./notrack";
-import { BdApi } from "./betterdiscord";
+import { internalDataStore } from "./api/storage";
 
 console.log(`Welcome to VX v${env.VERSION}`);
 

@@ -59,6 +59,9 @@ export function proxyCache<T extends object>(factory: () => T, typeofIsObject: b
 
   return proxy;
 }
+proxyCache.__get_cache__ = <T extends object>(obj: T): Cache<T> => {
+  return obj[Symbol.for("vx.proxy.cache") as unknown as keyof T] as Cache<T>;
+};
 
 export function cacheComponent<P extends {}>(factory: () => React.JSXElementConstructor<P>): React.JSXElementConstructor<P> {
   const cacheFactory = cache(factory);

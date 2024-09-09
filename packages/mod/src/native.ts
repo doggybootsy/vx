@@ -1,5 +1,5 @@
 import { IS_DESKTOP, git } from "vx:self";
-import { DataStore } from "./api/storage";
+import { DataStore, internalDataStore } from "./api/storage";
 
 export const extensions = {
   open() {
