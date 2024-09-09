@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { Header, Page } from "../../..";
-import {Button, Flex, Icons, Popout, SearchBar, Spinner, SystemDesign, Tooltip} from "../../../../components";
+import {Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip} from "../../../../components";
 import { Messages } from "vx:i18n";
 import {className, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
@@ -87,7 +87,7 @@ class Addon {
 
     this.id = addon.id;
     this.author = addon.author.display_name;
-    this.release = addon.release_date;
+    this.release = new Date(addon.release_date);
 
     this.#addon = addon;
   }
@@ -101,7 +101,7 @@ class Addon {
   public readonly tags: string[];
   public readonly likes: number;
   public readonly downloads: number;
-  readonly release: string;
+  readonly release: Date;
   public readonly author: string;
 
   public readonly guild: BetterDiscord.Guild | null;
@@ -215,13 +215,11 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
   const isDisabled = useMemo(() => hasTheme || downloadState !== 0, [downloadState, hasTheme]);
 
   const possiblyOutdated = useMemo(() => {
-    const releaseDate = new Date(addon.release);
-
     const now = new Date(); // Current date and time
     const max = new Date();
     max.setMonth(now.getMonth() - 18); // Date exactly 18 months (1.5 years) ago
   
-    return releaseDate >= max && releaseDate <= now;
+    return addon.release >= max && addon.release <= now;
   }, [addon.release]);
 
   return (
@@ -349,12 +347,14 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
             <Button
                 size={Button.Sizes.ICON}
                 disabled={isDisabled}
-                color={possiblyOutdated ? SystemDesign.Button.YELLOW : undefined}
-                onClick={async () => {
+                color={possiblyOutdated ? Button.Colors.RED : Button.Colors.BRAND}
+                onClick={async (event) => {
                   setDownloadState(1);
-                  if (possiblyOutdated) {
+                  if (possiblyOutdated && !event.shiftKey) {
+
                     openConfirmModal("Possibly Outdated Theme", [
                       "This theme may be outdated.", 
+                      "This themes main file hasn't been updated for over 18 months",
                       "Are you sure you want to download?"
                     ], {
                       async onConfirm() {
@@ -372,8 +372,9 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                       onCancel() {
                         setDownloadState(0);
                       },
-                      onCloseCallback() {
-                        setDownloadState(0);
+                      onCloseRequest(closedFromButton) {
+                        if (!closedFromButton) setDownloadState(0);
+                        return true;
                       }
                     });
                   } else {
@@ -400,7 +401,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
 
 
 const enum SortingMethod {
-  NAME, LIKES, DOWNLOADS, POPULARITY
+  NAME, LIKES, DOWNLOADS, POPULARITY, DATE
 }
 
 const ALL_TAGS = [
@@ -490,6 +491,9 @@ export function CommunityThemes() {
         case SortingMethod.LIKES:
           if (sortingReversed) return a.likes - b.likes; 
           return b.likes - a.likes;
+        case SortingMethod.DATE:
+          if (sortingReversed) return b.release.getTime() - a.release.getTime();
+          return a.release.getTime() - b.release.getTime(); 
       }
     });
 
@@ -538,6 +542,12 @@ export function CommunityThemes() {
                     id="name" 
                     checked={sorting === SortingMethod.NAME}
                     action={() => setSort(SortingMethod.NAME)}
+                  />
+                  <MenuComponents.MenuCheckboxItem 
+                    label={Messages.DATE} 
+                    id="date" 
+                    checked={sorting === SortingMethod.DATE}
+                    action={() => setSort(SortingMethod.DATE)}
                   />
                 </MenuComponents.MenuGroup>
                 <MenuComponents.MenuGroup>
@@ -635,7 +645,7 @@ export function CommunityThemes() {
             <tagsContext.Provider value={[ tags, setTags ]}>
               <div className="vx-community-addon-cards">
                 {filteredAddons.map((addon) => (
-                  <CommunityAddonCard addon={addon} />
+                  <CommunityAddonCard addon={addon} key={addon.id} />
                 ))}
               </div>
             </tagsContext.Provider>
