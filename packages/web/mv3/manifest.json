@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VX",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A Discord mod that provides Plugins and a easy way to load Themes",
   "icons": {
     "256": "icons/256.png",

@@ -87,13 +87,11 @@ class AssetStore {
 
   public async update(release: Git.Release) {
     this.logger.log("Updating", release);
-    
-    const data = {
-      js: await getAsset("js", release),
-      css: await getAsset("css", release)
-    };
+
+    this.css = await getAsset("css", release),
+    this.js = await getAsset("js", release),
   
-    await browser.storage.local.set(data);
+    await browser.storage.local.set({ css: this.css, js: this.js });
 
     await this.updatePersistence();
     
