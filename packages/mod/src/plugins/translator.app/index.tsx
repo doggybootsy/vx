@@ -256,12 +256,12 @@ export default definePlugin({
                         </MenuComponents.Menu>
                     )}
                 >
-                    {(props) => (
+                    {(popoutProps) => (
                         <div
-                            {...props}
+                            {...popoutProps}
                             className="vx-textarea-button-container"
                             onClick={async (event) => {
-                                props.onClick(event);
+                                popoutProps.onClick(event);
                                 
                                 if (event.shiftKey) {
                                     shouldShow(false);
@@ -269,13 +269,10 @@ export default definePlugin({
                                     if (!storage.has("lastTranslatedLanguage")) return;
                                     const last = storage.get("lastTranslatedLanguage")!;
 
-                                    storage.set("lastTranslatedLanguage", last);
+                                    const result = await window.VXNative!.translate(TextAreaInput.getText(), last);
 
-                                    const text = TextAreaInput.getText();
-                                    TextAreaInput.clearText();
-                                    const result = await window.VXNative!.translate(text, last);
-                                    TextAreaInput.insertText(result);
-                                  
+                                    await sendMessage(result, props.channel.id);
+
                                     return;
                                 }
 
