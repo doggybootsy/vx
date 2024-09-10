@@ -79,7 +79,7 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     name: Messages[`${id}_NAME`],
     description,
     authors: plugin.authors,
-    settings: plugin.exports.settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.exports.settings!)) : null,
+    settings: plugin.Settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.Settings!)) : null,
     isNew: newPlugins.has(plugin.id),
     icon: plugin.exports.icon || Icons.Code
   }

@@ -454,6 +454,7 @@ export function showFilePicker(callback: (file: File | null) => void, accepts: s
   const input = document.createElement("input");
   input.type = "file";
   input.accept = accepts;
+  input.multiple = false;
 
   input.showPicker();
 

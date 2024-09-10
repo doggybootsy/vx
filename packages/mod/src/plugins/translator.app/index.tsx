@@ -247,7 +247,7 @@ export default definePlugin({
                                             storage.set("lastTranslatedLanguage", lang);
                                             const result = await window.VXNative!.translate(TextAreaInput.getText(), lang);
 
-                                            await sendMessage(result, SelectedChannelStore.getCurrentlySelectedChannelId())
+                                            await sendMessage(result, props.channel.id);
                                         }}
                                         group="translation-group"
                                     />

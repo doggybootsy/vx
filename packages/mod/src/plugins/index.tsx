@@ -8,6 +8,7 @@ import { env } from "vx:self";
 import { Command } from "../api/commands/types";
 import { addCommand } from "../api/commands";
 import type { IconFullProps } from "../components/icons";
+import { Flex } from "../components";
 
 export interface PluginType {
   authors: Developer[],
@@ -55,13 +56,30 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     });
 
     this.authors = Array.from(new Set(exports.authors));
+
+    if (typeof exports.settings === "object") {
+      const entries = Object.entries(exports.settings);
+  
+      this.Settings = () => (
+        <Flex direction={Flex.Direction.VERTICAL} gap={20}>
+          {entries.map(([ key, setting ]) => (
+            <Flex.Child key={`vx-p-s-${key}`}>
+              <setting.render />
+            </Flex.Child>
+          ))}
+        </Flex>
+      );
+    }
+    if (typeof exports.settings === "function") this.Settings = exports.settings;
   }
 
-  authors: Developer[];
+  public readonly Settings: null | React.ComponentType<{}> = null;
 
-  type = <const>"internal";
+  public readonly authors: Developer[];
 
-  id: string;
+  public readonly type = "internal";
+
+  public readonly id: string;
 
   public readonly originalEnabledState: boolean;
   public readonly requiresRestart: boolean;
