@@ -2,12 +2,12 @@ import { definePlugin } from "../index";
 import { Developers } from "../../constants";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Injector } from "../../patcher";
-import { bySource, getLazy, getProxyByKeys } from "@webpack";
+import {bySource, getLazy, getProxyByKeys, getProxyStore} from "@webpack";
 import {Button, ErrorBoundary, Flex, Icons, Markdown, Popout, Tooltip} from "../../components";
 import * as styler from "./translate.css?managed";
 import { createAbort, InternalStore } from "../../util";
 import { useInternalStore } from "../../hooks";
-import { MessageStore, TextAreaInput } from "@webpack/common";
+import {MessageStore, SelectedChannelStore, sendMessage, TextAreaInput} from "@webpack/common";
 import { useMemo, useState } from "react";
 import { getLocaleName } from "vx:i18n";
 import {Channel, Message} from "discord-types/general";
@@ -245,12 +245,9 @@ export default definePlugin({
                                         id={`vx-translate-${lang}`}
                                         action={async () => {
                                             storage.set("lastTranslatedLanguage", lang);
-                                            
-                                            const text = TextAreaInput.getText();
-                                            TextAreaInput.clearText();
+                                            const result = await window.VXNative!.translate(TextAreaInput.getText(), lang);
 
-                                            const result = await window.VXNative!.translate(text, lang);
-                                            TextAreaInput.insertText(result);
+                                            await sendMessage(result, SelectedChannelStore.getCurrentlySelectedChannelId())
                                         }}
                                         group="translation-group"
                                     />
@@ -276,10 +273,9 @@ export default definePlugin({
 
                                     const text = TextAreaInput.getText();
                                     TextAreaInput.clearText();
-
                                     const result = await window.VXNative!.translate(text, last);
                                     TextAreaInput.insertText(result);
-
+                                  
                                     return;
                                 }
 
