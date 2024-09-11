@@ -153,6 +153,8 @@ const messages = {
   DM_LAST_MSG_DESCRIPTION: "Shows you the last message sent in a DM on your DMs list.",
   UNLIMITED_ACCOUNTS_NAME: "Unlimited Accounts",
   UNLIMITED_ACCOUNTS_DESCRIPTION: "Allows you to bypass the max amount of accounts for the account switcher.",
+  FIRST_MESSAGE_NAME: "First Message",
+  FIRST_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
   QUESTS_NAME: "Quests",
   QUESTS_DESCRIPTION: new FormattedMessage("Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.", "en-US", true),
 
