@@ -1,17 +1,20 @@
 import {definePlugin} from "../index";
 import {Developers} from "../../constants";
-import {MenuComponents, patch} from "../../api/menu";
 import {NavigationUtils} from "@webpack/common";
-import {SelectedChannelStore} from "@webpack/common"
+import {SelectedChannelStore, SelectedGuildStore} from "@webpack/common"
+import {Channel, Guild} from "discord-types/general";
 
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    commands: {
+        id: "first-message",
+        name: "first-message",
+        execute(options: any[], {channel, guild}: { channel: Channel; guild?: Guild }) {
+            NavigationUtils.transitionToGuild(guild?.id ?? null, channel?.id ?? SelectedChannelStore.getChannelId(), "0")
+        }
+    },
     start() {
-        patch("first-message","textarea-context",(res,props) => {
-            props.props.children.push(
-                <MenuComponents.MenuItem id={"first-message"} label={"Jump to First Message"} action={() => {NavigationUtils.transitionToGuild(null, SelectedChannelStore.getChannelId(), "0")}}/>
-            )
-        })
+        
     }
 })
