@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { Header, Page } from "../../..";
-import {Button, Flex, Icons, Popout, SearchBar, Spinner, Tooltip} from "../../../../components";
+import {Button, Flex, Icons, Popout, SearchBar, Spinner, SystemDesign, Tooltip} from "../../../../components";
 import { Messages } from "vx:i18n";
 import {className, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
@@ -212,7 +212,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
   const hasTheme = useInternalStore(themeStore, () => themeStore.keys().includes(addon.filename));
   const [downloadState, setDownloadState] = useState(0);
 
-  const isDisabled = useMemo(() => hasTheme || downloadState !== 0, [downloadState, hasTheme]);
+  const isInstalled = useMemo(() => hasTheme || downloadState !== 0, [downloadState, hasTheme]);
 
   const possiblyOutdated = useMemo(() => {
     const now = new Date(); // Current date and time
@@ -344,16 +344,15 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                 </Tooltip>
             )}
             <div className="vx-community-card-spacer" />
-            <Button
+            {!isInstalled ? <Button
                 size={Button.Sizes.ICON}
-                disabled={isDisabled}
                 color={possiblyOutdated ? Button.Colors.RED : Button.Colors.BRAND}
                 onClick={async (event) => {
                   setDownloadState(1);
                   if (possiblyOutdated && !event.shiftKey) {
 
                     openConfirmModal("Possibly Outdated Theme", [
-                      "This theme may be outdated.", 
+                      "This theme may be outdated.",
                       "This themes main file hasn't been updated for over 18 months",
                       "Are you sure you want to download?"
                     ], {
@@ -392,7 +391,15 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                 }}
             >
               {possiblyOutdated ? <Icons.Warn /> : <Icons.Download />}
-            </Button>
+            </Button> : <Button
+            size={Button.Sizes.ICON}
+            color={SystemDesign.Button.Colors.RED}
+            onClick={async () => {
+              themeStore.disable(addon.filename)
+              themeStore.delete(addon.filename)
+            }}>
+              <Icons.Trash/>
+            </Button>}
           </div>
         </div>
       </div>
