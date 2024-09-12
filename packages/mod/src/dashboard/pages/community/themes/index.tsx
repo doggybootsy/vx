@@ -393,7 +393,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
               {possiblyOutdated ? <Icons.Warn /> : <Icons.Download />}
             </Button> : <Button
             size={Button.Sizes.ICON}
-            color={SystemDesign.Button.RED}
+            color={SystemDesign.Button.Colors.RED}
             onClick={async () => {
               themeStore.disable(addon.filename)
               themeStore.delete(addon.filename)
