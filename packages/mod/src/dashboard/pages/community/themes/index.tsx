@@ -353,7 +353,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
 
                     openConfirmModal("Possibly Outdated Theme", [
                       "This theme may be outdated.",
-                      "This themes main file hasn't been updated for over 18 months",
+                      "This themes main file hasn't been updated for over 18 months, Do keep in mind there may be a fix on GitHub.",
                       "Are you sure you want to download?"
                     ], {
                       async onConfirm() {
