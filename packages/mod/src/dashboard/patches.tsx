@@ -105,23 +105,30 @@ __self__.TitlebarButton = function TitlebarButton(props: { windowKey?: string })
 };
 
 __self__._addHomeButton = cache(() => {
-  const dmsFilter = byStrings(".AvatarSizes.SIZE_16");
+  const dmsFilter = byStrings(".getPrivateChannelsVersion()");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
 
   return forwardRef((props: { children: React.ReactNode[] }, ref) => {
-    const children = props.children.concat();
+    const children = props.children.concat();    
 
     const index = children.findIndex((child) => isValidElement(child) ? dmsFilter(child.type) : false);
     
+    const VXChildren = [
+      <HomeButton />, 
+      // No need to make a new patch
+      <GuildClock />,
+      <GuildDmTypingIndicator />
+    ];
+
     if (~index) {      
       children.splice(
         index, 
         0, 
-        <HomeButton />, 
-        // No need to make a new patch
-        <GuildClock />,
-        <GuildDmTypingIndicator />
+        VXChildren
       );
+    }
+    else {
+      children.unshift(VXChildren);
     }
     
     return (

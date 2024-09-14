@@ -1,7 +1,7 @@
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
-import {getLazyStore, whenWebpackReady} from "@webpack";
+import {getLazyStore} from "@webpack";
 import {createSettings, SettingType} from "../settings";
 
 const inj = new Injector();
@@ -13,7 +13,7 @@ const settings = createSettings("experiments", {
     description: "Toggles Discord Built-in DevTools.",
     default: true
   }
-})
+});
 
 export default definePlugin({
   authors: [Developers.doggybootsy],
@@ -32,8 +32,6 @@ export default definePlugin({
     },
   ],
   async start() {
-    await whenWebpackReady();
-
     inj.after(await getLazyStore("UserStore"), "getCurrentUser", (that, args, user) => {
       if (!user) return;
       if (!settings.defaultEnableDevTools.get()) return;

@@ -9,7 +9,7 @@ import {
 } from "@webpack";
 import { Injector } from "../../patcher";
 import { createAbort } from "../../util";
-import { Button, SystemDesign } from "../../components";
+import { Button, Icons, SystemDesign } from "../../components";
 import {FluxDispatcher, UserStore} from "@webpack/common";
 
 const ApplicationStreamingStore = getProxyStore("ApplicationStreamingStore");
@@ -219,6 +219,7 @@ function isUserInCall()
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    icon: Icons.DiscordIcon.from("QuestsIcon"),
     async start() {
         const signal = getSignal();
         await whenWebpackReady();

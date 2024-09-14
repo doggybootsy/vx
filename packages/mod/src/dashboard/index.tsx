@@ -99,7 +99,6 @@ export function Page(props: {
       >
         <Header.Icon icon={props.icon} />
         <Header.Title>{props.title}</Header.Title>
-        {/* <Header.Divider /> */}
       </Header>
       <div className={className([ "vx-page-wrapper", contentClasses.content, props.wrapperClassName ])}>
         <div className={className([ "vx-page-body", scrollerClasses.auto, props.bodyClassName ])}>

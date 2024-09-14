@@ -1,4 +1,5 @@
 import { definePlugin } from "..";
+import { Icons } from "../../components";
 import { Developers } from "../../constants";
 import * as styler from "./index.css?managed"
 
@@ -6,6 +7,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   styler,
+  icon: Icons.DiscordIcon.from("ReactionIcon"),
   patches: {
     match: ".Messages.ADD_REACTION_NAMED",
     replacements: [

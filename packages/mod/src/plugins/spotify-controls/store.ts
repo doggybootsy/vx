@@ -20,14 +20,14 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
   public isDragging = false;
   public isCracked = false;
 
-  public accounts: Record<string, { isPremium: boolean, vx_original?: boolean }> = {};
+  public accounts: Record<string, { isPremium: boolean }> = {};
   public isPremium() {    
     if (this.isCracked) return true;
 
     if (!this.accountId) return false;
     const account = this.accounts[this.accountId];
     if (!account) return false;
-    return account.vx_original ?? account.isPremium;
+    return account.isPremium;
   }
 
   public track: Spotify.Track | null = null;
