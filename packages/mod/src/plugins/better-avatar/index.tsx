@@ -6,11 +6,15 @@ import { createAbort, findInReactTree } from "../../util";
 
 const INJECT: Injector = new Injector();
 
+const [ abort, getSignal ] = createAbort();
+
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
     async start() {
+        const signal = getSignal();
         const GIF_CROP: any = await getLazy(bySource('ImageCroppingModal'));
+        if (signal.aborted) return;
         
         INJECT.after(GIF_CROP, 'default', (_: any, __: any, returnValue: any) => {
             // @ts-ignore
