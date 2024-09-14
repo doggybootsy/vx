@@ -155,6 +155,8 @@ const messages = {
   UNLIMITED_ACCOUNTS_DESCRIPTION: "Allows you to bypass the max amount of accounts for the account switcher.",
   FIRST_MESSAGE_NAME: "First Message",
   FIRST_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
+  BETTER_AVATAR_NAME: "Better Cropping",
+  BETTER_AVATAR_DESCRIPTION: "Lets you zoom in more for pixel perfect profile pictures!",
   QUESTS_NAME: "Quests",
   QUESTS_DESCRIPTION: new FormattedMessage("Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.", "en-US", true),
 
