@@ -128,6 +128,7 @@ __self__._addHomeButton = cache(() => {
       );
     }
     else {
+      // Fallback
       children.unshift(VXChildren);
     }
     

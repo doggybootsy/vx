@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 
 const SECRET_CODE: string[] = [
     'ArrowUp',
@@ -17,6 +17,10 @@ const RainbowText: React.FC<React.PropsWithChildren> = ({ children }) => {
     const [sequence, setSequence] = useState<string[]>([]);
     const [showMessage, setShowMessage] = useState<boolean>(false);
 
+    const ref = useRef<HTMLDivElement>(null);
+    const lastTime = useRef<number | null>(null);
+    const lastDelta = useRef(0);
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             setSequence((prevSequence) => {
@@ -33,6 +37,29 @@ const RainbowText: React.FC<React.PropsWithChildren> = ({ children }) => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
+
+    useLayoutEffect(() => {
+        if (!lastTime.current) lastTime.current = performance.now();
+
+        let id: number;
+        function frame(time: DOMHighResTimeStamp) {
+            id = requestAnimationFrame(frame);
+
+            const delta = time - lastTime.current!;
+
+            lastTime.current = time;
+            lastDelta.current += delta;
+            
+            if (!ref.current) return;
+
+            
+            ref.current.style.backgroundPositionX = `${Math.ceil(lastDelta.current) / 10}px`;
+        }
+
+        id = requestAnimationFrame(frame);
+
+        return () => cancelAnimationFrame(id);
+    }, [ ]);
 
     const rainbowStyle: React.CSSProperties = {
         fontSize: '2rem',
@@ -56,7 +83,7 @@ const RainbowText: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     if (showMessage) return (
         <div style={containerStyle} onClick={() => {setShowMessage(false); setSequence([])}}>
-            <div style={rainbowStyle}>The cake is a lie</div>
+            <div style={rainbowStyle} ref={ref}>The cake is a lie</div>
         </div>
     );
 

@@ -391,15 +391,30 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                 }}
             >
               {possiblyOutdated ? <Icons.Warn /> : <Icons.Download />}
-            </Button> : <Button
-            size={Button.Sizes.ICON}
-            color={SystemDesign.Button.Colors.RED}
-            onClick={async () => {
-              themeStore.disable(addon.filename)
-              themeStore.delete(addon.filename)
-            }}>
-              <Icons.Trash/>
-            </Button>}
+            </Button> : (
+            <Button
+              size={Button.Sizes.ICON}
+              color={SystemDesign.Button.Colors.RED}
+              onClick={(event) => {
+                if (event.shiftKey) {
+                  themeStore.delete(addon.filename);
+                  return;
+                }
+                
+                openConfirmModal("Are you sure?", [
+                  `Are you sure you want to delete \`${addon.name}\` (\`${addon.filename}\`)`,
+                  "You cannot recover deleted Themes"
+                ], {
+                  confirmText: "Delete",
+                  danger: true,
+                  onConfirm() {
+                    themeStore.delete(addon.filename);
+                  }
+                });
+              }}>
+                <Icons.Trash/>
+              </Button>
+            )}
           </div>
         </div>
       </div>
