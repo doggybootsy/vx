@@ -1,9 +1,9 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
-import { bySource, getModule } from "@webpack";
+import {bySource, getProxy} from "@webpack";
 import {createElement} from "react";
 
-const ButtonModule: any = getModule(bySource(".lineHeightReset"));
+const ButtonModule: any = getProxy(bySource(".lineHeightReset"));
 
 export default definePlugin({
     authors: [Developers.kaan],
