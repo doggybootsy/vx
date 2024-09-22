@@ -157,7 +157,13 @@ const messages = {
   FIRST_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
   BETTER_AVATAR_NAME: "Better Cropping",
   BETTER_AVATAR_DESCRIPTION: "Lets you zoom in more for pixel perfect profile pictures!",
+  COPIER_NAME: "Copier",
+  COPIER_DESCRIPTION: "More User/Guild Utility",
+  GHOST_CALL_NAME: "More User Options",
+  GHOST_CALL_DESCRIPTION: "Has little utility options on the user right click",
   QUESTS_NAME: "Quests",
+  PREVIEW_MESSAGE_NAME: "First Message",
+  PREVIEW_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
   QUESTS_DESCRIPTION: new FormattedMessage("Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.", "en-US", true),
 
   SPOTIFY_OPEN_TRACK: "Open Track",
