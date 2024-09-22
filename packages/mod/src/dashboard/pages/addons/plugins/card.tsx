@@ -11,7 +11,7 @@ import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";
 import { markPluginAsSeen } from "../../../../plugins";
 
-function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string, github?: string }, isLast: boolean }) {
+export function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string, github?: string }, isLast: boolean }) {
   const user = useUser(dev.discord);
 
   const randomDefaultAvatar = useMemo(() => getDefaultAvatar(dev.discord), [ ]);
