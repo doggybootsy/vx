@@ -1,15 +1,14 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
 import { FluxDispatcher, RelationshipStore, UserStore } from "@webpack/common";
-import {getLazy, getModule, getProxyStore} from "@webpack";
+import {getLazy, getModule, getProxy, getProxyStore} from "@webpack";
 import { openNotification as originalOpenNotification } from "../../api/notifications";
 import { User } from "discord-types/general";
 import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
-const openPrivateChannel: void | { openPrivateChannel: (userId: string) => void } =  getModule(x=>x.openPrivateChannel)
+const openPrivateChannel: { openPrivateChannel: (userId: string) => void } =  getProxy(x=>x.openPrivateChannel)
 
-function OpenChannel(userId: string) {
-    if (openPrivateChannel)
-        openPrivateChannel.openPrivateChannel(userId)
+function openChannel(userId: string) {
+    openPrivateChannel.openPrivateChannel(userId)
 }
 
 interface GlobalUser extends User
@@ -80,7 +79,7 @@ function openNotification({
                 }}
             >
                 <svg
-                    onClick={() => OpenChannel(user.id)}
+                    onClick={() => openChannel(user.id)}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     width="10px"
