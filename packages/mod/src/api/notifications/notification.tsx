@@ -142,7 +142,7 @@ function Notification({ notification }: { notification: Notification }) {
           duration={notification.duration!} 
           springRef={springRef} 
           close={() => notificationStore.delete(notification.id!, "timeout")}
-          color={notification.color ? notification.color : "#FFFFFF"}
+          color={notification.color ? notification.color : void 0}
         />
       )}
     </div>
