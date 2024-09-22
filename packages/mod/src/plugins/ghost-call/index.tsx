@@ -1,10 +1,9 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
-import { Injector } from "../../patcher";
 import { bySource, getModule } from "@webpack";
 import {createElement} from "react";
 
-const inj = new Injector();
+const ButtonModule: any = getModule(bySource(".lineHeightReset"));
 
 export default definePlugin({
     authors: [Developers.kaan],
@@ -25,7 +24,6 @@ export default definePlugin({
     ],
 
     _renderButton: ({ audioContext }) => {
-        const ButtonModule: any = getModule(bySource(".lineHeightReset"));
 
         const CustomSVGIcon = () => (
             <svg
@@ -43,7 +41,7 @@ export default definePlugin({
         return createElement(
             "div",
             {},
-            createElement(ButtonModule.Z, {
+            createElement(ButtonModule.default, {
                 label: "Dismiss",
                 centerButton: true,
                 iconComponent: () => (<CustomSVGIcon />),

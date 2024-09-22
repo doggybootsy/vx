@@ -4,37 +4,12 @@ import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openImageModal } from "../../api/modals";
 import { createAbort } from "../../util";
 import {getProxyStore, getStore} from "@webpack";
+import {clipboard} from "../../util";
 
 const AvatarURL = "https://cdn.discordapp.com/avatars/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const BannerURL = "https://cdn.discordapp.com/banners/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const SplashURL = "https://cdn.discordapp.com/splashes/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const UserProfileStore = getProxyStore("UserProfileStore");
-
-class UserCache {
-    private cache: Map<string, any>;
-
-    constructor() {
-        this.cache = new Map();
-    }
-
-    getUserProfile(userId: string) {
-        if (this.cache.has(userId)) {
-            return this.cache.get(userId);
-        }
-
-        const profile = UserProfileStore.getUserProfile(userId);
-
-        if (profile) {
-            this.cache.set(userId, profile);
-        }
-
-        return profile;
-    }
-
-    clearCache() {
-        this.cache.clear();
-    }
-}
 
 function format(template: string, ...args: any[]) {
     return template.replace(/{(\d+)}/g, (match, index) => {
@@ -56,8 +31,6 @@ function isEitherDisabled(...args: any[]): boolean[] {
 }
 
 const [abort, getSignal] = createAbort();
-
-const userCache = new UserCache();
 
 export default definePlugin({
     authors: [Developers.kaan],
@@ -130,7 +103,7 @@ export default definePlugin({
                     label={"Copy Guild Banner"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guildBanner);
+                        clipboard.copy(guildBanner);
                     }}
                 />,
             ];
@@ -143,7 +116,7 @@ export default definePlugin({
                     disabled={validName}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guild.name);
+                        clipboard.copy(guild.name);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -153,7 +126,7 @@ export default definePlugin({
                     disabled={validDescription}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guild.description);
+                        clipboard.copy(guild.description);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -162,7 +135,7 @@ export default definePlugin({
                     label={"Copy Owner ID"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guild.ownerId);
+                        clipboard.copy(guild.ownerId);
                     }}
                 />,
             ];
@@ -215,7 +188,7 @@ export default definePlugin({
         patch("copierUser", "user-context", (props, res) => {
             const UserIcon = getAnimated(format(AvatarURL, props.user.id, props.user.avatar));
             const UserBanner = getAnimated(format(BannerURL, props.user.id, props.user.banner));
-            const UserProfile = userCache.getUserProfile(props.user.id);
+            const UserProfile = UserProfileStore.getUserProfile(props.user.id);
 
             const [validAvatar, validBanner] = isEitherDisabled(props.user.avatar, props.user.banner);
             const [validAccentColor, validBio, validUsername] = isEitherDisabled(
@@ -239,7 +212,7 @@ export default definePlugin({
                     label={"Copy Profile Picture"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(UserIcon);
+                        clipboard.copy(UserIcon);
                     }}
                 />,
             ];
@@ -259,7 +232,7 @@ export default definePlugin({
                     label={"Copy Banner"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(UserBanner);
+                        clipboard.copy(UserBanner);
                     }}
                 />,
             ];
@@ -272,7 +245,7 @@ export default definePlugin({
                     disabled={validAccentColor}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(UserProfile.accentColor.toString());
+                        clipboard.copy(UserProfile.accentColor.toString());
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -282,7 +255,7 @@ export default definePlugin({
                     disabled={validBio}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(UserProfile.bio);
+                        clipboard.copy(UserProfile.bio);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -292,7 +265,7 @@ export default definePlugin({
                     disabled={validUsername}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(props.user.username);
+                        clipboard.copy(props.user.username);
                     }}
                 />,
             ];
@@ -334,6 +307,5 @@ export default definePlugin({
     },
     stop() {
         unpatch("copierUser");
-        userCache.clearCache();
     },
 });

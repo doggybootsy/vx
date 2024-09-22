@@ -5,14 +5,13 @@ import {useState} from "react";
 import {Button, Icons} from "../../components";
 import {getModule, getProxy, getProxyByKeys, getProxyStore} from "@webpack";
 import {MessageActions, SelectedChannelStore} from "@webpack/common";
+import {channel} from "node:diagnostics_channel";
 const buttonClasses = getProxyByKeys<Record<string, string>>([ "buttonWrapper", "pulseButton" ]);
 
 const DraftStore = getProxyStore("DraftStore")
-const PreviewIcon = getProxy(x=>x.EyeIcon)
+const PreviewIcon = Icons.DiscordIcon.from("EyeIcon")
 
-function sendPreview() {
-    const channelID = SelectedChannelStore.getChannelId();
-
+function sendPreview(channelID: string) {
     const draft = DraftStore.getDraft(channelID, 0);
 
     if (draft) {
@@ -40,7 +39,7 @@ export default definePlugin({
                     size={Button.Sizes.NONE}
                     className={buttonClasses.active}
                     onClick={() => {
-                        sendPreview()
+                        sendPreview(props.channel.id)
                     }}
                     innerClassName="vx-textarea-button-inner"
                     // @ts-expect-error idk the typings for this, so
@@ -51,7 +50,7 @@ export default definePlugin({
                         }
                     }}
                 >
-                    <PreviewIcon.EyeIcon {...{color: "var(--interactive-normal)"}} />
+                    <PreviewIcon {...{color: "var(--interactive-normal)"}} />
                 </Button>
             </div>
         )

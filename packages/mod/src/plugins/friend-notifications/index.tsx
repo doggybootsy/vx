@@ -5,9 +5,11 @@ import {getLazy, getModule, getProxyStore} from "@webpack";
 import { openNotification as originalOpenNotification } from "../../api/notifications";
 import { User } from "discord-types/general";
 import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
+const openPrivateChannel: void | { openPrivateChannel: (userId: string) => void } =  getModule(x=>x.openPrivateChannel)
 
 function OpenChannel(userId: string) {
-    getModule(x=>x.openPrivateChannel).openPrivateChannel(userId)
+    if (openPrivateChannel)
+        openPrivateChannel.openPrivateChannel(userId)
 }
 
 interface GlobalUser extends User
@@ -169,17 +171,11 @@ function watchUserStatus(event: any) {
     }
 }
 
-const Flux = getLazy((x) => x.subscribe && x._dispatch);
-let uwuflux: Record<PropertyKey, any>;
-
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
-    async start() {
-        uwuflux = await Flux;
-        await uwuflux.subscribe("PRESENCE_UPDATES", watchUserStatus);
-    },
-    async stop() {
-        await uwuflux.unsubscribe("PRESENCE_UPDATES", watchUserStatus);
-    },
+    fluxEvents: { PRESENCE_UPDATES(event)
+        {
+            watchUserStatus(event)
+        }},
 });
