@@ -35,7 +35,7 @@ interface SpringRef {
   reset(): void
 };
 
-function Slider({duration, springRef, close, color, backgroundColor}: {
+function Slider({duration, springRef, close, color}: {
   duration: number,
   springRef: React.MutableRefObject<SpringRef | void>,
   close: () => void,
