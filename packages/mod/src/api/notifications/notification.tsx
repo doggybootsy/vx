@@ -39,7 +39,7 @@ function Slider({duration, springRef, close, color}: {
   duration: number,
   springRef: React.MutableRefObject<SpringRef | void>,
   close: () => void,
-  color: string,
+  color: React.CSSProperties["color"];
 }) {
   const props = ReactSpring.useSpring({
     to: { width: "100%" },
