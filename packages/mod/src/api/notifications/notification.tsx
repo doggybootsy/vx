@@ -35,7 +35,12 @@ interface SpringRef {
   reset(): void
 };
 
-function Slider({ duration, springRef, close }: { duration: number, springRef: React.MutableRefObject<SpringRef | void>, close: () => void }) {
+function Slider({duration, springRef, close, color, backgroundColor}: {
+  duration: number,
+  springRef: React.MutableRefObject<SpringRef | void>,
+  close: () => void,
+  color: string,
+}) {
   const props = ReactSpring.useSpring({
     to: { width: "100%" },
     from: { width: "0%" },
@@ -58,8 +63,8 @@ function Slider({ duration, springRef, close }: { duration: number, springRef: R
   return (
     <div className="vx-notification-slider-wrapper">
       <ReactSpring.animated.div 
-        style={{ width: props.width }} 
-        className="vx-notification-slider" 
+        style={{ width: props.width, backgroundColor: color }} 
+        className="vx-notification-slider"
       />
     </div>
   )
@@ -137,6 +142,7 @@ function Notification({ notification }: { notification: Notification }) {
           duration={notification.duration!} 
           springRef={springRef} 
           close={() => notificationStore.delete(notification.id!, "timeout")}
+          color={notification.color ? notification.color : "#FFFFFF"}
         />
       )}
     </div>
