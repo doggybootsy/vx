@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useInsertionEffect, useMemo } from "react";
 
 import { getComponentType, cacheComponent } from "../../util";
 import { byStrings, getModule, getProxyStore } from "@webpack";
 import { dirtyDispatch } from "@webpack/common";
+import { waitForNode } from "common/dom";
 
 const PopoutWindow = cacheComponent(() => {
   const filter = byStrings(".DnDProvider", ".POPOUT_WINDOW", "{guestWindow:");
@@ -23,16 +24,35 @@ interface OpenWindowOptions {
   id: string, 
   render: React.ComponentType<{ window: Window & typeof globalThis }>, 
   title: string,
-  wrap?: boolean
+  wrap?: boolean,
+  css?: string
 }
 
 export function openWindow(opts: OpenWindowOptions) {
-  const { id, render: Component, title, wrap = true } = opts;
+  const { id, render: Component, title, wrap = true, css } = opts;
 
   const windowKey = `DISCORD_VX_${id}`;
 
   function Render() {
     const window = useMemo(() => PopoutWindowStore.getWindow(windowKey)!, [ ]);
+
+    useInsertionEffect(() => {
+      if (typeof css !== "string") return;
+
+      let style: HTMLStyleElement | null = window.document.createElement("style");
+      style.textContent = css;
+
+      waitForNode("head", { target: window.document }).then(() => {
+        if (!style) return;
+
+        window.document.head.append(style);
+      });
+
+      return () => {
+        style!.remove();
+        style = null;
+      }
+    }, [ ]);
 
     if (!wrap) return <Component window={window} />;
 

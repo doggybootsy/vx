@@ -37,8 +37,8 @@ addPlainTextPatch(
       },
       // this patch is impossible to undo so it, it breaks the normal rules
       {
-        find: /(function .{1,3}\(.{1,3}\){)(let{focused:.{1,3},)/,
-        replace: "$1return null;$2",
+        find: /(function .{1,3}\((.{1,3})\){)(let{focused:.{1,3},)/,
+        replace: "$1if(!$2.windowKey)return;$3",
         predicate: () => nativeFrame.get()
       }
     ]

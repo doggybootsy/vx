@@ -8,7 +8,7 @@ import { SettingType, createSettings } from "../settings";
 
 import * as styler from "./index.css?managed";
 
-const settings = createSettings("loop", {
+export const settings = createSettings("loop", {
   autoLoop: {
     type: SettingType.SWITCH,
     default: false,

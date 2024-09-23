@@ -107,7 +107,7 @@ function AboutTab({ guild }: { guild: Guild }) {
 
 class InCommonStore extends InternalStore {
   #request = getProxyByKeys([ "requestMembersById" ]);
-  private requestMembersById(guildIds: string[] | string, userIds: string[] | string) {
+  public requestMembersById(guildIds: string[] | string, userIds: string[] | string) {
     this.#request.requestMembersById(guildIds, userIds, false);
   }
 
@@ -147,6 +147,7 @@ function UserItem({ userId, guildId }: { userId: string, guildId: string }) {
 
   useLayoutEffect(() => {
     if (!user) fetchUser(userId);
+    if (!member) inCommonStore.requestMembersById(guildId, userId);
   }, [ ]);
 
   const hasNickname = useMemo(() => !!friendNickName || !!member?.nick, [ user, member ]);
