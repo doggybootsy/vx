@@ -368,6 +368,7 @@ export default definePlugin({
   styler,
   menus: {
     "guild-context"(props, res) {
+      if (!props.guild) return; // to fix right clicking folder stuff
       res.props.children.unshift(
         <MenuComponents.MenuGroup>
           <MenuComponents.MenuItem 

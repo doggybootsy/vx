@@ -42,6 +42,7 @@ export default definePlugin({
 
         patch("copierGuild", "guild-context", (props, res) => {
             const guild = props.guild;
+            if (!guild) return;  // to fix right clicking folder stupidness cause right clicking a folder is for some reason a guild context menu
             const guildIconUri = guild.getIconSource().uri;
             const guildBanner = getAnimated(format(bannerURL, guild.id, guild.banner))
             const guildSplash = getAnimated(format(splashURL, guild.id, guild.splash));
