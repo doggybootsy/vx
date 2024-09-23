@@ -164,8 +164,8 @@ const messages = {
   FRIEND_NOTIFICATIONS_NAME: "Friend Notifications",
   FRIEND_NOTIFICATIONS_DESCRIPTION: "Gives you a notification of what is going on with your friends :>",
   QUESTS_NAME: "Quests",
-  PREVIEW_MESSAGE_NAME: "First Message",
-  PREVIEW_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
+  PREVIEW_MESSAGE_NAME: "Preview Message",
+  PREVIEW_MESSAGE_DESCRIPTION: "Allows you to preview a message before sending it.",
   QUESTS_DESCRIPTION: new FormattedMessage("Allows you to complete quests.app but you need to follow requirements. [More Here](https://gist.github.com/aamiaa/204cd9d42013ded9faf646fae7f89fbb) Ported from this gist.", "en-US", true),
 
   SPOTIFY_OPEN_TRACK: "Open Track",
