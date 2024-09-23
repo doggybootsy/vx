@@ -7,6 +7,10 @@ import { className } from "../../util";
 
 import * as styler from "./index.css?managed";
 
+function PIPWindow() {}
+
+
+
 function PIP() {
   const ref = useRef<HTMLDivElement>(null);
   const [ video, setVideo ] = useState<null | HTMLVideoElement>(null);

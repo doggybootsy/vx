@@ -26,7 +26,8 @@ interface ThemeStore extends GenericStore {
 };
 
 interface CorrectRelationshipStore extends RelationshipStore {
-  getSince(userId: string): string | void
+  getSince(userId: string): string | void,
+  getBlockedIDs(): string[]
 };
 
 interface CorrectChannelStore extends ChannelStore {
