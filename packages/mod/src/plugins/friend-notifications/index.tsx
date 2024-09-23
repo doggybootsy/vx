@@ -53,7 +53,7 @@ function openNotification({
     status: string;
 }) {
     const color = getColorFromStatus(status);
-
+    
     originalOpenNotification({
         title,
         description,
@@ -65,7 +65,7 @@ function openNotification({
             />
         ),
         duration: 3000,
-        color: color,
+        sliderColor: color,
         footer: (
             <div
                 style={{
