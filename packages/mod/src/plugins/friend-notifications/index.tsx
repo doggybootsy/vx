@@ -34,12 +34,8 @@ function getColorFromStatus(status: string): string {
             return "rgb(128, 132, 142)";
         case "dnd":
             return "rgb(242, 63, 67)"
-        case "busy":
-            return "rgb(240, 178, 50)";
         case "idle":
             return "rgb(240, 178, 50)"
-        case "away":
-            return "rgb(240, 178, 50)";
         default:
             return "gray";
     }

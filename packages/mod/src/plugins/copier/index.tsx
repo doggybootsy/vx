@@ -5,10 +5,11 @@ import { openImageModal } from "../../api/modals";
 import { createAbort } from "../../util";
 import {getProxyStore, getStore} from "@webpack";
 import {clipboard} from "../../util";
+import {useStateFromStores} from "@webpack/common";
 
-const AvatarURL = "https://cdn.discordapp.com/avatars/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
-const BannerURL = "https://cdn.discordapp.com/banners/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
-const SplashURL = "https://cdn.discordapp.com/splashes/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
+const avatarURL = "https://cdn.discordapp.com/avatars/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
+const bannerURL = "https://cdn.discordapp.com/banners/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
+const splashURL = "https://cdn.discordapp.com/splashes/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const UserProfileStore = getProxyStore("UserProfileStore");
 
 function format(template: string, ...args: any[]) {
@@ -42,8 +43,8 @@ export default definePlugin({
         patch("copierGuild", "guild-context", (props, res) => {
             const guild = props.guild;
             const guildIconUri = guild.getIconSource().uri;
-            const guildBanner = getAnimated(format(BannerURL, guild.id, guild.banner))
-            const guildSplash = getAnimated(format(SplashURL, guild.id, guild.splash));
+            const guildBanner = getAnimated(format(bannerURL, guild.id, guild.banner))
+            const guildSplash = getAnimated(format(splashURL, guild.id, guild.splash));
 
             const [validIcon, validBanner, validSplash] = isEitherDisabled(guildIconUri, guild.banner, guild.splash);
             const [validDescription, validName] = isEitherDisabled(guild.description, guild.name);
@@ -186,14 +187,14 @@ export default definePlugin({
         });
         
         patch("copierUser", "user-context", (props, res) => {
-            const UserIcon = getAnimated(format(AvatarURL, props.user.id, props.user.avatar));
-            const UserBanner = getAnimated(format(BannerURL, props.user.id, props.user.banner));
-            const UserProfile = UserProfileStore.getUserProfile(props.user.id);
+            const UserIcon = getAnimated(format(avatarURL, props.user.id, props.user.avatar));
+            const UserBanner = getAnimated(format(bannerURL, props.user.id, props.user.banner));
+            const userProfile = useStateFromStores([UserProfileStore], () => UserProfileStore.getUserProfile(props.user.id))
 
             const [validAvatar, validBanner] = isEitherDisabled(props.user.avatar, props.user.banner);
             const [validAccentColor, validBio, validUsername] = isEitherDisabled(
-                UserProfile?.accentColor,
-                UserProfile?.bio,
+                userProfile?.accentColor,
+                userProfile?.bio,
                 props.user.username
             );
 
