@@ -19,7 +19,7 @@ There will be an install method here shortly
 ### Browser Extension
 [<img src="https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/29bfeef37eef4ca3bcf962274c1c7766.png" width="40" alt="Microsoft Edge Logo" title="Install On Microsoft Edge">](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
 
-> [!WARNING]
+> [!CAUTION]
 > Be aware of potential high memory and CPU usage, which can cause Discord to crash or reload unexpectedly. This issue is likely related to Microsoft Edge rather than VX itself, as opening DevTools in Edge can also trigger increased resource consumption.
 
 ## Key Features
