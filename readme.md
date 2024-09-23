@@ -14,7 +14,7 @@ VX is a lightweight client modification for [Discord](https://discord.com/), com
 ### Desktop Application
 Currently, VX does not support a reliable installation method on the Discord desktop app. 
 
-There will be an install method here shortly
+There will be an installation method here shortly
 
 ### Browser Extension
 [<img src="https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/29bfeef37eef4ca3bcf962274c1c7766.png" width="40" alt="Microsoft Edge Logo" title="Install On Microsoft Edge">](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
