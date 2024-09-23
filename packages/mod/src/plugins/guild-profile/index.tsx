@@ -8,7 +8,7 @@ import { useDeferredValue, useId, useLayoutEffect, useMemo, useRef, useState } f
 import { byStrings, getMangledProxy, getModule, getProxy, getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
 import { Messages } from "vx:i18n";
 import { Guild } from "discord-types/general";
-import { focusStore, InternalStore, proxyCache } from "../../util";
+import { focusStore, getDefaultAvatar, InternalStore, proxyCache } from "../../util";
 import { useInternalStore } from "../../hooks";
 import { Markdown } from "../../components";
 
@@ -151,11 +151,21 @@ function UserItem({ userId, guildId }: { userId: string, guildId: string }) {
 
   const hasNickname = useMemo(() => !!friendNickName || !!member?.nick, [ user, member ]);
   const hasFocus = useInternalStore(focusStore, () => focusStore.hasFocus);
+  const randomDefaultAvatar = useMemo(() => getDefaultAvatar(userId), [ ]);
 
   if (!user || !member) {
     return (
-      <div>
-        {userId} loading...
+      <div className="vx-gp-user" onClick={() => openUserModal(userId)}>
+        <div 
+          className="vx-gp-user-avatar" 
+          style={{ backgroundImage: `url(${randomDefaultAvatar})` }} 
+        />
+        <div className="vx-gp-user-info">
+          <div className="vx-gp-user-title">{member?.nick || friendNickName || (user as any)?.globalName || user?.username || userId}</div>
+          {hasNickname && (
+            <div className="vx-gp-user-sub">{(user as any)?.globalName || user?.username || userId}</div>
+          )}
+        </div>
       </div>
     )
   }
@@ -177,7 +187,7 @@ function UserItem({ userId, guildId }: { userId: string, guildId: string }) {
 }
 
 function FriendsTab({ guild }: { guild: Guild }) {
-  const ids =  inCommonStore.useFriendIds(guild.id);
+  const ids = inCommonStore.useFriendIds(guild.id);
   
   return (
     <div className="vx-gp-users">
@@ -369,6 +379,7 @@ export default definePlugin({
   menus: {
     "guild-context"(props, res) {
       if (!props.guild) return; // to fix right clicking folder stuff
+
       res.props.children.unshift(
         <MenuComponents.MenuGroup>
           <MenuComponents.MenuItem 
