@@ -12,7 +12,8 @@ export interface Notification {
   description?: React.ReactNode | Array<React.ReactNode>,
   footer?: React.ReactNode,
   duration?: number,
-  color?: React.CSSProperties["color"],
+  sliderColor?: React.CSSProperties["color"],
+  textColor?: React.CSSProperties["color"],
 
   // events
   ref?(div: HTMLDivElement): void,

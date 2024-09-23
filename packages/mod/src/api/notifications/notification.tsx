@@ -6,6 +6,7 @@ import { useInternalStore } from "../../hooks";
 import { ReactSpring } from "@webpack/common"
 import { notificationStore } from "./store"
 import { internalDataStore } from "../storage";
+import {not} from "@webpack";
 
 export const Notifications = memo(function Notifications() {
   const state = useInternalStore(notificationStore, () => notificationStore.getState());
@@ -113,7 +114,7 @@ function Notification({ notification }: { notification: Notification }) {
               <notification.icon width={24} height={24} className="vx-notification-title" />
             </div>
           )}
-          <div className="vx-notification-title">
+          <div className="vx-notification-title" style={{color: notification.textColor}}>
             {notification.title}
           </div>
         </div>
@@ -142,7 +143,7 @@ function Notification({ notification }: { notification: Notification }) {
           duration={notification.duration!} 
           springRef={springRef} 
           close={() => notificationStore.delete(notification.id!, "timeout")}
-          color={notification.color ? notification.color : void 0}
+          color={notification.sliderColor ? notification.sliderColor : void 0}
         />
       )}
     </div>
