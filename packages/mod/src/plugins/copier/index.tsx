@@ -64,7 +64,7 @@ export default definePlugin({
                     label={"Copy Guild Icon"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guildIcon);
+                        clipboard.copy(guildIcon);
                     }}
                 />,
             ];
@@ -84,7 +84,7 @@ export default definePlugin({
                     label={"Copy Splash"}
                     action={() => {
                         // @ts-ignore
-                        window.DiscordNative.clipboard.copy(guildSplash);
+                        clipboard.copy(guildSplash);
                     }}
                 />,
             ];
