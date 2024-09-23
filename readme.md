@@ -3,51 +3,63 @@
 ![GitHub issues](https://img.shields.io/github/issues/doggybootsy/vx)
 ![Discord](https://img.shields.io/discord/864267123694370836?logo=discord&label=Discord&link=https%3A%2F%2Fdiscord.gg%2FyYJA3qQE5F)
 ![GitHub language count](https://img.shields.io/github/languages/count/doggybootsy/vx)
-<!-- [![CodeFactor](https://www.codefactor.io/repository/github/doggybootsy/vx/badge)](https://www.codefactor.io/repository/github/doggybootsy/vx) -->
 
-## ${\textsf{\color{red}Notice}}$
-VX is currently not fully out, there's no official way to install it that works currently. All except for the [MS Edge Store](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
+> [!WARNING]
+> VX is currently in development and is not fully released. Installation methods may be unstable, with the Microsoft Edge Store being the only currently supported option: [MS Edge Store](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig).
 
-## VX
-VX is a client mod for [@discord](https://discord.com/)
+## VX Overview
+VX is a lightweight client modification for [Discord](https://discord.com/), compatible with both the desktop application and web browser versions.
 
-## Installation
-### Desktop
-Currently there's no good way to install VX on the desktop app. 
+## Installation Guide
+### Desktop Application
+Currently, VX does not support a reliable installation method on the Discord desktop app. 
 
-### Browsers
-[<img src="https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/29bfeef37eef4ca3bcf962274c1c7766.png" width="40" alt="Microsft Edge Logo" title="Install On Microsft Edge">](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
+There will be an installation method here shortly
 
-${\textsf{\color{red}Notice}}$: Weird Memory / CPU usage happens and can cause discord to crash / reload (Most likely a issue with edge itself, as just opening devtools can cause edge to use a lot a cpu / memory)
+### Browser Extension
+[<img src="https://edgestatic.azureedge.net/shared/cms/lrs1c69a1j/section-images/29bfeef37eef4ca3bcf962274c1c7766.png" width="40" alt="Microsoft Edge Logo" title="Install On Microsoft Edge">](https://microsoftedge.microsoft.com/addons/detail/vx/cdjpfngmglnndcjclhdnmbhfkakbelig)
 
-## Features
-VX has 50+ plugins built in, each doing a seperate tasks. Also has the ability to load custom plugins.
+> [!CAUTION]
+> Be aware of potential high memory and CPU usage, which can cause Discord to crash or reload unexpectedly. This issue is likely related to Microsoft Edge rather than VX itself, as opening DevTools in Edge can also trigger increased resource consumption.
 
-Built in theming support.
+## Key Features
+- **50+ Built-In Plugins**: Each plugin offers unique functionality with the option to load custom plugins.
+- **Theming Support**: Easily customize the look and feel of your Discord client.
+- **Content Protection Mode**: Enable enhanced security features for Electron-based apps (available on macOS and Windows only).
 
-And the ability to enable electrons content protection mode (OSX and Windows only)
+## Why VX?
+VX provides a lightweight, versatile solution for enhancing your Discord experience, whether on the desktop app or in a web browser.
 
-## Why?
-VX is a light weight client mod that works both on the desktop app and in the browser
+## Suggesting New Plugins
+To suggest new plugins, please create a [new issue](https://github.com/doggybootsy/vx/issues/new?assignees=&labels=enhancement&projects=&template=plugin-request--%23name-.md&title=Plugin%20Request%20%5B%23name%5D) and ensure your suggestion is not already listed.
 
-## Suggesting
-To suggest plugins create a [new issue](https://github.com/doggybootsy/vx/issues/new?assignees=&labels=enhancement&projects=&template=plugin-request--%23name-.md&title=Plugin%20Request%20%5B%23name%5D) with the plugin, but check if the plugin already exists
+## Contributing to VX
+Interested in adding features or plugins to VX? Here's how you can get involved:
 
-## Contributing
-To add plugins / features this is what you would do
-1. To contribute to VX you first need [Git](https://git.com) and [NodeJS](https://nodejs.com). 
-2. Then you clone the repo `git clone https://github.com/doggybootsy/vx`
-3. After that you install the dependencies `npm install`
-4. To compile VX you do `npm run ./index.js` but you need flags todo anything
-  * Flags (you can also do `--` instead of `-`)
-    * Usage Example `npm run ./index.js -p -d -a -w`
-    * Flag `-w` or `-web` compiles the files for web
-    * Flag `-d` or `-desktop` compiles the files for desktop
-    * Flag `-a` or `-asar` compiles the desktop files into a `.asar`
-    * Flag `-p` or `-production` compiles in the production mode
-5. Using the compiled build
-  * On Desktop you need to require the `./app` folder VX makes in your `discord-desktop-core` (`%localappdata%\discord\app-#.#.####\modules\discord_desktop_core-#\discord_desktop_core`) or in the `app.asar` in the resource folder (`%localappdata%\discord\app-#.#.####\resources`)
-  * On Web Make sure you add the files to your extension then reload the extension (VX will at somepoint have a extension sub module that will make it) can't give a full guide currently
+1. **Prerequisites**: Ensure you have [Git](https://git-scm.com) and [Node.js](https://nodejs.org).
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/doggybootsy/vx
+   ```
+3. **Install Dependencies**
+    ```bash 
+    npm install
+    ```
+4. **Build VX**
+    ```bash
+    npm run ./index.js
+    ```
+    - Use the following flags to specify the build type:
 
-## License
-The license is the MIT license
+        `-w` or `--web`: Compile files for the web.
+
+      `-d` or `--desktop`: Compile files for the desktop app.
+
+      `-a` or `--asar`: Package desktop files into an .asar.
+
+      `-p` or `--production`: Compile in production mode.
+
+5. **Using the Compiled Build:**
+
+   - **Desktop**: Link the `./app` folder generated by VX to your`discord-desktop-core` (located in `%localappdata%\discord\app-#.#.####\modules\discord_desktop_core-#\discord_desktop_core`) or replace the app.asar in the resource folder (`%localappdata%\discord\app-#.#.####\resources`).
+   - **Web**: Add the compiled files to your browser extension and reload. A dedicated extension module for VX is planned for the future.
