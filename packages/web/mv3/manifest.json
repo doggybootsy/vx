@@ -11,6 +11,7 @@
   },
   "host_permissions": [
     "*://*.discord.com/*",
+    "*://*.discordapp.com/*",
     "*://*.github.com/*",
     "*://objects.githubusercontent.com/*",
     "*://*.betterdiscord.app/*"

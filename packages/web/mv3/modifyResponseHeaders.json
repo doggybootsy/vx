@@ -12,12 +12,17 @@
         {
           "header": "content-security-policy-report-only",
           "operation": "remove"
+        },
+        {
+          "header": "access-control-allow-origin",
+          "operation": "set",
+          "value": "*"
         }
       ]
     },
     "condition": {
       "regexFilter": "https?://discord.com/.*",
-      "resourceTypes": ["main_frame"]
+      "resourceTypes": ["main_frame", "xmlhttprequest", "sub_frame", "script"]
     }
   }
 ]

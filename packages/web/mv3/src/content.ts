@@ -24,6 +24,15 @@ addEventListener("message", async (event) => {
     
     return;
   }
+  if (data.type === "fetch-array-buffer") {  
+    connection.postMessage({
+      type: "fetch-array-buffer",
+      input: data.input,
+      id: data.id
+    });
+    
+    return;
+  }
 });
 
 function ping() {
@@ -37,6 +46,14 @@ connection.onMessage.addListener((msg: any) => {
       from: "vx",
       type: "community-themes",
       data: msg.data
+    });
+  }
+  if (msg.type === "array-buffer") {
+    postMessage({
+      from: "vx",
+      type: "array-buffer",
+      data: msg.data,
+      id: msg.id
     });
   }
   if (msg.type === "pong") {

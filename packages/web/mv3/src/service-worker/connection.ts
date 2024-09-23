@@ -44,6 +44,31 @@ function executeVXScript(connection: Connection) {
       });
     }
 
+    let i = 0;
+    async function fetchArrayBuffer(input: string): Promise<ArrayBuffer> {
+      return new Promise((resolve) => {
+        const id = i++;
+
+        function listener(event: MessageEvent) {
+          if (typeof event.data !== "object") return;
+          if (event.data.from !== "vx") return;
+          if (event.data.type === "array-buffer" && event.data.id === id) {
+            resolve(new Uint8Array(event.data.data).buffer);
+            globalThis.removeEventListener("message", listener);
+          }
+        }
+
+        globalThis.addEventListener("message", listener);
+        
+        postMessage({
+          type: "fetch-array-buffer", 
+          from: "vx", 
+          input,
+          id
+        });
+      });
+    }
+
     (globalThis as typeof window).VXExtension = {
       id,
       update(release) {
@@ -53,6 +78,7 @@ function executeVXScript(connection: Connection) {
           release
         });
       },
+      fetchArrayBuffer,
       getCommunityThemes
     };
 

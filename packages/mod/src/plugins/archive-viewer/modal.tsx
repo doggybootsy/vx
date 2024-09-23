@@ -129,9 +129,18 @@ function ZipModal(props: ZipModalProps) {
     let file: File;
     if (typeof props.src === "string") {
       try {
-        const blob = await request.blob(props.src, { cache: "force-cache" });
-        if (signal.aborted) return;
-        file = new File([ blob.blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
+        const filename = props.src.split("/").at(-1)!.split("?").at(0)!;
+
+        if (window.VXExtension?.fetchArrayBuffer) {
+          const buffer = await window.VXExtension.fetchArrayBuffer(props.src);
+          if (signal.aborted) return;
+          file = new File([ buffer ], filename);
+        }
+        else {
+          const blob = await request.blob(props.src, { cache: "force-cache" });
+          if (signal.aborted) return;
+          file = new File([ blob.blob ], filename);
+        }
       } catch (error) {
         setError(error as Error);
         return;
@@ -307,7 +316,6 @@ function ZipModal(props: ZipModalProps) {
                           
                           openZipModal(new File([ blob ], file.name));
                         }
-                        await file.getContent("uint8array")
 
                         return;
                       }

@@ -8,10 +8,7 @@ interface ButtonProps {
   downloadURL?: string
 };
 
-export function ZipButton(props: ButtonProps) {  
-
-  console.log(props);
-  
+export function ZipButton(props: ButtonProps) {    
   if (!props.downloadURL) return null;
   if (!isArchive(props.downloadURL)) return null;
   

@@ -155,6 +155,7 @@ interface DiscordNative {
 
 interface ExtensionNative {
   id: string,
+  fetchArrayBuffer(input: string): Promise<ArrayBuffer>,
   update(release: Git.Release): void,
   getCommunityThemes(): Promise<BetterDiscord.Addon[]>
 }

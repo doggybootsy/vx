@@ -16,6 +16,19 @@ async function getCommunityThemes(connection: Connection) {
 
   logger.log("Found community themes");
 }
+async function fetchArrayBuffer(connection: Connection, input: string, id: number) {
+  logger.log(`Fetching ${input}`);
+  
+  const { arrayBuffer } = await request.arrayBuffer(input);
+
+  connection.postMessage({
+    type: "array-buffer",
+    data: [...new Uint8Array(arrayBuffer)],
+    id
+  });
+
+  logger.log(`Fetched ${input}`);
+}
 
 browser.runtime.onConnect.addListener((_connection: any) => {  
   const connection = new Connection(_connection);
@@ -27,6 +40,9 @@ browser.runtime.onConnect.addListener((_connection: any) => {
         break;
       case "get-community-themes":
         getCommunityThemes(connection);
+        break;
+      case "fetch-array-buffer":
+        fetchArrayBuffer(connection, msg.input, msg.id);
         break;
       case "ping":
         logger.log(`Received ping from '${connection.tabId}'`);

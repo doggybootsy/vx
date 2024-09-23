@@ -23,6 +23,9 @@ const out = async ({ js, css }) => {
   VX.Connection.reloadAll();
 }
 
+console.log(path.join(webdir, "devtools.js"));
+
+
 fs.writeFileSync(
   path.join(webdir, "devtools.js"),
   `(${out})(${JSON.stringify({ js, css })})`
