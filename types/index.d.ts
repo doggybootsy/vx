@@ -200,8 +200,7 @@ declare module "*.html" {
   export default type;
 }
 declare module "@plugins" {
-  const type: Record<string, any>;
-  export = type;
+  
 }
 
 declare module "vx:self" {

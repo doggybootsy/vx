@@ -128,11 +128,16 @@ function ZipModal(props: ZipModalProps) {
   useAbortEffect(async (signal) => {
     let file: File;
     if (typeof props.src === "string") {
-      const blob = await request.blob(props.src, { cache: "force-cache" });
-      if (signal.aborted) return;
-      file = new File([ blob.blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
+      try {
+        const blob = await request.blob(props.src, { cache: "force-cache" });
+        if (signal.aborted) return;
+        file = new File([ blob.blob ], props.src.split("/").at(-1)!.split("?").at(0)!);
+      } catch (error) {
+        setError(error as Error);
+        return;
+      }
     }
-    else file = props.src;    
+    else file = props.src;
 
     try {
       const archive = await archiveOpenFileAsync(file, "");

@@ -236,24 +236,11 @@ const RequireAllPluginsPlugin = (desktop) => ({
         .filter(dir => !dir.endsWith(".ignore"))
         .filter(dir => !dir.endsWith(desktop ? ".web" : ".app"))
         .filter(dir => dir !== "shared");
-      const userPluginDirs = [];
-      // const userPluginDirs = (await readdir("./packages/mod/src/user-plugins", {
-      //   encoding: "binary"
-      // }))
-      //   .filter(dir => statSync(path.join("./packages/mod/src/user-plugins", dir)).isDirectory())
-      //   .filter(dir => !dir.endsWith(".ignore"))
-      //   .filter(dir => !dir.endsWith(desktop ? ".web" : ".app"))
-      //   .filter(dir => dir !== "shared");
         
       return {
         resolveDir: "./packages/mod/src",
         contents: `
-function esModuleInteropDefault(exports) {
-  if (typeof exports === "object" && exports !== null && exports.__esModule && exports.default) return exports.default;
-  return exports;
-}
-${pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = esModuleInteropDefault(require("./plugins/${dir}"));`).join("\n")}
-${userPluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = esModuleInteropDefault(require("./user-plugins/${dir}"));`).join("\n")}`
+${pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = require("./plugins/${dir}");`).join("\n")}`
       }
     });
   }

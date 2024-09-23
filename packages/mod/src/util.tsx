@@ -860,7 +860,7 @@ export function setRefValue<T>(ref: React.Ref<T> | void, value: T) {
   if (ref) (ref as React.MutableRefObject<T>).current = value;
 }
 
-export function compileFunction<T extends FunctionType>(code: string, args: string[]): T {
+export function compileFunction<T extends FunctionType>(code: string, args: string[] = [ ]): T {
   return new Function(...args, code) as T;
 }
 

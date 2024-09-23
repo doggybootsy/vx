@@ -9,6 +9,9 @@ interface ButtonProps {
 };
 
 export function ZipButton(props: ButtonProps) {  
+
+  console.log(props);
+  
   if (!props.downloadURL) return null;
   if (!isArchive(props.downloadURL)) return null;
   

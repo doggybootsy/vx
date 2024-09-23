@@ -9,6 +9,8 @@ import { Command } from "../api/commands/types";
 import { addCommand } from "../api/commands";
 import type { IconFullProps } from "../components/icons";
 import { Flex } from "../components";
+import * as menu from "../api/menu";
+import type { MenuCallback } from "../api/menu";
 
 export interface PluginType {
   authors: Developer[],
@@ -20,7 +22,8 @@ export interface PluginType {
   start?(): void,
   stop?(): void,
   fluxEvents?: Record<string, (data: Record<PropertyKey, any>) => void>,
-  styler?: ManagedCSS
+  styler?: ManagedCSS,
+  menus?: Record<string, MenuCallback>
 };
 
 export type AnyPluginType = PluginType & Omit<Record<string, any>, keyof PluginType>;
@@ -54,6 +57,17 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
         });
       }
     });
+    
+    for (const eventName in exports.menus) {
+      if (!Object.prototype.hasOwnProperty.call(exports.menus, eventName)) continue;
+
+      const handler = exports.menus[eventName];
+      
+      menu.patch(this.id, eventName, (props, res) => {
+        if (!this.getActiveState()) return;
+        handler.call(null, props, res);
+      });
+    }
 
     this.authors = Array.from(new Set(exports.authors));
 

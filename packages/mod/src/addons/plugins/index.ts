@@ -91,6 +91,8 @@ export const pluginStore = new class PluginStore extends InternalStore {
 
           removePlugin.call(this, filename);
 
+          addons.plugins.setEnabledState(filename, enabled);
+
           const code = addons.plugins.read(filename);
 
           const plugins = {
@@ -174,19 +176,11 @@ export const pluginStore = new class PluginStore extends InternalStore {
     delete this.#evaledPlugins[filename];
     delete this.#plugins[filename];
     metaCache.delete(filename);
-    
-    const plugins = {
-      ...this.#plugins,
-      [filename]: {
-        js,
-        enabled
-      }
-    };
 
-    this.#plugins = plugins;
-    
-    addons.plugins.write(filename, js);
     this.emit();
+
+    addons.plugins.setEnabledState(filename, enabled);
+    addons.plugins.write(filename, js);
   }
 
   public getMeta(id: string) {

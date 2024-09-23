@@ -86,8 +86,6 @@ electron.ipcMain.handle("@vx/splash/resize", (event, { width, height }) => {
   window.setResizable(true);
   window.setSize(width, height, false);
   window.setResizable(false);
-
-  console.log([ width, height ]);
 });
 
 electron.ipcMain.handle("@vx/devtools/toggle", async (event, options: OpenDevToolsOptions = { }) => {
