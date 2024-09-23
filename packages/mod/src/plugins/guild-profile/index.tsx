@@ -76,7 +76,7 @@ function AboutTab({ guild }: { guild: Guild }) {
         <span className="vx-gp-section">{dateToNode(snowflakeUtils.extractTimestamp(guild.id))}</span>
       </Section>
       {guild.vanityURLCode && (
-        <Section heading="Created At">
+        <Section heading="Vanity URL">
           <Markdown text={`https://discord.gg/${guild.vanityURLCode}`} />
         </Section>
       )}
