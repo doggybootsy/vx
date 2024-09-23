@@ -19,12 +19,13 @@ export default definePlugin({
             identifier: "ghost",
             match: ".RingingType.INCOMING",
             find: /INCOMING_CALL_PREVIEW_CAMERA}\):null/,
-            replace: `$&, $self._renderButton(arguments?.[0])`,
+            replace: `$&, $self._renderButton(arguments?.[0], $enabled)`,
         },
     ],
 
-    _renderButton: ({ audioContext }) => {
-
+    _renderButton: ({audioContext}, enabled) => {
+        if (!enabled) return;
+        
         const CustomSVGIcon = () => (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
