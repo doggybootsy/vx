@@ -153,33 +153,16 @@ function UserItem({ userId, guildId }: { userId: string, guildId: string }) {
   const hasFocus = useInternalStore(focusStore, () => focusStore.hasFocus);
   const randomDefaultAvatar = useMemo(() => getDefaultAvatar(userId), [ ]);
 
-  if (!user || !member) {
-    return (
-      <div className="vx-gp-user" onClick={() => openUserModal(userId)}>
-        <div 
-          className="vx-gp-user-avatar" 
-          style={{ backgroundImage: `url(${randomDefaultAvatar})` }} 
-        />
-        <div className="vx-gp-user-info">
-          <div className="vx-gp-user-title">{member?.nick || friendNickName || (user as any)?.globalName || user?.username || userId}</div>
-          {hasNickname && (
-            <div className="vx-gp-user-sub">{(user as any)?.globalName || user?.username || userId}</div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="vx-gp-user" onClick={() => openUserModal(userId)}>
       <div 
         className="vx-gp-user-avatar" 
-        style={{ backgroundImage: `url(${user.getAvatarURL(guildId, 60, hasFocus)})` }} 
+        style={{ backgroundImage: user ?  `url(${user.getAvatarURL(guildId, 60, hasFocus)})` : `url(${randomDefaultAvatar})` }} 
       />
       <div className="vx-gp-user-info">
-        <div className="vx-gp-user-title">{member.nick || friendNickName || (user as any).globalName || user.username}</div>
+        <div className="vx-gp-user-title">{member?.nick || friendNickName || (user as any)?.globalName || user?.username || userId}</div>
         {hasNickname && (
-          <div className="vx-gp-user-sub">{(user as any).globalName || user.username}</div>
+          <div className="vx-gp-user-sub">{(user as any)?.globalName || user?.username || userId}</div>
         )}
       </div>
     </div>
