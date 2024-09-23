@@ -1,13 +1,24 @@
-import { definePlugin } from "../index";
-import { Developers } from "../../constants";
+import {definePlugin} from "../index";
+import {Developers} from "../../constants";
 import {bySource, getProxy} from "@webpack";
-import {createElement} from "react";
+import {createSettings, SettingType} from "../settings";
 
 const ButtonModule: any = getProxy(bySource(".lineHeightReset"));
+const MutedStore: any = getProxy(x=>x.isChannelMuted)
+
+const settings = createSettings("ghost-call", {
+    muteCallOnMuted: {
+        title: "Mute Call On Channel Muted",
+        description: "Automatically mutes the call on mute",
+        default: false,
+        type: SettingType.SWITCH
+    }
+})
 
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    settings: settings,
     patches: [
         {
             match: ".useIsRingtoneEligible",
@@ -23,8 +34,12 @@ export default definePlugin({
         },
     ],
 
-    _renderButton: ({audioContext}, enabled) => {
+    _renderButton: (data, enabled: boolean) => {
         if (!enabled) return;
+        if (MutedStore.isChannelMuted(null, data.channel.id) && settings.muteCallOnMuted.get())
+        {
+            data.audioContext._ensureAudio().then(e=>data.audioContext.stop())
+        }
         
         const CustomSVGIcon = () => (
             <svg
@@ -49,7 +64,7 @@ export default definePlugin({
                 }}
                 background="gray"
                 onClick={() => {
-                    audioContext?.stop();
+                    data.audioContext?.stop();
                 }}
             />
         </div>
