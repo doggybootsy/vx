@@ -5,6 +5,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, w
 import { basename, extname, join } from "node:path";
 import { env } from "vx:self";
 import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
+import { alwaysPlay } from "../main/youtube";
 
 type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
 
@@ -284,6 +285,14 @@ const native = {
     },
     setState(state: boolean) {
       ipcRenderer.invoke("@vx/adblock/set", state);
+    }
+  },
+  alwaysPlay: {
+    getState() {
+      return ipcRenderer.sendSync("@vx/always-play/get");
+    },
+    setState(state: boolean) {
+      ipcRenderer.invoke("@vx/always-play/set", state);
     }
   }
 };
