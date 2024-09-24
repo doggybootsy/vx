@@ -12,7 +12,7 @@ import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
 import { GuildDmTypingIndicator } from "../plugins/better-typing-indicators";
 import { nativeFrame } from "../native";
-import { NavigationPanel } from "./navigational";
+import "./navigational";
 
 addPlainTextPatch(
   {
@@ -58,17 +58,10 @@ addPlainTextPatch(
   {
     identifier: "VX(navigation)",
     match: "app view user trigger debugging",
-    find: /(\.hidden\]:.{1,3}}\),children:)\[(\(0,.{1,3}\.jsx\)\(.{1,3},{}\))/,
-    replace: "$1[$jsx($vxi.NavigationPanel,{panel:$2})"
+    find: /null!=.{1,3}?\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{selectedChannelId:.{1,3},guildId:.{1,3}},.{1,3}\):\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{}\)/,
+    replace: "$vxi.isVXPath()?$jsx($vxi.NavigationPanel):$&"
   }
 );
-
-__self__.NavigationPanel = function({ panel }: { panel: React.ReactNode }) {
-  if (location.pathname.startsWith("/vx")) {
-    return <NavigationPanel />;
-  }
-  return panel;
-};
 
 __self__.TitlebarButton = function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");

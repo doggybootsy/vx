@@ -31,7 +31,8 @@ export function SpotifyPanel() {
     repeat: spotifyStore.repeat,
     isPremium: spotifyStore.isPremium(),
     isDragging: spotifyStore.isDragging,
-    shuffleState: spotifyStore.shuffleState
+    shuffleState: spotifyStore.shuffleState,
+    shouldShow: spotifyStore.shouldShow
   }));
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export function SpotifyPanel() {
     document.addEventListener("mousemove", onMouseMove);
   }, [ ]);
 
-  if (!data.track) return null;
+  if (!data.shouldShow) return null;
 
   return (
     <div 

@@ -86,6 +86,11 @@ export const spotifyStore = new class SpotifyStore extends InternalStore {
     this.request("/v1/me/player/shuffle", "put", { state });
   }
 
+  // Only show if track exists and if track is not local
+  public get shouldShow() {
+    return this.track ? !this.track.isLocal : false;
+  }
+
   #cache = new Map<string, Promise<Spotify.ArtistFull>>();
   async #getArtist(id: string): Promise<Spotify.ArtistFull> {
     const response = await this.request(`/v1/artists/${id}`, "get");
