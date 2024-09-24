@@ -7,32 +7,11 @@ import { IS_DESKTOP } from "vx:self";
 
 const scrollerClasses = getProxyByKeys([ "auto", "customTheme", "scrolling" ]);
 
-// let {categories: t, currentCategoryId: n, handleCategorySelect: a, shouldDisplaySelectedCategory: r=!0} = e;
-// return (0,
-// i.jsx)(i.Fragment, {
-//     children: t.map(e=>(0,
-//     i.jsx)(s.Z, {
-//         avatar: c(e.icon),
-//         name: e.name,
-//         focusProps: {
-//             offset: {
-//                 right: 4,
-//                 top: 1,
-//                 bottom: 1
-//             }
-//         },
-//         onClick: ()=>a(e.categoryId),
-//         wrapContent: !0,
-//         selected: r && e.categoryId === n,
-//         className: o.categoryItem,
-//         selectedClassName: o.selectedCategoryItem,
-//         innerClassName: o.itemInner
-//     }, e.categoryId))
-
 const CategoryItem = getProxy<{ default: any }>(bySource(".nameAndDecorators,children:[", "aria-selected"), { searchExports: false });
 const categoryClasses = getProxyByKeys([ "itemInner", "categoryItem", "selectedCategoryItem"])
 
-export function NavigationPanel() {
+__self__.isVXPath = () => location.pathname.startsWith("/vx");
+__self__.NavigationPanel = function NavigationPanel() {
   return (
     <div className={className([ "vx-dashboard-navigation", scrollerClasses.thin ])}>
       <h2 className="vx-dashboard-navigation-title">VX</h2>

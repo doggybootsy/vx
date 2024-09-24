@@ -7,7 +7,7 @@ import {waitFor} from "common/util";
 import {KnownDevToolsPages, OpenDevToolsOptions} from "typings";
 import {Storage} from "./storage";
 import {getVolume, setVolume} from "./spotify";
-import {adblock} from "./adblock";
+import {adblock, alwaysPlay} from "./youtube";
 // @ts-ignore
 import {translate} from "deeplx";
 
@@ -179,6 +179,13 @@ electron.ipcMain.on("@vx/adblock/get", (event) => {
 });
 electron.ipcMain.handle("@vx/adblock/set", (event, state) => {
   adblock(state);
+});
+
+electron.ipcMain.on("@vx/always-play/get", (event) => {
+  event.returnValue = alwaysPlay();
+});
+electron.ipcMain.handle("@vx/always-play/set", (event, state) => {
+  alwaysPlay(state);
 });
 
 ipcMain.handle("@vx/translate", async (event, [ text, to, from ]) => {
