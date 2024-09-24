@@ -9,7 +9,7 @@ const MutedStore: any = getProxy(x=>x.isChannelMuted)
 const settings = createSettings("ghost-call", {
     muteCallOnMuted: {
         title: "Mute Call On Channel Muted",
-        description: "Automatically mutes the call on mute",
+        description: "Automatically mutes the call if a channel is muted",
         default: false,
         type: SettingType.SWITCH
     }
