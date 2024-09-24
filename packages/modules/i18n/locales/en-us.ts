@@ -154,7 +154,7 @@ const messages = {
   UNLIMITED_ACCOUNTS_NAME: "Unlimited Accounts",
   UNLIMITED_ACCOUNTS_DESCRIPTION: "Allows you to bypass the max amount of accounts for the account switcher.",
   FIRST_MESSAGE_NAME: "First Message",
-  FIRST_MESSAGE_DESCRIPTION: "Adds a First Message Button. Right click the textarea to find it!.",
+  FIRST_MESSAGE_DESCRIPTION: "Allows you to scroll up to the first message ever sent in a channel.",
   BETTER_AVATAR_NAME: "Better Cropping",
   BETTER_AVATAR_DESCRIPTION: "Lets you zoom in more for pixel perfect profile pictures!",
   COPIER_NAME: "Copier",
