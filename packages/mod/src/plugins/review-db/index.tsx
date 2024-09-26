@@ -157,7 +157,7 @@ function Review({ review, isComment, isViewingCurrentUser, refetch }: ReviewProp
 
   const canDeleteReview = useMemo(() => {
     if (!hasAuth) return false;
-    return isFromCurrentUser || isFromCurrentUser || currentUser?.type === 1;
+    return isFromCurrentUser || isViewingCurrentUser || currentUser?.type === 1;
   }, [ hasAuth, isFromCurrentUser, isViewingCurrentUser ]);
 
   const timestamp = useMemo(() => {
