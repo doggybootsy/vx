@@ -3,6 +3,7 @@ import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import {getLazyStore} from "@webpack";
 import {createSettings, SettingType} from "../settings";
+import { Icons } from "../../components";
 
 const inj = new Injector();
 
@@ -18,6 +19,7 @@ const settings = createSettings("experiments", {
 export default definePlugin({
   authors: [Developers.doggybootsy],
   settings: settings,
+  icon: Icons.DiscordIcon.from("ManaIcon"),
   patches: [
     {
       match: "DeveloperExperimentStore",

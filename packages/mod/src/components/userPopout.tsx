@@ -11,24 +11,27 @@ interface UserPopoutProps extends Omit<PopoutProps, "renderPopout"> {
   channelId?: string;
 }
 
-const preloader = getMangledProxy<{ maybeFetchUserProfileForPopout(user: User, data: any): Promise<void> }>("withMutualFriends:null", {
-  maybeFetchUserProfileForPopout: byStrings("withMutualFriends:null")
-})
+const preloader = getMangledProxy<{ maybeFetchUserProfileForPopout(user: User, data: any): Promise<void> }>("preloadUserProfileForPopout", {
+  maybeFetchUserProfileForPopout: () => true
+});
 
-const UserPopoutModule = getProxy<any>(byStrings("UserPopoutExperimentWrapper"));
+const UserPopoutModule = getProxy<any>(byStrings("UserProfilePopoutWrapper: currentUser"));
 
 class RenderPopout extends Component<RenderPopoutProps & { userId: string, channelId?: string, guildId?: string }, { loaded: boolean }> {
   state = { loaded: false };
 
   async componentDidMount() {
-    let user = UserStore.getUser(this.props.userId);
-    if (!user) user = await fetchUser(this.props.userId);
-
-    await preloader.maybeFetchUserProfileForPopout(
-      user,
-      { guildId: this.props.guildId, channelId: this.props.channelId }
-    );
-
+    try {
+      let user = UserStore.getUser(this.props.userId);
+      if (!user) user = await fetchUser(this.props.userId);
+  
+      await preloader.maybeFetchUserProfileForPopout(
+        user,
+        { guildId: this.props.guildId, channelId: this.props.channelId }
+      );
+    } catch (error) {
+      
+    }
     this.setState({ loaded: true });
   }
 

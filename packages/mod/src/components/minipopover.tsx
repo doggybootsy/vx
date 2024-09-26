@@ -1,12 +1,13 @@
 import { getProxyByKeys } from "@webpack";
 import { className } from "../util";
 import { Tooltip } from "./tooltip";
+import { IconFullProps } from "./icons";
 
 const minipopoverClasses = getProxyByKeys([ "button", "dangerous", "selected", "separator", "wrapper" ]);
 const innerClasses = getProxyByKeys([ "icon", "buttonContent" ]);
 
 interface MiniPopoverButtonProps {
-  icon(props: { width: number, height: number, className: string }): React.ReactNode,
+  icon: React.ComponentType<IconFullProps>,
   text: string,
   onClick?(event: React.MouseEvent): void,
   onContextMenu?(event: React.MouseEvent): void,

@@ -1,4 +1,4 @@
-import React, { Suspense, Component, useSyncExternalStore } from "react";
+import React, { Suspense, Component, useSyncExternalStore, useState, useLayoutEffect } from "react";
 import { getLazy, getLazyByKeys, getProxyByKeys, getProxyByStrings } from "@webpack";
 import { User } from "discord-types/general";
 import { FluxStore } from "discord-types/stores";
@@ -884,7 +884,26 @@ export const focusStore = new class FocusStore extends InternalStore {
     window.addEventListener("blur", () => this.emit());
   }
 
-  get hasFocus() { return document.hasFocus(); }
+  public get hasFocus() { return document.hasFocus(); }
+  public useFocus() {
+    const [ hasFocus, setFocus ] = useState(() => document.hasFocus());
+
+    useLayoutEffect(() => {
+      function listener() {
+        setFocus(document.hasFocus());
+      }
+      
+      window.addEventListener("focus", listener);
+      window.addEventListener("blur", listener)
+      
+      return () => {
+        window.removeEventListener("focus", listener);
+        window.removeEventListener("blur", listener);
+      }
+    }, [ ]);
+
+    return hasFocus;
+  }
 }
 
 const AVATARS: Record<string, string> = {

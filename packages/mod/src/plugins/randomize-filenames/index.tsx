@@ -5,6 +5,7 @@ import { createAbort, getRandomItem } from "../../util";
 import { Injector } from "../../patcher";
 import { createSettings, SettingType } from "../settings";
 import { Button, Flex, Icons, SystemDesign } from "../../components";
+import { UserStore } from "@webpack/common";
 
 const DEFAULT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
 
@@ -79,7 +80,7 @@ const settings = createSettings("randomize-filenames", {
 function randomizeName(filename: string) {
   const spl = filename.split(".");
   
-  const format = settings.format.get();
+  let format = settings.format.get();
 
   let addPeriod = false;
   const mExt = /(\.?)%e/.exec(format);
@@ -87,18 +88,31 @@ function randomizeName(filename: string) {
 
   const ext = spl.length === 1 ? "" : `${addPeriod ? "." : ""}${spl.at(-1)}`;
 
+  // ext
+  format = format.replace(/(\.?)%e/, ext);
+  // User stuff
+  format = format.replace(/%u/g, () => UserStore.getCurrentUser().username);
+  format = format.replace(/%i/g, () => UserStore.getCurrentUser().id);
+  // date
+  format = format.replace(/%d/g, () => Date.now().toString());
+  // Random chars
+  format = format.replace(/%r/g, () => getRandomItem([ ...settings.characters.get() ]));
+  format = format.replace(/%R/g, () => getRandomItem([ ...DEFAULT_CHARACTERS ]));
+
   if (settings.timestamp.get()) {
-    return format.replace("%n", Date.now().toString()).replace(/(\.?)%e/, ext);
+    return format.replace(/%n/g, Date.now().toString());
   }
 
-  let name = "";
-  const chars = [ ...settings.characters.get() ];
-  
-  for (let index = 0; index < (filename.length - ext.length); index++) {
-    name += getRandomItem(chars);
-  }
+  return format.replace(/%n/g, () => {
+    let name = "";
+    const chars = [ ...settings.characters.get() ];
+    
+    for (let index = 0; index < (filename.length - ext.length); index++) {
+      name += getRandomItem(chars);
+    }
 
-  return format.replace("%n", name).replace(/(\.?)%e/, ext);
+    return name;
+  });
 }
 
 const injector = new Injector();

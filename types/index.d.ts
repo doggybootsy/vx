@@ -356,3 +356,51 @@ interface Cache<T> {
 declare function cache<T>(factory: () => T): Cache<T>;
 
 declare const __self__: Record<string, any>;
+
+declare namespace ReviewDB {
+  const enum ReviewType {
+    User = 0,
+    Server = 1,
+    Support = 2,
+    System = 3
+  }
+  interface Badge {
+    name: string,
+    description: string,
+    icon: string,
+    redirectURL?: string,
+    type: number
+  }
+  interface User {
+    badges: Badge[],
+    discordID: string,
+    id: number,
+    profilePhoto: string,
+    username: string
+  }
+  interface CurrentUser extends User {
+    clientMods: string[],
+    lastReviewID: number,
+    warningCount: number,
+    banInfo: null | unknwon,
+    blockedUsers: string[] | null,
+    notification: null | unknown,
+    type: number
+  }
+  interface Review {
+    comment: string,
+    id: number,
+    replies: null | Review[],
+    sender: User,
+    type: ReviewType,
+    star: number,
+    timestamp: number
+  }
+  interface Reviews {
+    hasNextPage: boolean,
+    message: string,
+    reviewCount: number,
+    reviews: Review[],
+    success: boolean
+  }
+}

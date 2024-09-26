@@ -176,3 +176,11 @@
   justify-content: center;
   color: var(--interactive-normal);
 }
+
+[class*=userProfileModalInner_] [class^=body_] > [class*=overlay_] {
+  flex-grow: 1;
+}
+
+[class*=userProfileModalInner_] [class^=body_] > [class*=overlay_] > [class^=container_] {
+  height: 100%;
+}
