@@ -3,14 +3,14 @@ import { Developers } from "../../constants";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { openImageModal } from "../../api/modals";
 import { createAbort } from "../../util";
-import {getProxyStore, getStore} from "@webpack";
-import {clipboard} from "../../util";
+import {getModule, getProxy, getProxyStore, getStore} from "@webpack";
 import {useStateFromStores} from "@webpack/common";
 
 const avatarURL = "https://cdn.discordapp.com/avatars/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const bannerURL = "https://cdn.discordapp.com/banners/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const splashURL = "https://cdn.discordapp.com/splashes/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const UserProfileStore = getProxyStore("UserProfileStore");
+const copyModule = getProxy(x=>x.copyImage);
 
 function format(template: string, ...args: any[]) {
     return template.replace(/{(\d+)}/g, (match, index) => {
@@ -64,8 +64,7 @@ export default definePlugin({
                     id={"copier-copy-guild-icon"}
                     label={"Copy Guild Icon"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guildIcon);
+                        copyModule.copyImage(guildIconUri);
                     }}
                 />,
             ];
@@ -84,8 +83,7 @@ export default definePlugin({
                     id={"copier-copy-guild-icon"}
                     label={"Copy Splash"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guildSplash);
+                        copyModule.copyImage(guildSplash);
                     }}
                 />,
             ];
@@ -104,8 +102,8 @@ export default definePlugin({
                     id={"copier-copy-guild-banner"}
                     label={"Copy Guild Banner"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guildBanner);
+
+                        copyModule.copyImage(guildBanner);
                     }}
                 />,
             ];
@@ -117,8 +115,8 @@ export default definePlugin({
                     label={"Copy Guild Name"}
                     disabled={validName}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guild.name);
+
+                        copyModule.copy(guild.name);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -127,8 +125,8 @@ export default definePlugin({
                     label={"Copy Description"}
                     disabled={validDescription}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guild.description);
+
+                        copyModule.copy(guild.description);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -136,8 +134,8 @@ export default definePlugin({
                     id={"copier-copy-guild-owner"}
                     label={"Copy Owner ID"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(guild.ownerId);
+
+                        copyModule.copy(guild.ownerId);
                     }}
                 />,
             ];
@@ -213,8 +211,8 @@ export default definePlugin({
                     id={"copier-copy-user-pfp"}
                     label={"Copy Profile Picture"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(UserIcon);
+
+                        copyModule.copyImage(UserIcon);
                     }}
                 />,
             ];
@@ -233,8 +231,7 @@ export default definePlugin({
                     id={"copier-copy-user-banner"}
                     label={"Copy Banner"}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(UserBanner);
+                        copyModule.copyImage(UserBanner);
                     }}
                 />,
             ];
@@ -246,8 +243,7 @@ export default definePlugin({
                     label={"Copy Accent Color"}
                     disabled={validAccentColor}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(UserProfile.accentColor.toString());
+                        copyModule.copy(userProfile.accentColor.toString());
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -256,8 +252,7 @@ export default definePlugin({
                     label={"Copy Bio"}
                     disabled={validBio}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(UserProfile.bio);
+                        copyModule.copy(userProfile.bio);
                     }}
                 />,
                 <MenuComponents.MenuItem
@@ -266,8 +261,8 @@ export default definePlugin({
                     label={"Copy Username"}
                     disabled={validUsername}
                     action={() => {
-                        // @ts-ignore
-                        clipboard.copy(props.user.username);
+
+                        copyModule.copy(props.user.username);
                     }}
                 />,
             ];
