@@ -3,7 +3,7 @@ import { isPluginEnabled } from "..";
 import { className, getDefaultAvatar } from "../../util";
 import { Button, Icons, Markdown, Spinner, SystemDesign, Tooltip } from "../../components";
 import { User } from "discord-types/general";
-import { createContext, useCallback, useContext, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { reviewDBStore } from "./store";
 import { useInternalStore } from "../../hooks";
 import { openConfirmModal, openExternalWindowModal } from "../../api/modals";
@@ -250,7 +250,7 @@ function Review({ review, isComment, isViewingCurrentUser, refetch }: ReviewProp
                 <Markdown text={review.comment} />
               </div>
             </div>
-            {review.id && (
+            {!!review.id && (
               <div className="vx-rdp-buttons">
                 <MiniPopover.Button 
                   text={Messages.REPLY}
@@ -353,57 +353,89 @@ function useReviewResultContext() {
   return useContext(reviewResultContext);
 }
 
-export function ReviewDBPage({ user, currentUser }: { user: User, currentUser: User }) {
-  const [ reviews, setReviews ] = useState<null | ReviewDB.Reviews>(null);
+function useReviews(user: User) {
   const [ page, setPage ] = useState(1);
+  const [ result, setResult ] = useState<null | ReviewDB.Reviews>(null);
+
+  const destructor = useRef<() => void>(() => {});
+
+  const fetchPage = useCallback((page: number) => {
+    destructor.current();
+    setResult(null);
+    
+    const controller = new AbortController();
+
+    destructor.current = () => controller.abort();
+
+    reviewDBStore.fetchReviews(user.id, (page - 1) * 50).then((res) => {
+      if (controller.signal.aborted) return;
+      setResult(res);
+    });
+  }, [ ]);
+
+  const fetchCurrentPage = useCallback(() => {
+    fetchPage(page);
+  }, [ page ]);
+
+  useEffect(() => {
+    fetchCurrentPage();
+    return () => destructor.current();
+  }, [ ]);
+
+  const newSetPage = useCallback((page: React.SetStateAction<number>) => {
+    setPage((prev) => {
+      const value = typeof page === "function" ? page(prev) : page;
+      fetchPage(value);
+      return value;
+    });
+  }, [ ]);
+
+  return {
+    fetchCurrentPage,
+    page,
+    setPage: newSetPage,
+    result
+  }
+}
+
+export function ReviewDBPage({ user, currentUser }: { user: User, currentUser: User }) {
+  const { result, fetchCurrentPage, page, setPage } = useReviews(user);
+
   const replyMessageData = useState<null | number>(null);
   const id = useId();
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const fetch = useCallback(() => {
-    const controller = new AbortController();
-
-    reviewDBStore.fetchReviews(user.id, (page - 1) * 50).then((reviews) => {
-      if (controller.signal.aborted) return;
-
-      setReviews(reviews);
-    });
-
-    return () => controller.abort();
-  }, [ page ]);
-
-  useLayoutEffect(() => fetch(), [ page ]);
-
-  if (!reviews) return (
-    <div className="vx-rdb-loading">
-      <Spinner />
-    </div>
-  );
-
-  const jsx = reviews.reviews.length ? reviews.reviews.map((review) => (
-    <Review review={review} isViewingCurrentUser={currentUser.id === user.id} key={review.id} refetch={() => void fetch()} />
-  )) : (
-    <NoReviews />
-  );
-
   return (
-    <reviewResultContext.Provider value={reviews}>
+    <reviewResultContext.Provider value={result}>
       <replyContext.Provider value={replyMessageData}>
         <div ref={ref} className="vx-rdb" data-rdb-id={id}>
-          <div ref={ref} className={className([ "vx-rdb-scroller", scrollerClasses.thin, scrollerClasses.fade ])}>
-            {jsx}
-            <SystemDesign.Paginator 
-              currentPage={page}
-              totalCount={reviews.reviewCount}
-              pageSize={50}
-              maxVisiblePages={5}
-              onPageChange={(page: number) => {
-                setPage(page);
-              }}
-            />
-          </div>
-          <AddReviewPanel id={id} user={user} refetch={() => void fetch()} />
+          {result ? (
+            <div ref={ref} className={className([ "vx-rdb-scroller", scrollerClasses.thin, scrollerClasses.fade ])}>
+              {result.reviews.length ? result.reviews.map((review) => (
+                <Review 
+                  review={review} 
+                  isViewingCurrentUser={currentUser.id === user.id} 
+                  key={review.id} 
+                  refetch={() => fetchCurrentPage()} 
+                />
+              )) : (
+                <NoReviews />
+              )}
+              <SystemDesign.Paginator 
+                currentPage={page}
+                totalCount={result ? result.reviewCount : 0}
+                pageSize={50}
+                maxVisiblePages={5}
+                onPageChange={setPage}
+              />
+            </div>
+          ) : (
+            <div className="vx-rdb-loading">
+              <Spinner />
+            </div>
+          )}
+          <AddReviewPanel id={id} user={user} refetch={() => fetchCurrentPage()} />
         </div>
       </replyContext.Provider>
     </reviewResultContext.Provider>
