@@ -54,6 +54,7 @@ function AddReviewPanel({ id, user, refetch }: { id: string, user: User, refetch
 
   const sendReview = useCallback(async () => {
     setValue("");
+    setReviewId(null);
     
     if (!await reviewDBStore.attemptToEnsureAuth()) return;
 
@@ -292,7 +293,6 @@ function Review({ review, isComment, isViewingCurrentUser, refetch }: ReviewProp
                     })
                   }}
                   disabled={isFromCurrentUser}
-                  danger
                 />
                 <MiniPopover.Button 
                   text="Delete Review"
@@ -313,7 +313,6 @@ function Review({ review, isComment, isViewingCurrentUser, refetch }: ReviewProp
                       }
                     })
                   }}
-                  danger
                 />
               </div>
             )}
