@@ -3,7 +3,7 @@ import {ModalComponents, openImageModal, openModal} from "../../api/modals";
 import { ZIP } from "../../components/icons";
 import {Developers} from "../../constants";
 import {definePlugin} from "../index";
-import "./index.css"
+import * as styler from "./index.css?managed";
 import {memo, useCallback, useState} from "../../fake_node_modules/react";
 const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
     let binary = '';
@@ -137,5 +137,6 @@ export default definePlugin({
     ZipButton,
     stop() {
         jsmediatag.remove()
-    }
+    },
+    styler
 });
