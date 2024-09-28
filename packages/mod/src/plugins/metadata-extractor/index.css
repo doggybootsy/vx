@@ -1,0 +1,79 @@
+.modern-metadata-modal {
+    font-family: 'Arial', sans-serif;
+    color: #ffffff;
+    background-color: #2C2F33;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 600px;
+    max-width: 90vw;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #23272A;
+}
+
+.album-cover {
+    width: 100px;
+    height: 100px;
+    border-radius: 4px;
+    margin-right: 20px;
+    object-fit: cover;
+}
+
+.album-info h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.album-info h3 {
+    margin: 5px 0 0;
+    font-size: 18px;
+    color: #B9BBBE;
+}
+
+.modal-content {
+    padding: 20px;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-key {
+    font-size: 14px;
+    color: #B9BBBE;
+    margin-bottom: 5px;
+}
+
+.metadata-value {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.comment-section {
+    border-top: 1px solid #40444B;
+    padding-top: 20px;
+}
+
+.comment-section h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #B9BBBE;
+}
+
+.comment-section p {
+    font-size: 14px;
+    line-height: 1.5;
+}
