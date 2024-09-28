@@ -63,7 +63,7 @@ export function getLocale(): LocaleCodes {
   return internalDataStore.get("last-loaded-locale") ?? "en-US";
 }
 
-type KnownFormmatableStrings = "NUM_IMAGES" | "NUM_ATTACHMENTS" | "NUM_USERS" | "CONNECTIONS_PROFILE_TIKTOK_LIKES" | KeysMatching<ALL_KNOWN_MESSAGES, FormattedMessage>;
+type KnownFormmatableStrings = "REPLYING_TO" | "NUM_IMAGES" | "NUM_ATTACHMENTS" | "NUM_USERS" | "CONNECTIONS_PROFILE_TIKTOK_LIKES" | KeysMatching<ALL_KNOWN_MESSAGES, FormattedMessage>;
 type KnownStrings = "DOWNLOAD" | "EDIT" | "DELETE" | "HELP" | KeysMatching<ALL_KNOWN_MESSAGES, string>;
 
 type MessagesType = Omit<Record<Uppercase<string>, string>, KnownStrings | KnownFormmatableStrings> & Record<KnownStrings, string> & Record<KnownFormmatableStrings, FormattedMessage>;

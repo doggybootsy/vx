@@ -403,4 +403,6 @@ declare namespace ReviewDB {
     reviews: Review[],
     success: boolean
   }
+
+  type ReviewRequest = { comment: string } & ({ repliesTo: number } | { id: number } | {});
 }

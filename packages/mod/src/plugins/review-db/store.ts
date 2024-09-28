@@ -144,7 +144,7 @@ class ReviewDBStore extends InternalStore {
 
   public get flags() {
     let flags = 0;
-    if (settings.showWarning.get()) flags |= 0b00000010;
+    if (!settings.showWarning.get()) flags |= 0b00000010;
     return flags;
   }
 
@@ -192,10 +192,10 @@ class ReviewDBStore extends InternalStore {
     return result;
   }
 
-  public async addReview(userId: string, comment: string) {
+  public async addReview(userId: string, review: ReviewDB.ReviewRequest) {    
     const res = await this.request(`/users/${userId}/reviews`, {
       method: "PUT",
-      body: JSON.stringify({ userId, comment })
+      body: JSON.stringify({ userId, ...review })
     });
 
     if(res.ok) return true;
