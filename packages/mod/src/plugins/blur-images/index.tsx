@@ -80,7 +80,7 @@ class BlurChannels extends DataStore {
      */
     applyBlur(className: string, channelId: string, nsfw: boolean = false): string {
         if (nsfw) this.muteChannel(channelId)
-        return this.isChannelMuted(channelId) ? `${className} blur` : className;
+        return this.isChannelMuted(channelId) ? `${className} vx-blur` : className;
     }
 }
 
@@ -118,7 +118,7 @@ export default definePlugin({
             const channelId = instance.props?.message?.channel_id;
             const isMarkedAsNSFW = ChannelStore.getChannel(channelId)?.isNSFW?.()
 
-            if (result && isMarkedAsNSFW && settings.blurNSFWChannels.get())
+            if (result && settings.blurNSFWChannels.get() && isMarkedAsNSFW)
             {
                 blurChannels.muteChannel(channelId);
                 result.props.className = blurChannels.applyBlur(className, channelId);

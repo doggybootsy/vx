@@ -1,12 +1,12 @@
-.blur:hover img,
-.blur:hover video,
-a:hover + div > .blur {
+.vx-blur:hover img,
+.vx-blur:hover video,
+a:hover + div > .vx-blur {
     transition: 1ms cubic-bezier(.2, .11, 0, 1) !important;
     filter: blur(0px) !important;
 }
 
-.blur img,
-.blur video
+.vx-blur img,
+.vx-blur video
 {
     filter: blur(10px) !important;
     transition: 1ms cubic-bezier(.2, .11, 0, 1) !important;

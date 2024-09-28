@@ -1,5 +1,5 @@
 import {SystemDesign, Tooltip} from "../../components";
-import { ModalComponents, openModal } from "../../api/modals";
+import {ModalComponents, openImageModal, openModal} from "../../api/modals";
 import { ZIP } from "../../components/icons";
 import {Developers} from "../../constants";
 import {definePlugin} from "../index";
@@ -39,22 +39,25 @@ const ZipButton = memo(({ downloadURL, name, mimeType }) => {
                     }
 
                     const modalContent = (
-                        <div className="modern-metadata-modal">
-                            <div className="modal-header">
+                        <div className="vx-metadataextract-modern-metadata-modal">
+                            <div className="vx-metadataextract-modal-header">
                                 {albumCoverUrl && (
                                     <img
                                         src={albumCoverUrl}
                                         alt="Album Cover"
-                                        className="album-cover"
+                                        className="vx-metadataextract-album-cover"
+                                        onClick={() => {
+                                            openImageModal(albumCoverUrl)
+                                        }}
                                     />
                                 )}
-                                <div className="album-info">
+                                <div className="vx-metadataextract-album-info">
                                     <h2>{tag.tags.album || "Unknown Album"}</h2>
                                     <h3>{tag.tags.artist || "Unknown Artist"}</h3>
                                 </div>
                             </div>
-                            <div className="modal-content">
-                                <div className="metadata-grid">
+                            <div className="vx-metadataextract-modal-content">
+                                <div className="vx-metadataextract-metadata-grid">
                                     {[
                                         ["Title", tag.tags.title],
                                         ["Year", tag.tags.year],
@@ -62,15 +65,15 @@ const ZipButton = memo(({ downloadURL, name, mimeType }) => {
                                         ["Track", tag.tags.track],
                                     ].map(([key, value]) => (
                                         value && (
-                                            <div key={key} className="metadata-item">
-                                                <span className="metadata-key">{key}</span>
-                                                <span className="metadata-value">{String(value)}</span>
+                                            <div key={key} className="vx-metadataextract-metadata-item">
+                                                <span className="vx-metadataextract-metadata-key">{key}</span>
+                                                <span className="vx-metadataextract-metadata-value">{String(value)}</span>
                                             </div>
                                         )
                                     ))}
                                 </div>
                                 {tag.tags.comment && (
-                                    <div className="comment-section">
+                                    <div className="vx-metadataextract-comment-section">
                                         <h4>Comment</h4>
                                         <p>{typeof tag.tags.comment === 'object' ? tag.tags.comment.text : tag.tags.comment}</p>
                                     </div>
@@ -85,7 +88,7 @@ const ZipButton = memo(({ downloadURL, name, mimeType }) => {
                         </ModalComponents.ModalRoot>
                     ));
                 },
-                onError: (error) => {
+                onError: (error: any) => {
                     console.error("Error reading tags:", error);
                 },
             });
@@ -116,10 +119,10 @@ const ZipButton = memo(({ downloadURL, name, mimeType }) => {
     );
 });
 
+let jsmediatag: HTMLScriptElement;
 export default definePlugin({
     authors: [Developers.kaan],
     start() {
-        let jsmediatag;
         setTimeout(() => {
             jsmediatag = document.createElement("script");
             jsmediatag.src = "https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js";
@@ -132,4 +135,7 @@ export default definePlugin({
         replace: "$1[$enabled&&$jsx($self.ZipButton,$2),$3]",
     },
     ZipButton,
+    stop() {
+        jsmediatag.remove()
+    }
 });
