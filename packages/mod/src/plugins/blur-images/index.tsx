@@ -9,7 +9,7 @@ import { createSettings, SettingType } from "../settings";
 import { ChannelStore } from "@webpack/common";
 
 const injector = new Injector();
-const settings = createSettings("ghost-call", {
+const settings = createSettings("blur-images", {
     blurNSFWChannels: {
         title: "Blur NSFW Channels",
         description: "Automatically blurs the images in a channel if marked as NSFW",
