@@ -155,7 +155,8 @@ interface DiscordNative {
 
 interface ExtensionNative {
   id: string,
-  fetchArrayBuffer(input: string): Promise<ArrayBuffer>,
+  // Not in the public release!
+  fetchArrayBuffer?(input: string): Promise<ArrayBuffer>,
   update(release: Git.Release): void,
   getCommunityThemes(): Promise<BetterDiscord.Addon[]>
 }
@@ -405,4 +406,14 @@ declare namespace ReviewDB {
   }
 
   type ReviewRequest = { comment: string } & ({ repliesTo: number } | { id: number } | {});
+}
+
+declare interface PromiseResolvers<T> {
+  promise: Promise<T>,
+  reject(reason: any): void,
+  resolve(value: T | PromiseLike<T>): void
+}
+
+interface PromiseConstructor {
+  withResolvers<T>(): PromiseResolvers<T>
 }

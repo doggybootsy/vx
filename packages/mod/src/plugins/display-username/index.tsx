@@ -28,11 +28,11 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: 'null,"dot"===',
-    find: /null,"dot"===.{1,3}\?.+?:null,.{1,3},/,
-    replace: "$&$enabled&&$self.addUsername(...arguments),"
+    match: ".communicationDisabledOpacity]:",
+    find: /(children:(.{1,3})}\)),(.{1,3}&&!.{1,3}&&\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{id:\(0,.{1,3}\..{1,3}\)\(.{1,3}\),timestamp:.{1,3}\.timestamp)/,
+    replace: "$1,$enabled&&$self.addUsername({...arguments[0],author:$2}),$3"
   },
-  addUsername({ message, author }: { message: Message & { author: TypedUser }, author: { nick: string } }) {
+  addUsername({ message, author }: { message: Message & { author: TypedUser }, author: { nick: string } }) {    
     return (
       <ErrorBoundary>
         <DisplayUsername message={message} author={author} />

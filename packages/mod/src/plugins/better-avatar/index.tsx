@@ -14,16 +14,20 @@ export default definePlugin({
     async start() {
         const signal = getSignal();
         const GIF_CROP: any = await getLazy(bySource('ImageCroppingModal'));
-        if (signal.aborted) return;
+        if (signal.aborted) return;        
         
-        INJECT.after(GIF_CROP, 'default', (_: any, __: any, returnValue: any) => {
+        INJECT.after(GIF_CROP, 'default', (_: any, __: any, returnValue: any) => {            
             // @ts-ignore
             const SliderContainer: { children: Array<{ props: { maxValue: number, stickToMarkers: boolean } }> } = findInReactTree(returnValue, (x: { className: string | string[]; }) => x?.className?.includes?.('sliderContainer'));
+            
+            if (!SliderContainer?.children) return;
+
             const Slider = SliderContainer.children[1].props
             Slider.maxValue = 20;
         });
     },
     stop() {
-        INJECT.unpatchAll()
+        INJECT.unpatchAll();
+        abort();
     }
 });

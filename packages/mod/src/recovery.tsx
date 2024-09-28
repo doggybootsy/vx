@@ -4,12 +4,14 @@ import { Injector } from "./patcher";
 import { Button, Collapsable, Markdown } from "./components";
 import { closeAllModals } from "./api/modals";
 import { closeMenu } from "./api/menu";
+import { LayerManager } from "@webpack/common";
 
 type ErrorBoundaryComponent = Component<React.PropsWithChildren, { error: Error, info: React.ErrorInfo }>;
 
 function attemptRecovery() {
   closeAllModals();
   closeMenu();
+  LayerManager.clear();
 }
 
 async function init() {

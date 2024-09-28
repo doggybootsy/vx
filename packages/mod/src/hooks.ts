@@ -88,3 +88,7 @@ export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
 export function useDebounce(handler: (this: any, ...args: any[]) => any, deps: React.DependencyList, timeout?: number | undefined) {
   return useMemo(() => debounce(handler, timeout), deps);
 }
+
+export function useDestructor(destructor: () => void, deps?: React.DependencyList) {
+  useEffect(() => destructor, deps);
+}

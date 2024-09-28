@@ -798,7 +798,9 @@ export function createState<T>(initialState: T): State<T> {
   return state;
 }
 
-export function destructuredPromise<T extends any = void>() {
+export function destructuredPromise<T extends any = void>(): PromiseResolvers<T> {
+  if (Promise.withResolvers) return Promise.withResolvers();
+
   let resolve: (value: T | PromiseLike<T>) => void;
   let reject: (reason: any) => void;
   const promise = new Promise<T>(($resolve, $reject) => {

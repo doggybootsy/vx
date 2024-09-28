@@ -53,7 +53,7 @@ const injector = new Injector();
 const filter = byStrings(".id)).mutualGuilds)||void 0===", ".id)).mutualFriends)||void 0===", ".Messages.USER_PROFILE_ABOUT_ME");
 const useUserModalSections = getLazy((m) => filter(m.default), { searchDefault: false });
 
-const plugin = definePlugin({
+export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   styler,

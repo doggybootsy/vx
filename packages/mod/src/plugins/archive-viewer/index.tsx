@@ -5,8 +5,19 @@ import { ZipButton } from "./button";
 
 import * as styler from "./index.css?managed";
 
+const archiveFileTypes = [
+  "zip",
+  "mcaddon", "mcpack", "mcworld",
+  "rar",
+  "tar",
+  "tar.gz",
+  "asar"
+].map((value) => value.split(".").join("\\."));
+
+const FILE_REGEX = new RegExp(`\\.(${archiveFileTypes.join("|")})($|\\?|#)`);
+
 export function isArchive(filename: string) {
-  return /\.(zip|rar|tar|asar|mcaddon|mcpack|mcworld)($|\?|#)/.test(filename);
+  return FILE_REGEX.test(filename);
 }
 
 export default definePlugin({
