@@ -17,7 +17,7 @@ function getLanguage(lang: string): string {
   if (language && language.name) return language.name.toLowerCase();
   
   return lang;
-};
+}
 
 export function openCodeModal(options: CodeModalOptions) {
   return openModal((props) => {

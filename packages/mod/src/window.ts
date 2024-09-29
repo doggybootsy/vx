@@ -136,6 +136,7 @@ export function vxRequire(path: string) {
     case "react-dom/client": return ReactDOM;
 
     case "moment": return api.common.moment;
+    case "highlight.js": return require("highlight.js");
 
     case "vx:common": return { dom: require("common/dom"), util: require("common/util") };
     case "vx:common/dom": return require("common/dom");

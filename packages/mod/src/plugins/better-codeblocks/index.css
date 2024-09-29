@@ -1,0 +1,85 @@
+.vx-bcb {
+  text-size-adjust: none;
+  color: var(--text-normal);
+  display: block;
+  overflow-x: auto;
+  border-radius: 4px;
+  user-select: text;
+  text-indent: 0;
+  white-space: pre-wrap;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-tertiary);
+  font-size: .875rem;
+  line-height: 1.125rem;
+
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 0;
+  font-family: var(--font-code);
+  font-size: .75rem;
+  line-height: 1rem;
+  margin-top: 6px;
+  max-width: 90%;
+  white-space: pre;
+  background-clip: border-box;
+}
+
+.vx-bcb-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vx-bcb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .5em;
+  border-bottom: 1px solid var(--background-tertiary);
+}
+
+td.vx-cbc-index {
+  min-width: 1.5em;
+  display: flex;
+  justify-content: end;
+  padding: 0 .2em;
+  user-select: none;
+  position: relative;
+}
+
+td.vx-cbc-line {
+  padding: 0 .5em;
+  width: 100%;
+}
+
+.vx-cbc-addition::before {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+.vx-cbc-deletion::before {
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+.theme-light .vx-cbc-addition::before {
+  color: #22863a;
+  background-color: #f0fff4;
+}
+.theme-light .vx-cbc-deletion::before {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+
+.vx-cbc-deletion::before, .vx-cbc-addition::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+}
+
+.vx-cbc-row {
+  position: relative;
+  isolation: isolate;
+}

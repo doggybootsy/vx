@@ -467,8 +467,8 @@ export function showFilePicker(callback: (file: File | null) => void, accepts: s
   });
 };
 
-export function download(filename: string, part: BlobPart) {
-  const blob = new Blob([ part ], { type: "application/octet-binary" });
+export function download(filename: string, ...parts: BlobPart[]) {
+  const blob = new Blob(parts, { type: "application/octet-binary" });
   const blobURL = URL.createObjectURL(blob);
 
   const anchor = document.createElement("a");
@@ -957,3 +957,43 @@ export const suffixNumber = (v: number) =>
 
 const $cache = cache;
 export { $cache as cache };
+
+const domParser = new DOMParser();
+
+export function convertSvgToURL(content: string, color?: React.CSSProperties["color"]) {
+  const parsed = domParser.parseFromString(content, "image/svg+xml");
+
+  if (!(parsed.documentElement instanceof SVGElement)) return;
+
+  if (!parsed.documentElement.hasAttribute("xmlns")) {
+    parsed.documentElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  }
+  if (typeof color === "string") {
+    parsed.documentElement.style.color = color;
+  }
+
+  return URL.createObjectURL(new Blob([ parsed.documentElement.outerHTML ], { type: "image/svg+xml" }));
+}
+
+export async function callSafely(fn: () => any, onError: (err: any) => void = () => {}): Promise<void> {
+  try {
+    const result = fn();
+    if (result instanceof Promise) await result;
+  } 
+  catch (error) {
+    onError(error);
+  }
+}
+
+export function createPersistence(key: string) {
+  return {
+    get() {
+      const data = window.sessionStorage.getItem(key);
+      if (!data) return null;
+      return JSON.parse(data);
+    },
+    set(value: any) {
+      window.sessionStorage.setItem(key, JSON.stringify(value));
+    }
+  }
+}

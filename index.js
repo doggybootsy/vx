@@ -92,7 +92,8 @@ const FakeNodeModules = {
       "moment",
       "react",
       "react-dom",
-      "react-dom/client"
+      "react-dom/client",
+      "highlight.js"
     ];
 
     build.onResolve({

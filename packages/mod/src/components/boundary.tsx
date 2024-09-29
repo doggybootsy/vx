@@ -1,8 +1,7 @@
 import { Component, useMemo } from "react";
 import { Button } from ".";
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode,
+interface ErrorBoundaryProps extends React.PropsWithChildren {
   fallback?: React.ReactNode
 };
 

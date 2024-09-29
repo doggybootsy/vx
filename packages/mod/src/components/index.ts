@@ -27,3 +27,4 @@ export * from "./util";
 export * from "./textOverflowScroller";
 export * from "./html";
 export * from "./userPopout";
+export * from "./scroller";

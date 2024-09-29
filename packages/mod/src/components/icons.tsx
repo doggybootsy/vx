@@ -144,6 +144,21 @@ export function Palette(props: IconProps) {
 export function Logo(props: IconProps) {
   const { color, height, width, className } = ensureProps(props, "Logo");
 
+  if (__self__.__proto_logo__ === 0) {
+    return (
+      <svg className={className} width={width} height={height} viewBox="0 0 172 154" xmlns="http://www.w3.org/2000/svg">
+        <path fill={color} d="M29 15.5H54.325l31.65 46 31.7575-46.075h25.275l-56.97 84.1025Zm83.5 123-17.25-25.925L107.625 93.8 138.1 138.5Zm-78.5 0 29.875-44L76.5 113.125l-16.875 25.4ZM67.275 154 85.95 126.5 105.1 154H167L117.5 80 172 0H109.775l-23.8 34.5L62.425 0H0L54.725 81 5 154Z" />
+      </svg>
+    )
+  }
+  if (__self__.__proto_logo__ === 1) {
+    return (
+      <svg className={className} width={width} height={height} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272.1 154">
+        <path d="M167 154H105.1L0 0H62.425L136.1 108.5 154.825 81 100.1 0h62.425l23.55 34.5L209.875 0H272.1L217.6 80l49.5 74H205.2l-19.15-27.5L167.375 154Z" fill={color} />
+      </svg>
+    )
+  }
+
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <path fill={color} d="M51.4697 27.0801L38.96 74.6582L22.0068 75.6152L6.62598 27.5586L22.8271 26.0547L29.3896 54.082L35.7471 26.0547L51.4697 27.0801ZM93.75 27.0801L80.4199 50.2539L91.7676 70.4199L77.4805 74.8633L71.3281 60.918L64.082 74.9316L49.3164 69.5996L61.8945 49.7754L50.4102 28.9258L66.0645 25.166L71.6699 38.9062L77.6172 25.166L93.75 27.0801Z" />

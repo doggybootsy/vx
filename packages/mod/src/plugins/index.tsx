@@ -11,6 +11,8 @@ import type { IconFullProps } from "../components/icons";
 import { Flex } from "../components";
 import * as menu from "../api/menu";
 import type { MenuCallback } from "../api/menu";
+import { callSafely } from "../util";
+import { type Injector } from "../patcher";
 
 export interface PluginType {
   authors: Developer[],
@@ -18,8 +20,9 @@ export interface PluginType {
   patches?: PlainTextPatchType | PlainTextPatchType[],
   commands?: Command | Command[],
   settings?: Record<string, CreatedSetting<any>> | React.ComponentType,
+  injector?: Injector,
   requiresRestart?: boolean,
-  start?(): void,
+  start?(signal: AbortSignal): void,
   stop?(): void,
   fluxEvents?: Record<string, (data: Record<PropertyKey, any>) => void>,
   styler?: ManagedCSS,
@@ -87,6 +90,8 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     if (typeof exports.settings === "function") this.Settings = exports.settings;
   }
 
+  public controller = new AbortController();
+
   public readonly Settings: null | React.ComponentType<{}> = null;
 
   public readonly authors: Developer[];
@@ -120,7 +125,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     internalDataStore.set("enabled-plugins", enabled);
 
     if (!this.requiresRestart) {
-      if (typeof this.exports.start === "function") this.exports.start();
+      if (typeof this.exports.start === "function") callSafely(() => this.exports.start!(this.controller.signal));
       if (this.exports.styler) this.exports.styler.addStyle();
     }
 
@@ -136,8 +141,12 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     internalDataStore.set("enabled-plugins", enabled);
 
     if (!this.requiresRestart) {
-      if (typeof this.exports.stop === "function") this.exports.stop();
+      if (typeof this.exports.stop === "function") callSafely(() => this.exports.stop!());
       if (this.exports.styler) this.exports.styler.removeStyle();
+      if (this.exports.injector) this.exports.injector.unpatchAll();
+      
+      this.controller.abort();
+      this.controller = new AbortController();
     }
     
     return true;
@@ -208,7 +217,7 @@ export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {
   }
 
   if (isEnabled) {
-    if (typeof exports.start === "function") exports.start();
+    if (typeof exports.start === "function") callSafely(() => exports.start!(plugin.controller.signal));
     if (exports.styler) exports.styler.addStyle();
   }
 
