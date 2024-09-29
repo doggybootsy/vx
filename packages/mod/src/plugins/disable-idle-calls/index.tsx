@@ -14,6 +14,9 @@ export default definePlugin(
             i.instead(timeoutModule.V7.prototype, "start", () => {
                 return; // god I wish to make this better. this is SOOO bad.
             })
+        },
+        stop() {
+            i.unpatchAll()
         }
     }
 )
