@@ -58,7 +58,7 @@ class ReviewDBStore extends InternalStore {
 
     return user.id in settings.auth.get();
   }
-  public  getAuthToken() {
+  public getAuthToken() {
     if (!this.hasAuth()) throw new Error("User is not signed in");
     return settings.auth.get()[UserStore.getCurrentUser().id];
   }
@@ -69,6 +69,8 @@ class ReviewDBStore extends InternalStore {
     delete auth[this.currentUserId];
 
     settings.auth.set(auth);
+    
+    delete this.#users[this.currentUserId];
 
     this.emit();
   }

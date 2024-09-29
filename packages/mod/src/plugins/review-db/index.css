@@ -222,10 +222,7 @@
   margin-right: .5rem;
 }
 
-.vx-rdb-comment > .vx-rdb-blocked-header {
-  padding-left: 72px;
-}
-:not(.vx-rdb-comment) > .vx-rdb-blocked-header {
+.vx-rdb-blocked-header {
   padding-left: 16px;
 }
 

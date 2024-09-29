@@ -34,14 +34,12 @@ async function getBannerColor(guildIcon?: string): Promise<[ r: number, g: numbe
       reject(e);
       img!.onerror = img!.onload = null,
       img = null;
-    }
-    ,
+    };
     img.onload = ()=>{
       resolve(quantize.quantize(img!, 5, 10));
       img!.onerror = img!.onload = null,
       img = null;
-    }
-    ,
+    };
     img.src = guildIcon;
   });
 }

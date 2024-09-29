@@ -257,7 +257,9 @@ function Review({ review, isComment, isViewingCurrentUser, refetch }: ReviewProp
                   icon={Icons.DiscordIcon.from("ArrowAngleLeftUpIcon")}
                   onClick={() => {
                     setReviewId(review.id);
-                    ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    requestAnimationFrame(() => 
+                      ref.current?.scrollIntoView({ behavior: "smooth", block: "center" })
+                    );
                   }}
                 />
                 <MiniPopover.Button 
