@@ -7,6 +7,7 @@ const i = new Injector();
 export default definePlugin(
     {
         authors: [Developers.kaan],
+        requiresRestart: false,
         async start() {
             const idleTimeout = getLazy(bySource("this._ref&&(clearTimeout(this._ref)"))
             const timeoutModule = await idleTimeout
