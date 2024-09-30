@@ -70,11 +70,10 @@ const DIFF_CODE_TYPE = /^diff([-~])/;
 
 export function CodeBlock({ lang, content }: { lang: string, content: string }) {
   const isDiffAnd = useMemo(() => DIFF_CODE_TYPE.test(lang.toLowerCase()), [lang]);
-
-  // @ts-ignore
+  
   const [language, languageDefinition] = useMemo<[string, Language]>(() => {
     const $lang = isDiffAnd ? lang.slice(5) : lang;
-    const language = hljs.getLanguage($lang) || hljs.getLanguage("txt");
+    const language = hljs.getLanguage($lang) || hljs.getLanguage("txt")!;
     return [$lang, language];
   }, [lang, isDiffAnd]);
 
@@ -94,7 +93,7 @@ export function CodeBlock({ lang, content }: { lang: string, content: string }) 
   const effectiveLanguage = useMemo(() => {
     try {
       JSON.parse(content);
-      return "json";
+      return "JSON";
     } catch {
       return language;
     }
@@ -139,7 +138,7 @@ export function CodeBlock({ lang, content }: { lang: string, content: string }) 
       <div className="vx-bcb" data-lang-name={effectiveLanguage} data-raw-lang={lang}>
         <div className="vx-bcb-header">
           <div className="vx-bcb-lang">
-            {isDiffAnd ? `Diff & ${languageDefinition.name}` : languageDefinition.name}
+            {isDiffAnd ? `Diff & ${languageDefinition.name}` : effectiveLanguage}
           </div>
           <div className="vx-bcb-actions">
             {svgURL && (
