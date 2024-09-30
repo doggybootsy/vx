@@ -349,8 +349,7 @@ export function Home() {
             <img
                 src="https://i.imgur.com/qUDvuS2.png"
                 alt="Image"
-                
-                style={{ position: 'absolute', bottom: '0px', right: '0px', width: '500px' }}
+                className="vx-anime-girl"
             />
         </RainbowText>
     </Page>

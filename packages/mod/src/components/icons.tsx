@@ -158,6 +158,13 @@ export function Logo(props: IconProps) {
       </svg>
     )
   }
+  if (__self__.__proto_logo__ === 2) {
+    return (
+      <svg className={className} width={width} height={height} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272.1 154">
+        <path d="M129.1 15.5H154.425l31.65 46 31.7575-46.075h25.275l-56.97 84.1025Zm83.5 123-17.25-25.925L207.725 93.8 238.2 138.5Zm-100.1 0-83.5-123h25.556L126.8795 122.026h18.406L163.975 94.5 176.6 113.125l-16.875 25.4ZM167.375 154 186.05 126.5 205.2 154H267.1L217.6 80 272.1 0H209.875l-23.8 34.5L162.525 0H100.1L154.825 81 135.7523 109.0001 62.425 0H0L105.1 154Z" fill={color} />
+      </svg>
+    )
+  }
 
   return (
     <svg className={className} width={width} height={height} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

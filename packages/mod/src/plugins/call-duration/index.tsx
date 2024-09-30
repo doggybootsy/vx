@@ -18,9 +18,9 @@ class CallDurationStore extends InternalStore {
     super();
 
     subscribeToDispatch("RTC_CONNECTION_STATE", (event) => {
-      if (event.context !== "default") return;
+      if (event.context !== "default") return;      
 
-      if (event.state === "RTC_CONNECTED") {
+      if (event.state === "CONNECTING") {
         if (this.lastChannelId === event.channelId) return;
         this.then = Date.now();
         this.lastChannelId = event.channelId;

@@ -10,10 +10,9 @@ import {ModalComponents, openAlertModal, openModal} from "../../api/modals";
 import { clipboard } from "../../util";
 import {MenuComponents, openMenu, closeMenu} from "../../api/menu";
 
-const sidebar = getLazy(bySource("hasReportedAnalytics"));
 const LinkButton = getProxy((m) => m.prototype?.render?.toString().includes(".linkButtonIcon"), { searchExports: true });
 const Button = getProxy(x => x.Button);
-const i = new Injector();
+const injector = new Injector();
 const FriendInviteStore = getProxy(x => x.createFriendInvite);
 
 const fetchFriendInvites = async () => {
@@ -125,11 +124,7 @@ function FriendInvitesModal({ props }) {
 
 function NavigatorButton() {
     return (
-        <ErrorBoundary
-            fallback={(
-                <div onClick={() => NavigationUtils.transitionTo("/")}>Public Servers</div>
-            )}
-        >
+        <ErrorBoundary>
             <LinkButton
                 icon={Icons.Discord}
                 text="Friend Invites"
@@ -147,9 +142,11 @@ export default definePlugin(
     {
         authors: [Developers.kaan],
         requiresRestart: false,
+        injector,
         async start(signal: AbortSignal) {
-            const uwu = await sidebar;
-            i.after(uwu, "Z", (that, args, res: any) => {
+            const uwu = await getLazy(bySource("hasReportedAnalytics"), { signal });
+
+            injector.after(uwu, "default", (that, args, res: any) => {
                 if (args[0]?.children.find((button?: { key: string }) => button?.key === "uwu_linkButton")) return;
 
                 args[0]?.children.push(

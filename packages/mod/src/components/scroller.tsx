@@ -1,7 +1,7 @@
 import { getProxyByKeys } from "@webpack";
 import { className } from "../util";
 import ErrorBoundary from "./boundary";
-import { forwardRef, Component, useMemo } from "react";
+import { forwardRef, useMemo } from "react";
 
 type OverflowValue = "scroll" | "hidden";
 

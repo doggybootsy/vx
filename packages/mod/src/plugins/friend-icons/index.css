@@ -1,0 +1,12 @@
+.vx-friend-icon {
+  display: inline-block;
+  overflow: hidden;
+  -o-object-fit: contain;
+  object-fit: contain;
+  margin-right: .25rem;
+  vertical-align: top;
+  position: relative;
+  top: 1px;
+  height: 1.25rem;
+  width: 1.25rem;
+}

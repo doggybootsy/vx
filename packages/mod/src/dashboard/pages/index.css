@@ -208,6 +208,14 @@ input.vx-addon-input:not(:focus) {
   background: var(--background-secondary);
   padding: 6px;
   border-radius: 4px;
+  isolation: isolate;
+}
+.vx-anime-girl {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  z-index: -1;
 }
 .vx-updater {
   background: var(--background-secondary);
