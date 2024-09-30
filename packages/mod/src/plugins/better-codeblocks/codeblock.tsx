@@ -125,6 +125,16 @@ export function CodeBlock({ lang, content }: { lang: string, content: string }) 
     return hljs.highlight(formattedContent, { language: effectiveLanguage }).value.split("\n");
   }, [formattedContent, effectiveLanguage, isDiffAnd]);
 
+  const svgURL = useSVGUrl(content, languageDefinition);
+  
+  /*
+  <HeaderButton
+    text="Code Modal"
+    icon={Icons.Code}
+    onClick={(event) => openCodeModal({code: formattedContent, language: effectiveLanguage, filename: `codeblock.${effectiveLanguage}`})}
+  /> This will be the code modals revenge arc cause of you doggy
+   */
+  
   return (
       <div className="vx-bcb" data-lang-name={effectiveLanguage} data-raw-lang={lang}>
         <div className="vx-bcb-header">
@@ -132,11 +142,13 @@ export function CodeBlock({ lang, content }: { lang: string, content: string }) 
             {isDiffAnd ? `Diff & ${languageDefinition.name}` : languageDefinition.name}
           </div>
           <div className="vx-bcb-actions">
-            <HeaderButton
-                text="Preview"
-                icon={Icons.DiscordIcon.from("EyeIcon")}
-                onClick={(event) => openCodeModal({code: formattedContent, language: effectiveLanguage, filename: `codeblock.${effectiveLanguage}`})}
-            />
+            {svgURL && (
+                <HeaderButton
+                    text="Preview"
+                    icon={Icons.DiscordIcon.from("EyeIcon")}
+                    onClick={(event) => openImageModal(svgURL, { scale: event.shiftKey ? 1 : 10 })}
+                />
+            )}
             {clipboard.SUPPORTS_COPY && (
                 <HeaderButton
                     text={Messages.COPY}
