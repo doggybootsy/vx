@@ -5,7 +5,7 @@ import { className, clipboard, convertSvgToURL, download, getCSSVarColor } from 
 import { Messages } from "vx:i18n";
 import { IconFullProps } from "../../components/icons";
 import { useDestructor, useForceUpdate } from "../../hooks";
-import { openImageModal } from "../../api/modals";
+import {openCodeModal, openImageModal} from "../../api/modals";
 
 function HeaderButton({ icon: Icon, text, onClick }: { icon: React.ComponentType<IconFullProps>, text: string, onClick(event: React.MouseEvent<HTMLDivElement>): void }) {
   return (
@@ -66,27 +66,45 @@ function Line({ code, index, hasDiff }: { code: string, index: number, hasDiff: 
   )
 }
 
-const DIFF_CODE_TYPE = /^diff(-|~)/;
+const DIFF_CODE_TYPE = /^diff([-~])/;
 
 export function CodeBlock({ lang, content }: { lang: string, content: string }) {
-  const isDiffAnd = useMemo(() => DIFF_CODE_TYPE.test(lang.toLowerCase()), [ lang ]);
+  const isDiffAnd = useMemo(() => DIFF_CODE_TYPE.test(lang.toLowerCase()), [lang]);
   
-  const [ language, languageDefination ] = useMemo<[ language: string, languageDefination: Language ]>(() => {
+  const [language, languageDefinition] = useMemo<[string, Language]>(() => {
     const $lang = isDiffAnd ? lang.slice(5) : lang;
-    
-    const language = hljs.getLanguage($lang);
-    if (language) return [ $lang, language ];
-    return [ "txt", hljs.getLanguage("txt")! ];
-  }, [ lang, isDiffAnd ]);
+    const language = hljs.getLanguage($lang) || hljs.getLanguage("txt")!;
+    return [$lang, language];
+  }, [lang, isDiffAnd]);
+
+  const formattedContent = useMemo(() => {
+    const languageName = languageDefinition?.name?.toLowerCase();
+    return languageName === 'json' || languageName === 'plain text' && content
+        ? (() => {
+          try {
+            return JSON.stringify(JSON.parse(content), null, 2);
+          } catch {
+            return content;
+          }
+        })()
+        : content;
+  }, [content, languageDefinition]);
   
-  const svgURL = useSVGUrl(content, languageDefination);
-  
+  const effectiveLanguage = useMemo(() => {
+    try {
+      JSON.parse(content);
+      return "JSON";
+    } catch {
+      return language;
+    }
+  }, [content, language]);
+
   const highlight = useMemo(() => {
     if (isDiffAnd) {
       const diff = hljs.highlight(content, { language: "diff" });
-      const result = hljs.highlight(content, { language });
+      const result = hljs.highlight(formattedContent, { language: effectiveLanguage });
 
-      const diffSplit = diff.value.split("\n");;
+      const diffSplit = diff.value.split("\n");
       const codeSplit = result.value.split("\n");
 
       const code: string[] = [];
@@ -94,62 +112,65 @@ export function CodeBlock({ lang, content }: { lang: string, content: string }) 
       for (let index = 0; index < diffSplit.length; index++) {
         const match = diffSplit[index].match(DIFF_REGEX);
         if (match) {
-          code.push(
-            `<span class="hljs-${match[1]}">${codeSplit[index]}</span>`
-          );
+          code.push(`<span class="hljs-${match[1]}">${codeSplit[index]}</span>`);
+        } else {
+          code.push(codeSplit[index]);
         }
-        else code.push(codeSplit[index]);
       }
 
       return code;
     }
 
-    return hljs.highlight(content, { language }).value.split("\n");
-  }, [ content, language, isDiffAnd ]);
+    return hljs.highlight(formattedContent, { language: effectiveLanguage }).value.split("\n");
+  }, [formattedContent, effectiveLanguage, isDiffAnd]);
 
-  const hasDiff = useMemo(() => isDiffAnd || (languageDefination.name === "Diff"), [ isDiffAnd, languageDefination ]);
-
+  const svgURL = useSVGUrl(content, languageDefinition);
+  
+  /*
+  <HeaderButton
+    text="Code Modal"
+    icon={Icons.Code}
+    onClick={(event) => openCodeModal({code: formattedContent, language: effectiveLanguage, filename: `codeblock.${effectiveLanguage}`})}
+  /> This will be the code modals revenge arc cause of you doggy
+   */
+  
   return (
-    <div 
-      className="vx-bcb" 
-      data-lang-name={languageDefination.name!} 
-      data-raw-lang={lang}
-    >
-      <div className="vx-bcb-header">
-        <div className="vx-bcb-lang">
-          {isDiffAnd ? `Diff & ${languageDefination.name}` : languageDefination.name}
-        </div>
-        <div className="vx-bcb-actions">
-          {svgURL && (
-            <HeaderButton 
-              text="Preview"
-              icon={Icons.DiscordIcon.from("EyeIcon")}
-              onClick={(event) => openImageModal(svgURL, { scale: event.shiftKey ? 1 : 10 })}
+      <div className="vx-bcb" data-lang-name={effectiveLanguage} data-raw-lang={lang}>
+        <div className="vx-bcb-header">
+          <div className="vx-bcb-lang">
+            {isDiffAnd ? `Diff & ${languageDefinition.name}` : effectiveLanguage}
+          </div>
+          <div className="vx-bcb-actions">
+            {svgURL && (
+                <HeaderButton
+                    text="Preview"
+                    icon={Icons.DiscordIcon.from("EyeIcon")}
+                    onClick={(event) => openImageModal(svgURL, { scale: event.shiftKey ? 1 : 10 })}
+                />
+            )}
+            {clipboard.SUPPORTS_COPY && (
+                <HeaderButton
+                    text={Messages.COPY}
+                    icon={Icons.Copy}
+                    onClick={() => clipboard.copy(content)}
+                />
+            )}
+            <HeaderButton
+                text={Messages.DOWNLOAD}
+                icon={Icons.Download}
+                onClick={() => download(`codeblock.${effectiveLanguage}`, formattedContent)}
             />
-          )}
-          {clipboard.SUPPORTS_COPY && (
-            <HeaderButton 
-              text={Messages.COPY}
-              icon={Icons.Copy}
-              onClick={() => clipboard.copy(content)}
-            />
-          )}
-          <HeaderButton 
-            text={Messages.DOWNLOAD}
-            icon={Icons.Download}
-            onClick={() => download(`codeblock.${language}`, content)}
-          />
+          </div>
         </div>
-      </div>
-      <Scroller type="thin" fade className="vx-bcb-wrapper" overflow="scroll hidden">
-        <table className="vx=bcb-body">
-          <tbody>
+        <Scroller type="thin" fade className="vx-bcb-wrapper" overflow="scroll hidden">
+          <table className="vx-bcb-body">
+            <tbody>
             {highlight.map((value, index) => (
-              <Line code={value} index={index} hasDiff={hasDiff} key={index} />
+                <Line code={value} index={index} hasDiff={isDiffAnd} key={index} />
             ))}
-          </tbody>
-        </table>
-      </Scroller>
-    </div>
+            </tbody>
+          </table>
+        </Scroller>
+      </div>
   );
 }

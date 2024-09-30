@@ -1,0 +1,58 @@
+
+.vx-friend-invites-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 16px;
+}
+.vx-friend-invites-card {
+    background-color: #2f3136;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.vx-friend-invites-card:hover {
+    background-color: #36393f;
+}
+.vx-friend-invites-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.vx-friend-invites-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.vx-friend-invites-code-container {
+    flex-grow: 1;
+}
+.vx-friend-invites-code {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+}
+.vx-friend-invites-expiry {
+    font-size: 12px;
+    color: #b9bbbe;
+}
+.vx-friend-invites-details {
+    font-size: 12px;
+    color: #b9bbbe;
+}
+.vx-friend-invites-details p {
+    margin: 2px 0;
+}
+.vx-friend-invites-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 20px;
+}
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
