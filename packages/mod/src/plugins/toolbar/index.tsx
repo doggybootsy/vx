@@ -63,11 +63,9 @@ export default definePlugin({
         
         Toolbar.addItem("vx-game-button-toggle", GameToggleButton)
 
-        console.log(Module)
         const key = Object.entries(Module).find(x=>x.toString?.().includes("--custom-app-panels-height"))![0];
         
         inj.after(Module, key, (a: any, b: any, c: any) => {
-            console.log(a, b, c);
 
             c.props?.children?.push(<div
                 style={{
