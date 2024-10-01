@@ -3,7 +3,7 @@ import { Developers } from "../../constants";
 import {bySource, byStrings, getLazy, getMangledLazy, getModuleIdBySource, getProxy, webpackRequire} from "@webpack";
 import { createElement } from "react";
 import {Injector} from "../../patcher";
-import {Button, SystemDesign, Tooltip} from "../../components";
+import {Button, Icons, SystemDesign, Tooltip} from "../../components";
 import {openNotification} from "../../api/notifications";
 import {proxyCache} from "../../util";
 
@@ -59,7 +59,7 @@ export default definePlugin({
                 const ActivitySetting = !ProtoSync.getSetting()
                 ProtoSync.updateSetting(ActivitySetting)
                 openNotification({title: "ProtoSync Update", description: `Activity is currently ${ActivitySetting ? "enabled" : "disabled"}.`, sliderColor: getColorBasedOffStatus(ActivitySetting)})
-            }} icon={() => (<SystemDesign.GameControllerIcon/>)}/>
+            }} icon={Icons.DiscordIcon.from("GameControllerIcon")}/>
         
         Toolbar.addItem("vx-game-button-toggle", GameToggleButton)
 
