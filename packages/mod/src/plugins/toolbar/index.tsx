@@ -55,33 +55,35 @@ export default definePlugin({
 
         if (signal.aborted) return;
         
-        const GameToggleButton = <PanelButton onClick={() => {
+        const GameToggleButton = <PanelButton tooltip={"Game Activity Toggle"} onClick={() => {
                 const ActivitySetting = !ProtoSync.getSetting()
                 ProtoSync.updateSetting(ActivitySetting)
                 openNotification({title: "ProtoSync Update", description: `Activity is currently ${ActivitySetting ? "enabled" : "disabled"}.`, sliderColor: getColorBasedOffStatus(ActivitySetting)})
             }} icon={() => (<SystemDesign.GameControllerIcon/>)}/>
         
         Toolbar.addItem("vx-game-button-toggle", GameToggleButton)
+
+        console.log(Module)
+        const key = Object.entries(Module).find(x=>x.toString?.().includes("--custom-app-panels-height"))![0];
         
-        inj.after(Module, 'b', (a: any, b: any, c: { props: { children: React.DetailedReactHTMLElement<{ style: { display: "flex"; justifyContent: "center"; alignItems: "center"; color: "white"; }; }, HTMLElement>[]; }; }) => {
+        inj.after(Module, key, (a: any, b: any, c: any) => {
             console.log(a, b, c);
 
-            const centeredDiv = createElement("div", {
-                style: {
+            c.props?.children?.push(<div
+                style={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    color: "white"
-                }
-            }, [
-                ...Toolbar.getItems().map((item: any) => item)
-            ]);
-
-            c.props?.children?.push(centeredDiv);
+                    color: "white",
+                }}
+            >
+                {Toolbar.getItems().map((item) => (
+                    item
+                ))}
+            </div>);
         });
     },
-    stop()
-    {
+    stop() {
         inj.unpatchAll()
         Toolbar.removeItem("vx-game-button-toggle");
     }
