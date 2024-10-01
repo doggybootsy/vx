@@ -55,7 +55,7 @@ export default definePlugin({
 
         if (signal.aborted) return;
         
-        const GameToggleButton = <PanelButton tooltip={"Game Activity Toggle"} onClick={() => {
+        const GameToggleButton = <PanelButton tooltipText={"Game Activity Toggle"} onClick={() => {
                 const ActivitySetting = !ProtoSync.getSetting()
                 ProtoSync.updateSetting(ActivitySetting)
                 openNotification({title: "ProtoSync Update", description: `Activity is currently ${ActivitySetting ? "enabled" : "disabled"}.`, sliderColor: getColorBasedOffStatus(ActivitySetting)})
