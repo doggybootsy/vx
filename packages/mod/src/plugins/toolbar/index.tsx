@@ -6,6 +6,7 @@ import {Injector} from "../../patcher";
 import {Button, Icons, SystemDesign, Tooltip} from "../../components";
 import {openNotification} from "../../api/notifications";
 import {proxyCache} from "../../util";
+import {useEffect, useState} from "../../fake_node_modules/react";
 
 const PanelMenu = getLazy(bySource('--custom-app-panels-height'));
 const PanelButton = getProxy(byStrings("{tooltipText:", ".Masks.PANEL_BUTTON,"));
@@ -17,11 +18,12 @@ const ProtoSync = proxyCache(() => {
 
     return webpackRequire!(mId)[match[1]];
 });
+const Controller = Icons.DiscordIcon.from("GameControllerIcon");
 
 class Toolbar {
     private static items: { id: string; element: any }[] = [];
 
-    static addItem(id: string,  element: any): string {
+    static addItem(id: string, element: any): string {
         this.items.push({ id, element });
         return id;
     }
@@ -37,14 +39,33 @@ class Toolbar {
 
 const inj = new Injector();
 
-function getColorBasedOffStatus(enabled: boolean)
-{
-    switch (enabled) {
-        case true: 
-            return "green"
-        case false:
-            return "red"
-    }
+function getColorBasedOffStatus(enabled: boolean) {
+    return enabled ? "green" : "red";
+}
+
+function GameToggleButton() {
+    const [activityEnabled, setActivityEnabled] = useState(() => ProtoSync.getSetting());
+
+    const toggleActivity = () => {
+        const newStatus = !activityEnabled;
+        ProtoSync.updateSetting(newStatus);
+        setActivityEnabled(newStatus);
+        openNotification({
+            title: "ProtoSync Update",
+            description: `Activity is currently ${newStatus ? "enabled" : "disabled"}.`,
+            sliderColor: getColorBasedOffStatus(newStatus),
+        });
+    };
+
+    return (
+        <PanelButton
+            tooltipText={"Game Activity Toggle"}
+            onClick={toggleActivity}
+            icon={() => (
+                <Controller color={activityEnabled ? "var(--interactive-normal)" : "var(--red-430)"} />
+            )}
+        />
+    );
 }
 
 export default definePlugin({
@@ -54,35 +75,28 @@ export default definePlugin({
         const Module = await PanelMenu;
 
         if (signal.aborted) return;
-        
-        const GameToggleButton = <PanelButton tooltipText={"Game Activity Toggle"} onClick={() => {
-                const ActivitySetting = !ProtoSync.getSetting()
-                ProtoSync.updateSetting(ActivitySetting)
-                openNotification({title: "ProtoSync Update", description: `Activity is currently ${ActivitySetting ? "enabled" : "disabled"}.`, sliderColor: getColorBasedOffStatus(ActivitySetting)})
-            }} icon={Icons.DiscordIcon.from("GameControllerIcon")}/>
-        
-        Toolbar.addItem("vx-game-button-toggle", GameToggleButton)
 
-        const key = Object.entries(Module).find(x=>x.toString?.().includes("--custom-app-panels-height"))![0];
-        
+        Toolbar.addItem("vx-game-button-toggle", <GameToggleButton />);
+
+        const key = Object.entries(Module).find(x => x.toString?.().includes("--custom-app-panels-height"))![0];
+
         inj.after(Module, key, (a: any, b: any, c: any) => {
-
-            c.props?.children?.push(<div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    color: "white",
-                }}
-            >
-                {Toolbar.getItems().map((item) => (
-                    item
-                ))}
-            </div>);
+            c.props?.children?.push(
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        color: "white",
+                    }}
+                >
+                    {Toolbar.getItems().map((item) => item)}
+                </div>
+            );
         });
     },
     stop() {
-        inj.unpatchAll()
+        inj.unpatchAll();
         Toolbar.removeItem("vx-game-button-toggle");
     }
 });
