@@ -42,7 +42,7 @@ function KeyboardFull() {
   )
 }
 
-const buttonClasses = getProxyByKeys<Record<string, string>>([ "buttonWrapper", "pulseButton" ]);
+export const buttonClasses = getProxyByKeys<Record<string, string>>([ "buttonWrapper", "pulseButton" ]);
 
 export function KeyboardButton() {
   const shouldShowTyping = settings.shouldShowTyping.use();

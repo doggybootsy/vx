@@ -186,11 +186,11 @@ export default definePlugin({
         });
         
         patch("copierUser", "user-context", (props, res) => {
-            const UserIcon = getAnimated(format(avatarURL, props.user.id, props.user.avatar));
-            const UserBanner = getAnimated(format(bannerURL, props.user.id, props.user.banner));
             const userProfile = useStateFromStores([UserProfileStore], () => UserProfileStore.getUserProfile(props.user.id))
+            const UserIcon = getAnimated(format(avatarURL, props.user.id, props.user.avatar));
+            const UserBanner = getAnimated(format(bannerURL, props.user.id, userProfile?.banner || props.user.banner));
 
-            const [validAvatar, validBanner] = isEitherDisabled(props.user.avatar, props.user.banner);
+            const [validAvatar, validBanner] = isEitherDisabled(props.user.avatar, UserBanner);
             const [validAccentColor, validBio, validUsername] = isEitherDisabled(
                 userProfile?.accentColor,
                 userProfile?.bio,
