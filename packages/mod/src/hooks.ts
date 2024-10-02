@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer, useRef } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
 import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
