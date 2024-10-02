@@ -483,6 +483,7 @@ button.vx-community-card-button {
 .vx-page-body {
   padding: 16px 12px;
   overflow: hidden scroll;
+  isolation: isolate;
 }
 
 .vx-community-addon-cards {

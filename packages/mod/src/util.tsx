@@ -249,6 +249,8 @@ export function findInReactTree<T extends Object>(tree: any, searchFilter: (item
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
 }
 
+let id = 0;
+const idSymbol = Symbol("vx.internal-store");
 export class InternalStore {
   public static stores = new Set<InternalStore>();
   public static getStore(name: string) {
@@ -256,11 +258,18 @@ export class InternalStore {
       if (InternalStore.prototype.getName.call(store) === name) return store;
     }
   }
+  static getStoreId(store: InternalStore) {
+    return store[idSymbol];
+  }
 
   constructor() {
+    this[idSymbol] = id++;
     InternalStore.stores.add(this);
   }
 
+  public initialize(): void {};
+
+  public [idSymbol]: number;
   public static displayName?: string;
   public displayName?: string;
 
@@ -286,6 +295,13 @@ export class InternalStore {
     for (const listener of this.#listeners) {
       listener();
     }
+  }
+
+  public getClass(): typeof InternalStore {
+    return this.constructor as any;
+  }
+  public getId() {
+    return InternalStore.getStoreId(this);
   }
 }
 
@@ -985,8 +1001,22 @@ export async function callSafely(fn: () => any, onError: (err: any) => void = ()
   }
 }
 
-export function createPersistence(key: string) {
-  return {
+export interface Persistence<T> {
+  get(): T | undefined,
+  set(value: T): void,
+  clear(): void,
+  has(): boolean,
+  ensure(value: T): T
+}
+
+const persistenceObjects: Record<string, Persistence<any>> = {}
+
+export function createPersistence<T>(key: string): Persistence<T> {
+  key = `VX(${key})`;
+
+  if (key in persistenceObjects) return persistenceObjects[key];
+  
+  return persistenceObjects[key] = createNullObject({
     get() {
       const data = window.sessionStorage.getItem(key);
       if (!data) return null;
@@ -994,6 +1024,20 @@ export function createPersistence(key: string) {
     },
     set(value: any) {
       window.sessionStorage.setItem(key, JSON.stringify(value));
+    },
+    clear() {
+      window.sessionStorage.removeItem(key);
+    },
+    has() {
+      for (let index = 0; index < window.sessionStorage.length; index++) {
+        if (window.sessionStorage.key(index) === key) return true;
+      }
+
+      return false;
+    },
+    ensure(value) {
+      if (!this.has()) this.set(value);
+      return this.get()!;
     }
-  }
+  }, key);
 }

@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { Header, Page } from "../../..";
 import {Button, Flex, Icons, Popout, SearchBar, Spinner, SystemDesign, Tooltip} from "../../../../components";
 import { Messages } from "vx:i18n";
-import {className, InternalStore, suffixNumber} from "../../../../util";
+import {className, createPersistence, InternalStore, suffixNumber} from "../../../../util";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../../addons/shared";
 import { useInternalStore } from "../../../../hooks";
 import {openConfirmModal, openImageModal, openInviteModal} from "../../../../api/modals";
@@ -456,7 +456,7 @@ const ALL_TAGS = [
 export function CommunityThemes() {
   const { isLoading, ok, addons } = useInternalStore(themeCommunityStore, () => themeCommunityStore.getState());
 
-  const [ query, setQuery ] = useState(() => queryStore.get("community-themes"));
+  const [ query, setQuery, clear ] = queryStore.use("community-themes");
 
   const [ tags, setTags ] = useState<string[]>([ ]);
 
@@ -643,14 +643,8 @@ export function CommunityThemes() {
             <SearchBar 
               query={query}
               size={SearchBar.Sizes.SMALL}
-              onQueryChange={(query) => {
-                setQuery(query);
-                queryStore.set("community-themes", query);
-              }}
-              onClear={() => {
-                setQuery("");
-                queryStore.clear("community-themes");
-              }}
+              onQueryChange={setQuery}
+              onClear={clear}
               autoFocus
             />
           </div>

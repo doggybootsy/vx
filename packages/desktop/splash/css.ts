@@ -8,7 +8,7 @@ import { ipcRenderer } from "electron";
 const filepath = getAndEnsureVXPath("splash.css", (path) => writeFileSync(path, ""));
 
 function getCustomCSS() {
-  return readFileSync(filepath, "binary");
+  return readFileSync(filepath, "utf-8");
 }
 
 const { appendTo, setCSS } = createStyle("vx-custom-css", getCustomCSS());

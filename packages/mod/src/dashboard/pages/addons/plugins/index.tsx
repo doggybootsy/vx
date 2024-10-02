@@ -110,7 +110,7 @@ export function Plugins() {
     });
   }, [ customPlugins, internalPlugins ]);
 
-  const [ query, setQuery ] = useState(() => queryStore.get("plugins"));
+  const [ query, setQuery, clear ] = queryStore.use("plugins");
   const queredPlugins = useMemo(() => allPlugins.filter(([ id, plugin ]) => plugin.name.toLowerCase().includes(query.toLowerCase())), [ query, allPlugins ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
@@ -142,14 +142,8 @@ export function Plugins() {
             <SearchBar 
               query={query}
               size={SearchBar.Sizes.SMALL}
-              onQueryChange={(query) => {
-                setQuery(query);
-                queryStore.set("plugins", query);
-              }}
-              onClear={() => {
-                setQuery("");
-                queryStore.clear("plugins");
-              }}
+              onQueryChange={setQuery}
+              onClear={clear}
               autoFocus
             />
           </div>

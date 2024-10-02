@@ -11,7 +11,7 @@ import { addons } from "../../../../native";
 import { IS_DESKTOP } from "vx:self";
 
 export function Themes() {
-  const [ query, setQuery ] = useState(() => queryStore.get("themes"));
+  const [ query, setQuery, clear ] = queryStore.use("themes")
 
   const keys = useInternalStore(themeStore, () => {
     const keys = themeStore.keys();
@@ -49,14 +49,8 @@ export function Themes() {
             <SearchBar 
               query={query}
               size={SearchBar.Sizes.SMALL}
-              onQueryChange={(query) => {
-                setQuery(query);
-                queryStore.set("themes", query);
-              }}
-              onClear={() => {
-                setQuery("");
-                queryStore.clear("themes");
-              }}
+              onQueryChange={setQuery}
+              onClear={clear}
               autoFocus
             />
           </div>

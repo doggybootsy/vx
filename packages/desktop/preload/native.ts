@@ -47,10 +47,10 @@ function createAddonAPI(type: "themes" | "plugins") {
       return existsSync(join(path, basename(filename)));
     },
     read(filename: string) {
-      return readFileSync(join(path, basename(filename)), "binary");
+      return readFileSync(join(path, basename(filename)), "utf-8");
     },
     write(filename: string, content: string) {
-      writeFileSync(join(path, basename(filename)), content, "binary");
+      writeFileSync(join(path, basename(filename)), content, "utf-8");
     },
     delete(filename: string) {
       return electron.shell.trashItem(join(path, basename(filename)));
@@ -222,7 +222,7 @@ const native = {
 
       if (!existsSync(file)) return null;
 
-      const data = readFileSync(file, "binary");
+      const data = readFileSync(file, "utf-8");
       const match = data.match(/^vx-(0|1):([\s\S]+)$/);
 
       if (!match) return null;
@@ -231,7 +231,7 @@ const native = {
 
       // 0 === not encrypted | 1 === encrypted
       if (type === "0") {
-        const data = Buffer.from(contents, "base64").toString("binary");
+        const data = Buffer.from(contents, "base64").toString("utf-8");
         storageCache.set(key, data);
         
         return data;
@@ -256,7 +256,7 @@ const native = {
 
       const file = join(path, `${basename(key)}.vxs`);
 
-      writeFileSync(file, `vx-0:${Buffer.from(value, "binary").toString("base64")}`, "binary");
+      writeFileSync(file, `vx-0:${Buffer.from(value, "utf-8").toString("base64")}`, "utf-8");
     },
     delete(key: string) {
       storageCache.delete(key);

@@ -60,7 +60,7 @@ function Extension({ extension }: { extension: Electron.Extension }) {
 export function Extensions() {
   const allExtensions = useMemo(() => extensions.getAll(), [ ]);
 
-  const [ query, setQuery ] = useState(() => queryStore.get("extensions"));
+  const [ query, setQuery, clear ] = queryStore.use("extensions");
   const quered = useMemo(() => allExtensions.filter((extension) => extension.name.toLowerCase().includes(query.toLowerCase())), [ query ]);
 
   const alt = useMemo(() => !Math.floor(Math.random() * 100), [ query ]);
@@ -86,14 +86,8 @@ export function Extensions() {
             <SearchBar 
               query={query}
               size={SearchBar.Sizes.SMALL}
-              onQueryChange={(query) => {
-                setQuery(query);
-                queryStore.set("extensions", query);
-              }}
-              onClear={() => {
-                setQuery("");
-                queryStore.clear("extensions");
-              }}
+              onQueryChange={setQuery}
+              onClear={clear}
               autoFocus
             />
           </div>

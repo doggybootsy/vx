@@ -10,11 +10,11 @@ import "./discordnative";
 
 waitForNode("head").then(() => {
   const script = document.createElement("script");
-  script.innerHTML = readFileSync(path.join(__dirname, "build.js"), { encoding: "binary" });
+  script.innerHTML = readFileSync(path.join(__dirname, "build.js"), { encoding: "utf-8" });
   script.id = "vx-script";
 
   const style = document.createElement("style");
-  style.innerHTML = readFileSync(path.join(__dirname, "build.css"), { encoding: "binary" });
+  style.innerHTML = readFileSync(path.join(__dirname, "build.css"), { encoding: "utf-8" });
   style.id = "vx-style";
 
   document.head.append(script, style);

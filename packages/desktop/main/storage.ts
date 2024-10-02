@@ -10,7 +10,7 @@ export class Storage {
     const vxDir = path.join(appData, ".vx");
     const fullpath = path.join(vxDir, `${name}.json`);
 
-    if (!existsSync(fullpath)) writeFileSync(fullpath, "{}", "binary");
+    if (!existsSync(fullpath)) writeFileSync(fullpath, "{}", "utf-8");
 
     this.#fullpath = fullpath;
     require(fullpath);

@@ -98,28 +98,55 @@ export default {
   get MenuCheckboxItem(): React.FunctionComponent<MenuCheckboxItemProps> { 
     return SystemDesign.MenuCheckboxItem;
   },
+  get CheckboxItem(): React.FunctionComponent<MenuCheckboxItemProps> { 
+    return SystemDesign.MenuCheckboxItem;
+  },
   get MenuControlItem(): React.FunctionComponent<MenuControlItemProps> { 
+    return SystemDesign.MenuControlItem;
+  },
+  get ControlItem(): React.FunctionComponent<MenuControlItemProps> { 
     return SystemDesign.MenuControlItem;
   },
   get MenuGroup(): React.FunctionComponent<MenuGroupProps> { 
     return SystemDesign.MenuGroup;
   },
+  get Group(): React.FunctionComponent<MenuGroupProps> { 
+    return SystemDesign.MenuGroup;
+  },
   get MenuItem(): React.FunctionComponent<MenuItemProps> { 
+    return SystemDesign.MenuItem;
+  },
+  get Item(): React.FunctionComponent<MenuItemProps> { 
     return SystemDesign.MenuItem;
   },
   get MenuRadioItem(): React.FunctionComponent<MenuRadioItemProps> { 
     return SystemDesign.MenuRadioItem;
   },
+  get RadioItem(): React.FunctionComponent<MenuRadioItemProps> { 
+    return SystemDesign.MenuRadioItem;
+  },
   get MenuSearchControl(): React.FunctionComponent<MenuSearchControlProps> { 
+    return SystemDesign.MenuSearchControl;
+  },
+  get SearchControl(): React.FunctionComponent<MenuSearchControlProps> { 
     return SystemDesign.MenuSearchControl;
   },
   get MenuSeparator(): React.FunctionComponent { 
     return SystemDesign.MenuSeparator;
   },
+  get Separator(): React.FunctionComponent { 
+    return SystemDesign.MenuSeparator;
+  },
   get MenuSliderControl(): React.FunctionComponent<MenuSliderControlProps> { 
     return SystemDesign.MenuSliderControl;
   },
+  get SliderControl(): React.FunctionComponent<MenuSliderControlProps> { 
+    return SystemDesign.MenuSliderControl;
+  },
   get MenuSpinner(): React.FunctionComponent { 
+    return SystemDesign.MenuSpinner;
+  },
+  get Spinner(): React.FunctionComponent { 
     return SystemDesign.MenuSpinner;
   }
 };

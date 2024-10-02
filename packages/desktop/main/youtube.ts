@@ -27,11 +27,11 @@ const ADBLOCK_URL = "https://raw.githubusercontent.com/AdguardTeam/BlockYouTubeA
 
 const fetchScript = cache(async () => {
   const path = join(electron.app.getPath("appData"), ".vx", "adblock.js");
-  if (existsSync(path)) return fs.readFile(path, { encoding: "binary" });
+  if (existsSync(path)) return fs.readFile(path, { encoding: "utf-8" });
 
   const res = await request.text(ADBLOCK_URL);
 
-  await fs.writeFile(path, res.text);
+  await fs.writeFile(path, res.text, "utf-8");
 
   return res.text;
 });

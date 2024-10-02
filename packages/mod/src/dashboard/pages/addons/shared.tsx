@@ -1,5 +1,6 @@
+import { useCallback, useMemo, useState } from "react";
 import { internalDataStore } from "../../../api/storage";
-import { InternalStore } from "../../../util";
+import { createPersistence, InternalStore, Persistence } from "../../../util";
 
 export const NO_ADDONS = "/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg";
 export const NO_RESULTS = "/assets/45cd76fed34c8e398cc8.svg";
@@ -20,21 +21,57 @@ export function NoAddons(props: { message: string, img: string }) {
 
 type Pages = "plugins" | "themes" | "extensions" | "community-themes";
 
+type DataType = Partial<Record<Pages, string>>;
+
 class QueryStore extends InternalStore {
-  isPreserving() {
+  constructor() {
+    super();
+
+    this.persistence = createPersistence(this.getName());
+    if (this.persistence.has()) this.#data = this.persistence.get()!;
+  }
+
+  private persistence: Persistence<DataType>;
+
+  public isPreserving() {
     return internalDataStore.get("preserve-query") ?? true;
   }
 
-  #cache = new Map<Pages, string>();
-  get(page: Pages) {
+  #data: DataType = {};
+
+  private updateData(cb: (data: DataType) => void) {
+    const data = structuredClone(this.#data!);
+    cb(data);
+
+    this.#data = data;
+    this.persistence.set(data);
+    this.emit();
+  }
+
+  public get(page: Pages) {
     if (!this.isPreserving()) return "";
-    return this.#cache.get(page) ?? "";
+    return this.#data![page] || "";
   }
-  set(page: Pages, query: string) {
-    this.#cache.set(page, query);
+  public set(page: Pages, query: string) {
+    this.updateData((data) => data[page] = query);
   }
-  clear(page: Pages) {
-    this.#cache.set(page, "");
+  public clear(page: Pages) {
+    this.updateData((data) => delete data[page]);
+  }
+
+  public use(page: Pages) {
+    const [ query, setQuery ] = useState(() => this.get(page));
+
+    const newSetQuery = useCallback((value: string) => {
+      setQuery(value);
+      this.set(page, value);
+    }, [ ]);
+    const clear = useCallback(() => {
+      setQuery("");
+      this.clear(page);
+    }, [ ]);
+
+    return [ query, newSetQuery, clear ] as const;
   }
 }
 
