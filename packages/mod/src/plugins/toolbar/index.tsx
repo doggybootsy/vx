@@ -62,7 +62,7 @@ function GameToggleButton() {
             tooltipText={"Game Activity Toggle"}
             onClick={toggleActivity}
             icon={(props) => (
-                <Controller {...props} color={activityEnabled ? "var(--interactive-normal)" : "var(--red-430)"} />
+                <Controller {...props} color={activityEnabled ? "currentColor" : "var(--red-430)"} />
             )}
         />
     );
