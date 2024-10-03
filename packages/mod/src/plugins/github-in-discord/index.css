@@ -1,0 +1,145 @@
+:root {
+    --vx-background-default: #22272e;
+    --vx-background-secondary: #2d333b;
+    --vx-background-tertiary: rgba(99, 110, 123, 0.4);
+    --vx-text-default: #adbac7;
+    --vx-text-secondary: #768390;
+    --vx-accent-primary: #539bf5;
+    --vx-border-default: #444c56;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
+}
+
+.github-modal-close:hover {
+    background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));
+}
+.github-modal-file:hover {
+    background-color: var(--vx-background-secondary);
+}
+.github-modal-breadcrumb:hover {
+    background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));
+}
+
+.modal {
+    background-color: var(--vx-background-default);
+    color: var(--vx-text-default, #1F2328);
+    border: 1px solid var(--vx-border-default, #d0d7de);
+    border-radius: 6px;
+    box-shadow: var(--shadow-modal, 0 8px 24px rgba(140,149,159,0.2));
+    width: 100%;
+    max-width: 880px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--vx-border-default, #d0d7de);
+}
+
+.modal-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--vx-text-secondary, #656d76);
+    border-radius: 6px;
+}
+
+.modal-content {
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.breadcrumb-button {
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--vx-accent-primary, #0969da);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.breadcrumb-separator {
+    color: var(--vx-text-secondary, #656d76);
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--vx-text-default, #1F2328);
+    text-decoration: none;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+}
+
+.file-icon {
+    margin-right: 12px;
+    color: var(--vx-text-secondary, #656d76);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--vx-border-default, #d0d7de);
+    border-top-color: var(--vx-accent-primary, #0969da);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.repo-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.repo-stats span {
+    font-size: 14px;
+}
+
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -7,6 +7,7 @@ import {Button, Icons, SystemDesign, Tooltip} from "../../components";
 import {openNotification} from "../../api/notifications";
 import {proxyCache} from "../../util";
 import {useEffect, useState} from "../../fake_node_modules/react";
+import {Toolbar} from "./ToolbarService";
 
 const PanelMenu = getLazy(bySource('--custom-app-panels-height'));
 const PanelButton = getProxy(byStrings("{tooltipText:", ".Masks.PANEL_BUTTON,"));
@@ -19,23 +20,6 @@ const ProtoSync = proxyCache(() => {
     return webpackRequire!(mId)[match[1]];
 });
 const Controller = Icons.DiscordIcon.from("GameControllerIcon");
-
-class Toolbar {
-    private static items: { id: string; element: any }[] = [];
-
-    static addItem(id: string, element: any): string {
-        this.items.push({ id, element });
-        return id;
-    }
-
-    static removeItem(id: string) {
-        this.items = this.items.filter(item => item.id !== id);
-    }
-
-    static getItems() {
-        return this.items.map(item => item.element);
-    }
-}
 
 const inj = new Injector();
 
