@@ -2,6 +2,14 @@ import {definePlugin} from "../index";
 import {Developers} from "../../constants";
 import {byStrings, getProxy} from "@webpack";
 import * as styler from "./index.css?managed"
+import React from 'react';
+import {Toolbar} from "../toolbar/ToolbarService";
+import {MenuComponents} from "../../api/menu";
+import {openModal} from "../../api/modals";
+import GitHubModal from "./githubModal";
+import {getParents} from "../../util";
+import {createSettings, SettingType} from "../settings";
+import {Button, Flex, Icons, SystemDesign} from "../../components";
 
 interface GitHubUrlInfo {
     user: string;
@@ -9,13 +17,35 @@ interface GitHubUrlInfo {
     branch: string;
 }
 
-import React from 'react';
-import {Toolbar} from "../toolbar/ToolbarService";
-import {MenuComponents} from "../../api/menu";
-import {ModalComponents, openModal} from "../../api/modals";
-import GitHubModal from "./githubModal";
-import {getParents} from "../../util";
 const PanelButton = getProxy(byStrings("{tooltipText:", ".Masks.PANEL_BUTTON,"));
+
+export const settings = createSettings("github-in-discord", {
+    githubToken: {
+        type: SettingType.CUSTOM,
+        placeholder: "Github Token",
+        title: "Github Token",
+        description: "Your Github Account token. Used for increasing api rate limits and private repos",
+        default: "",
+        render(props: { setState(state: any): void; state: any }): React.ReactNode {
+            return <Flex>
+                <Flex.Child grow={1}>
+                    <div>
+                        <SystemDesign.TextInput
+                            minLength={1}
+                            value={props.state}
+                            onChange={(value: string) => props.setState(value)}
+                        />
+                    </div>
+                </Flex.Child>
+                <Flex.Child grow={0} shrink={0} onClick={() => props.setState("")}>
+                    <Button size={Button.Sizes.ICON}>
+                        <Icons.Refresh />
+                    </Button>
+                </Flex.Child>
+            </Flex>
+        }
+    },
+})
 
 function GithubButton() {
     return (   
@@ -64,6 +94,7 @@ export default definePlugin({
         );
     },
     styler,
+    settings,
     menus: {
         "message"(a, ctx) {
             console.log(a)

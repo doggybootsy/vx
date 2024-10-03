@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
 import {SystemDesign} from "../../components";
 import {Github} from "../../components/icons";
+import {settings} from "./index";
 
 interface GitHubUrlInfo {
     user: string;
@@ -61,8 +62,8 @@ class GitHubService {
             'Accept': 'application/vnd.github.v3+json'
         };
 
-        if (this.token) {
-            headers['Authorization'] = `token ${this.token}`;
+        if (settings.githubToken.get()) {
+            headers['Authorization'] = `Bearer ${settings.githubToken.get()}`;
         }
 
         const response = await fetch(`${overrideURL ? "" : this.baseURL}${endpoint}`, { headers });
