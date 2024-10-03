@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
 import {SystemDesign} from "../../components";
-
-const GitHubIcon = ({ size = 24, color = 'currentColor' }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        width={size}
-        height={size}
-        fill={color}
-    >
-        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.54 5.47 7.59.4.07.55-.17.55-.39 0-.19-.01-.69-.01-1.35-2.01.44-2.43-.48-2.58-.92-.09-.22-.47-.92-.81-1.11-.28-.16-.67-.56-.01-.57.62-.01 1.07.57 1.21.81.71 1.18 1.86.84 2.31.64.07-.51.28-.84.51-1.03-1.77-.2-2.89-.87-2.89-3.85 0-.85.3-1.55.79-2.1-.08-.2-.34-1.02.07-2.12 0 0 .66-.21 2.15.81A7.55 7.55 0 018 3.2c.66.003 1.32.09 1.93.26 1.48-1.02 2.15-.81 2.15-.81.41 1.1.15 1.92.07 2.12.49.55.79 1.25.79 2.1 0 2.99-1.12 3.65-2.89 3.85.3.27.59.8.59 1.62 0 1.17-.01 2.12-.01 2.41 0 .22.15.46.55.39C13.71 14.54 16 11.54 16 8c0-4.42-3.58-8-8-8z" />
-    </svg>
-);
+import {Github} from "../../components/icons";
 
 interface GitHubUrlInfo {
     user: string;
@@ -41,6 +30,11 @@ class GitHubService {
             label: `${fork.owner.login} / ${fork.name}`,
             value: fork
         }));
+    }
+
+    async getBranches(user: string, repo: string) {
+        const endpoint = `/repos/${user}/${repo}/branches`;
+        return this.fetchFromGitHub(endpoint);
     }
 
     async openFile(url: string)
@@ -103,8 +97,13 @@ class GitHubService {
 
     async getRepoInfo(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}`;
-        return this.fetchFromGitHub(endpoint);
+        const repoInfo = await this.fetchFromGitHub(endpoint);
+        return {
+            ...repoInfo,
+            default_branch: repoInfo.default_branch
+        };
     }
+
 
     async getContributors(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}/contributors`;
@@ -123,17 +122,25 @@ class GitHubService {
         } else if (typeof url === 'object' && url !== null) {
             repoInfo = url;
         } else {
-            throw new TypeError('url must be a string or a GitHubUrlInfo object') // this happened at some point? how idk. my coding doggy... haha get it ?
+            throw new TypeError('url must be a string or a GitHubUrlInfo object');
         }
 
-        const { user, repo, branch, path } = repoInfo;
+        const { user, repo, path } = repoInfo;
+
+        const repoDetails = await this.getRepoInfo(user, repo);
+        const defaultBranch = repoDetails.default_branch;
+
         let endpoint = `/repos/${user}/${repo}/contents`;
         if (path) {
             endpoint += `/${path}`;
         }
-        endpoint += `?ref=${branch}`;
 
-        return this.fetchFromGitHub(endpoint);
+        try {
+            return await this.fetchFromGitHub(`${endpoint}?ref=${defaultBranch}`);
+        } catch (error) {
+            console.error(`Error loading files from ${defaultBranch}:`, error);
+            throw error;
+        }
     }
 }
 
@@ -157,31 +164,55 @@ const GitHubModal = ({ url, onClose, props }) => {
     const [stars, setStars] = useState(0);
     const [contributors, setContributors] = useState(0);
     const [forksList, setForksList] = useState([]);
+    const [branches, setBranches] = useState([]);
+    const [selectedBranch, setSelectedBranch] = useState(repoInfo?.branch || 'main');
     const [selectedFork, setSelectedFork] = useState<GitHubUrlInfo>(null);
 
     const githubService = new GitHubService();
 
     useEffect(() => {
-        loadFiles('');
+        const parsedInfo = githubService.parseGitHubUrl(url);
+        if (parsedInfo) {
+            setRepoInfo(parsedInfo);
+            setSelectedBranch(parsedInfo.branch || 'main');
+            loadFiles(currentPath);
+        }
     }, [url]);
 
     const loadFiles = async (path) => {
         setLoading(true);
         try {
-            const parsedInfo = githubService.parseGitHubUrl(url);
-            if (!parsedInfo) throw new Error('Invalid GitHub URL');
+            let parsedInfo;
 
-            const updatedInfo = {
-                ...parsedInfo,
-                path: path || parsedInfo.path
-            };
-            setRepoInfo(updatedInfo);
+            if (selectedFork) {
+                parsedInfo = {
+                    user: selectedFork.user,
+                    repo: selectedFork.repo,
+                    branch: selectedBranch || selectedFork.branch,
+                    path: path || ''
+                };
+            } else {
+                parsedInfo = githubService.parseGitHubUrl(url);
+                if (!parsedInfo) throw new Error('Invalid GitHub URL');
+                parsedInfo = {
+                    ...parsedInfo,
+                    path: path || parsedInfo.path,
+                    branch: selectedBranch || parsedInfo.branch
+                };
+            }
 
-            const files = await githubService.getRepoFiles(updatedInfo);
+            setRepoInfo(parsedInfo);
+
+            const files = await githubService.getRepoFiles(parsedInfo);
             setFiles(Array.isArray(files) ? files : []);
 
-            const forks = await githubService.getForks(updatedInfo.user, updatedInfo.repo);
-            setForksList(forks);
+            if (!selectedFork) {
+                const forks = await githubService.getForks(parsedInfo.user, parsedInfo.repo);
+                setForksList(forks);
+
+                const branches = await githubService.getBranches(parsedInfo.user, parsedInfo.repo);
+                setBranches(branches.map(branch => ({ label: branch.name, value: branch.name })));
+            }
 
             updateBreadcrumbs(path);
         } catch (error) {
@@ -191,15 +222,45 @@ const GitHubModal = ({ url, onClose, props }) => {
     };
 
     const selectFork = async (forkInfo) => {
-        const forkedRepoUrl = `https://github.com/${forkInfo.owner.login}/${forkInfo.name}`;
-        setSelectedFork(githubService.parseGitHubUrl(forkedRepoUrl));
-        await loadFiles('');
+        if (!forkInfo) return;
+
+        const newForkInfo = {
+            user: forkInfo.owner.login,
+            repo: forkInfo.name,
+            branch: forkInfo.default_branch,
+            path: ''
+        };
+
+        setSelectedFork(newForkInfo);
+        setSelectedBranch(forkInfo.default_branch);
+
+        const parsedInfo = {
+            user: newForkInfo.user,
+            repo: newForkInfo.repo,
+            branch: forkInfo.default_branch,
+            path: ''
+        };
+
+        setLoading(true);
+        try {
+            const files = await githubService.getRepoFiles(parsedInfo);
+            setFiles(Array.isArray(files) ? files : []);
+
+            const branches = await githubService.getBranches(parsedInfo.user, parsedInfo.repo);
+            setBranches(branches.map(branch => ({ label: branch.name, value: branch.name })));
+
+            updateBreadcrumbs('');
+        } catch (error) {
+            console.error('Error loading fork:', error);
+        }
+        setLoading(false);
     };
 
 
-    const navigateToFolder = (path: React.SetStateAction<string>) => {
+
+    const navigateToFolder = async (path: React.SetStateAction<string>) => {
         setCurrentPath(path);
-        loadFiles(path);
+        await loadFiles(path);
     };
 
     const updateBreadcrumbs = (path: string) => {
@@ -211,11 +272,24 @@ const GitHubModal = ({ url, onClose, props }) => {
         setBreadcrumbs(newBreadcrumbs);
     };
 
+    /*
+    <SystemDesign.SearchableSelect
+                    placeholder={"Select Branch"}
+                    options={branches}
+                    value={selectedBranch}
+                    onChange={async (event: React.SetStateAction<string>) => {
+                        setSelectedBranch(event);
+                        await loadFiles(currentPath);
+                        await navigateToFolder('')
+                    }}
+                />
+     */
+    
     return (
         <ModalComponents.ModalRoot className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
             <ModalComponents.ModalHeader className="modal-header">
                 <div className="modal-header-title">
-                    <GitHubIcon size={24} />
+                    <Github size={24} />
                     <span>{repoInfo?.repo || 'GitHub Repository'}</span>
                 </div>
                 <div className="repo-stats">
@@ -223,11 +297,15 @@ const GitHubModal = ({ url, onClose, props }) => {
                     <span><strong>Forks:</strong> {forks}</span>
                     <span><strong>Contributors:</strong> {contributors}</span>
                 </div>
-                <SystemDesign.SearchableSelect placeholder={"Select Fork"} options={forksList} value={null} onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                    selectFork(event);
-                }} >
-
-                </SystemDesign.SearchableSelect>
+                <SystemDesign.SearchableSelect
+                    placeholder={"Select Fork"}
+                    options={forksList}
+                    value={selectedFork}
+                    onChange={async (event) => {
+                        const forkInfo = forksList.find(fork => fork.value.id === event.id)?.value;
+                        await selectFork(forkInfo);
+                    }}
+                />
                 <button className="close-button" onClick={onClose}>
                     &times;
                 </button>
@@ -235,7 +313,7 @@ const GitHubModal = ({ url, onClose, props }) => {
 
             <ModalComponents.Content className="modal-content">
                 <div className="breadcrumbs">
-                    <button className="breadcrumb-button" onClick={() => navigateToFolder('')}>
+                    <button className="breadcrumb-button" onClick={async () => await navigateToFolder('')}>
                         Home
                     </button>
                     {breadcrumbs.map((breadcrumb: any, index) => (
@@ -243,7 +321,7 @@ const GitHubModal = ({ url, onClose, props }) => {
                             <span className="breadcrumb-separator">/</span>
                             <button
                                 className="breadcrumb-button"
-                                onClick={() => navigateToFolder(breadcrumb.path)}
+                                onClick={async () => await navigateToFolder(breadcrumb.path)}
                             >
                                 {breadcrumb.label}
                             </button>
@@ -261,9 +339,9 @@ const GitHubModal = ({ url, onClose, props }) => {
                             <button
                                 key={file.path}
                                 className="file-item"
-                                onClick={() =>
+                                onClick={async () =>
                                     file.type === 'dir'
-                                        ? navigateToFolder(file.path)
+                                        ? await navigateToFolder(file.path)
                                         : githubService.openFile(file.url)
                                 }
                             >

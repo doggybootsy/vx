@@ -14,6 +14,7 @@ import {Toolbar} from "../toolbar/ToolbarService";
 import {MenuComponents} from "../../api/menu";
 import {ModalComponents, openModal} from "../../api/modals";
 import GitHubModal from "./githubModal";
+import {getParents} from "../../util";
 const PanelButton = getProxy(byStrings("{tooltipText:", ".Masks.PANEL_BUTTON,"));
 
 function GithubButton() {
@@ -66,7 +67,7 @@ export default definePlugin({
     menus: {
         "message"(a, ctx) {
             console.log(a)
-            const messageContent = a.message?.content;
+            const messageContent = a.target.tagName === "A" ? a.target?.href : getParents(a.target).querySelector("a")?.href ?? a.message?.content;
             const githubUrlRegex = /https:\/\/github.com\/\w+\/\w+(\/tree)?/;
 
             if (messageContent && githubUrlRegex.test(messageContent)) {
