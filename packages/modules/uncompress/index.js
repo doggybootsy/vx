@@ -598,7 +598,7 @@ const Asar = (function () {
 
 let loaded = false;
 export function archiveOpenFile(file, password, callback) {
-  if (loaded) return uncompressJS.archiveOpenFile(file, password, callback);
+  if (loaded) return void uncompressJS.archiveOpenFile(file, password, callback);
   
   uncompressJS.loadArchiveFormats([ "rar", "zip", "tar", "asar" ], () => {
     loaded = true;

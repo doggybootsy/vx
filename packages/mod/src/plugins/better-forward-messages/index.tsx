@@ -2,7 +2,7 @@ import { Message, User } from "discord-types/general";
 import { definePlugin } from "..";
 import { ErrorBoundary, UserPopout } from "../../components";
 import { Developers } from "../../constants";
-import { ChannelStore, Constants, MessageActions, MessageStore, PermissionStore, RelationshipStore, UserStore, useStateFromStores } from "@webpack/common";
+import { ChannelStore, Constants, MessageActions, MessageStore, NavigationUtils, PermissionStore, RelationshipStore, UserStore, useStateFromStores } from "@webpack/common";
 import { useEffect, useMemo, useState } from "react";
 import { focusStore, getDefaultAvatar } from "../../util";
 import * as styler from "./index.css?managed";
@@ -110,7 +110,22 @@ function ForwardedMessage({ message, original }: ForwardedMessageProps) {
   return (
     <div className="vx-bfm">
       <Author userId={forwardedMessage.author.id} />
-      {original}
+      <div 
+        className="vx-bfm-jump"
+        role="button"
+        aria-disabled={!canViewChannel}
+        onClick={() => {
+          if (!canViewChannel) return;
+          
+          NavigationUtils.transitionToGuild(
+            message.messageReference!.guild_id || null,
+            message.messageReference!.channel_id,
+            message.messageReference!.message_id
+          );
+        }}
+      >
+        {original}
+      </div>
     </div>
   )
 }
