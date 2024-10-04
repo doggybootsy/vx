@@ -3,7 +3,6 @@ import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
 import {Button, Flex, Markdown, SystemDesign} from "../../components";
 import {Github} from "../../components/icons";
 import {settings} from "./index";
-import MarkdownRenderer, {MarkdownParser} from "./markdownModule";
 
 interface GitHubUrlInfo {
     user: string;
@@ -207,6 +206,34 @@ const CloseIcon = () => (
     </svg>
 );
 
+export const themes = [
+    { label: 'Dark', themeName: 'dark', value: 'dark' },
+    { label: 'Light', themeName: 'light', value: 'light' },
+    { label: 'Contrast', themeName: 'contrast', value: 'contrast' },
+    { label: 'Dark High Contrast', themeName: 'dark-high-contrast', value: 'dark-high-contrast' },
+    { label: 'Light Colorblind', themeName: 'light-colorblind', value: 'light-colorblind' },
+    { label: 'Dark Colorblind', themeName: 'dark-colorblind', value: 'dark-colorblind' },
+    { label: 'Random 1', themeName: 'random-1', value: 'random-1' },
+    { label: 'Random 2', themeName: 'random-2', value: 'random-2' },
+    { label: 'Random 3', themeName: 'random-3', value: 'random-3' },
+    { label: 'Solarized Dark', themeName: 'solarized-dark', value: 'solarized-dark' },
+    { label: 'Solarized Light', themeName: 'solarized-light', value: 'solarized-light' },
+    { label: 'Monokai', themeName: 'monokai', value: 'monokai' },
+    { label: 'Dracula', themeName: 'dracula', value: 'dracula' },
+    { label: 'Oceanic', themeName: 'oceanic', value: 'oceanic' },
+    { label: 'Forest Green', themeName: 'forest-green', value: 'forest-green' },
+    { label: 'Lava Red', themeName: 'lava-red', value: 'lava-red' },
+    { label: 'Twilight', themeName: 'twilight', value: 'twilight' },
+    { label: 'Purple Night', themeName: 'purple-night', value: 'purple-night' },
+    { label: 'Retro Green', themeName: 'retro-green', value: 'retro-green' },
+    { label: 'Vibrant Yellow', themeName: 'vibrant-yellow', value: 'vibrant-yellow' },
+    { label: 'Cyberpunk', themeName: 'cyberpunk', value: 'cyberpunk' },
+    { label: 'Nebula', themeName: 'nebula', value: 'nebula' },
+    { label: 'Mint Green', themeName: 'mint-green', value: 'mint-green' },
+];
+
+
+
 const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [currentPath, setCurrentPath] = useState<string[]>([]);
     const [files, setFiles] = useState<FileItem[]>([]);
@@ -221,12 +248,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [pullRequests, setPullRequests] = useState([]);
     const [issues, setIssues] = useState([]);
     const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
+    const [theme, setTheme] = useState<'dark' | 'light'>(settings.theme.get())
 
     const githubService = new GitHubService();
 
     useEffect(() => {
         initializeRepo();
-    }, [url]);
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [url, theme]);
 
     const loadFiles = async (info: GitHubUrlInfo | null, path: string[] = []) => {
         try {
@@ -344,59 +373,71 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
 
     return (
         <ModalComponents.ModalRoot className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
-            <ModalComponents.ModalHeader className="modal-header">
-                <div className="modal-header-title">
+            <ModalComponents.ModalHeader className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Github />
                     <span>{repoInfo?.user}/{repoInfo?.repo}</span>
                 </div>
-                <button className="close-button github-modal-close" onClick={onClose}>
-                    <CloseIcon />
-                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <SystemDesign.SearchableSelect
+                        placeholder="Select Theme"
+                        options={themes}
+                        value={theme}
+                        onChange={(event: string | ((prevState: "dark" | "light") => "dark" | "light")) => {
+                            setTheme(event);
+                        }}
+                    />
+                    <button className="close-button github-modal-close" onClick={onClose}>
+                        <CloseIcon />
+                    </button>
+                </div>
             </ModalComponents.ModalHeader>
 
+
             <div className="modal-content">
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
-                    <SystemDesign.SearchableSelect
-                        placeholder="Select Fork"
-                        options={forksList}
-                        value={selectedFork}
-                        onChange={handleForkChange}
-                    />
-                    <SystemDesign.SearchableSelect
-                        placeholder="Select Branch"
-                        options={branches}
-                        value={selectedBranch}
-                        onChange={handleBranchChange}
-                    />
-                    <Button
-                        style={{ backgroundColor: "#1f6feb" }}
-                        onClick={() => setCurrentPage('files')}
-                        className={currentPage === 'files' ? 'active' : ''}
-                    >
-                        Files
-                    </Button>
-                    <Button
-                        style={{ backgroundColor: "#1f6feb" }}
-                        onClick={() => setCurrentPage('releases')}
-                        className={currentPage === 'releases' ? 'active' : ''}
-                    >
-                        Releases
-                    </Button>
-                    <Button
-                        style={{ backgroundColor: "#1f6feb" }}
-                        onClick={() => setCurrentPage('pullRequests')}
-                        className={currentPage === 'pullRequests' ? 'active' : ''}
-                    >
-                        Pull Requests
-                    </Button>
-                    <Button
-                        style={{ backgroundColor: "#1f6feb" }}
-                        onClick={() => setCurrentPage('issues')}
-                        className={currentPage === 'issues' ? 'active' : ''}
-                    >
-                        Issues
-                    </Button>
-                </div>
+                   <Flex align={Flex.Align.CENTER} gap={16}>
+                       <SystemDesign.SearchableSelect
+                           placeholder="Select Fork"
+                           options={forksList}
+                           value={selectedFork}
+                           onChange={handleForkChange}
+                       />
+                       <SystemDesign.SearchableSelect
+                           placeholder="Select Branch"
+                           options={branches}
+                           value={selectedBranch}
+                           onChange={handleBranchChange}
+                       />
+                       <Button
+                           style={{ backgroundColor: "#1f6feb" }}
+                           onClick={() => setCurrentPage('files')}
+                           className={currentPage === 'files' ? 'active' : ''}
+                       >
+                           Files
+                       </Button>
+                       <Button
+                           style={{ backgroundColor: "#1f6feb" }}
+                           onClick={() => setCurrentPage('releases')}
+                           className={currentPage === 'releases' ? 'active' : ''}
+                       >
+                           Releases
+                       </Button>
+                       <Button
+                           style={{ backgroundColor: "#1f6feb" }}
+                           onClick={() => setCurrentPage('pullRequests')}
+                           className={currentPage === 'pullRequests' ? 'active' : ''}
+                       >
+                           Pull Requests
+                       </Button>
+                       <Button
+                           style={{ backgroundColor: "#1f6feb" }}
+                           onClick={() => setCurrentPage('issues')}
+                           className={currentPage === 'issues' ? 'active' : ''}
+                       >
+                           Issues
+                       </Button>
+                   </Flex>
 
                 {loading ? (
                     <div className="loading-container">

@@ -18,6 +18,17 @@ interface SettingsCommon<T> {
   onChange?(state: T): void
 }
 
+type SelectSettingValue = string | { label: string, value: string };
+
+type SelectSettingGetValue<T extends SelectSettingValue> = T extends { label: string, value: string } ? T["value"] : T;
+
+interface SelectSettingType<V extends SelectSettingValue[]> extends SettingsCommon<SelectSettingGetValue<V[number]>> {
+  type: SettingType.SELECT;
+  choices: V;
+  placeholder?: string;
+}
+
+
 interface SwitchSettingType extends SettingsCommon<boolean> {
   type: SettingType.SWITCH,
   props?: Omit<FormSwitchProps, "disabled" | "value" | "onChange" | "children" | "note">
@@ -29,9 +40,6 @@ interface InputSettingType extends SettingsCommon<string> {
   type: SettingType.INPUT,
   placeholder: string
 }
-
-type SelectSettingValue = string | { label: string, value: string };
-type SelectSettingGetValue<T extends SelectSettingValue> = T extends { label: string, value: string } ? T["value"] : T;
 
 interface SelectSettingType<V extends SelectSettingValue[]> extends SettingsCommon<SelectSettingGetValue<V[number]>> {
   type: SettingType.SELECT,
@@ -46,7 +54,12 @@ export interface CustomSettingType<V> {
   onChange?(settings: V): void
 }
 
-type SettingTypes = SwitchSettingType | ColorSettingType | InputSettingType | SelectSettingType<string[]> | CustomSettingType<any>;
+type SettingTypes =
+    | SwitchSettingType
+    | ColorSettingType
+    | InputSettingType
+    | SelectSettingType<string[] | { label: string, value: string }[]>
+    | CustomSettingType<any>;
 
 type GetCustomSettingType<T extends CustomSettingType<any>> = T extends CustomSettingType<infer P> ? P : never;
 type GetSettingType<T extends SettingTypes> = T extends SwitchSettingType ? boolean : T extends ColorSettingType ? number : T extends InputSettingType ? string : T extends SelectSettingType<string[]> ? SelectSettingGetValue<T["choices"][number]> : T extends CustomSettingType<any> ? GetCustomSettingType<T> : unknown;
@@ -118,30 +131,36 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
     };
   }
   if (element.type === SettingType.SELECT) {
-    const $setting = element as SelectSettingType<string[]>;
+    const $setting = element as SelectSettingType<string[] | { label: string, value: string }[]>;
 
-    const options = $setting.choices.map((choice) => ({ label: choice, value: choice }));
+    const options = $setting.choices.map((choice) => {
+      if (typeof choice === "string") {
+        return { label: choice, value: choice };
+      }
+      return { label: choice.label, value: choice.value };
+    });
 
     return () => {
       const value = setting.use() as string;
       const isDisabled = typeof $setting.disabled === "function" ? $setting.disabled(settings) : false;
 
       return (
-        <FormBody title={element.title} description={element.description}>
-          <SystemDesign.Select 
-            options={options}
-            placeholder={$setting.placeholder}
-            select={set}
-            serialize={(m: any) => String(m)}
-            isSelected={(item: string) => item === value}
-            value={value}
-            isDisabled={isDisabled}
-            closeOnSelect
-          />
-        </FormBody>
+          <FormBody title={element.title} description={element.description}>
+            <SystemDesign.Select
+                options={options}
+                placeholder={$setting.placeholder}
+                select={set}
+                serialize={(m: any) => String(m)}
+                isSelected={(item: string) => item === value}
+                value={value}
+                isDisabled={isDisabled}
+                closeOnSelect
+            />
+          </FormBody>
       )
     };
   }
+
   if (false && element.type === SettingType.INPUT) {
     const $setting = element as InputSettingType;
 

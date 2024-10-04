@@ -6,7 +6,7 @@ import React from 'react';
 import {Toolbar} from "../toolbar/ToolbarService";
 import {MenuComponents} from "../../api/menu";
 import {openModal} from "../../api/modals";
-import GitHubModal from "./githubModal";
+import GitHubModal, {themes} from "./githubModal";
 import {getParents} from "../../util";
 import {createSettings, SettingType} from "../settings";
 import {Button, Flex, Icons, SystemDesign} from "../../components";
@@ -45,6 +45,13 @@ export const settings = createSettings("github-in-discord", {
             </Flex>
         }
     },
+    theme: {
+        type: SettingType.SELECT,
+        default: "dark",
+        choices: themes,
+        title: "Github Theme",
+        placeholder: "Select theme",
+    }
 })
 
 function GithubButton() {

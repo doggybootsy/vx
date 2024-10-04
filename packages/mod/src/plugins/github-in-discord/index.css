@@ -1,4 +1,5 @@
 :root {
+    /* Dark Mode (Default) */
     --vx-background-default: #22272e;
     --vx-background-secondary: #2d333b;
     --vx-background-tertiary: rgba(99, 110, 123, 0.4);
@@ -9,6 +10,293 @@
     --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
     --vx-button-primary-bgColor: #1f6feb;
 }
+
+/* Light Mode */
+[data-theme="light"] {
+    --vx-background-default: #ffffff;
+    --vx-background-secondary: #f6f8fa;
+    --vx-background-tertiary: rgba(208, 215, 222, 0.4);
+    --vx-text-default: #24292e;
+    --vx-text-secondary: #586069;
+    --vx-accent-primary: #0366d6;
+    --vx-border-default: #e1e4e8;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.12);
+    --vx-button-primary-bgColor: #0366d6;
+}
+
+/* Contrast Mode */
+[data-theme="contrast"] {
+    --vx-background-default: #121212;
+    --vx-background-secondary: #1e1e1e;
+    --vx-background-tertiary: rgba(50, 50, 50, 0.4);
+    --vx-text-default: #ffffff;
+    --vx-text-secondary: #b3b3b3;
+    --vx-accent-primary: #bb86fc;
+    --vx-border-default: #333333;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.48);
+    --vx-button-primary-bgColor: #6200ea;
+}
+
+/* Dark High Contrast Mode */
+[data-theme="dark-high-contrast"] {
+    --vx-background-default: #000000;
+    --vx-background-secondary: #1a1a1a;
+    --vx-background-tertiary: rgba(50, 50, 50, 0.4);
+    --vx-text-default: #ffffff;
+    --vx-text-secondary: #cccccc;
+    --vx-accent-primary: #ff6f61;
+    --vx-border-default: #444444;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.64);
+    --vx-button-primary-bgColor: #ff6f61;
+}
+
+/* Light Colorblind Mode */
+[data-theme="light-colorblind"] {
+    --vx-background-default: #ffffff;
+    --vx-background-secondary: #f6f8fa;
+    --vx-background-tertiary: rgba(208, 215, 222, 0.4);
+    --vx-text-default: #24292e;
+    --vx-text-secondary: #586069;
+    --vx-accent-primary: #008080;
+    --vx-border-default: #e1e4e8;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.12);
+    --vx-button-primary-bgColor: #008080;
+}
+
+/* Dark Colorblind Mode */
+[data-theme="dark-colorblind"] {
+    --vx-background-default: #22272e;
+    --vx-background-secondary: #2d333b;
+    --vx-background-tertiary: rgba(99, 110, 123, 0.4);
+    --vx-text-default: #adbac7;
+    --vx-text-secondary: #768390;
+    --vx-accent-primary: #008080;
+    --vx-border-default: #444c56;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
+    --vx-button-primary-bgColor: #008080;
+}
+
+/* Random Theme 1 */
+[data-theme="random-1"] {
+    --vx-background-default: #ffcccb;
+    --vx-background-secondary: #ffb6c1;
+    --vx-background-tertiary: rgba(255, 182, 193, 0.4);
+    --vx-text-default: #8b0000;
+    --vx-text-secondary: #a52a2a;
+    --vx-accent-primary: #ff69b4;
+    --vx-border-default: #ff1493;
+    --vx-shadow-modal: 0 8px 24px rgba(255, 20, 147, 0.32);
+    --vx-button-primary-bgColor: #ff1493;
+}
+
+/* Random Theme 2 */
+[data-theme="random-2"] {
+    --vx-background-default: #add8e6;
+    --vx-background-secondary: #87ceeb;
+    --vx-background-tertiary: rgba(135, 206, 235, 0.4);
+    --vx-text-default: #00008b;
+    --vx-text-secondary: #191970;
+    --vx-accent-primary: #00bfff;
+    --vx-border-default: #1e90ff;
+    --vx-shadow-modal: 0 8px 24px rgba(30, 144, 255, 0.32);
+    --vx-button-primary-bgColor: #1e90ff;
+}
+
+/* Random Theme 3 */
+[data-theme="random-3"] {
+    --vx-background-default: #f0e68c;
+    --vx-background-secondary: #fffacd;
+    --vx-background-tertiary: rgba(255, 250, 205, 0.4);
+    --vx-text-default: #800000;
+    --vx-text-secondary: #a52a2a;
+    --vx-accent-primary: #ffd700;
+    --vx-border-default: #daa520;
+    --vx-shadow-modal: 0 8px 24px rgba(218, 165, 32, 0.32);
+    --vx-button-primary-bgColor: #daa520;
+}
+
+/* Solarized Dark Theme */
+[data-theme="solarized-dark"] {
+    --vx-background-default: #002b36;
+    --vx-background-secondary: #073642;
+    --vx-background-tertiary: rgba(0, 43, 54, 0.4);
+    --vx-text-default: #839496;
+    --vx-text-secondary: #93a1a1;
+    --vx-accent-primary: #268bd2;
+    --vx-border-default: #586e75;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #268bd2;
+}
+
+/* Solarized Light Theme */
+[data-theme="solarized-light"] {
+    --vx-background-default: #fdf6e3;
+    --vx-background-secondary: #eee8d5;
+    --vx-background-tertiary: rgba(238, 232, 213, 0.4);
+    --vx-text-default: #657b83;
+    --vx-text-secondary: #839496;
+    --vx-accent-primary: #268bd2;
+    --vx-border-default: #93a1a1;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.2);
+    --vx-button-primary-bgColor: #268bd2;
+}
+
+/* Monokai Theme */
+[data-theme="monokai"] {
+    --vx-background-default: #272822;
+    --vx-background-secondary: #3e3d32;
+    --vx-background-tertiary: rgba(62, 61, 50, 0.4);
+    --vx-text-default: #f8f8f2;
+    --vx-text-secondary: #75715e;
+    --vx-accent-primary: #66d9ef;
+    --vx-border-default: #f92672;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.3);
+    --vx-button-primary-bgColor: #f92672;
+}
+
+/* Dracula Theme */
+[data-theme="dracula"] {
+    --vx-background-default: #282a36;
+    --vx-background-secondary: #44475a;
+    --vx-background-tertiary: rgba(68, 71, 90, 0.4);
+    --vx-text-default: #f8f8f2;
+    --vx-text-secondary: #6272a4;
+    --vx-accent-primary: #ff79c6;
+    --vx-border-default: #bd93f9;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #ff79c6;
+}
+
+/* Oceanic Theme */
+[data-theme="oceanic"] {
+    --vx-background-default: #1b2b34;
+    --vx-background-secondary: #343d46;
+    --vx-background-tertiary: rgba(27, 43, 52, 0.4);
+    --vx-text-default: #d8dee9;
+    --vx-text-secondary: #a7adba;
+    --vx-accent-primary: #6699cc;
+    --vx-border-default: #4f5b66;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #6699cc;
+}
+
+/* Forest Green Theme */
+[data-theme="forest-green"] {
+    --vx-background-default: #2b4d3f;
+    --vx-background-secondary: #395c4a;
+    --vx-background-tertiary: rgba(59, 92, 74, 0.4);
+    --vx-text-default: #cdeccd;
+    --vx-text-secondary: #6d9070;
+    --vx-accent-primary: #4caf50;
+    --vx-border-default: #1b5e20;
+    --vx-shadow-modal: 0 8px 24px rgba(27, 94, 32, 0.32);
+    --vx-button-primary-bgColor: #4caf50;
+}
+
+/* Lava Red Theme */
+[data-theme="lava-red"] {
+    --vx-background-default: #7f1d1d;
+    --vx-background-secondary: #991b1b;
+    --vx-background-tertiary: rgba(153, 27, 27, 0.4);
+    --vx-text-default: #fcd5d5;
+    --vx-text-secondary: #f87171;
+    --vx-accent-primary: #ef4444;
+    --vx-border-default: #b91c1c;
+    --vx-shadow-modal: 0 8px 24px rgba(185, 28, 28, 0.32);
+    --vx-button-primary-bgColor: #ef4444;
+}
+
+/* Twilight Theme */
+[data-theme="twilight"] {
+    --vx-background-default: #3a3a3a;
+    --vx-background-secondary: #4d4d4d;
+    --vx-background-tertiary: rgba(77, 77, 77, 0.4);
+    --vx-text-default: #e5e5e5;
+    --vx-text-secondary: #cccccc;
+    --vx-accent-primary: #ff6b6b;
+    --vx-border-default: #5c5c5c;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.32);
+    --vx-button-primary-bgColor: #ff6b6b;
+}
+
+/* Purple Night Theme */
+[data-theme="purple-night"] {
+    --vx-background-default: #2d006a;
+    --vx-background-secondary: #39008c;
+    --vx-background-tertiary: rgba(57, 0, 140, 0.4);
+    --vx-text-default: #f3e8ff;
+    --vx-text-secondary: #c3abf5;
+    --vx-accent-primary: #9f7aea;
+    --vx-border-default: #6b46c1;
+    --vx-shadow-modal: 0 8px 24px rgba(107, 70, 193, 0.32);
+    --vx-button-primary-bgColor: #9f7aea;
+}
+
+/* Retro Green Theme */
+[data-theme="retro-green"] {
+    --vx-background-default: #004d00;
+    --vx-background-secondary: #006600;
+    --vx-background-tertiary: rgba(0, 77, 0, 0.4);
+    --vx-text-default: #b3ffb3;
+    --vx-text-secondary: #99ff99;
+    --vx-accent-primary: #33cc33;
+    --vx-border-default: #009900;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 153, 0, 0.32);
+    --vx-button-primary-bgColor: #33cc33;
+}
+
+/* Vibrant Yellow Theme */
+[data-theme="vibrant-yellow"] {
+    --vx-background-default: #ffea00;
+    --vx-background-secondary: #ffec3d;
+    --vx-background-tertiary: rgba(255, 236, 61, 0.4);
+    --vx-text-default: #3d3d3d;
+    --vx-text-secondary: #5a5a5a;
+    --vx-accent-primary: #ffc107;
+    --vx-border-default: #ffd700;
+    --vx-shadow-modal: 0 8px 24px rgba(255, 215, 0, 0.32);
+    --vx-button-primary-bgColor: #ffc107;
+}
+
+/* Cyberpunk Theme */
+[data-theme="cyberpunk"] {
+    --vx-background-default: #0d0d0d;
+    --vx-background-secondary: #1a1a1a;
+    --vx-background-tertiary: rgba(26, 26, 26, 0.4);
+    --vx-text-default: #f0f;
+    --vx-text-secondary: #ff00ff;
+    --vx-accent-primary: #00ffff;
+    --vx-border-default: #ff00ff;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 255, 255, 0.5);
+    --vx-button-primary-bgColor: #00ffff;
+}
+
+/* Nebula Theme */
+[data-theme="nebula"] {
+    --vx-background-default: #1b0030;
+    --vx-background-secondary: #2e0047;
+    --vx-background-tertiary: rgba(30, 0, 70, 0.4);
+    --vx-text-default: #ebccff;
+    --vx-text-secondary: #d1b3ff;
+    --vx-accent-primary: #ff66ff;
+    --vx-border-default: #800080;
+    --vx-shadow-modal: 0 8px 24px rgba(128, 0, 128, 0.32);
+    --vx-button-primary-bgColor: #ff66ff;
+}
+
+/* Mint Green Theme */
+[data-theme="mint-green"] {
+    --vx-background-default: #98ff98;
+    --vx-background-secondary: #adffad;
+    --vx-background-tertiary: rgba(173, 255, 173, 0.4);
+    --vx-text-default: #006400;
+    --vx-text-secondary: #008000;
+    --vx-accent-primary: #32cd32;
+    --vx-border-default: #228b22;
+    --vx-shadow-modal: 0 8px 24px rgba(34, 139, 34, 0.32);
+    --vx-button-primary-bgColor: #32cd32;
+}
+
 
 .github-modal-close:hover {
     background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));
