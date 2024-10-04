@@ -4,6 +4,7 @@ import { Developers } from "../../constants";
 import { ZipButton } from "./button";
 
 import * as styler from "./index.css?managed";
+import { escapeRegex } from "../../util";
 
 const archiveFileTypes = [
   "zip",
@@ -12,7 +13,7 @@ const archiveFileTypes = [
   "tar",
   "tar.gz",
   "asar"
-].map((value) => value.split(".").join("\\."));
+].map((value) => escapeRegex(value).source);
 
 const FILE_REGEX = new RegExp(`\\.(${archiveFileTypes.join("|")})($|\\?|#)`);
 

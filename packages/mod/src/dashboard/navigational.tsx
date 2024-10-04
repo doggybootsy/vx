@@ -8,7 +8,6 @@ import { IS_DESKTOP } from "vx:self";
 const scrollerClasses = getProxyByKeys([ "auto", "customTheme", "scrolling" ]);
 
 const CategoryItem = getProxy<{ default: any }>(bySource(".nameAndDecorators,children:[", "aria-selected"), { searchExports: false });
-const categoryClasses = getProxyByKeys([ "itemInner", "categoryItem", "selectedCategoryItem"])
 
 __self__.isVXPath = () => location.pathname.startsWith("/vx");
 __self__.NavigationPanel = function NavigationPanel() {
@@ -27,9 +26,6 @@ __self__.NavigationPanel = function NavigationPanel() {
           }
         }}
         selected={location.pathname === "/vx/home"}
-        className={categoryClasses.categoryItem}
-        selectedClassName={categoryClasses.selectedCategoryItem}
-        innerClassName={categoryClasses.innerClassName}
         onClick={() => {
           NavigationUtils.transitionTo("/vx/home");
         }}
@@ -46,9 +42,6 @@ __self__.NavigationPanel = function NavigationPanel() {
           }
         }}
         selected={location.pathname === "/vx/plugins"}
-        className={categoryClasses.categoryItem}
-        selectedClassName={categoryClasses.selectedCategoryItem}
-        innerClassName={categoryClasses.innerClassName}
         onClick={() => {
           NavigationUtils.transitionTo("/vx/plugins");
         }}
@@ -65,9 +58,6 @@ __self__.NavigationPanel = function NavigationPanel() {
           }
         }}
         selected={location.pathname === "/vx/themes"}
-        className={categoryClasses.categoryItem}
-        selectedClassName={categoryClasses.selectedCategoryItem}
-        innerClassName={categoryClasses.innerClassName}
         onClick={() => {
           NavigationUtils.transitionTo("/vx/themes");
         }}
@@ -88,9 +78,6 @@ __self__.NavigationPanel = function NavigationPanel() {
           }
         }}
         selected={location.pathname === "/vx/community/themes"}
-        className={categoryClasses.categoryItem}
-        selectedClassName={categoryClasses.selectedCategoryItem}
-        innerClassName={categoryClasses.innerClassName}
         onClick={() => {
           NavigationUtils.transitionTo("/vx/community/themes");
         }}
@@ -112,9 +99,6 @@ __self__.NavigationPanel = function NavigationPanel() {
               }
             }}
             selected={location.pathname === "/vx/extensions"}
-            className={categoryClasses.categoryItem}
-            selectedClassName={categoryClasses.selectedCategoryItem}
-            innerClassName={categoryClasses.innerClassName}
             onClick={() => {
               NavigationUtils.transitionTo("/vx/extensions");
             }}

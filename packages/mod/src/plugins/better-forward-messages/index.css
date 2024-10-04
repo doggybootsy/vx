@@ -35,3 +35,10 @@ img.vx-bfm-avatar {
   -webkit-text-decoration: underline;
   text-decoration: underline;
 }
+
+.vx-bfm-jump[aria-disabled="false"] {
+  cursor: pointer;
+}
+.vx-bfm-jump[aria-disabled="true"] {
+  cursor: not-allowed;
+}

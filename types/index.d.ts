@@ -155,10 +155,10 @@ interface DiscordNative {
 
 interface ExtensionNative {
   id: string,
-  // Not in the public release!
-  fetchArrayBuffer?(input: string): Promise<ArrayBuffer>,
   update(release: Git.Release): void,
-  getCommunityThemes(): Promise<BetterDiscord.Addon[]>
+  getCommunityThemes(): Promise<BetterDiscord.Addon[]>,
+  fetchArrayBuffer(input: string): Promise<ArrayBuffer>,
+  version: string
 }
 
 type NativeObject = import("../packages/desktop/preload/native").NativeObject;
