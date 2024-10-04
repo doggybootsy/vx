@@ -1,6 +1,7 @@
 import { Icons } from "../../components";
 
 import React from 'react';
+import {CodeGithubIcon, CodeSmall} from "../../components/icons";
 
 export const FileIcon = ({ type, name }) => {
     const icons = {
@@ -12,14 +13,14 @@ export const FileIcon = ({ type, name }) => {
         '.avi': <Icons.Movie />,
         '.mov': <Icons.Movie />,
         '.mkv': <Icons.Movie />,
-        '.js': <Icons.Code />,
-        '.jsx': <Icons.Code />,
-        '.ts': <Icons.Code />,
-        '.tsx': <Icons.Code />,
-        '.cpp': <Icons.Code />,
-        '.cs': <Icons.Code />,
-        '.java': <Icons.Code />,
-        '.py': <Icons.Code />,
+        '.js': <Icons.CodeSmall />,
+        '.jsx': <Icons.CodeSmall />,
+        '.ts': <Icons.CodeSmall />,
+        '.tsx': <Icons.CodeSmall />,
+        '.cpp': <Icons.CodeSmall />,
+        '.cs': <Icons.CodeSmall />,
+        '.java': <Icons.CodeSmall />,
+        '.py': <Icons.CodeSmall />,
     };
 
     const ext = name.slice(name.lastIndexOf('.')); // Get the file extension

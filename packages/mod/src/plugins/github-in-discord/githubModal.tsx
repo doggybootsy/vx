@@ -476,11 +476,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                             className="file-item github-modal-file"
                                             onClick={() => handleFileClick(file)}
                                         >
-                                            <FileIcon type={file.type} name={file.name}/>
-                                            {file.name}
+                                            <div className="file-item-content">
+                                                <FileIcon type={file.type} name={file.name}/>
+                                                <span>{file.name}</span>
+                                            </div>
                                         </button>
                                     ))}
                                 </div>
+
 
                                 <div className="repo-stats">
                                     <span>{contributors.length} Contributors</span>
