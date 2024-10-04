@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
-import {Button, Flex, SystemDesign} from "../../components";
+import {Button, Flex, Markdown, SystemDesign} from "../../components";
 import {Github} from "../../components/icons";
 import {settings} from "./index";
+import MarkdownRenderer, {MarkdownParser} from "./markdownModule";
 
 interface GitHubUrlInfo {
     user: string;
@@ -367,6 +368,34 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         value={selectedBranch}
                         onChange={handleBranchChange}
                     />
+                    <Button
+                        style={{ backgroundColor: "#1f6feb" }}
+                        onClick={() => setCurrentPage('files')}
+                        className={currentPage === 'files' ? 'active' : ''}
+                    >
+                        Files
+                    </Button>
+                    <Button
+                        style={{ backgroundColor: "#1f6feb" }}
+                        onClick={() => setCurrentPage('releases')}
+                        className={currentPage === 'releases' ? 'active' : ''}
+                    >
+                        Releases
+                    </Button>
+                    <Button
+                        style={{ backgroundColor: "#1f6feb" }}
+                        onClick={() => setCurrentPage('pullRequests')}
+                        className={currentPage === 'pullRequests' ? 'active' : ''}
+                    >
+                        Pull Requests
+                    </Button>
+                    <Button
+                        style={{ backgroundColor: "#1f6feb" }}
+                        onClick={() => setCurrentPage('issues')}
+                        className={currentPage === 'issues' ? 'active' : ''}
+                    >
+                        Issues
+                    </Button>
                 </div>
 
                 {loading ? (
@@ -420,36 +449,6 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     <span>{forksList.length} Forks</span>
                                     <span>{branches.length} Branches</span>
                                 </div>
-                                <Flex>
-                                    <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
-                                        onClick={() => setCurrentPage('files')}
-                                        className={currentPage === 'files' ? 'active' : ''}
-                                    >
-                                        Files
-                                    </Button>
-                                    <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
-                                        onClick={() => setCurrentPage('releases')}
-                                        className={currentPage === 'releases' ? 'active' : ''}
-                                    >
-                                        Releases
-                                    </Button>
-                                    <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
-                                        onClick={() => setCurrentPage('pullRequests')}
-                                        className={currentPage === 'pullRequests' ? 'active' : ''}
-                                    >
-                                        Pull Requests
-                                    </Button>
-                                    <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
-                                        onClick={() => setCurrentPage('issues')}
-                                        className={currentPage === 'issues' ? 'active' : ''}
-                                    >
-                                        Issues
-                                    </Button>
-                                </Flex>
                             </>
                         )}
 
@@ -461,15 +460,24 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                             <h4 className="release-title">{release.name}</h4>
                                             <span className="release-tag">{release.tag_name}</span>
                                         </div>
-                                        <p>{release.body}</p>
-                                        <a 
-                                           className="asset-link">
+                                        <Markdown text={release?.body ?? ""}/>
+                                        <a
+                                            href={release.html_url}
+                                            className="asset-link"
+                                            target="_blank"
+                                            rel="noopener noreferrer">
                                             View on GitHub
                                         </a>
                                         <div className="assets-section">
-                                            {release.assets.map((asset: { id: React.Key | null | undefined; browser_download_url: string | URL | undefined; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; size: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+                                            {release.assets.map((asset: {
+                                                id: React.Key | null | undefined;
+                                                browser_download_url: string | URL | undefined;
+                                                name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined;
+                                                size: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined;
+                                            }) => (
                                                 <div className="asset-item" key={asset.id}>
-                                                    <a onClick={() => downloadAsset(asset.browser_download_url)} className="asset-link">
+                                                    <a onClick={() => downloadAsset(asset.browser_download_url)}
+                                                       className="asset-link">
                                                         <span className="asset-name">{asset.name}</span>
                                                         <span className="asset-size">{asset.size} KB</span>
                                                     </a>
@@ -502,15 +510,19 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                 {pullRequests.map((pr: any) => (
                                     <div key={pr.id} className="pr-item">
                                         <h4 className="pr-title">{pr.title}</h4>
-                                        <p>{pr.body}</p>
+                                        <Markdown text={pr?.body ?? ""}/>
                                         <a
-                                           className="pr-link">
+                                            href={pr.html_url}
+                                            className="pr-link"
+                                            target="_blank"
+                                            rel="noopener noreferrer">
                                             View on GitHub
                                         </a>
+
                                     </div>
                                 ))}
                                 <Button
-                                    style={{ backgroundColor: "#1f6feb" }}
+                                    style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
                                     className="back-to-repo-button"
                                 >
@@ -524,15 +536,19 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                 {issues.map((issue: any) => (
                                     <div key={issue.id} className="issue-item">
                                         <h4 className="issue-title">{issue.title}</h4>
-                                        <p>{issue.body}</p>
+                                        <Markdown text={issue?.body ?? ""}/>
                                         <a
-                                           className="issue-link">
+                                            href={issue.html_url}
+                                            className="issue-link"
+                                            target="_blank"
+                                            rel="noopener noreferrer">
                                             View on GitHub
                                         </a>
+
                                     </div>
                                 ))}
                                 <Button
-                                    style={{ backgroundColor: "#1f6feb" }}
+                                    style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
                                     className="back-to-repo-button"
                                 >

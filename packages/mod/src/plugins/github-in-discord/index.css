@@ -36,7 +36,7 @@
 .modal-content {
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1); 
+    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
 .modal-content::-webkit-scrollbar {
@@ -160,7 +160,6 @@
 .repo-stats span {
     font-size: 14px;
 }
-
 
 @keyframes spin {
     to {
@@ -333,5 +332,89 @@
 }
 
 .issue-item .issue-link:hover {
+    text-decoration: underline;
+}
+
+.vx-markdown-paragraph {
+    margin: 1em 0;
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+.vx-markdown-header {
+    margin: 0.5em 0;
+    font-weight: bold;
+}
+
+.vx-markdown-header-1 {
+    font-size: 2em;
+}
+
+.vx-markdown-header-2 {
+    font-size: 1.5em;
+}
+
+.vx-markdown-header-3 {
+    font-size: 1.17em;
+}
+
+.vx-markdown-blockquote {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    border-left: 4px solid #ccc;
+    background-color: var(--vx-background-secondary);
+    font-style: italic;
+}
+
+.vx-markdown-strikethrough {
+    text-decoration: line-through;
+}
+
+.vx-markdown-code-block {
+    background-color: #f4f4f4;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.vx-markdown-inline-code {
+    background-color: var(--vx-background-default);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.vx-markdown-strong {
+    font-weight: bold;
+}
+
+.vx-markdown-em {
+    font-style: italic;
+}
+
+.vx-markdown-list {
+    list-style-type: disc;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.vx-markdown-ordered-list {
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.vx-markdown-image {
+    max-width: 100%;
+    height: auto;
+    margin: 1em 0;
+}
+
+.vx-markdown-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.vx-markdown-link:hover {
     text-decoration: underline;
 }
