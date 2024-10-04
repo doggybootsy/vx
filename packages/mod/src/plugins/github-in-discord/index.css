@@ -297,9 +297,13 @@
     --vx-button-primary-bgColor: #32cd32;
 }
 
-.vx-gm-button
-{
+#app-mount .vx-gm-button {
     background-color: var(--vx-button-primary-bgColor);
+    transition: background-color 0.3s ease; 
+}
+
+#app-mount .vx-gm-button:hover {
+    filter: brightness(0.85); 
 }
 
 .github-modal-close:hover {
