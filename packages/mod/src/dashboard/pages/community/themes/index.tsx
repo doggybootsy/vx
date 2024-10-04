@@ -409,6 +409,7 @@ function CommunityAddonCard({ addon }: { addon: Addon }) {
                   danger: true,
                   onConfirm() {
                     themeStore.delete(addon.filename);
+                    setDownloadState(0);
                   }
                 });
               }}>

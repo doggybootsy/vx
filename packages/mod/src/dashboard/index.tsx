@@ -132,6 +132,17 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
     )
   }, [ ]);
 
+  // Add electron to the list of versions | This is because discord doesn't
+  const extensionVersionSection = useMemo(() => {
+    if (typeof window.VXExtension?.version !== "string") return null;
+
+    return (
+      <div className="vx-section-version">
+        <span>{`Extension ${window.VXExtension.version}`}</span>
+      </div>
+    )
+  }, [ ]);
+
   return (
     <div className={className([ "vx-section-info", isMenu && "vx-section-info-menu" ])}>
       <div className="vx-section-version">
@@ -142,6 +153,7 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
           )}
         </Tooltip>
       </div>
+      {extensionVersionSection}
       {git.exists ? (
         <div 
           className="vx-section-git"

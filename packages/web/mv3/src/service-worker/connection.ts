@@ -23,7 +23,7 @@ function executeVXScript(connection: Connection) {
 
   logger.log(`Injecting script on tab id '${connection.tabId}'`);
 
-  connection.eval((id: string, js: string) => {
+  connection.eval((id: string, js: string, version: string) => {
     function getCommunityThemes(): Promise<BetterDiscord.Addon[]> {
       return new Promise((resolve) => {
         function listener(event: MessageEvent) {
@@ -79,7 +79,8 @@ function executeVXScript(connection: Connection) {
         });
       },
       fetchArrayBuffer,
-      getCommunityThemes
+      getCommunityThemes,
+      version
     };
 
     if (location.pathname.startsWith("/vx")) {
@@ -96,7 +97,7 @@ function executeVXScript(connection: Connection) {
     }    
 
     (0, eval)(js);
-  }, [ browser.runtime.id, assets.getAsset("js") ]);
+  }, [ browser.runtime.id, assets.getAsset("js"), browser.runtime.getManifest().version ]);
 
   connection.insertCSS(assets.getAsset("css"));
 }

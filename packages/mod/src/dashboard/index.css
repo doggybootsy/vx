@@ -166,7 +166,7 @@
 
 .vx-dashboard-navigation {
   overflow: hidden scroll;
-  padding-right: 0px;
+  padding-left: 8px;
 }
 
 .theme-dark .vx-dashboard-navigation {
