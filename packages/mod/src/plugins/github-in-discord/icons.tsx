@@ -1,8 +1,6 @@
 import { Icons } from "../../components";
 
-import {IconProps} from "../../components/icons";
-
-export function CodeFile(props: IconProps) {
+export function CodeFile() {
     return (
         <svg className="file-icon" viewBox="0 0 16 16" fill="currentColor">
             <path
@@ -29,7 +27,31 @@ export const FileIcon = ({ type, name }) => {
         '.cs': <CodeFile />,
         '.java': <CodeFile />,
         '.py': <CodeFile />,
+        '.html': <CodeFile />,
+        '.css': <CodeFile />,
+        '.scss': <CodeFile />,
+        '.json': <CodeFile />,
+        '.xml': <CodeFile />,
+        '.yaml': <CodeFile />,
+        '.txt': <CodeFile />,
+        '.md': <CodeFile />,
+        '.pdf': <CodeFile />,
+        '.zip': <Icons.ZIP />,
+        '.tar': <Icons.ZIP />,
+        '.gz': <Icons.ZIP />,
+        '.sql': <CodeFile />,
+        '.rb': <CodeFile />,
+        '.go': <CodeFile />,
+        '.php': <CodeFile />,
+        '.swift': <CodeFile />,
+        '.rs': <CodeFile />,
+        '.pl': <CodeFile />,
+        '.lua': <CodeFile />,
+        '.dart': <CodeFile />,
+        '.kotlin': <CodeFile />,
+        '.r': <CodeFile />,
     };
+
 
     const ext = name.slice(name.lastIndexOf('.')); // Get the file extension
 
