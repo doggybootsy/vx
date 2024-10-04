@@ -165,8 +165,6 @@ class GitHubService {
             endpoint += `/${path}`;
         }  
 
-        console.log(useBranch)
-        
         try {
             return await this.fetchFromGitHub(`${endpoint}?ref=${useBranch}`);
         } catch (error) {
