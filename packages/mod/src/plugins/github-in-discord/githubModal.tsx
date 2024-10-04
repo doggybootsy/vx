@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
-import {SystemDesign} from "../../components";
+import {Button, Flex, SystemDesign} from "../../components";
 import {Github} from "../../components/icons";
 import {settings} from "./index";
 
@@ -9,14 +9,12 @@ interface GitHubUrlInfo {
     repo: string;
     branch: string;
     path?: string;
-};
+}
 
 class GitHubService {
-    private readonly token: any;
     private readonly baseURL: string;
 
-    constructor(token = null) {
-        this.token = token;
+    constructor() {
         this.baseURL = 'https://api.github.com';
     }
 
@@ -27,7 +25,7 @@ class GitHubService {
     async getForks(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}/forks`;
         const forks = await this.fetchFromGitHub(endpoint);
-        return forks.map((fork) => ({
+        return forks.map((fork: { owner: { login: any; }; name: any; }) => ({
             label: `${fork.owner.login} / ${fork.name}`,
             value: fork
         }));
@@ -38,12 +36,10 @@ class GitHubService {
         return this.fetchFromGitHub(endpoint);
     }
 
-    async openFile(url: string)
-    {
+    async openFile(url: string) {
         await this.fetchFromGitHub(url, true).then(res => {
             const regex = /\w+\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i;
-            if (res.download_url && regex.test(res.download_url))
-            {
+            if (res.download_url && regex.test(res.download_url)) {
                 openImageModal(res.download_url);
                 return;
             }
@@ -63,10 +59,11 @@ class GitHubService {
         };
 
         if (settings.githubToken.get()) {
+            // @ts-ignore
             headers['Authorization'] = `Bearer ${settings.githubToken.get()}`;
         }
 
-        const response = await fetch(`${overrideURL ? "" : this.baseURL}${endpoint}`, { headers });
+        const response = await fetch(`${overrideURL ? "" : this.baseURL}${endpoint}`, {headers});
 
         if (!response.ok) {
             throw new Error(`GitHub API error: ${response.statusText}`);
@@ -75,7 +72,13 @@ class GitHubService {
         return response.json();
     }
 
-    parseGitHubUrl(url: string): GitHubUrlInfo | null {
+    async parseGitHubUrl(url: string): Promise<{
+        path: string;
+        repo: string;
+        defaultBranch: any;
+        user: string;
+        branch: any
+    }> {
         if (typeof url !== 'string') {
             throw new TypeError('url must be a string');
         }
@@ -84,16 +87,25 @@ class GitHubService {
         const match = url.match(pattern);
 
         if (!match) {
-            return null;
+            return;
         }
 
         const [, user, repo, branch, path] = match;
-        return {
-            user,
-            repo,
-            branch: branch || 'main',
-            path: path || ''
-        };
+
+        try {
+            const repoInfo = await this.getRepoInfo(user, repo);
+
+            return {
+                user,
+                repo,
+                branch: branch || repoInfo.default_branch,
+                defaultBranch: repoInfo.default_branch,
+                path: path || ''
+            };
+        } catch (error) {
+            console.error('Error fetching repository information:', error);
+            throw error;
+        }
     }
 
     async getRepoInfo(user: string, repo: string) {
@@ -105,18 +117,31 @@ class GitHubService {
         };
     }
 
+    async getPullRequests(user: string, repo: string) {
+        const endpoint = `/repos/${user}/${repo}/pulls`;
+        return this.fetchFromGitHub(endpoint);
+    }
+
+    async getIssues(user: string, repo: string) {
+        const endpoint = `/repos/${user}/${repo}/issues`;
+        return this.fetchFromGitHub(endpoint);
+    }
 
     async getContributors(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}/contributors`;
         return this.fetchFromGitHub(endpoint);
     }
 
-
-    async getRepoFiles(url: string | GitHubUrlInfo) {
+    async getReleases(user: string, repo: string) {
+        const endpoint = `/repos/${user}/${repo}/releases`;
+        return this.fetchFromGitHub(endpoint);
+    }
+    
+    async getRepoFiles(url: { path: string }) {
         let repoInfo: GitHubUrlInfo;
 
         if (typeof url === 'string') {
-            repoInfo = this.parseGitHubUrl(url);
+            repoInfo = await this.parseGitHubUrl(url);
             if (!repoInfo) {
                 throw new Error('Invalid GitHub URL');
             }
@@ -126,25 +151,32 @@ class GitHubService {
             throw new TypeError('url must be a string or a GitHubUrlInfo object');
         }
 
-        const { user, repo, path } = repoInfo;
+        const {user, repo, path, branch} = repoInfo;
 
-        const repoDetails = await this.getRepoInfo(user, repo);
-        const defaultBranch = repoDetails.default_branch;
+        // this was my BIGGEST issue bruh.. default branch main/master? nah some random stuff
+        let useBranch = branch;
+        if (!useBranch) {
+            const repoDetails = await this.getRepoInfo(user, repo);
+            useBranch = repoDetails.default_branch;
+        }
 
         let endpoint = `/repos/${user}/${repo}/contents`;
         if (path) {
             endpoint += `/${path}`;
-        }
+        }  
 
+        console.log(useBranch)
+        
         try {
-            return await this.fetchFromGitHub(`${endpoint}?ref=${defaultBranch}`);
+            return await this.fetchFromGitHub(`${endpoint}?ref=${useBranch}`);
         } catch (error) {
-            console.error(`Error loading files from ${defaultBranch}:`, error);
-            throw error;
+            const repoDetails = await this.getRepoInfo(user, repo);
+            return await this.fetchFromGitHub(`${endpoint}?ref=${repoDetails.default_branch}`);
         }
     }
 }
 
+// @ts-ignore
 const FileIcon = ({ type }) => (
     <svg className="file-icon" viewBox="0 0 16 16" fill="currentColor">
         {type === 'dir' ? (
@@ -155,208 +187,366 @@ const FileIcon = ({ type }) => (
     </svg>
 );
 
-const GitHubModal = ({ url, onClose, props }) => {
-    const [files, setFiles] = useState([]);
-    const [currentPath, setCurrentPath] = useState('');
-    const [breadcrumbs, setBreadcrumbs] = useState([]);
+
+interface GitHubModalProps {
+    url: string;
+    onClose: () => void;
+    props: any[],
+}
+
+interface FileItem {
+    url: string;
+    name: string;
+    type: 'dir' | 'file';
+    path: string;
+    download_url?: string;
+}
+
+const CloseIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+    </svg>
+);
+
+const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
+    const [currentPath, setCurrentPath] = useState<string[]>([]);
+    const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [repoInfo, setRepoInfo] = useState<GitHubUrlInfo>(null);
-    const [forks, setForks] = useState(0);
-    const [stars, setStars] = useState(0);
-    const [contributors, setContributors] = useState(0);
+    const [repoInfo, setRepoInfo] = useState<GitHubUrlInfo | null>(null);
     const [forksList, setForksList] = useState([]);
     const [branches, setBranches] = useState([]);
-    const [selectedBranch, setSelectedBranch] = useState(repoInfo?.branch || 'main');
-    const [selectedFork, setSelectedFork] = useState<GitHubUrlInfo>(null);
+    const [selectedFork, setSelectedFork] = useState(null);
+    const [selectedBranch, setSelectedBranch] = useState('');
+    const [contributors, setContributors] = useState([]);
+    const [releases, setReleases] = useState([]);
+    const [pullRequests, setPullRequests] = useState([]);
+    const [issues, setIssues] = useState([]);
+    const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
 
     const githubService = new GitHubService();
 
     useEffect(() => {
-        const parsedInfo = githubService.parseGitHubUrl(url);
-        if (parsedInfo) {
-            setRepoInfo(parsedInfo);
-            setSelectedBranch(parsedInfo.branch || 'main');
-            loadFiles(currentPath);
-        }
+        initializeRepo();
     }, [url]);
 
-    const loadFiles = async (path) => {
-        setLoading(true);
+    const loadFiles = async (info: GitHubUrlInfo | null, path: string[] = []) => {
         try {
-            let parsedInfo;
-
-            if (selectedFork) {
-                parsedInfo = {
-                    user: selectedFork.user,
-                    repo: selectedFork.repo,
-                    branch: selectedBranch || selectedFork.branch,
-                    path: path || ''
-                };
-            } else {
-                parsedInfo = githubService.parseGitHubUrl(url);
-                if (!parsedInfo) throw new Error('Invalid GitHub URL');
-                parsedInfo = {
-                    ...parsedInfo,
-                    path: path || parsedInfo.path,
-                    branch: selectedBranch || parsedInfo.branch
-                };
-            }
-
-            setRepoInfo(parsedInfo);
-
-            const files = await githubService.getRepoFiles(parsedInfo);
-            setFiles(Array.isArray(files) ? files : []);
-
-            if (!selectedFork) {
-                const forks = await githubService.getForks(parsedInfo.user, parsedInfo.repo);
-                setForksList(forks);
-
-                const branches = await githubService.getBranches(parsedInfo.user, parsedInfo.repo);
-                setBranches(branches.map(branch => ({ label: branch.name, value: branch.name })));
-            }
-
-            updateBreadcrumbs(path);
+            setLoading(true);
+            const filesData = await githubService.getRepoFiles({
+                ...info,
+                path: path.join('/')
+            });
+            setFiles(Array.isArray(filesData) ? filesData : [filesData]);
         } catch (error) {
             console.error('Error loading files:', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
-    const selectFork = async (forkInfo) => {
-        if (!forkInfo) return;
+    const handleFileClick = async (file: FileItem) => {
+        if (file.type === 'dir') {
+            const newPath = [...currentPath, file.name];
+            setCurrentPath(newPath);
+            await loadFiles(repoInfo, newPath);
+        } else {
+            await githubService.openFile(file.url);
+        }
+    };
 
-        const newForkInfo = {
-            user: forkInfo.owner.login,
-            repo: forkInfo.name,
-            branch: forkInfo.default_branch,
-            path: ''
+    const navigateToBreadcrumb = async (index: number) => {
+        const newPath = index === -1 ? [] : currentPath.slice(0, index + 1);
+        setCurrentPath(newPath);
+        await loadFiles(repoInfo, newPath);
+    };
+
+    const handleBranchChange = async (event: React.SetStateAction<string>) => {
+        setSelectedBranch(event);
+        const updatedRepoInfo = {
+            ...repoInfo,
+            branch: event
         };
+        setRepoInfo(updatedRepoInfo);
+        await loadFiles(updatedRepoInfo, currentPath);
+    };
 
-        setSelectedFork(newForkInfo);
-        setSelectedBranch(forkInfo.default_branch);
-
-        const parsedInfo = {
-            user: newForkInfo.user,
-            repo: newForkInfo.repo,
-            branch: forkInfo.default_branch,
-            path: ''
+    const handleForkChange = async (event) => {
+        setSelectedFork(event);
+        const newRepoInfo = {
+            user: event.owner.login,
+            repo: event.name,
+            branch: event.default_branch,
+            defaultBranch: event.default_branch
         };
+        setRepoInfo(newRepoInfo);
+        setCurrentPath([]);
+        setSelectedBranch(event.default_branch);
 
-        setLoading(true);
+        const branchesData = await githubService.getBranches(newRepoInfo.user, newRepoInfo.repo);
+        setBranches(branchesData.map((branch: { name: any; }) => ({
+            label: branch.name,
+            value: branch.name
+        })));
+
+        await loadFiles(newRepoInfo, []);
+    };
+
+    const initializeRepo = async () => {
         try {
-            const files = await githubService.getRepoFiles(parsedInfo);
-            setFiles(Array.isArray(files) ? files : []);
+            setLoading(true);
+            const urlInfo = await githubService.parseGitHubUrl(url);
 
-            const branches = await githubService.getBranches(parsedInfo.user, parsedInfo.repo);
-            setBranches(branches.map(branch => ({ label: branch.name, value: branch.name })));
+            const repoDetails = await githubService.getRepoInfo(urlInfo.user, urlInfo.repo);
+            const defaultBranch = repoDetails.default_branch;
 
-            updateBreadcrumbs('');
+            const fullRepoInfo = {
+                ...urlInfo,
+                branch: urlInfo.branch || defaultBranch,
+                defaultBranch
+            };
+
+            setRepoInfo(fullRepoInfo);
+
+            const [forks, branchesData, contributorsData, releasesData, pullRequestsData, issuesData] = await Promise.all([
+                githubService.getForks(fullRepoInfo.user, fullRepoInfo.repo),
+                githubService.getBranches(fullRepoInfo.user, fullRepoInfo.repo),
+                githubService.getContributors(fullRepoInfo.user, fullRepoInfo.repo),
+                githubService.getReleases(fullRepoInfo.user, fullRepoInfo.repo),
+                githubService.getPullRequests(fullRepoInfo.user, fullRepoInfo.repo),
+                githubService.getIssues(fullRepoInfo.user, fullRepoInfo.repo)
+            ]);
+
+            setForksList(forks);
+            setBranches(branchesData.map((branch: { name: any; }) => ({
+                label: branch.name,
+                value: branch.name
+            })));
+            setContributors(contributorsData);
+            setReleases(releasesData);
+            setPullRequests(pullRequestsData);
+            setIssues(issuesData);
+            setSelectedBranch(fullRepoInfo.branch);
+
+            await loadFiles(fullRepoInfo, []);
         } catch (error) {
-            console.error('Error loading fork:', error);
+            console.error('Error initializing repo:', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
-
-
-    const navigateToFolder = async (path: React.SetStateAction<string>) => {
-        setCurrentPath(path);
-        await loadFiles(path);
+    const downloadRepo = () => {
+        window.open(`https://github.com/${repoInfo?.user}/${repoInfo?.repo}/archive/refs/heads/${selectedBranch}.zip`);
     };
 
-    const updateBreadcrumbs = (path: string) => {
-        const parts = path.split('/').filter(Boolean);
-        const newBreadcrumbs = parts.map((part: any, index: number) => ({
-            label: part,
-            path: parts.slice(0, index + 1).join('/')
-        }));
-        setBreadcrumbs(newBreadcrumbs);
+    const downloadAsset = (url: string | URL | undefined) => {
+        window.open(url);
     };
 
-    /*
-    <SystemDesign.SearchableSelect
-                    placeholder={"Select Branch"}
-                    options={branches}
-                    value={selectedBranch}
-                    onChange={async (event: React.SetStateAction<string>) => {
-                        setSelectedBranch(event);
-                        await loadFiles(currentPath);
-                        await navigateToFolder('')
-                    }}
-                />
-     */
-    
     return (
         <ModalComponents.ModalRoot className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
             <ModalComponents.ModalHeader className="modal-header">
                 <div className="modal-header-title">
-                    <Github size={24} />
-                    <span>{repoInfo?.repo || 'GitHub Repository'}</span>
+                    <Github />
+                    <span>{repoInfo?.user}/{repoInfo?.repo}</span>
                 </div>
-                <div className="repo-stats">
-                    <span><strong>Stars:</strong> {stars}</span>
-                    <span><strong>Forks:</strong> {forks}</span>
-                    <span><strong>Contributors:</strong> {contributors}</span>
-                </div>
-                <SystemDesign.SearchableSelect
-                    placeholder={"Select Fork"}
-                    options={forksList}
-                    value={selectedFork}
-                    onChange={async (event) => {
-                        const forkInfo = forksList.find(fork => fork.value.id === event.id)?.value;
-                        await selectFork(forkInfo);
-                    }}
-                />
-                <button className="close-button" onClick={onClose}>
-                    &times;
+                <button className="close-button github-modal-close" onClick={onClose}>
+                    <CloseIcon />
                 </button>
             </ModalComponents.ModalHeader>
 
-            <ModalComponents.Content className="modal-content">
-                <div className="breadcrumbs">
-                    <button className="breadcrumb-button" onClick={async () => await navigateToFolder('')}>
-                        Home
-                    </button>
-                    {breadcrumbs.map((breadcrumb: any, index) => (
-                        <React.Fragment key={index}>
-                            <span className="breadcrumb-separator">/</span>
-                            <button
-                                className="breadcrumb-button"
-                                onClick={async () => await navigateToFolder(breadcrumb.path)}
-                            >
-                                {breadcrumb.label}
-                            </button>
-                        </React.Fragment>
-                    ))}
+            <div className="modal-content">
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                    <SystemDesign.SearchableSelect
+                        placeholder="Select Fork"
+                        options={forksList}
+                        value={selectedFork}
+                        onChange={handleForkChange}
+                    />
+                    <SystemDesign.SearchableSelect
+                        placeholder="Select Branch"
+                        options={branches}
+                        value={selectedBranch}
+                        onChange={handleBranchChange}
+                    />
                 </div>
 
                 {loading ? (
                     <div className="loading-container">
-                        <div className="spinner"></div>
+                        <div className="spinner" />
                     </div>
                 ) : (
-                    <div className="file-list">
-                        {files.map((file: any) => (
-                            <button
-                                key={file.path}
-                                className="file-item"
-                                onClick={async () =>
-                                    file.type === 'dir'
-                                        ? await navigateToFolder(file.path)
-                                        : githubService.openFile(file.url)
-                                }
-                            >
-                                <FileIcon type={file.type} />
-                                <span>{file.name}</span>
-                            </button>
-                        ))}
-                    </div>
+                    <>
+                        {currentPage === 'files' && (
+                            <>
+                                <div className="breadcrumbs">
+                                    <button
+                                        className="breadcrumb-button github-modal-breadcrumb"
+                                        onClick={() => navigateToBreadcrumb(-1)}
+                                    >
+                                        {repoInfo?.repo}
+                                    </button>
+                                    {currentPath.map((path, index) => (
+                                        <React.Fragment key={index}>
+                                            <span className="breadcrumb-separator">/</span>
+                                            <button
+                                                className="breadcrumb-button github-modal-breadcrumb"
+                                                onClick={() => navigateToBreadcrumb(index)}
+                                            >
+                                                {path}
+                                            </button>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+
+                                <div className="file-list">
+                                    {files.sort((a, b) => {
+                                        if (a.type !== b.type) {
+                                            return a.type === 'dir' ? -1 : 1;
+                                        }
+                                        return a.name.localeCompare(b.name);
+                                    }).map((file) => (
+                                        <button
+                                            key={file.path}
+                                            className="file-item github-modal-file"
+                                            onClick={() => handleFileClick(file)}
+                                        >
+                                            <FileIcon type={file.type} />
+                                            {file.name}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="repo-stats">
+                                    <span>{contributors.length} Contributors</span>
+                                    <span>{forksList.length} Forks</span>
+                                    <span>{branches.length} Branches</span>
+                                </div>
+                                <Flex>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={() => setCurrentPage('files')}
+                                        className={currentPage === 'files' ? 'active' : ''}
+                                    >
+                                        Files
+                                    </Button>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={() => setCurrentPage('releases')}
+                                        className={currentPage === 'releases' ? 'active' : ''}
+                                    >
+                                        Releases
+                                    </Button>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={() => setCurrentPage('pullRequests')}
+                                        className={currentPage === 'pullRequests' ? 'active' : ''}
+                                    >
+                                        Pull Requests
+                                    </Button>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={() => setCurrentPage('issues')}
+                                        className={currentPage === 'issues' ? 'active' : ''}
+                                    >
+                                        Issues
+                                    </Button>
+                                </Flex>
+                            </>
+                        )}
+
+                        {currentPage === 'releases' && (
+                            <div className="release-container">
+                                {releases.map((release: any) => (
+                                    <div key={release.id} className="release-item">
+                                        <div className="release-header">
+                                            <h4 className="release-title">{release.name}</h4>
+                                            <span className="release-tag">{release.tag_name}</span>
+                                        </div>
+                                        <p>{release.body}</p>
+                                        <a 
+                                           className="asset-link">
+                                            View on GitHub
+                                        </a>
+                                        <div className="assets-section">
+                                            {release.assets.map((asset: { id: React.Key | null | undefined; browser_download_url: string | URL | undefined; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; size: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+                                                <div className="asset-item" key={asset.id}>
+                                                    <a onClick={() => downloadAsset(asset.browser_download_url)} className="asset-link">
+                                                        <span className="asset-name">{asset.name}</span>
+                                                        <span className="asset-size">{asset.size} KB</span>
+                                                    </a>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                <Flex>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={() => setCurrentPage('files')}
+                                        className="back-to-repo-button"
+                                    >
+                                        Back to Repo
+                                    </Button>
+                                    <Button
+                                        style={{ backgroundColor: "#1f6feb" }}
+                                        onClick={downloadRepo}
+                                        className="download-repo-button"
+                                    >
+                                        Download the Entire Repo
+                                    </Button>
+                                </Flex>
+                            </div>
+                        )}
+
+                        {currentPage === 'pullRequests' && (
+                            <div className="pull-requests-container">
+                                {pullRequests.map((pr: any) => (
+                                    <div key={pr.id} className="pr-item">
+                                        <h4 className="pr-title">{pr.title}</h4>
+                                        <p>{pr.body}</p>
+                                        <a
+                                           className="pr-link">
+                                            View on GitHub
+                                        </a>
+                                    </div>
+                                ))}
+                                <Button
+                                    style={{ backgroundColor: "#1f6feb" }}
+                                    onClick={() => setCurrentPage('files')}
+                                    className="back-to-repo-button"
+                                >
+                                    Back to Repo
+                                </Button>
+                            </div>
+                        )}
+
+                        {currentPage === 'issues' && (
+                            <div className="issues-container">
+                                {issues.map((issue: any) => (
+                                    <div key={issue.id} className="issue-item">
+                                        <h4 className="issue-title">{issue.title}</h4>
+                                        <p>{issue.body}</p>
+                                        <a
+                                           className="issue-link">
+                                            View on GitHub
+                                        </a>
+                                    </div>
+                                ))}
+                                <Button
+                                    style={{ backgroundColor: "#1f6feb" }}
+                                    onClick={() => setCurrentPage('files')}
+                                    className="back-to-repo-button"
+                                >
+                                    Back to Repo
+                                </Button>
+                            </div>
+                        )}
+                    </>
                 )}
-            </ModalComponents.Content>
+            </div>
         </ModalComponents.ModalRoot>
     );
 };
-
-
 
 export default GitHubModal;

@@ -7,6 +7,7 @@
     --vx-accent-primary: #539bf5;
     --vx-border-default: #444c56;
     --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
+    --vx-button-primary-bgColor: #1f6feb;
 }
 
 .github-modal-close:hover {
@@ -30,6 +31,29 @@
     max-height: 85vh;
     display: flex;
     flex-direction: column;
+}
+
+.modal-content {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1); 
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
@@ -142,4 +166,172 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.release-container {
+    background-color: var(--vx-background-default);
+    color: var(--vx-text-default);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--vx-border-default);
+    margin-bottom: 24px;
+}
+
+.release-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.release-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--vx-text-default);
+}
+
+.release-commits {
+    font-size: 14px;
+    color: var(--vx-text-secondary);
+}
+
+.release-tag {
+    font-size: 14px;
+    background-color: var(--vx-background-secondary);
+    color: var(--vx-text-default);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.assets-section {
+    margin-top: 16px;
+    padding: 8px 0;
+    border-top: 1px solid var(--vx-border-default);
+}
+
+.asset-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    color: var(--vx-text-default);
+    text-decoration: none;
+    border-bottom: 1px solid var(--vx-background-secondary);
+}
+
+.asset-item:hover {
+    background-color: var(--vx-background-secondary);
+}
+
+.asset-name {
+    font-size: 14px;
+    color: var(--vx-text-default);
+}
+
+.asset-size {
+    font-size: 12px;
+    color: var(--vx-text-secondary);
+}
+
+.asset-link {
+    text-decoration: none;
+    color: var(--vx-accent-primary);
+}
+
+.asset-link:hover {
+    text-decoration: underline;
+}
+
+.pull-requests-container {
+    margin-top: 20px;
+    padding: 16px;
+    border-top: 1px solid #e1e4e8;
+}
+
+.pull-requests-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--vx-text-default);
+}
+
+.pr-item {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--vx-background-secondary);
+}
+
+.pr-item .pr-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--vx-text-default);
+}
+
+.pr-item p {
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: var(--vx-text-default);
+    line-height: 1.5;
+}
+
+.pr-item .pr-link {
+    display: inline-block;
+    margin-right: 16px;
+    color: #0366d6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.pr-item .pr-link:hover {
+    text-decoration: underline;
+}
+
+.issues-container {
+    margin-top: 20px;
+    padding: 16px;
+    border-top: 1px solid #e1e4e8;
+}
+
+.issues-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--vx-text-default);
+}
+
+.issue-item {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--vx-background-secondary);
+}
+
+.issue-item .issue-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--vx-text-default);
+}
+
+.issue-item p {
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: var(--vx-text-default);
+    line-height: 1.5;
+}
+
+.issue-item .issue-link {
+    display: inline-block;
+    margin-right: 16px;
+    color: #0366d6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.issue-item .issue-link:hover {
+    text-decoration: underline;
 }

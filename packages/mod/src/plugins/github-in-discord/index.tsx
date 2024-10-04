@@ -99,7 +99,7 @@ export default definePlugin({
         "message"(a, ctx) {
             console.log(a)
             const messageContent = a.target.tagName === "A" ? a.target?.href : getParents(a.target).querySelector("a")?.href ?? a.message?.content;
-            const githubUrlRegex = /https:\/\/github.com\/\w+\/\w+(\/tree)?/;
+            const githubUrlRegex = /https:\/\/github.com\/.+\/\w+(\/tree)?/;
 
             if (messageContent && githubUrlRegex.test(messageContent)) {
                 const matches = messageContent.match(githubUrlRegex);
