@@ -532,14 +532,12 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                 ))}
                                 <Flex>
                                     <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
                                         onClick={() => setCurrentPage('files')}
                                         className="vx-gm-button"
                                     >
                                         Back to Repo
                                     </Button>
                                     <Button
-                                        style={{ backgroundColor: "#1f6feb" }}
                                         onClick={downloadRepo}
                                         className="vx-gm-button"
                                     >
@@ -566,7 +564,6 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     </div>
                                 ))}
                                 <Button
-                                    style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
                                     className="vx-gm-button"
                                 >
@@ -592,7 +589,6 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     </div>
                                 ))}
                                 <Button
-                                    style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
                                     className="vx-gm-button"
                                 >
