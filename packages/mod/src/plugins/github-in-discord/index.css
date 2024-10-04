@@ -297,6 +297,10 @@
     --vx-button-primary-bgColor: #32cd32;
 }
 
+.vx-gm-button
+{
+    background-color: var(--vx-button-primary-bgColor);
+}
 
 .github-modal-close:hover {
     background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));

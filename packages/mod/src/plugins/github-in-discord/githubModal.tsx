@@ -232,7 +232,16 @@ export const themes = [
     { label: 'Mint Green', themeName: 'mint-green', value: 'mint-green' },
 ];
 
+const githubService = new GitHubService();
 
+function format(size: number) {
+    let count = 0;
+    while (size >= 1024) {
+        count++;
+        size /= 1024;
+    }
+    return `${size.toPrecision(3)} ${[ "", "K", "M", "G", "T", "P" ][count]}B`;
+}
 
 const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [currentPath, setCurrentPath] = useState<string[]>([]);
@@ -248,13 +257,11 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [pullRequests, setPullRequests] = useState([]);
     const [issues, setIssues] = useState([]);
     const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
-    const [theme, setTheme] = useState<'dark' | 'light'>(settings.theme.get())
-
-    const githubService = new GitHubService();
+    const theme = settings.theme.use()
 
     useEffect(() => {
         initializeRepo();
-        document.documentElement.setAttribute('data-theme', theme);
+        typeof theme === "string" && document.documentElement.setAttribute('data-theme', theme);
     }, [url, theme]);
 
     const loadFiles = async (info: GitHubUrlInfo | null, path: string[] = []) => {
@@ -298,7 +305,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         await loadFiles(updatedRepoInfo, currentPath);
     };
 
-    const handleForkChange = async (event) => {
+    const handleForkChange = async (event: any) => {
         setSelectedFork(event);
         const newRepoInfo = {
             user: event.owner.login,
@@ -372,8 +379,8 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     };
 
     return (
-        <ModalComponents.ModalRoot className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
-            <ModalComponents.ModalHeader className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <ModalComponents.Root className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
+            <ModalComponents.Header className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Github />
                     <span>{repoInfo?.user}/{repoInfo?.repo}</span>
@@ -384,15 +391,15 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         placeholder="Select Theme"
                         options={themes}
                         value={theme}
-                        onChange={(event: string | ((prevState: "dark" | "light") => "dark" | "light")) => {
-                            setTheme(event);
+                        onChange={(event: "dark" | "light") => {
+                            settings.theme.set(event)
                         }}
                     />
                     <button className="close-button github-modal-close" onClick={onClose}>
                         <CloseIcon />
                     </button>
                 </div>
-            </ModalComponents.ModalHeader>
+            </ModalComponents.Header>
 
 
             <div className="modal-content">
@@ -410,30 +417,26 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                            onChange={handleBranchChange}
                        />
                        <Button
-                           style={{ backgroundColor: "#1f6feb" }}
                            onClick={() => setCurrentPage('files')}
-                           className={currentPage === 'files' ? 'active' : ''}
+                           className={'vx-gm-button'}
                        >
                            Files
                        </Button>
                        <Button
-                           style={{ backgroundColor: "#1f6feb" }}
                            onClick={() => setCurrentPage('releases')}
-                           className={currentPage === 'releases' ? 'active' : ''}
+                           className={'vx-gm-button'}
                        >
                            Releases
                        </Button>
                        <Button
-                           style={{ backgroundColor: "#1f6feb" }}
                            onClick={() => setCurrentPage('pullRequests')}
-                           className={currentPage === 'pullRequests' ? 'active' : ''}
+                           className={'vx-gm-button'}
                        >
                            Pull Requests
                        </Button>
                        <Button
-                           style={{ backgroundColor: "#1f6feb" }}
                            onClick={() => setCurrentPage('issues')}
-                           className={currentPage === 'issues' ? 'active' : ''}
+                           className={'vx-gm-button'}
                        >
                            Issues
                        </Button>
@@ -513,14 +516,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                             {release.assets.map((asset: {
                                                 id: React.Key | null | undefined;
                                                 browser_download_url: string | URL | undefined;
-                                                name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined;
-                                                size: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined;
+                                                name: string
+                                                size: number
                                             }) => (
                                                 <div className="asset-item" key={asset.id}>
                                                     <a onClick={() => downloadAsset(asset.browser_download_url)}
                                                        className="asset-link">
                                                         <span className="asset-name">{asset.name}</span>
-                                                        <span className="asset-size">{asset.size} KB</span>
+                                                        <span className="asset-size">{format(asset.size)}</span>
                                                     </a>
                                                 </div>
                                             ))}
@@ -531,14 +534,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     <Button
                                         style={{ backgroundColor: "#1f6feb" }}
                                         onClick={() => setCurrentPage('files')}
-                                        className="back-to-repo-button"
+                                        className="vx-gm-button"
                                     >
                                         Back to Repo
                                     </Button>
                                     <Button
                                         style={{ backgroundColor: "#1f6feb" }}
                                         onClick={downloadRepo}
-                                        className="download-repo-button"
+                                        className="vx-gm-button"
                                     >
                                         Download the Entire Repo
                                     </Button>
@@ -565,7 +568,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                 <Button
                                     style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
-                                    className="back-to-repo-button"
+                                    className="vx-gm-button"
                                 >
                                     Back to Repo
                                 </Button>
@@ -591,7 +594,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                 <Button
                                     style={{backgroundColor: "#1f6feb" }}
                                     onClick={() => setCurrentPage('files')}
-                                    className="back-to-repo-button"
+                                    className="vx-gm-button"
                                 >
                                     Back to Repo
                                 </Button>
@@ -600,7 +603,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                     </>
                 )}
             </div>
-        </ModalComponents.ModalRoot>
+        </ModalComponents.Root>
     );
 };
 
