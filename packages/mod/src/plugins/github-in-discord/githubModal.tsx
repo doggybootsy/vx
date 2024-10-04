@@ -259,11 +259,16 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
     const theme = settings.theme.use()
 
+    typeof theme === "string" && document.documentElement.setAttribute('data-theme', theme);
+    
     useEffect(() => {
         initializeRepo();
-        typeof theme === "string" && document.documentElement.setAttribute('data-theme', theme);
-    }, [url, theme]);
+        return () => {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    }, [url]);
 
+    
     const loadFiles = async (info: GitHubUrlInfo | null, path: string[] = []) => {
         try {
             setLoading(true);
