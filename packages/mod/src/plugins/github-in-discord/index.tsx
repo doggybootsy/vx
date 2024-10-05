@@ -61,7 +61,7 @@ function GithubButton() {
         onClick={() => {
             console.log('hi')
         }}
-        icon={() => <GitHubIcon color="currentColor"/>}
+        icon={Icons.Github}
     />)
 }
 
@@ -88,18 +88,6 @@ const openModal_ = (url) => {
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
-    start(signal: AbortSignal) {
-
-        Toolbar.addItem("vx-github-in-discord",
-            <PanelButton
-                tooltipText="Github In Discord"
-                onClick={() => {
-                    openModal_("https://github.com/username/repo");
-                }}
-                icon={() => <GitHubIcon color="currentColor"/>}
-            />
-        );
-    },
     styler,
     settings,
     menus: {

@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import {ModalComponents, openCodeModal, openImageModal} from '../../api/modals';
+import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModal} from '../../api/modals';
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {Github} from "../../components/icons";
 import {settings} from "./index";
-import {FileIcon} from "./icons";
+import {codeFileTypes, FileIcon, imageFileTypes, videoFileTypes} from "./icons";
+import {PIPWindow, popoutCSS} from "../pip";
+import {openWindow} from "../../api/window";
 
 interface GitHubUrlInfo {
     user: string;
     repo: string;
     branch: string;
     path?: string;
+}
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
 
 class GitHubService {
@@ -37,20 +47,40 @@ class GitHubService {
         return this.fetchFromGitHub(endpoint);
     }
 
-    async openFile(url: string) {
+    async openFile(url: string, event?: MouseEvent) {
         await this.fetchFromGitHub(url, true).then(res => {
-            const regex = /\w+\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i;
-            if (res.download_url && regex.test(res.download_url)) {
-                openImageModal(res.download_url);
-                return;
+            const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
+            const key = `DISCORD_VX_${generateUUID()}`
+            if (res.download_url) {
+                if (videoFileTypes.includes(ext) && event?.shiftKey) {
+                    openWindow({
+                        id: key,
+                        title: res.name,
+                        css: popoutCSS.css,
+                        render({ window }) {
+                            return <PIPWindow window={window} src={res.download_url} windowKey={key} />
+                        }
+                    });
+                    return;
+                } else if (videoFileTypes.includes(ext)) {
+                    openVideoModal(res.download_url)
+                    return;
+                }
+
+                if (imageFileTypes.includes(ext)) {
+                    openImageModal(res.download_url);
+                    return;
+                }
             }
+
             openCodeModal({
                 code: this.decodeContent(res.content),
-                language: res.name.split(".").pop(),
+                language: ext.slice(1),
                 filename: res.name
             });
         });
     }
+
 
 
     async fetchFromGitHub(endpoint: string, overrideURL: boolean = false): Promise<any> {
@@ -273,13 +303,13 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         }
     };
 
-    const handleFileClick = async (file: FileItem) => {
+    const handleFileClick = async (file: FileItem, event?: Event) => {
         if (file.type === 'dir') {
             const newPath = [...currentPath, file.name];
             setCurrentPath(newPath);
             await loadFiles(repoInfo, newPath);
         } else {
-            await githubService.openFile(file.url);
+            await githubService.openFile(file.url, event);
         }
     };
 
@@ -474,7 +504,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                         <button
                                             key={file.path}
                                             className="file-item github-modal-file"
-                                            onClick={() => handleFileClick(file)}
+                                            onClick={(event: Event) => handleFileClick(file, event)}
                                         >
                                             <div className="file-item-content">
                                                 <FileIcon type={file.type} name={file.name}/>

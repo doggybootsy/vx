@@ -7,6 +7,7 @@ import { base64, className, proxyCache } from "../../util";
 
 import * as styler from "./index.css?managed";
 import * as popout from "./popout.css?managed";
+export const popoutCSS = popout
 
 import { DataStore } from "../../api/storage";
 import { closeWindow, openWindow } from "../../api/window";
@@ -101,7 +102,7 @@ function getBuffers(node: HTMLVideoElement) {
 };
 
 
-function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src: string, windowKey: string }) {
+export function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src: string, windowKey: string }) {
   const video = useRef<HTMLVideoElement>(null);
   const [ state, setVideoState ] = useState(VideoState.PAUSED);
   const [ canplay, setCanPlay ] = useState(false);

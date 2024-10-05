@@ -9,9 +9,9 @@ export function CodeFile() {
     )
 }
 
-const imageFileTypes = ['.png', '.jpg', '.jpeg', '.gif'];
-const videoFileTypes = ['.mp4', '.avi', '.mov', '.mkv'];
-const codeFileTypes = ['.js', '.jsx', '.ts', '.tsx', '.cpp', '.cs', '.java', '.py', '.html', '.css', '.scss', '.json', '.xml', '.yaml', '.txt', '.md', '.sql', '.rb', '.go', '.php', '.swift', '.rs', '.pl', '.lua', '.dart', '.kotlin', '.r','.powershell','.ps1','.ps','.php'];
+export const imageFileTypes = ['.png', '.jpg', '.jpeg', '.gif'];
+export const videoFileTypes = ['.mp4', '.avi', '.mov', '.mkv'];
+export const codeFileTypes = ['.js', '.jsx', '.ts', '.tsx', '.cpp', '.cs', '.java', '.py', '.html', '.css', '.scss', '.json', '.xml', '.yaml', '.txt', '.md', '.sql', '.rb', '.go', '.php', '.swift', '.rs', '.pl', '.lua', '.dart', '.kotlin', '.r','.powershell','.ps1','.ps','.php'];
 
 export const FileIcon = ({ type, name }) => {
     const ext = name.slice(name.lastIndexOf('.'));
