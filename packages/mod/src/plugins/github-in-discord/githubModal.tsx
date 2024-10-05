@@ -3,7 +3,7 @@ import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModa
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
 import {FileIcon, imageFileTypes, videoFileTypes} from "./icons";
-import {PIPWindow, popoutCSS} from "../pip";
+import {onPip} from "../pip";
 import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
@@ -110,17 +110,9 @@ class GitHubService {
     async openFile(url: string, event?: MouseEvent, currentPath) {
         await this.fetchFromGitHub(url, true).then(async res => {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
-            const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
             if (res.download_url) {
                 if (videoFileTypes.includes(ext) && event?.shiftKey) {
-                    openWindow({
-                        id: key,
-                        title: res.name,
-                        css: popoutCSS.css,
-                        render({window}) {
-                            return <PIPWindow window={window} src={res.download_url} windowKey={key}/>;
-                        }
-                    });
+                    onPip({res})
                     return;
                 } else if (videoFileTypes.includes(ext)) {
                     openVideoModal(res.download_url);
