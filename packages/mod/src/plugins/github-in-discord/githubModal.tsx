@@ -8,7 +8,8 @@ import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
 import JSZip from "jszip";
-import {download} from "../../util";
+import {clipboard, download} from "../../util";
+import React from 'react';
 
 interface GitHubUrlInfo {
     user: string;
@@ -64,8 +65,28 @@ class GitHubService {
         const endpoint = `/repos/${user}/${repo}/branches`;
         return this.fetchFromGitHub(endpoint);
     }
-    
-    async openFile(url: string, event?: MouseEvent, currentPath) {
+
+    async openJsonFile(url: string, event?: MouseEvent, currentPath: string[]) {
+        const response = await this.fetchFromGitHub(url, true);
+        const jsonContent = JSON.parse(this.decodeContent(response.content));
+
+        openModal((props) => (
+            <ModalComponents.Root data-theme={settings.theme.get()} className="vx-gm-modal" {...props} size={ModalComponents.ModalSize.LARGE}>
+                <ModalComponents.Header className="vx-gm-modal-header">
+                    <div className="vx-gm-modal-header-title"
+                         style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+                        <Icons.Github/>
+                        <span>JSON Viewer</span>
+                    </div>
+                </ModalComponents.Header>
+                <ModalComponents.Content>
+                    <JsonViewer json={jsonContent}/>
+                </ModalComponents.Content>
+            </ModalComponents.Root>
+        ));
+    }
+
+    async openFile(url: string, event?: MouseEvent) {
         await this.fetchFromGitHub(url, true).then(async res => {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
             if (res.download_url) {
@@ -249,6 +270,75 @@ const CloseIcon = () => (
     </svg>
 );
 
+class JsonViewerProps {
+    public json: string | undefined;
+}
+
+const JsonViewer: React.FC<JsonViewerProps> = ({ json }) => {
+    const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+
+    const toggleExpand = (key: string) => {
+        if (expandedKeys.includes(key)) {
+            setExpandedKeys(expandedKeys.filter(k => k !== key));
+        } else {
+            setExpandedKeys([...expandedKeys, key]);
+        }
+    };
+
+    const renderJson = (data: any, keyPrefix: string = '') => {
+        if (typeof data === 'object' && data !== null) {
+            return (
+                <ul>
+                    {Object.entries(data).map(([key, value]) => {
+                        const fullKey = keyPrefix ? `${keyPrefix}.${key}` : key;
+                        const isExpanded = expandedKeys.includes(fullKey);
+                        return (
+                            <li key={fullKey}>
+                                <div
+                                    onClick={() => toggleExpand(fullKey)}
+                                    onContextMenu={(event) => handleContextMenu(event, value)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <strong>{key}:</strong>
+                                    {isExpanded ? ' -' : ' +'}
+                                </div>
+                                {isExpanded && renderJson(value, fullKey)}
+                            </li>
+                        );
+                    })}
+                </ul>
+            );
+        } else {
+            return (
+                <span onContextMenu={(event) => handleContextMenu(event, data)}>
+                    {JSON.stringify(data)}
+                </span>
+            );
+        }
+    };
+
+    const handleContextMenu = (event: React.MouseEvent, value: any) => {
+        event.preventDefault();
+        openMenu(event, (props) => (
+            <MenuComponents.Menu {...props} onClose={() => props.onClose?.()} navId={"vx-gm-json-viewer"}>
+                <MenuComponents.Item
+                    id={"vx-gm-json-viewer-copy"}
+                    label={"Copy Value"}
+                    action={() => {
+                        clipboard.copy(JSON.stringify(value))
+                    }}
+                />
+            </MenuComponents.Menu>
+        ));
+    };
+
+    return (
+        <div className="vx-gm-json-viewer">
+            {renderJson(json)}
+        </div>
+    );
+};
+
 async function fetchFile(url) {
     const response = await fetch(url);
 
@@ -331,6 +421,296 @@ function format(size: number) {
     return `${size.toPrecision(3)} ${[ "", "K", "M", "G", "T", "P" ][count]}B`;
 }
 
+const ControlBar: React.FC<{
+    forksList: any[];
+    branches: any[];
+    selectedFork: any;
+    selectedBranch: string;
+    setSelectedFork: (fork: any) => void;
+    setSelectedBranch: (branch: string) => void;
+    setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void;
+    downloadSelected: () => void;
+    repoArchived: any
+}> = ({
+          forksList,
+          branches,
+          selectedFork,
+          selectedBranch,
+          setSelectedFork,
+          setSelectedBranch,
+          setCurrentPage,
+          downloadSelected,
+          repoArchived
+      }) => {
+    return (
+        <>
+            <Flex align={Flex.Align.CENTER}>
+                {repoArchived.archived && (
+                    <ArchivedBanner created_at={repoArchived.created_at}></ArchivedBanner>
+                )}
+            </Flex>
+            <Flex align={Flex.Align.CENTER} gap={16}>
+                <SystemDesign.SearchableSelect
+                    placeholder="Select Fork"
+                    options={forksList}
+                    value={selectedFork}
+                    onChange={setSelectedFork}/><SystemDesign.SearchableSelect
+                placeholder="Select Branch"
+                options={branches}
+                value={selectedBranch}
+                onChange={setSelectedBranch}/><Button
+                onClick={() => setCurrentPage('files')}
+                className={'vx-gm-button'}
+            >
+                Files
+            </Button><Button
+                onClick={() => setCurrentPage('releases')}
+                className={'vx-gm-button'}
+            >
+                Releases
+            </Button><Button
+                onClick={() => setCurrentPage('pullRequests')}
+                className={'vx-gm-button'}
+            >
+                Pull Requests
+            </Button><Button
+                onClick={() => setCurrentPage('issues')}
+                className={'vx-gm-button'}
+            >
+                Issues
+            </Button><Button
+                onClick={downloadSelected}
+                className={'vx-gm-button'}
+            >
+                Download Selected
+            </Button>
+            </Flex>
+        </>
+    );
+};
+
+const IssueList: React.FC<{ issues: any[]; setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void }> = ({ issues, setCurrentPage }) => {
+    return (
+        <div className="vx-gm-issues-container">
+            {issues.map((issue: any) => (
+                <div key={issue.id} className="vx-gm-issue-item">
+                    <h4 className="vx-gm-issue-title">{issue.title}</h4>
+                    <Markdown text={issue?.body ?? ""} />
+                    <a
+                        href={issue.html_url}
+                        className="vx-gm-issue-link"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        View on GitHub
+                    </a>
+                </div>
+            ))}
+            <Button
+                onClick={() => setCurrentPage('files')}
+                className="vx-gm-button"
+            >
+                Back to Repo
+            </Button>
+        </div>
+    );
+};
+
+const PullRequestList: React.FC<{ pullRequests: any[]; setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void }> = ({ pullRequests, setCurrentPage }) => {
+    return (
+        <div className="vx-gm-pull-requests-container">
+            {pullRequests.map((pr: any) => (
+                <div key={pr.id} className="vx-gm-pr-item">
+                    <h4 className="vx-gm-pr-title">{pr.title}</h4>
+                    <Markdown text={pr?.body ?? ""} />
+                    <a
+                        href={pr.html_url}
+                        className="vx-gm-pr-link"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        View on GitHub
+                    </a>
+                </div>
+            ))}
+            <Button
+                onClick={() => setCurrentPage('files')}
+                className="vx-gm-button"
+            >
+                Back to Repo
+            </Button>
+        </div>
+    );
+};
+
+const ReleaseList: React.FC<{ releases: any[]; downloadRepo: () => void; setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void, downloadAsset: () => {} }> = ({ releases, downloadRepo, setCurrentPage, downloadAsset }) => {
+    return (
+        <div className="vx-gm-release-container">
+            {releases.map((release: any) => (
+                <div key={release.id} className="vx-gm-release-item">
+                    <div className="vx-gm-release-header">
+                        <h4 className="vx-gm-release-title">{release.name}</h4>
+                        <span className="vx-gm-release-tag">{release.tag_name}</span>
+                    </div>
+                    <Markdown text={release?.body ?? ""} />
+                    <a
+                        href={release.html_url}
+                        className="vx-gm-asset-link"
+                        target="_blank"
+                        rel="noopener noreferrer">
+                        View on GitHub
+                    </a>
+                    <div className="vx-gm-assets-section">
+                        {release.assets.map((asset: {
+                            id: React.Key | null | undefined;
+                            browser_download_url: string | URL | undefined;
+                            name: string
+                            size: number
+                        }) => (
+                            <div className="vx-gm-asset-item" key={asset.id}>
+                                <a onClick={() => downloadAsset(asset.browser_download_url)}
+                                   className="vx-gm-asset-link">
+                                    <span className="vx-gm-asset-name">{asset.name}</span>
+                                    <span className="vx-gm-asset-size">{format(asset.size)}</span>
+                                </a>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+            <Flex>
+                <Button
+                    onClick={() => setCurrentPage('files')}
+                    className="vx-gm-button"
+                >
+                    Back to Repo
+                </Button>
+                <Button
+                    onClick={downloadRepo}
+                    className="vx-gm-button"
+                >
+                    Download the Entire Repo
+                </Button>
+            </Flex>
+        </div>
+    );
+};
+
+const RepoStats: React.FC<{ contributors: any[]; forksList: any[]; branches: any[] }> = ({ contributors, forksList, branches }) => {
+    return (
+        <div className="vx-gm-repo-stats">
+            <span>{contributors.length} Contributors</span>
+            <span>{forksList.length} Forks</span>
+            <span>{branches.length} Branches</span>
+        </div>
+    );
+};
+
+const FileList: React.FC<{ files: FileItem[]; currentPath: string[]; handleFileClick: (file: FileItem, event?: Event, currentPath: string[], handleContextMenu: () => {}, selectedFiles: any[]) => void; handleCheckboxChange: (file: FileItem) => void }> = ({ files, currentPath, handleFileClick, handleCheckboxChange, handleContextMenu, selectedFiles }) => {
+    return (
+        <div className="vx-gm-file-list">
+            {files.sort((a, b) => {
+                if (a.type !== b.type) {
+                    return a.type === 'dir' ? -1 : 1;
+                }
+                return a.name.localeCompare(b.name);
+            }).map((file) => {
+                const selected = selectedFiles.has(file.path);
+                return (
+                    <div key={file.path} className="vx-gm-file-item-container">
+                        <Flex align={Flex.Align.CENTER} justify={Flex.Justify.BETWEEN}>
+                            <button
+                                className="vx-gm-file-item github-modal-file"
+                                onClick={(event: Event) => handleFileClick(file, event, currentPath)}
+                                onContextMenu={(event) => handleContextMenu(event, file)}
+                            >
+                                <div className="vx-gm-file-item-content">
+                                    <FileIcon type={file.type} name={file.name} />
+                                    <span>{file.name}</span>
+                                </div>
+                            </button>
+                            <SystemDesign.Checkbox
+                                value={selected}
+                                type="inverted"
+                                onChange={(event: React.ChangeEvent, newState: boolean) => {
+                                    handleCheckboxChange(file, event);
+                                }}
+                            />
+                        </Flex>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+const Breadcrumbs: React.FC<{ currentPath: string[]; navigateToBreadcrumb: (index: number) => void, repoInfo: any }> = ({ currentPath, navigateToBreadcrumb, repoInfo }) => {
+    return (
+        <div className="vx-gm-breadcrumbs">
+            <button
+                className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
+                onClick={() => navigateToBreadcrumb(-1)}
+            >
+                {repoInfo?.repo}
+            </button>
+            {currentPath.map((path, index) => (
+                <React.Fragment key={index}>
+                    <span className="vx-gm-breadcrumb-separator">/</span>
+                    <button
+                        className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
+                        onClick={() => navigateToBreadcrumb(index)}
+                    >
+                        {path}
+                    </button>
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
+
+const LoadingIndicator: React.FC<{ isDownloading: boolean; progress: number }> = ({ isDownloading, progress }) => {
+    if (!isDownloading) return null;
+
+    return (
+        <div className="vx-gm-loading-indicator">
+            <div className="vx-gm-spinner" />
+            <p>Downloading files...</p>
+            <div className="vx-gm-progress-bar-container">
+                <div className="vx-gm-progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+        </div>
+    );
+};
+
+const ModalHeader: React.FC<{ repoInfo: GitHubUrlInfo | null; onClose: () => void }> = ({ repoInfo, onClose }) => {
+    const theme = settings.theme.use();
+
+    useEffect(() => {
+        document.querySelector('.vx-gm-modal')?.setAttribute('data-theme', theme);
+    }, [theme]);
+
+    return (
+        <ModalComponents.Header className="vx-gm-modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="vx-gm-modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Icons.Github />
+                <span>{repoInfo?.user}/{repoInfo?.repo}</span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <SystemDesign.SearchableSelect
+                    placeholder="Select Theme"
+                    options={themes}
+                    value={theme}
+                    onChange={(event: "dark" | "light") => {
+                        settings.theme.set(event)
+                    }}
+                />
+                <button className="vx-gm-close-button vx-gm-github-modal-close" onClick={onClose}>
+                    <CloseIcon />
+                </button>
+            </div>
+        </ModalComponents.Header>
+    );
+};
+
 const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [currentPath, setCurrentPath] = useState<string[]>([]);
     const [files, setFiles] = useState<FileItem[]>([]);
@@ -347,15 +727,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
     const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
     const [isDownloading, setIsDownloading] = useState(false);
+    const [theme, setTheme] = useState('dark');
     const [progress, setProgress] = useState(0)
-    
-    const theme = settings.theme.use()
-    
+    const [repoArchived, setRepoArchived] = useState(false)
+
     useEffect(() => {
         initializeRepo();
     }, [url]);
 
-    
     const loadFiles = async (info: GitHubUrlInfo | null, path: string[] = []) => {
         try {
             setLoading(true);
@@ -405,19 +784,23 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         }
 
         const content = await zip.generateAsync({ type: 'blob' });
-        // FileSaver.saveAs(content, `${repoInfo?.repo}-selected-files.zip`);
-        download(`${repoInfo?.repo}-selected-files.zip`, content)
+        download(`${repoInfo?.repo}-selected-files.zip`, content);
         setIsDownloading(false);
         setProgress(0);
     };
-    
-    const handleFileClick = async (file: FileItem, event?: Event, currentPath) => {
+
+    const handleFileClick = async (file: FileItem, event?: Event, currentPath: string[]) => {
         if (file.type === 'dir') {
             const newPath = [...currentPath, file.name];
             setCurrentPath(newPath);
             await loadFiles(repoInfo, newPath);
         } else {
-            await githubService.openFile(file.url, event, currentPath);
+            const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+            if (ext === '.json') {
+                await githubService.openJsonFile(file.url, event, currentPath);
+            } else {
+                await githubService.openFile(file.url, event, currentPath);
+            }
         }
     };
 
@@ -464,6 +847,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
             const urlInfo = await githubService.parseGitHubUrl(url);
 
             const repoDetails = await githubService.getRepoInfo(urlInfo.user, urlInfo.repo);
+            const repoArchiveDetails = await githubService.fetchFromGitHub(`/repos/${urlInfo.user}/${urlInfo.repo}`)
             const defaultBranch = repoDetails.default_branch;
 
             const fullRepoInfo = {
@@ -474,6 +858,8 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
 
             setRepoInfo(fullRepoInfo);
 
+            setRepoArchived(repoArchiveDetails)
+            
             const [forks, branchesData, contributorsData, releasesData, pullRequestsData, issuesData] = await Promise.all([
                 githubService.getForks(fullRepoInfo.user, fullRepoInfo.repo),
                 githubService.getBranches(fullRepoInfo.user, fullRepoInfo.repo),
@@ -503,11 +889,19 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     };
 
     const downloadRepo = () => {
-        window.open(`https://github.com/${repoInfo?.user}/${repoInfo?.repo}/archive/refs/heads/${selectedBranch}.zip`);
+        window.open(`https://github.com/${repoInfo?.user}/${repoInfo?.repo}/archive/refs/heads/${selectedBranch}.zip`, "_blank", "noopener,noreferrer");
     };
 
-    const downloadAsset = (url: string | URL | undefined) => {
-        window.open(url);
+    function downloadAsset(browser_download_url: string | URL | undefined) {
+        window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    const ArchivedBanner = ({created_at}) => {
+        return (
+            <div className="vx-archived-banner">
+                This repository has been archived by the owner on {new Date(created_at).toString()}. It is now read-only.
+            </div>
+        );
     };
 
     const handleContextMenu = (event: React.MouseEvent, file: FileItem) => {
@@ -536,256 +930,61 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
 
     return (
         <ModalComponents.Root data-theme={theme} className="vx-gm-modal" {...props} size={ModalComponents.ModalSize.LARGE}>
-            <ModalComponents.Header className="vx-gm-modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className="vx-gm-modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icons.Github />
-                    <span>{repoInfo?.user}/{repoInfo?.repo}</span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <SystemDesign.SearchableSelect
-                        placeholder="Select Theme"
-                        options={themes}
-                        value={theme}
-                        onChange={(event: "dark" | "light") => {
-                            settings.theme.set(event)
-                        }}
-                    />
-                    <button className="vx-gm-close-button vx-gm-github-modal-close" onClick={onClose}>
-                        <CloseIcon />
-                    </button>
-                </div>
-            </ModalComponents.Header>
-
+            <ModalHeader repoInfo={repoInfo} onClose={onClose} />
 
             {isDownloading ? (
-                <div className="vx-gm-loading-indicator">
-                    <div className="vx-gm-spinner"/>
-                    <p>Downloading files...</p>
-                    <div className="vx-gm-progress-bar-container">
-                        <div className="vx-gm-progress-bar" style={{width: `${progress}%`}}></div>
-                    </div>
+                <LoadingIndicator isDownloading={isDownloading} progress={progress} />
+            ) : (
+                <div className="vx-gm-modal-content">
+                    <ControlBar
+                        forksList={forksList}
+                        branches={branches}
+                        selectedFork={selectedFork}
+                        selectedBranch={selectedBranch}
+                        setSelectedFork={handleForkChange}
+                        setSelectedBranch={handleBranchChange}
+                        setCurrentPage={setCurrentPage}
+                        downloadSelected={downloadSelected}
+                        repoArchived={repoArchived}
+                    />
+
+                    {loading ? (
+                        <div className="vx-gm-loading-container">
+                            <div className="vx-gm-spinner"/>
+                        </div>
+                    ) : (
+                        <>
+                            {currentPage === 'files' && (
+                                <>
+                                    <Breadcrumbs currentPath={currentPath}
+                                                 navigateToBreadcrumb={navigateToBreadcrumb} repoInfo={repoInfo}/>
+                                    <FileList files={files} currentPath={currentPath}
+                                              handleFileClick={handleFileClick}
+                                              handleCheckboxChange={handleCheckboxChange}
+                                              handleContextMenu={handleContextMenu}
+                                              selectedFiles={selectedFiles}
+                                    />
+                                    <RepoStats contributors={contributors} forksList={forksList}
+                                               branches={branches}/>
+                                </>
+                            )}
+
+                            {currentPage === 'releases' && (
+                                <ReleaseList releases={releases} downloadRepo={downloadRepo}
+                                             setCurrentPage={setCurrentPage} downloadAsset={downloadAsset}/>
+                            )}
+
+                            {currentPage === 'pullRequests' && (
+                                <PullRequestList pullRequests={pullRequests} setCurrentPage={setCurrentPage}/>
+                            )}
+
+                            {currentPage === 'issues' && (
+                                <IssueList issues={issues} setCurrentPage={setCurrentPage}/>
+                            )}
+                        </>
+                    )}
                 </div>
-            ) : (<div className="vx-gm-modal-content">
-                <Flex align={Flex.Align.CENTER} gap={16}>
-                    <SystemDesign.SearchableSelect
-                        placeholder="Select Fork"
-                        options={forksList}
-                        value={selectedFork}
-                        onChange={handleForkChange}
-                       />
-                       <SystemDesign.SearchableSelect
-                           placeholder="Select Branch"
-                           options={branches}
-                           value={selectedBranch}
-                           onChange={handleBranchChange}
-                       />
-                       <Button
-                           onClick={() => setCurrentPage('files')}
-                           className={'vx-gm-button'}
-                       >
-                           Files
-                       </Button>
-                       <Button
-                           onClick={() => setCurrentPage('releases')}
-                           className={'vx-gm-button'}
-                       >
-                           Releases
-                       </Button>
-                       <Button
-                           onClick={() => setCurrentPage('pullRequests')}
-                           className={'vx-gm-button'}
-                       >
-                           Pull Requests
-                       </Button>
-                       <Button
-                           onClick={() => setCurrentPage('issues')}
-                           className={'vx-gm-button'}
-                       >
-                           Issues
-                       </Button>
-                       <Button
-                           onClick={downloadSelected}
-                           className={'vx-gm-button'}
-                       >
-                           Download Selected
-                       </Button>
-                   </Flex>
-
-                {loading ? (
-                    <div className="vx-gm-loading-container">
-                        <div className="vx-gm-spinner" />
-                    </div>
-                ) : (
-                    <>
-                        {currentPage === 'files' && (
-                            <>
-                                <div className="vx-gm-breadcrumbs">
-                                    <button
-                                        className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
-                                        onClick={() => navigateToBreadcrumb(-1)}
-                                    >
-                                        {repoInfo?.repo}
-                                    </button>
-                                    {currentPath.map((path, index) => (
-                                        <React.Fragment key={index}>
-                                            <span className="vx-gm-breadcrumb-separator">/</span>
-                                            <button
-                                                className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
-                                                onClick={() => navigateToBreadcrumb(index)}
-                                            >
-                                                {path}
-                                            </button>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-
-                                <div className="vx-gm-file-list">
-                                    {files.sort((a, b) => {
-                                        if (a.type !== b.type) {
-                                            return a.type === 'dir' ? -1 : 1;
-                                        }
-                                        return a.name.localeCompare(b.name);
-                                    }).map((file) => {
-                                        const selected = selectedFiles.has(file.path);
-                                        return (
-                                            <div key={file.path} className="vx-gm-file-item-container">
-                                                <Flex align={Flex.Align.CENTER} justify={Flex.Justify.BETWEEN}>
-                                                    <button
-                                                        className="vx-gm-file-item github-modal-file"
-                                                        onClick={(event: Event) => handleFileClick(file, event, currentPath)}
-                                                        onContextMenu={(event) => handleContextMenu(event, file)}
-                                                    >
-                                                        <div className="vx-gm-file-item-content">
-                                                            <FileIcon type={file.type} name={file.name}/>
-                                                            <span>{file.name}</span>
-                                                        </div>
-                                                    </button>
-                                                    <SystemDesign.Checkbox
-                                                        value={selected}
-                                                        type="inverted"
-                                                        onChange={(event: React.ChangeEvent, newState: boolean) => {
-                                                            handleCheckboxChange(file, event);
-                                                        }}
-                                                    />
-                                                </Flex>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                <div className="vx-gm-repo-stats">
-                                    <span>{contributors.length} Contributors</span>
-                                    <span>{forksList.length} Forks</span>
-                                    <span>{branches.length} Branches</span>
-                                </div>
-                            </>
-                        )}
-
-                        {currentPage === 'releases' && (
-                            <div className="vx-gm-release-container">
-                                {releases.map((release: any) => (
-                                    <div key={release.id} className="vx-gm-release-item">
-                                        <div className="vx-gm-release-header">
-                                            <h4 className="vx-gm-release-title">{release.name}</h4>
-                                            <span className="vx-gm-release-tag">{release.tag_name}</span>
-                                        </div>
-                                        <Markdown text={release?.body ?? ""}/>
-                                        <a
-                                            href={release.html_url}
-                                            className="vx-gm-asset-link"
-                                            target="_blank"
-                                            rel="noopener noreferrer">
-                                            View on GitHub
-                                        </a>
-                                        <div className="vx-gm-assets-section">
-                                            {release.assets.map((asset: {
-                                                id: React.Key | null | undefined;
-                                                browser_download_url: string | URL | undefined;
-                                                name: string
-                                                size: number
-                                            }) => (
-                                                <div className="vx-gm-asset-item" key={asset.id}>
-                                                    <a onClick={() => downloadAsset(asset.browser_download_url)}
-                                                       className="vx-gm-asset-link">
-                                                        <span className="vx-gm-asset-name">{asset.name}</span>
-                                                        <span className="vx-gm-asset-size">{format(asset.size)}</span>
-                                                    </a>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                                <Flex>
-                                    <Button
-                                        onClick={() => setCurrentPage('files')}
-                                        className="vx-gm-button"
-                                    >
-                                        Back to Repo
-                                    </Button>
-                                    <Button
-                                        onClick={downloadRepo}
-                                        className="vx-gm-button"
-                                    >
-                                        Download the Entire Repo
-                                    </Button>
-                                </Flex>
-                            </div>
-                        )}
-
-                        {currentPage === 'pullRequests' && (
-                            <div className="vx-gm-pull-requests-container">
-                                {pullRequests.map((pr: any) => (
-                                    <div key={pr.id} className="vx-gm-pr-item">
-                                        <h4 className="vx-gm-pr-title">{pr.title}</h4>
-                                        <Markdown text={pr?.body ?? ""}/>
-                                        <a
-                                            href={pr.html_url}
-                                            className="vx-gm-pr-link"
-                                            target="_blank"
-                                            rel="noopener noreferrer">
-                                            View on GitHub
-                                        </a>
-
-                                    </div>
-                                ))}
-                                <Button
-                                    onClick={() => setCurrentPage('files')}
-                                    className="vx-gm-button"
-                                >
-                                    Back to Repo
-                                </Button>
-                            </div>
-                        )}
-
-                        {currentPage === 'issues' && (
-                            <div className="vx-gm-issues-container">
-                                {issues.map((issue: any) => (
-                                    <div key={issue.id} className="vx-gm-issue-item">
-                                        <h4 className="vx-gm-issue-title">{issue.title}</h4>
-                                        <Markdown text={issue?.body ?? ""}/>
-                                        <a
-                                            href={issue.html_url}
-                                            className="vx-gm-issue-link"
-                                            target="_blank"
-                                            rel="noopener noreferrer">
-                                            View on GitHub
-                                        </a>
-
-                                    </div>
-                                ))}
-                                <Button
-                                    onClick={() => setCurrentPage('files')}
-                                    className="vx-gm-button"
-                                >
-                                    Back to Repo
-                                </Button>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div> )
-            }
+            )}
         </ModalComponents.Root>
     );
 };

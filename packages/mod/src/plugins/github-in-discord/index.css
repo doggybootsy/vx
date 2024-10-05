@@ -702,13 +702,6 @@
     overflow-x: auto;
 }
 
-.vx-gm-markdown-inline-code {
-    background-color: var(--vx-background-default);
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-family: monospace;
-}
-
 .vx-gm-markdown-strong {
     font-weight: bold;
 }
@@ -747,4 +740,53 @@
 .vx-gm-markdown {
     width: 100%;
     color: var(--text-normal);
+}
+.vx-gm-archived-banner {
+    background-color: #3c2c25;
+    color: #e4dac8;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    border-top: 3px solid #f29979;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.vx-gm-archived-banner a {
+    color: #4aa3ff;
+    text-decoration: none;
+}
+
+.vx-gm-archived-banner a:hover {
+    text-decoration: underline;
+}
+
+.vx-gm-container {
+    background-color: #1c1c1c;
+    padding: 20px;
+}
+
+.vx-gm-json-viewer {
+    color: var(--vx-text-default);
+    padding: 16px;
+    border-radius: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.vx-gm-json-viewer ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.vx-gm-json-viewer li {
+    margin-bottom: 8px;
+}
+
+.vx-gm-json-viewer strong {
+    color: var(--vx-text-default);
+}
+
+.vx-gm-json-viewer span {
+    cursor: pointer;
 }
