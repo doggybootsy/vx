@@ -9,7 +9,6 @@ import * as styler from "./index.css?managed";
 
 function Avatar({ author }: { author: User }) {
   const hasFocus = focusStore.useFocus();
-  if (!author) return;
   const randomDefaultAvatar = useMemo(() => getDefaultAvatar(author.id), [ ]);
 
   const [ shouldShow, setShouldShow ] = useState(false);
@@ -39,7 +38,6 @@ function Avatar({ author }: { author: User }) {
 function Username({ author }: { author: User }) {
   const [ shouldShow, setShouldShow ] = useState(false);
   const name = useMemo(() => {
-    if (!author) return;
     const friendNickName = RelationshipStore.isFriend(author.id) && RelationshipStore.getNickname(author.id);
     if (friendNickName) return friendNickName;
     // @ts-expect-error

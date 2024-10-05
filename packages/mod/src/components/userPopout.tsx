@@ -48,7 +48,6 @@ class RenderPopout extends Component<RenderPopoutProps & { userId: string, chann
 }
 
 export function UserPopout(props: UserPopoutProps) {
-  if (!props.user) return;
   const userId = typeof props.user === "string" ? props.user : props.user.id;
 
   return (
