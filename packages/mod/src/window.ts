@@ -142,6 +142,8 @@ export function vxRequire(path: string) {
     case "vx:common/dom": return require("common/dom");
     case "vx:common/util": return require("common/util");
 
+    case "commonmark": return require("commonmark");
+
     case "vx": return window.VX;
   
     // vxi === vx internal

@@ -85,7 +85,7 @@ class GitHubService {
                 
                 if (ext === '.md') {
                     openModal((props) => (
-                        <ModalComponents.Root {...props} size={SystemDesign.ModalSize.DYNAMIC}>
+                        <ModalComponents.Root {...props} size={ModalComponents.Size.LARGE}>
                             <ModalComponents.Content>
                                 <MarkdownRenderer {...props} markdown={this.decodeContent(res.content)} />
                             </ModalComponents.Content>
@@ -535,9 +535,9 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     };
 
     return (
-        <ModalComponents.Root data-theme={theme} className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
-            <ModalComponents.Header className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <ModalComponents.Root data-theme={theme} className="vx-gm-modal" {...props} size={ModalComponents.ModalSize.LARGE}>
+            <ModalComponents.Header className="vx-gm-modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="vx-gm-modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Icons.Github />
                     <span>{repoInfo?.user}/{repoInfo?.repo}</span>
                 </div>
@@ -551,7 +551,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                             settings.theme.set(event)
                         }}
                     />
-                    <button className="close-button github-modal-close" onClick={onClose}>
+                    <button className="vx-gm-close-button vx-gm-github-modal-close" onClick={onClose}>
                         <CloseIcon />
                     </button>
                 </div>
@@ -559,14 +559,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
 
 
             {isDownloading ? (
-                <div className="loading-indicator">
-                    <div className="spinner"/>
+                <div className="vx-gm-loading-indicator">
+                    <div className="vx-gm-spinner"/>
                     <p>Downloading files...</p>
-                    <div className="progress-bar-container">
-                        <div className="progress-bar" style={{width: `${progress}%`}}></div>
+                    <div className="vx-gm-progress-bar-container">
+                        <div className="vx-gm-progress-bar" style={{width: `${progress}%`}}></div>
                     </div>
                 </div>
-            ) : (<div className="modal-content">
+            ) : (<div className="vx-gm-modal-content">
                 <Flex align={Flex.Align.CENTER} gap={16}>
                     <SystemDesign.SearchableSelect
                         placeholder="Select Fork"
@@ -613,25 +613,25 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                    </Flex>
 
                 {loading ? (
-                    <div className="loading-container">
-                        <div className="spinner" />
+                    <div className="vx-gm-loading-container">
+                        <div className="vx-gm-spinner" />
                     </div>
                 ) : (
                     <>
                         {currentPage === 'files' && (
                             <>
-                                <div className="breadcrumbs">
+                                <div className="vx-gm-breadcrumbs">
                                     <button
-                                        className="breadcrumb-button github-modal-breadcrumb"
+                                        className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
                                         onClick={() => navigateToBreadcrumb(-1)}
                                     >
                                         {repoInfo?.repo}
                                     </button>
                                     {currentPath.map((path, index) => (
                                         <React.Fragment key={index}>
-                                            <span className="breadcrumb-separator">/</span>
+                                            <span className="vx-gm-breadcrumb-separator">/</span>
                                             <button
-                                                className="breadcrumb-button github-modal-breadcrumb"
+                                                className="vx-gm-breadcrumb-button vx-gm-github-modal-breadcrumb"
                                                 onClick={() => navigateToBreadcrumb(index)}
                                             >
                                                 {path}
@@ -640,7 +640,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     ))}
                                 </div>
 
-                                <div className="file-list">
+                                <div className="vx-gm-file-list">
                                     {files.sort((a, b) => {
                                         if (a.type !== b.type) {
                                             return a.type === 'dir' ? -1 : 1;
@@ -649,14 +649,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     }).map((file) => {
                                         const selected = selectedFiles.has(file.path);
                                         return (
-                                            <div key={file.path} className="file-item-container">
+                                            <div key={file.path} className="vx-gm-file-item-container">
                                                 <Flex align={Flex.Align.CENTER} justify={Flex.Justify.BETWEEN}>
                                                     <button
-                                                        className="file-item github-modal-file"
+                                                        className="vx-gm-file-item github-modal-file"
                                                         onClick={(event: Event) => handleFileClick(file, event, currentPath)}
                                                         onContextMenu={(event) => handleContextMenu(event, file)}
                                                     >
-                                                        <div className="file-item-content">
+                                                        <div className="vx-gm-file-item-content">
                                                             <FileIcon type={file.type} name={file.name}/>
                                                             <span>{file.name}</span>
                                                         </div>
@@ -674,7 +674,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                     })}
                                 </div>
 
-                                <div className="repo-stats">
+                                <div className="vx-gm-repo-stats">
                                     <span>{contributors.length} Contributors</span>
                                     <span>{forksList.length} Forks</span>
                                     <span>{branches.length} Branches</span>
@@ -683,33 +683,33 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         )}
 
                         {currentPage === 'releases' && (
-                            <div className="release-container">
+                            <div className="vx-gm-release-container">
                                 {releases.map((release: any) => (
-                                    <div key={release.id} className="release-item">
-                                        <div className="release-header">
-                                            <h4 className="release-title">{release.name}</h4>
-                                            <span className="release-tag">{release.tag_name}</span>
+                                    <div key={release.id} className="vx-gm-release-item">
+                                        <div className="vx-gm-release-header">
+                                            <h4 className="vx-gm-release-title">{release.name}</h4>
+                                            <span className="vx-gm-release-tag">{release.tag_name}</span>
                                         </div>
                                         <Markdown text={release?.body ?? ""}/>
                                         <a
                                             href={release.html_url}
-                                            className="asset-link"
+                                            className="vx-gm-asset-link"
                                             target="_blank"
                                             rel="noopener noreferrer">
                                             View on GitHub
                                         </a>
-                                        <div className="assets-section">
+                                        <div className="vx-gm-assets-section">
                                             {release.assets.map((asset: {
                                                 id: React.Key | null | undefined;
                                                 browser_download_url: string | URL | undefined;
                                                 name: string
                                                 size: number
                                             }) => (
-                                                <div className="asset-item" key={asset.id}>
+                                                <div className="vx-gm-asset-item" key={asset.id}>
                                                     <a onClick={() => downloadAsset(asset.browser_download_url)}
-                                                       className="asset-link">
-                                                        <span className="asset-name">{asset.name}</span>
-                                                        <span className="asset-size">{format(asset.size)}</span>
+                                                       className="vx-gm-asset-link">
+                                                        <span className="vx-gm-asset-name">{asset.name}</span>
+                                                        <span className="vx-gm-asset-size">{format(asset.size)}</span>
                                                     </a>
                                                 </div>
                                             ))}
@@ -734,14 +734,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         )}
 
                         {currentPage === 'pullRequests' && (
-                            <div className="pull-requests-container">
+                            <div className="vx-gm-pull-requests-container">
                                 {pullRequests.map((pr: any) => (
-                                    <div key={pr.id} className="pr-item">
-                                        <h4 className="pr-title">{pr.title}</h4>
+                                    <div key={pr.id} className="vx-gm-pr-item">
+                                        <h4 className="vx-gm-pr-title">{pr.title}</h4>
                                         <Markdown text={pr?.body ?? ""}/>
                                         <a
                                             href={pr.html_url}
-                                            className="pr-link"
+                                            className="vx-gm-pr-link"
                                             target="_blank"
                                             rel="noopener noreferrer">
                                             View on GitHub
@@ -759,14 +759,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         )}
 
                         {currentPage === 'issues' && (
-                            <div className="issues-container">
+                            <div className="vx-gm-issues-container">
                                 {issues.map((issue: any) => (
-                                    <div key={issue.id} className="issue-item">
-                                        <h4 className="issue-title">{issue.title}</h4>
+                                    <div key={issue.id} className="vx-gm-issue-item">
+                                        <h4 className="vx-gm-issue-title">{issue.title}</h4>
                                         <Markdown text={issue?.body ?? ""}/>
                                         <a
                                             href={issue.html_url}
-                                            className="issue-link"
+                                            className="vx-gm-issue-link"
                                             target="_blank"
                                             rel="noopener noreferrer">
                                             View on GitHub

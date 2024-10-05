@@ -567,10 +567,10 @@ export class VXNodeList<T extends Node> {
 
   [key: number]: T;
 
-  querySelector(selectors: string): T | null {
+  querySelector<E extends T>(selectors: string): E | null {
     for (const node of this) {
       if (!(node instanceof Element)) continue;
-      if (node.matches(selectors)) return node;
+      if (node.matches(selectors)) return node as unknown as E;
     }
 
     return null;
