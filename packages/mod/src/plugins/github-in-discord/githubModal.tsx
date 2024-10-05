@@ -3,7 +3,7 @@ import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModa
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
 import {FileIcon, imageFileTypes, videoFileTypes} from "./icons";
-import {onPip} from "../pip";
+import {openPip} from "../pip";
 import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
@@ -70,7 +70,7 @@ class GitHubService {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
             if (res.download_url) {
                 if (videoFileTypes.includes(ext) && event?.shiftKey) {
-                    onPip({res})
+                    openPip(res.name, res.download_url)
                     return;
                 } else if (videoFileTypes.includes(ext)) {
                     openVideoModal(res.download_url);

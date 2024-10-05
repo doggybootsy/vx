@@ -101,7 +101,7 @@ function getBuffers(node: HTMLVideoElement) {
   return buffers;
 };
 
-export function onPip({res})
+export function openPip(name, download)
 {
   const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
   openWindow({
