@@ -106,7 +106,7 @@ export function onPip({res})
   const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
   openWindow({
     id: key,
-    title: res.name(),
+    title: res.name,
     css: popout.css,
     render({window}) {
       return <PIPWindow window={window} src={res.download_url} windowKey={key}/>;
