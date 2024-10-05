@@ -64,48 +64,6 @@ class GitHubService {
         const endpoint = `/repos/${user}/${repo}/branches`;
         return this.fetchFromGitHub(endpoint);
     }
-
-    extractRepoPath(url: string) {
-        const parts = url.split('/');
-        const user = parts[3];
-        const repo = parts[4];
-        return `${user}/${repo}`;
-    }
-
-    extractStylesheetLinks(htmlContent: string): string[] {
-        const styleSheetLinks: string[] = [];
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlContent, 'text/html');
-
-        const linkElements = doc.querySelectorAll('link[rel="stylesheet"]');
-        linkElements.forEach(link => {
-            styleSheetLinks.push(link.getAttribute('href'));
-        });
-        return styleSheetLinks;
-    }
-
-
-    async fetchStylesheet(url: string): Promise<string> {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch stylesheet: ${url}`);
-        }
-        return response.text();
-    }
-
-    convertToRawGitHubUrl(url: string): string {
-        return `https://raw.githubusercontent.com/`
-    }
-
-    executeInSandbox(script: string) {
-        const sandbox = {};
-        const scriptFunction = new Function('sandbox', script);
-        try {
-            scriptFunction(sandbox);
-        } catch (error) {
-            console.error('Error executing script:', error);
-        }
-    }
     
     async openFile(url: string, event?: MouseEvent, currentPath) {
         await this.fetchFromGitHub(url, true).then(async res => {
@@ -392,14 +350,9 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [progress, setProgress] = useState(0)
     
     const theme = settings.theme.use()
-
-    typeof theme === "string" && document.documentElement.setAttribute('data-theme', theme);
     
     useEffect(() => {
         initializeRepo();
-        return () => {
-            document.documentElement.removeAttribute('data-theme');
-        }
     }, [url]);
 
     
@@ -582,7 +535,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     };
 
     return (
-        <ModalComponents.Root className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
+        <ModalComponents.Root data-theme={theme} className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
             <ModalComponents.Header className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Icons.Github />

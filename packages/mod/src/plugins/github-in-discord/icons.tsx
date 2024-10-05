@@ -1,5 +1,5 @@
 import { Icons } from "../../components";
-import {textFileUtils} from "../archive-viewer/modal";
+import {textFileUtils} from "../archive-viewer/util";
 
 export function CodeFile() {
     return (
