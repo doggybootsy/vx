@@ -1,4 +1,5 @@
 import { Icons } from "../../components";
+import {textFileUtils} from "../archive-viewer/modal";
 
 export function CodeFile() {
     return (
@@ -11,14 +12,12 @@ export function CodeFile() {
 
 export const imageFileTypes = ['.png', '.jpg', '.jpeg', '.gif'];
 export const videoFileTypes = ['.mp4', '.avi', '.mov', '.mkv'];
-export const codeFileTypes = ['.js', '.jsx', '.ts', '.tsx', '.cpp', '.cs', '.java', '.py', '.html', '.css', '.scss', '.json', '.xml', '.yaml', '.txt', '.md', '.sql', '.rb', '.go', '.php', '.swift', '.rs', '.pl', '.lua', '.dart', '.kotlin', '.r','.powershell','.ps1','.ps','.php'];
-
 export const FileIcon = ({ type, name }) => {
     const ext = name.slice(name.lastIndexOf('.'));
 
     if (imageFileTypes.includes(ext)) return <Icons.Image />;
     if (videoFileTypes.includes(ext)) return <Icons.Movie />;
-    if (codeFileTypes.includes(ext)) return <CodeFile />;
+    if (textFileUtils.isPlaintextPreviewableFile(name || ext)) return <CodeFile />;
 
     return type === 'dir' ? (
         <svg className="file-icon" viewBox="0 0 16 16" fill="currentColor">
