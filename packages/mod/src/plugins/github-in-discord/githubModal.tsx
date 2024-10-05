@@ -1,25 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModal} from '../../api/modals';
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
-import {Github} from "../../components/icons";
 import {settings} from "./index";
 import {codeFileTypes, FileIcon, imageFileTypes, videoFileTypes} from "./icons";
 import {PIPWindow, popoutCSS} from "../pip";
 import {openWindow} from "../../api/window";
-
+import MarkdownRenderer from "./markdownModule";
 interface GitHubUrlInfo {
     user: string;
     repo: string;
     branch: string;
     path?: string;
-}
-
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
 }
 
 class GitHubService {
@@ -47,23 +38,65 @@ class GitHubService {
         return this.fetchFromGitHub(endpoint);
     }
 
-    async openFile(url: string, event?: MouseEvent) {
-        await this.fetchFromGitHub(url, true).then(res => {
+    extractRepoPath(url: string) {
+        const parts = url.split('/');
+        const user = parts[3];
+        const repo = parts[4];
+        return `${user}/${repo}`;
+    }
+
+    extractStylesheetLinks(htmlContent: string): string[] {
+        const styleSheetLinks: string[] = [];
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+
+        const linkElements = doc.querySelectorAll('link[rel="stylesheet"]');
+        linkElements.forEach(link => {
+            styleSheetLinks.push(link.getAttribute('href'));
+        });
+        return styleSheetLinks;
+    }
+
+
+    async fetchStylesheet(url: string): Promise<string> {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch stylesheet: ${url}`);
+        }
+        return response.text();
+    }
+
+    convertToRawGitHubUrl(url: string): string {
+        return `https://raw.githubusercontent.com/`
+    }
+
+    executeInSandbox(script: string) {
+        const sandbox = {};
+        const scriptFunction = new Function('sandbox', script);
+        try {
+            scriptFunction(sandbox);
+        } catch (error) {
+            console.error('Error executing script:', error);
+        }
+    }
+    
+    async openFile(url: string, event?: MouseEvent, currentPath) {
+        await this.fetchFromGitHub(url, true).then(async res => {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
-            const key = `DISCORD_VX_${generateUUID()}`
+            const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
             if (res.download_url) {
                 if (videoFileTypes.includes(ext) && event?.shiftKey) {
                     openWindow({
                         id: key,
                         title: res.name,
                         css: popoutCSS.css,
-                        render({ window }) {
-                            return <PIPWindow window={window} src={res.download_url} windowKey={key} />
+                        render({window}) {
+                            return <PIPWindow window={window} src={res.download_url} windowKey={key}/>;
                         }
                     });
                     return;
                 } else if (videoFileTypes.includes(ext)) {
-                    openVideoModal(res.download_url)
+                    openVideoModal(res.download_url);
                     return;
                 }
 
@@ -71,6 +104,20 @@ class GitHubService {
                     openImageModal(res.download_url);
                     return;
                 }
+
+                
+                if (ext === '.md') {
+                    openModal((props) => (
+                        <ModalComponents.Root {...props} size={SystemDesign.ModalSize.DYNAMIC}>
+                            <ModalComponents.Content>
+                                <MarkdownRenderer {...props} markdown={this.decodeContent(res.content)} />
+                            </ModalComponents.Content>
+                        </ModalComponents.Root>
+                    ))
+                    return;
+                }
+                 
+
             }
 
             openCodeModal({
@@ -303,13 +350,13 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         }
     };
 
-    const handleFileClick = async (file: FileItem, event?: Event) => {
+    const handleFileClick = async (file: FileItem, event?: Event, currentPath) => {
         if (file.type === 'dir') {
             const newPath = [...currentPath, file.name];
             setCurrentPath(newPath);
             await loadFiles(repoInfo, newPath);
         } else {
-            await githubService.openFile(file.url, event);
+            await githubService.openFile(file.url, event, currentPath);
         }
     };
 
@@ -406,7 +453,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         <ModalComponents.Root className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
             <ModalComponents.Header className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Github />
+                    <Icons.Github />
                     <span>{repoInfo?.user}/{repoInfo?.repo}</span>
                 </div>
 
@@ -504,7 +551,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                         <button
                                             key={file.path}
                                             className="file-item github-modal-file"
-                                            onClick={(event: Event) => handleFileClick(file, event)}
+                                            onClick={(event: Event) => handleFileClick(file, event, currentPath)}
                                         >
                                             <div className="file-item-content">
                                                 <FileIcon type={file.type} name={file.name}/>
