@@ -1,5 +1,5 @@
 import { Icons } from "../../components";
-import {textFileUtils} from "../archive-viewer/util";
+import {textFileUtils} from "@webpack/common";
 
 export function CodeFile() {
     return (

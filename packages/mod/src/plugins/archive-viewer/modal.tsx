@@ -8,7 +8,7 @@ import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "vx:uncompress";
 import { isArchive } from ".";
 import { Messages } from "vx:i18n";
-import {textFileUtils} from "./util";
+import {textFileUtils} from "@webpack/common";
 
 interface ZipModalProps extends ModalProps {
   src: string | File

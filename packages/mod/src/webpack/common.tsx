@@ -246,6 +246,10 @@ const openUserMenuModule = getMangledProxy<{
 }>(",showMute:!1,targetIsUser:!0", {
   openUserContextMenu: byStrings(".isGroupDM()?")
 })
+export const textFileUtils = getMangledProxy<{ isPlaintextPreviewableFile: (name: string) => boolean, plaintextPreviewableFiles: Set<string> }>('"powershell","ps","ps1"', {
+  plaintextPreviewableFiles: (m) => m instanceof Set,
+  isPlaintextPreviewableFile: (m) => m instanceof Function
+});
 
 export function openUserContextMenu(event: React.MouseEvent, user: User | string, useCurrentChannel: boolean = false) {
   if (typeof user === "string") user = UserStore.getUser(user);
