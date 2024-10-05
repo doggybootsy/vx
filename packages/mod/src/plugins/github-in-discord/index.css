@@ -1,0 +1,745 @@
+:root {
+    /* Dark Mode (Default) */
+    --vx-background-default: #22272e;
+    --vx-background-secondary: #2d333b;
+    --vx-background-tertiary: rgba(99, 110, 123, 0.4);
+    --vx-text-default: #adbac7;
+    --vx-text-secondary: #768390;
+    --vx-accent-primary: #539bf5;
+    --vx-border-default: #444c56;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
+    --vx-button-primary-bgColor: #1f6feb;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+    --vx-background-default: #ffffff;
+    --vx-background-secondary: #f6f8fa;
+    --vx-background-tertiary: rgba(208, 215, 222, 0.4);
+    --vx-text-default: #24292e;
+    --vx-text-secondary: #586069;
+    --vx-accent-primary: #0366d6;
+    --vx-border-default: #e1e4e8;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.12);
+    --vx-button-primary-bgColor: #0366d6;
+}
+
+/* Contrast Mode */
+[data-theme="contrast"] {
+    --vx-background-default: #121212;
+    --vx-background-secondary: #1e1e1e;
+    --vx-background-tertiary: rgba(50, 50, 50, 0.4);
+    --vx-text-default: #ffffff;
+    --vx-text-secondary: #b3b3b3;
+    --vx-accent-primary: #bb86fc;
+    --vx-border-default: #333333;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.48);
+    --vx-button-primary-bgColor: #6200ea;
+}
+
+/* Dark High Contrast Mode */
+[data-theme="dark-high-contrast"] {
+    --vx-background-default: #000000;
+    --vx-background-secondary: #1a1a1a;
+    --vx-background-tertiary: rgba(50, 50, 50, 0.4);
+    --vx-text-default: #ffffff;
+    --vx-text-secondary: #cccccc;
+    --vx-accent-primary: #ff6f61;
+    --vx-border-default: #444444;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.64);
+    --vx-button-primary-bgColor: #ff6f61;
+}
+
+/* Light Colorblind Mode */
+[data-theme="light-colorblind"] {
+    --vx-background-default: #ffffff;
+    --vx-background-secondary: #f6f8fa;
+    --vx-background-tertiary: rgba(208, 215, 222, 0.4);
+    --vx-text-default: #24292e;
+    --vx-text-secondary: #586069;
+    --vx-accent-primary: #008080;
+    --vx-border-default: #e1e4e8;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.12);
+    --vx-button-primary-bgColor: #008080;
+}
+
+/* Dark Colorblind Mode */
+[data-theme="dark-colorblind"] {
+    --vx-background-default: #22272e;
+    --vx-background-secondary: #2d333b;
+    --vx-background-tertiary: rgba(99, 110, 123, 0.4);
+    --vx-text-default: #adbac7;
+    --vx-text-secondary: #768390;
+    --vx-accent-primary: #008080;
+    --vx-border-default: #444c56;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.32);
+    --vx-button-primary-bgColor: #008080;
+}
+
+/* Random Theme 1 */
+[data-theme="random-1"] {
+    --vx-background-default: #ffcccb;
+    --vx-background-secondary: #ffb6c1;
+    --vx-background-tertiary: rgba(255, 182, 193, 0.4);
+    --vx-text-default: #8b0000;
+    --vx-text-secondary: #a52a2a;
+    --vx-accent-primary: #ff69b4;
+    --vx-border-default: #ff1493;
+    --vx-shadow-modal: 0 8px 24px rgba(255, 20, 147, 0.32);
+    --vx-button-primary-bgColor: #ff1493;
+}
+
+/* Random Theme 2 */
+[data-theme="random-2"] {
+    --vx-background-default: #add8e6;
+    --vx-background-secondary: #87ceeb;
+    --vx-background-tertiary: rgba(135, 206, 235, 0.4);
+    --vx-text-default: #00008b;
+    --vx-text-secondary: #191970;
+    --vx-accent-primary: #00bfff;
+    --vx-border-default: #1e90ff;
+    --vx-shadow-modal: 0 8px 24px rgba(30, 144, 255, 0.32);
+    --vx-button-primary-bgColor: #1e90ff;
+}
+
+/* Random Theme 3 */
+[data-theme="random-3"] {
+    --vx-background-default: #f0e68c;
+    --vx-background-secondary: #fffacd;
+    --vx-background-tertiary: rgba(255, 250, 205, 0.4);
+    --vx-text-default: #800000;
+    --vx-text-secondary: #a52a2a;
+    --vx-accent-primary: #ffd700;
+    --vx-border-default: #daa520;
+    --vx-shadow-modal: 0 8px 24px rgba(218, 165, 32, 0.32);
+    --vx-button-primary-bgColor: #daa520;
+}
+
+/* Solarized Dark Theme */
+[data-theme="solarized-dark"] {
+    --vx-background-default: #002b36;
+    --vx-background-secondary: #073642;
+    --vx-background-tertiary: rgba(0, 43, 54, 0.4);
+    --vx-text-default: #839496;
+    --vx-text-secondary: #93a1a1;
+    --vx-accent-primary: #268bd2;
+    --vx-border-default: #586e75;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #268bd2;
+}
+
+/* Solarized Light Theme */
+[data-theme="solarized-light"] {
+    --vx-background-default: #fdf6e3;
+    --vx-background-secondary: #eee8d5;
+    --vx-background-tertiary: rgba(238, 232, 213, 0.4);
+    --vx-text-default: #657b83;
+    --vx-text-secondary: #839496;
+    --vx-accent-primary: #268bd2;
+    --vx-border-default: #93a1a1;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.2);
+    --vx-button-primary-bgColor: #268bd2;
+}
+
+/* Monokai Theme */
+[data-theme="monokai"] {
+    --vx-background-default: #272822;
+    --vx-background-secondary: #3e3d32;
+    --vx-background-tertiary: rgba(62, 61, 50, 0.4);
+    --vx-text-default: #f8f8f2;
+    --vx-text-secondary: #75715e;
+    --vx-accent-primary: #66d9ef;
+    --vx-border-default: #f92672;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.3);
+    --vx-button-primary-bgColor: #f92672;
+}
+
+/* Dracula Theme */
+[data-theme="dracula"] {
+    --vx-background-default: #282a36;
+    --vx-background-secondary: #44475a;
+    --vx-background-tertiary: rgba(68, 71, 90, 0.4);
+    --vx-text-default: #f8f8f2;
+    --vx-text-secondary: #6272a4;
+    --vx-accent-primary: #ff79c6;
+    --vx-border-default: #bd93f9;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #ff79c6;
+}
+
+/* Oceanic Theme */
+[data-theme="oceanic"] {
+    --vx-background-default: #1b2b34;
+    --vx-background-secondary: #343d46;
+    --vx-background-tertiary: rgba(27, 43, 52, 0.4);
+    --vx-text-default: #d8dee9;
+    --vx-text-secondary: #a7adba;
+    --vx-accent-primary: #6699cc;
+    --vx-border-default: #4f5b66;
+    --vx-shadow-modal: 0 8px 24px rgba(0,0,0,0.4);
+    --vx-button-primary-bgColor: #6699cc;
+}
+
+/* Forest Green Theme */
+[data-theme="forest-green"] {
+    --vx-background-default: #2b4d3f;
+    --vx-background-secondary: #395c4a;
+    --vx-background-tertiary: rgba(59, 92, 74, 0.4);
+    --vx-text-default: #cdeccd;
+    --vx-text-secondary: #6d9070;
+    --vx-accent-primary: #4caf50;
+    --vx-border-default: #1b5e20;
+    --vx-shadow-modal: 0 8px 24px rgba(27, 94, 32, 0.32);
+    --vx-button-primary-bgColor: #4caf50;
+}
+
+/* Lava Red Theme */
+[data-theme="lava-red"] {
+    --vx-background-default: #7f1d1d;
+    --vx-background-secondary: #991b1b;
+    --vx-background-tertiary: rgba(153, 27, 27, 0.4);
+    --vx-text-default: #fcd5d5;
+    --vx-text-secondary: #f87171;
+    --vx-accent-primary: #ef4444;
+    --vx-border-default: #b91c1c;
+    --vx-shadow-modal: 0 8px 24px rgba(185, 28, 28, 0.32);
+    --vx-button-primary-bgColor: #ef4444;
+}
+
+/* Twilight Theme */
+[data-theme="twilight"] {
+    --vx-background-default: #3a3a3a;
+    --vx-background-secondary: #4d4d4d;
+    --vx-background-tertiary: rgba(77, 77, 77, 0.4);
+    --vx-text-default: #e5e5e5;
+    --vx-text-secondary: #cccccc;
+    --vx-accent-primary: #ff6b6b;
+    --vx-border-default: #5c5c5c;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.32);
+    --vx-button-primary-bgColor: #ff6b6b;
+}
+
+/* Purple Night Theme */
+[data-theme="purple-night"] {
+    --vx-background-default: #2d006a;
+    --vx-background-secondary: #39008c;
+    --vx-background-tertiary: rgba(57, 0, 140, 0.4);
+    --vx-text-default: #f3e8ff;
+    --vx-text-secondary: #c3abf5;
+    --vx-accent-primary: #9f7aea;
+    --vx-border-default: #6b46c1;
+    --vx-shadow-modal: 0 8px 24px rgba(107, 70, 193, 0.32);
+    --vx-button-primary-bgColor: #9f7aea;
+}
+
+/* Retro Green Theme */
+[data-theme="retro-green"] {
+    --vx-background-default: #004d00;
+    --vx-background-secondary: #006600;
+    --vx-background-tertiary: rgba(0, 77, 0, 0.4);
+    --vx-text-default: #b3ffb3;
+    --vx-text-secondary: #99ff99;
+    --vx-accent-primary: #33cc33;
+    --vx-border-default: #009900;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 153, 0, 0.32);
+    --vx-button-primary-bgColor: #33cc33;
+}
+
+/* Vibrant Yellow Theme */
+[data-theme="vibrant-yellow"] {
+    --vx-background-default: #ffea00;
+    --vx-background-secondary: #ffec3d;
+    --vx-background-tertiary: rgba(255, 236, 61, 0.4);
+    --vx-text-default: #3d3d3d;
+    --vx-text-secondary: #5a5a5a;
+    --vx-accent-primary: #ffc107;
+    --vx-border-default: #ffd700;
+    --vx-shadow-modal: 0 8px 24px rgba(255, 215, 0, 0.32);
+    --vx-button-primary-bgColor: #ffc107;
+}
+
+/* Cyberpunk Theme */
+[data-theme="cyberpunk"] {
+    --vx-background-default: #0d0d0d;
+    --vx-background-secondary: #1a1a1a;
+    --vx-background-tertiary: rgba(26, 26, 26, 0.4);
+    --vx-text-default: #f0f;
+    --vx-text-secondary: #ff00ff;
+    --vx-accent-primary: #00ffff;
+    --vx-border-default: #ff00ff;
+    --vx-shadow-modal: 0 8px 24px rgba(0, 255, 255, 0.5);
+    --vx-button-primary-bgColor: #00ffff;
+}
+
+/* Nebula Theme */
+[data-theme="nebula"] {
+    --vx-background-default: #1b0030;
+    --vx-background-secondary: #2e0047;
+    --vx-background-tertiary: rgba(30, 0, 70, 0.4);
+    --vx-text-default: #ebccff;
+    --vx-text-secondary: #d1b3ff;
+    --vx-accent-primary: #ff66ff;
+    --vx-border-default: #800080;
+    --vx-shadow-modal: 0 8px 24px rgba(128, 0, 128, 0.32);
+    --vx-button-primary-bgColor: #ff66ff;
+}
+
+/* Mint Green Theme */
+[data-theme="mint-green"] {
+    --vx-background-default: #98ff98;
+    --vx-background-secondary: #adffad;
+    --vx-background-tertiary: rgba(173, 255, 173, 0.4);
+    --vx-text-default: #006400;
+    --vx-text-secondary: #008000;
+    --vx-accent-primary: #32cd32;
+    --vx-border-default: #228b22;
+    --vx-shadow-modal: 0 8px 24px rgba(34, 139, 34, 0.32);
+    --vx-button-primary-bgColor: #32cd32;
+}
+
+#app-mount .vx-gm-button {
+    background-color: var(--vx-button-primary-bgColor);
+    transition: background-color 0.3s ease; 
+}
+
+#app-mount .vx-gm-button:hover {
+    filter: brightness(0.85); 
+}
+
+#app-mount .vx-gm-button:active {
+    filter: brightness(1.25);
+}
+
+.github-modal-close:hover {
+    background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));
+}
+.github-modal-file:hover {
+    background-color: var(--vx-background-secondary);
+}
+.github-modal-breadcrumb:hover {
+    background-color: var(--vx-background-tertiary, rgba(175, 184, 193, 0.2));
+}
+
+.modal {
+    background-color: var(--vx-background-default);
+    color: var(--vx-text-default, #1F2328);
+    border: 1px solid var(--vx-border-default, #d0d7de);
+    border-radius: 6px;
+    box-shadow: var(--shadow-modal, 0 8px 24px rgba(140,149,159,0.2));
+    width: 100%;
+    max-width: 880px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--vx-border-default, #d0d7de);
+}
+
+.modal-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--vx-text-secondary, #656d76);
+    border-radius: 6px;
+}
+
+.modal-content {
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.breadcrumb-button {
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--vx-accent-primary, #0969da);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.breadcrumb-separator {
+    color: var(--vx-text-secondary, #656d76);
+}
+
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--vx-text-default, #1F2328);
+    text-decoration: none;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+}
+
+.file-icon {
+    margin-right: 12px;
+    color: var(--vx-text-secondary, #656d76);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.progress-bar-container {
+    width: 100%;
+    display: flex;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #4caf50;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--vx-border-default, #d0d7de);
+    border-top-color: var(--vx-accent-primary, #0969da);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.repo-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.repo-stats span {
+    font-size: 14px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.release-container {
+    background-color: var(--vx-background-default);
+    color: var(--vx-text-default);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--vx-border-default);
+    margin-bottom: 24px;
+}
+
+.release-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.release-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--vx-text-default);
+}
+
+.release-commits {
+    font-size: 14px;
+    color: var(--vx-text-secondary);
+}
+
+.release-tag {
+    font-size: 14px;
+    background-color: var(--vx-background-secondary);
+    color: var(--vx-text-default);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.assets-section {
+    margin-top: 16px;
+    padding: 8px 0;
+    border-top: 1px solid var(--vx-border-default);
+}
+
+.asset-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    color: var(--vx-text-default);
+    text-decoration: none;
+    border-bottom: 1px solid var(--vx-background-secondary);
+}
+
+.asset-item:hover {
+    background-color: var(--vx-background-secondary);
+}
+
+.asset-name {
+    font-size: 14px;
+    color: var(--vx-text-default);
+}
+
+.asset-size {
+    font-size: 12px;
+    color: var(--vx-text-secondary);
+}
+
+.asset-link {
+    text-decoration: none;
+    color: var(--vx-accent-primary);
+}
+
+.asset-link:hover {
+    text-decoration: underline;
+}
+
+.pull-requests-container {
+    margin-top: 20px;
+    padding: 16px;
+    border-top: 1px solid #e1e4e8;
+}
+
+.pull-requests-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--vx-text-default);
+}
+
+.pr-item {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--vx-background-secondary);
+}
+
+.pr-item .pr-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--vx-text-default);
+}
+
+.pr-item p {
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: var(--vx-text-default);
+    line-height: 1.5;
+}
+
+.pr-item .pr-link {
+    display: inline-block;
+    margin-right: 16px;
+    color: #0366d6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.pr-item .pr-link:hover {
+    text-decoration: underline;
+}
+
+.issues-container {
+    margin-top: 20px;
+    padding: 16px;
+    border-top: 1px solid #e1e4e8;
+}
+
+.issues-container h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--vx-text-default);
+}
+
+.issue-item {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--vx-background-secondary);
+}
+
+.issue-item .issue-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--vx-text-default);
+}
+
+.issue-item p {
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: var(--vx-text-default);
+    line-height: 1.5;
+}
+
+.issue-item .issue-link {
+    display: inline-block;
+    margin-right: 16px;
+    color: #0366d6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.issue-item .issue-link:hover {
+    text-decoration: underline;
+}
+
+.vx-markdown-paragraph {
+    margin: 1em 0;
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+.vx-markdown-header {
+    margin: 0.5em 0;
+    font-weight: bold;
+}
+
+.vx-markdown-header-1 {
+    font-size: 2em;
+}
+
+.vx-markdown-header-2 {
+    font-size: 1.5em;
+}
+
+.vx-markdown-header-3 {
+    font-size: 1.17em;
+}
+
+.vx-markdown-blockquote {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    border-left: 4px solid #ccc;
+    background-color: var(--vx-background-secondary);
+    font-style: italic;
+}
+
+.vx-markdown-strikethrough {
+    text-decoration: line-through;
+}
+
+.vx-markdown-code-block {
+    background-color: #f4f4f4;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.vx-markdown-inline-code {
+    background-color: var(--vx-background-default);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.vx-markdown-strong {
+    font-weight: bold;
+}
+
+.vx-markdown-em {
+    font-style: italic;
+}
+
+.vx-markdown-list {
+    list-style-type: disc;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.vx-markdown-ordered-list {
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.vx-markdown-image {
+    max-width: 100%;
+    height: auto;
+    margin: 1em 0;
+}
+
+.vx-markdown-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.vx-markdown-link:hover {
+    text-decoration: underline;
+}

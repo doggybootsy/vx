@@ -8,6 +8,7 @@ import { className, download, getParents } from "../../util";
 import { archiveOpenFileAsync } from "vx:uncompress";
 import { isArchive } from ".";
 import { Messages } from "vx:i18n";
+import {textFileUtils} from "@webpack/common";
 
 interface ZipModalProps extends ModalProps {
   src: string | File
@@ -22,11 +23,6 @@ interface GetContent extends Function {
 type FileTypeDir = { children: { [key in string]: FileType }, name: string, dir: true, path: string };
 type FileTypeFile = { name: string, dir: false, getContent: GetContent, path: string, is: { image: boolean, video: boolean, code: boolean, zip: boolean } };
 type FileType = FileTypeDir | FileTypeFile;
-
-const textFileUtils = getMangledProxy<{ isPlaintextPreviewableFile: (name: string) => boolean, plaintextPreviewableFiles: Set<string> }>('"powershell","ps","ps1"', {
-  plaintextPreviewableFiles: (m) => m instanceof Set,
-  isPlaintextPreviewableFile: (m) => m instanceof Function
-});
 
 const isVideoFile = (file: string) => /\.(mp4|mov)$/i.test(file.split("?")[0]);
 const isImageFile = (file: string) => /\.(png|jpe?g|webp|gif|heic|heif|dng)$/i.test(file.split("?")[0]);

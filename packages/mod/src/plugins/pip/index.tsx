@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { definePlugin, isPluginEnabled } from "..";
 import { Button, ErrorBoundary, Icons } from "../../components";
@@ -14,6 +14,7 @@ import { settings } from "../loop";
 import { getProxy, getProxyByStrings } from "@webpack";
 import { IS_DESKTOP } from "vx:self";
 import { DiscordIcon } from "../../components/icons";
+import exp from "node:constants";
 
 const storage = new DataStore<{
   volume: number,
@@ -100,6 +101,18 @@ function getBuffers(node: HTMLVideoElement) {
   return buffers;
 };
 
+export function openPip(name, download)
+{
+  const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
+  openWindow({
+    id: key,
+    title: res.name,
+    css: popout.css,
+    render({window}) {
+      return <PIPWindow window={window} src={res.download_url} windowKey={key}/>;
+    }
+  });
+}
 
 function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src: string, windowKey: string }) {
   const video = useRef<HTMLVideoElement>(null);
