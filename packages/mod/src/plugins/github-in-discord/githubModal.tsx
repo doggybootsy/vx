@@ -8,7 +8,8 @@ import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
 import JSZip from "jszip";
-import {download} from "../../util";
+import {clipboard, download} from "../../util";
+import React from 'react';
 
 interface GitHubUrlInfo {
     user: string;
@@ -64,8 +65,28 @@ class GitHubService {
         const endpoint = `/repos/${user}/${repo}/branches`;
         return this.fetchFromGitHub(endpoint);
     }
-    
-    async openFile(url: string, event?: MouseEvent, currentPath) {
+
+    async openJsonFile(url: string, event?: MouseEvent, currentPath: string[]) {
+        const response = await this.fetchFromGitHub(url, true);
+        const jsonContent = JSON.parse(this.decodeContent(response.content));
+
+        openModal((props) => (
+            <ModalComponents.Root data-theme={settings.theme.get()} className="vx-gm-modal" {...props} size={ModalComponents.ModalSize.LARGE}>
+                <ModalComponents.Header className="vx-gm-modal-header">
+                    <div className="vx-gm-modal-header-title"
+                         style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+                        <Icons.Github/>
+                        <span>JSON Viewer</span>
+                    </div>
+                </ModalComponents.Header>
+                <ModalComponents.Content>
+                    <JsonViewer json={jsonContent}/>
+                </ModalComponents.Content>
+            </ModalComponents.Root>
+        ));
+    }
+
+    async openFile(url: string, event?: MouseEvent) {
         await this.fetchFromGitHub(url, true).then(async res => {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
             if (res.download_url) {
@@ -249,6 +270,75 @@ const CloseIcon = () => (
     </svg>
 );
 
+class JsonViewerProps {
+    public json: string | undefined;
+}
+
+const JsonViewer: React.FC<JsonViewerProps> = ({ json }) => {
+    const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+
+    const toggleExpand = (key: string) => {
+        if (expandedKeys.includes(key)) {
+            setExpandedKeys(expandedKeys.filter(k => k !== key));
+        } else {
+            setExpandedKeys([...expandedKeys, key]);
+        }
+    };
+
+    const renderJson = (data: any, keyPrefix: string = '') => {
+        if (typeof data === 'object' && data !== null) {
+            return (
+                <ul>
+                    {Object.entries(data).map(([key, value]) => {
+                        const fullKey = keyPrefix ? `${keyPrefix}.${key}` : key;
+                        const isExpanded = expandedKeys.includes(fullKey);
+                        return (
+                            <li key={fullKey}>
+                                <div
+                                    onClick={() => toggleExpand(fullKey)}
+                                    onContextMenu={(event) => handleContextMenu(event, value)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <strong>{key}:</strong>
+                                    {isExpanded ? ' -' : ' +'}
+                                </div>
+                                {isExpanded && renderJson(value, fullKey)}
+                            </li>
+                        );
+                    })}
+                </ul>
+            );
+        } else {
+            return (
+                <span onContextMenu={(event) => handleContextMenu(event, data)}>
+                    {JSON.stringify(data)}
+                </span>
+            );
+        }
+    };
+
+    const handleContextMenu = (event: React.MouseEvent, value: any) => {
+        event.preventDefault();
+        openMenu(event, (props) => (
+            <MenuComponents.Menu {...props} onClose={() => props.onClose?.()} navId={"vx-json-viewer"}>
+                <MenuComponents.Item
+                    id={"vx-json-viewer-copy"}
+                    label={"Copy Value"}
+                    action={() => {
+                        clipboard.copy(JSON.stringify(value))
+                    }}
+                />
+            </MenuComponents.Menu>
+        ));
+    };
+
+    return (
+        <div className="vx-json-viewer">
+            {renderJson(json)}
+        </div>
+    );
+};
+
 async function fetchFile(url) {
     const response = await fetch(url);
 
@@ -415,7 +505,12 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
             setCurrentPath(newPath);
             await loadFiles(repoInfo, newPath);
         } else {
-            await githubService.openFile(file.url, event, currentPath);
+            const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+            if (ext === '.json') {
+                await githubService.openJsonFile(file.url, event, currentPath);
+            } else {
+                await githubService.openFile(file.url, event, currentPath);
+            }
         }
     };
 

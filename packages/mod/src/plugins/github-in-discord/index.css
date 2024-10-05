@@ -765,3 +765,28 @@
     background-color: #1c1c1c;
     padding: 20px;
 }
+
+.vx-json-viewer {
+    color: var(--vx-text-default);
+    padding: 16px;
+    border-radius: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.vx-json-viewer ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.vx-json-viewer li {
+    margin-bottom: 8px;
+}
+
+.vx-json-viewer strong {
+    color: var(--vx-text-default);
+}
+
+.vx-json-viewer span {
+    cursor: pointer;
+}
