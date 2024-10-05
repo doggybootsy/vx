@@ -8,7 +8,7 @@ import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
 import JSZip from "jszip";
-import FileSaver from "file-saver";
+import {download} from "../../util";
 
 interface GitHubUrlInfo {
     user: string;
@@ -44,7 +44,7 @@ class GitHubService {
         await this.addFilesToZip(zip, files, folderPath);
 
         const content = await zip.generateAsync({ type: 'blob' });
-        FileSaver.saveAs(content, `${repo}-${folderPath.replace(/\//g, '-')}.zip`);
+        download(`${repo}-${folderPath.replace(/\//g, '-')}.zip`, content);
     }
 
     async addFilesToZip(zip: JSZip, files: any[], folderPath: string) {
@@ -460,7 +460,8 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         }
 
         const content = await zip.generateAsync({ type: 'blob' });
-        FileSaver.saveAs(content, `${repoInfo?.repo}-selected-files.zip`);
+        // FileSaver.saveAs(content, `${repoInfo?.repo}-selected-files.zip`);
+        download(`${repoInfo?.repo}-selected-files.zip`, content)
         setIsDownloading(false);
         setProgress(0);
     };
