@@ -1,7 +1,7 @@
 // MarkdownRenderer.tsx
 import React, {useEffect} from 'react';
 import { Parser, HtmlRenderer } from 'commonmark';
-import hljs from "../../fake_node_modules/highlight.js";
+import hljs from "highlight.js";
 
 const MarkdownRenderer: React.FC<{ markdown: string }> = ({ markdown }) => {
     const parseMarkdown = (markdown: string): string => {

@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModal} from '../../api/modals';
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
-import {codeFileTypes, FileIcon, imageFileTypes, videoFileTypes} from "./icons";
+import {FileIcon, imageFileTypes, videoFileTypes} from "./icons";
 import {PIPWindow, popoutCSS} from "../pip";
 import {openWindow} from "../../api/window";
 import MarkdownRenderer from "./markdownModule";
+import {MenuComponents, openMenu} from "../../api/menu";
+import JSZip from "jszip";
+import FileSaver from "file-saver";
+
 interface GitHubUrlInfo {
     user: string;
     repo: string;
@@ -33,6 +37,29 @@ class GitHubService {
         }));
     }
 
+    async downloadFolderAsZip(user: string, repo: string, folderPath: string, branch: string = 'main') {
+        const files = await this.getRepoFiles({ user, repo, path: folderPath, branch });
+        const zip = new JSZip();
+
+        await this.addFilesToZip(zip, files, folderPath);
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        FileSaver.saveAs(content, `${repo}-${folderPath.replace(/\//g, '-')}.zip`);
+    }
+
+    async addFilesToZip(zip: JSZip, files: any[], folderPath: string) {
+        for (const file of files) {
+            if (file.type === 'file') {
+                const fileContent = await this.fetchFromGitHub(file.url, true);
+                zip.file(`${folderPath}/${file.name}`, this.decodeContent(fileContent.content));
+            } else if (file.type === 'dir') {
+                const subFolderFiles = await this.fetchFromGitHub(file.url, true);
+                const subFolderPath = `${folderPath}/${file.name}`;
+                await this.addFilesToZip(zip, subFolderFiles, subFolderPath);
+            }
+        }
+    }
+    
     async getBranches(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}/branches`;
         return this.fetchFromGitHub(endpoint);
@@ -272,6 +299,51 @@ const CloseIcon = () => (
     </svg>
 );
 
+async function fetchFile(url) {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+
+    const disposition = response.headers.get('Content-Disposition');
+    let filename = "downloaded_file"
+
+    if (disposition && disposition.indexOf('attachment') !== -1) {
+        const filenameRegex = /filename[^=\n]*=((['"]).*?\2|([^;\n]*))/;
+        const matches = filenameRegex.exec(disposition);
+        if (matches != null && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+        }
+    } else {
+        filename = url.split('/').pop().split('?')[0];
+    }
+
+    return new File([blob], filename, {type: blob.type});
+}
+
+export async function downloadFile(url) {
+    try {
+        const file = await fetchFile(url);
+        const blobURL = URL.createObjectURL(file);
+
+        const anchor = document.createElement("a");
+        anchor.href = blobURL;
+        anchor.download = file.name;
+        document.body.append(anchor);
+
+        anchor.click();
+
+        anchor.remove();
+        URL.revokeObjectURL(blobURL);
+    } catch (error) {
+        console.error("Download failed:", error);
+    }
+}
+
+
 export const themes = [
     { label: 'Dark', themeName: 'dark', value: 'dark' },
     { label: 'Light', themeName: 'light', value: 'light' },
@@ -323,6 +395,10 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [pullRequests, setPullRequests] = useState([]);
     const [issues, setIssues] = useState([]);
     const [currentPage, setCurrentPage] = useState<'files' | 'releases' | 'pullRequests' | 'issues'>('files');
+    const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [progress, setProgress] = useState(0)
+    
     const theme = settings.theme.use()
 
     typeof theme === "string" && document.documentElement.setAttribute('data-theme', theme);
@@ -350,6 +426,45 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         }
     };
 
+    const handleCheckboxChange = (file: FileItem) => {
+        setSelectedFiles((prevSelected) => {
+            const newSelected = new Set(prevSelected);
+            if (newSelected.has(file.path)) {
+                newSelected.delete(file.path);
+            } else {
+                newSelected.add(file.path);
+            }
+            return newSelected;
+        });
+    };
+
+    const downloadSelected = async () => {
+        setIsDownloading(true);
+        const zip = new JSZip();
+        const totalFiles = selectedFiles.size;
+        let completedFiles = 0;
+
+        for (const path of selectedFiles) {
+            const file = files.find((f) => f.path === path);
+            if (file) {
+                if (file.type === 'file') {
+                    const fileContent = await githubService.fetchFromGitHub(file.url, true);
+                    zip.file(file.path, githubService.decodeContent(fileContent.content));
+                } else if (file.type === 'dir') {
+                    const subFolderFiles = await githubService.fetchFromGitHub(file.url, true);
+                    await githubService.addFilesToZip(zip, subFolderFiles, file.path);
+                }
+            }
+            completedFiles++;
+            setProgress((completedFiles / totalFiles) * 100);
+        }
+
+        const content = await zip.generateAsync({ type: 'blob' });
+        FileSaver.saveAs(content, `${repoInfo?.repo}-selected-files.zip`);
+        setIsDownloading(false);
+        setProgress(0);
+    };
+    
     const handleFileClick = async (file: FileItem, event?: Event, currentPath) => {
         if (file.type === 'dir') {
             const newPath = [...currentPath, file.name];
@@ -449,10 +564,34 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         window.open(url);
     };
 
+    const handleContextMenu = (event: React.MouseEvent, file: FileItem) => {
+        event.preventDefault();
+        openMenu(event, (props) => (
+            <MenuComponents.Menu {...props} onClose={() => props.onClose?.()} navId={"vx-githubModal"}>
+                <MenuComponents.Item
+                    id={"vx-githubModal-2"}
+                    label={"Download"}
+                    action={() => {
+                        if (file.download_url) {
+                            downloadFile(file.download_url);
+                        } else {
+                            githubService.downloadFolderAsZip(
+                                repoInfo?.user,
+                                repoInfo?.repo,
+                                file.path,
+                                repoInfo?.branch || repoInfo?.defaultBranch
+                            );
+                        }
+                    }}
+                />
+            </MenuComponents.Menu>
+        ));
+    };
+
     return (
         <ModalComponents.Root className="modal" {...props} size={ModalComponents.ModalSize.LARGE}>
             <ModalComponents.Header className="modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Icons.Github />
                     <span>{repoInfo?.user}/{repoInfo?.repo}</span>
                 </div>
@@ -473,13 +612,21 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
             </ModalComponents.Header>
 
 
-            <div className="modal-content">
-                   <Flex align={Flex.Align.CENTER} gap={16}>
-                       <SystemDesign.SearchableSelect
-                           placeholder="Select Fork"
-                           options={forksList}
-                           value={selectedFork}
-                           onChange={handleForkChange}
+            {isDownloading ? (
+                <div className="loading-indicator">
+                    <div className="spinner"/>
+                    <p>Downloading files...</p>
+                    <div className="progress-bar-container">
+                        <div className="progress-bar" style={{width: `${progress}%`}}></div>
+                    </div>
+                </div>
+            ) : (<div className="modal-content">
+                <Flex align={Flex.Align.CENTER} gap={16}>
+                    <SystemDesign.SearchableSelect
+                        placeholder="Select Fork"
+                        options={forksList}
+                        value={selectedFork}
+                        onChange={handleForkChange}
                        />
                        <SystemDesign.SearchableSelect
                            placeholder="Select Branch"
@@ -510,6 +657,12 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                            className={'vx-gm-button'}
                        >
                            Issues
+                       </Button>
+                       <Button
+                           onClick={downloadSelected}
+                           className={'vx-gm-button'}
+                       >
+                           Download Selected
                        </Button>
                    </Flex>
 
@@ -547,20 +700,33 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                                             return a.type === 'dir' ? -1 : 1;
                                         }
                                         return a.name.localeCompare(b.name);
-                                    }).map((file) => (
-                                        <button
-                                            key={file.path}
-                                            className="file-item github-modal-file"
-                                            onClick={(event: Event) => handleFileClick(file, event, currentPath)}
-                                        >
-                                            <div className="file-item-content">
-                                                <FileIcon type={file.type} name={file.name}/>
-                                                <span>{file.name}</span>
+                                    }).map((file) => {
+                                        const selected = selectedFiles.has(file.path);
+                                        return (
+                                            <div key={file.path} className="file-item-container">
+                                                <Flex align={Flex.Align.CENTER} justify={Flex.Justify.BETWEEN}>
+                                                    <button
+                                                        className="file-item github-modal-file"
+                                                        onClick={(event: Event) => handleFileClick(file, event, currentPath)}
+                                                        onContextMenu={(event) => handleContextMenu(event, file)}
+                                                    >
+                                                        <div className="file-item-content">
+                                                            <FileIcon type={file.type} name={file.name}/>
+                                                            <span>{file.name}</span>
+                                                        </div>
+                                                    </button>
+                                                    <SystemDesign.Checkbox
+                                                        value={selected}
+                                                        type="inverted"
+                                                        onChange={(event: React.ChangeEvent, newState: boolean) => {
+                                                            handleCheckboxChange(file, event);
+                                                        }}
+                                                    />
+                                                </Flex>
                                             </div>
-                                        </button>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
-
 
                                 <div className="repo-stats">
                                     <span>{contributors.length} Contributors</span>
@@ -672,7 +838,8 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
                         )}
                     </>
                 )}
-            </div>
+            </div> )
+            }
         </ModalComponents.Root>
     );
 };
