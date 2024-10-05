@@ -320,9 +320,9 @@ const JsonViewer: React.FC<JsonViewerProps> = ({ json }) => {
     const handleContextMenu = (event: React.MouseEvent, value: any) => {
         event.preventDefault();
         openMenu(event, (props) => (
-            <MenuComponents.Menu {...props} onClose={() => props.onClose?.()} navId={"vx-json-viewer"}>
+            <MenuComponents.Menu {...props} onClose={() => props.onClose?.()} navId={"vx-gm-json-viewer"}>
                 <MenuComponents.Item
-                    id={"vx-json-viewer-copy"}
+                    id={"vx-gm-json-viewer-copy"}
                     label={"Copy Value"}
                     action={() => {
                         clipboard.copy(JSON.stringify(value))
@@ -333,7 +333,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({ json }) => {
     };
 
     return (
-        <div className="vx-json-viewer">
+        <div className="vx-gm-json-viewer">
             {renderJson(json)}
         </div>
     );

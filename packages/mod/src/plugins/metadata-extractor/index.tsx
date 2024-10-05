@@ -5,6 +5,7 @@ import {Developers} from "../../constants";
 import {definePlugin} from "../index";
 import * as styler from "./index.css?managed";
 import {memo, useCallback, useState} from "../../fake_node_modules/react";
+import {openNotification} from "../../api/notifications";
 const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
     let binary = '';
     const bytes = new Uint8Array(buffer);
@@ -89,7 +90,11 @@ const ZipButton = memo(({ downloadURL, name, mimeType }) => {
                     ));
                 },
                 onError: (error: any) => {
-                    console.error("Error reading tags:", error);
+                    openNotification({
+                        title: "Metadata Error",
+                        description: "This attachment doesnt seem to have any ID3 header data. Sorry for the mishap",
+                        sliderColor: "red"
+                    })
                 },
             });
         } catch (error) {
