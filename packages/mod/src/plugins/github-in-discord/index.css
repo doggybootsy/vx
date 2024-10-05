@@ -702,13 +702,6 @@
     overflow-x: auto;
 }
 
-.vx-gm-markdown-inline-code {
-    background-color: var(--vx-background-default);
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-family: monospace;
-}
-
 .vx-gm-markdown-strong {
     font-weight: bold;
 }
@@ -747,4 +740,28 @@
 .vx-gm-markdown {
     width: 100%;
     color: var(--text-normal);
+}
+.vx-archived-banner {
+    background-color: #3c2c25;
+    color: #e4dac8;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    border-top: 3px solid #f29979;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.vx-archived-banner a {
+    color: #4aa3ff;
+    text-decoration: none;
+}
+
+.vx-archived-banner a:hover {
+    text-decoration: underline;
+}
+
+.vx-container {
+    background-color: #1c1c1c;
+    padding: 20px;
 }

@@ -349,6 +349,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const [isDownloading, setIsDownloading] = useState(false);
     const [theme, setTheme] = useState('dark');
     const [progress, setProgress] = useState(0)
+    const [repoArchived, setRepoArchived] = useState(false)
 
     useEffect(() => {
         initializeRepo();
@@ -461,6 +462,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
             const urlInfo = await githubService.parseGitHubUrl(url);
 
             const repoDetails = await githubService.getRepoInfo(urlInfo.user, urlInfo.repo);
+            const repoArchiveDetails = await githubService.fetchFromGitHub(`/repos/${urlInfo.user}/${urlInfo.repo}`)
             const defaultBranch = repoDetails.default_branch;
 
             const fullRepoInfo = {
@@ -471,6 +473,8 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
 
             setRepoInfo(fullRepoInfo);
 
+            setRepoArchived(repoArchiveDetails)
+            
             const [forks, branchesData, contributorsData, releasesData, pullRequestsData, issuesData] = await Promise.all([
                 githubService.getForks(fullRepoInfo.user, fullRepoInfo.repo),
                 githubService.getBranches(fullRepoInfo.user, fullRepoInfo.repo),
@@ -507,6 +511,14 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
         window.open(url, "_blank", "noopener,noreferrer");
     }
 
+    const ArchivedBanner = ({created_at}) => {
+        return (
+            <div className="vx-archived-banner">
+                This repository has been archived by the owner on {new Date(created_at).toString()}. It is now read-only.
+            </div>
+        );
+    };
+
     const ControlBar: React.FC<{
         forksList: any[];
         branches: any[];
@@ -527,50 +539,49 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
               downloadSelected
           }) => {
         return (
-            <Flex align={Flex.Align.CENTER} gap={16}>
-                <SystemDesign.SearchableSelect
-                    placeholder="Select Fork"
-                    options={forksList}
-                    value={selectedFork}
-                    onChange={setSelectedFork}
-                />
-                <SystemDesign.SearchableSelect
-                    placeholder="Select Branch"
-                    options={branches}
-                    value={selectedBranch}
-                    onChange={setSelectedBranch}
-                />
-                <Button
-                    onClick={() => setCurrentPage('files')}
-                    className={'vx-gm-button'}
-                >
-                    Files
-                </Button>
-                <Button
-                    onClick={() => setCurrentPage('releases')}
-                    className={'vx-gm-button'}
-                >
-                    Releases
-                </Button>
-                <Button
-                    onClick={() => setCurrentPage('pullRequests')}
-                    className={'vx-gm-button'}
-                >
-                    Pull Requests
-                </Button>
-                <Button
-                    onClick={() => setCurrentPage('issues')}
-                    className={'vx-gm-button'}
-                >
-                    Issues
-                </Button>
-                <Button
-                    onClick={downloadSelected}
-                    className={'vx-gm-button'}
-                >
-                    Download Selected
-                </Button>
-            </Flex>
+            <>
+                <Flex align={Flex.Align.CENTER}>
+                    {repoArchived.archived && (
+                        <ArchivedBanner created_at={repoArchived.created_at}></ArchivedBanner>
+                    )}
+                </Flex>
+                <Flex align={Flex.Align.CENTER} gap={16}>
+                    <SystemDesign.SearchableSelect
+                        placeholder="Select Fork"
+                        options={forksList}
+                        value={selectedFork}
+                        onChange={setSelectedFork}/><SystemDesign.SearchableSelect
+                        placeholder="Select Branch"
+                        options={branches}
+                        value={selectedBranch}
+                        onChange={setSelectedBranch}/><Button
+                        onClick={() => setCurrentPage('files')}
+                        className={'vx-gm-button'}
+                    >
+                        Files
+                    </Button><Button
+                        onClick={() => setCurrentPage('releases')}
+                        className={'vx-gm-button'}
+                    >
+                        Releases
+                    </Button><Button
+                        onClick={() => setCurrentPage('pullRequests')}
+                        className={'vx-gm-button'}
+                    >
+                        Pull Requests
+                    </Button><Button
+                        onClick={() => setCurrentPage('issues')}
+                        className={'vx-gm-button'}
+                    >
+                        Issues
+                    </Button><Button
+                        onClick={downloadSelected}
+                        className={'vx-gm-button'}
+                    >
+                        Download Selected
+                    </Button>
+                </Flex>
+            </>
         );
     };
 
@@ -768,6 +779,10 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
     const ModalHeader: React.FC<{ repoInfo: GitHubUrlInfo | null; onClose: () => void }> = ({ repoInfo, onClose }) => {
         const theme = settings.theme.use();
 
+        useEffect(() => {
+            document.querySelector('.vx-gm-modal')?.setAttribute('data-theme', theme);
+        }, [theme]); 
+        
         return (
             <ModalComponents.Header className="vx-gm-modal-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className="vx-gm-modal-header-title" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
