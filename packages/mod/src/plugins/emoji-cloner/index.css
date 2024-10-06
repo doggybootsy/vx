@@ -1,33 +1,33 @@
-.vx-modal-title {
+.vx-ec-modal-title {
     font-size: 20px;
     font-weight: 600;
     color: var(--header-primary);
     text-align: center;
 }
 
-.vx-status-message {
+.vx-ec-status-message {
     color: var(--text-normal);
     text-align: center;
     margin-top: 8px;
 }
 
-.vx-error-text {
+.vx-ec-error-text {
     color: var(--text-danger);
 }
 
-.vx-guild-grid {
+.vx-ec-guild-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;
     padding: 10px;
 }
 
-.vx-guild-icon-wrapper {
+.vx-ec-guild-icon-wrapper {
     position: relative;
     display: inline-block;
 }
 
-.vx-guild-icon {
+.vx-ec-guild-icon {
     width: 55px;
     height: 55px;
     border-radius: 50%;
@@ -42,40 +42,40 @@
     border: 2px solid transparent;
 }
 
-.vx-guild-icon.selected {
+.vx-ec-guild-icon.selected {
     border-color: var(--brand-experiment);
 }
 
-.vx-guild-icon.disabled {
+.vx-ec-guild-icon.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.vx-guild-icon.exists {
+.vx-ec-guild-icon.exists {
     border-color: var(--info-warning-foreground);
 }
 
-.vx-status-indicator {
+.vx-ec-status-indicator {
     position: absolute;
     top: -2px;
     right: -2px;
 }
 
-.vx-status-dot {
+.vx-ec-status-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
 }
 
-.vx-status-dot.success {
+.vx-ec-status-dot.success {
     background-color: var(--status-positive-background);
 }
 
-.vx-status-dot.error {
+.vx-ec-status-dot.error {
     background-color: var(--status-danger-background);
 }
 
-.vx-loading-spinner {
+.vx-ec-loading-spinner {
     width: 16px;
     height: 16px;
     border: 2px solid var(--interactive-muted);
@@ -84,30 +84,30 @@
     animation: vx-spin 1s linear infinite;
 }
 
-@keyframes vx-spin {
+@keyframes vx-ec-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-.vx-modal-content {
+.vx-ec-modal-content {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.vx-input-group {
+.vx-ec-input-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.vx-input-label {
+.vx-ec-input-label {
     font-size: 14px;
     font-weight: 500;
     color: var(--header-secondary);
 }
 
-.vx-guild-section {
+.vx-ec-guild-section {
     display: flex;
     flex-direction: column;
     gap: 8px;

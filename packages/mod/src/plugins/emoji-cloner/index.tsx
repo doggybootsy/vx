@@ -3,12 +3,10 @@ import { Developers } from "../../constants";
 import { MenuComponents } from "../../api/menu";
 import { ModalComponents, openModal } from "../../api/modals";
 import {byRegex, getByStrings, getModule, getProxy, getProxyByStrings, getProxyStore} from "@webpack";
-import { Guild } from "discord-types/general";
 import { useState } from "react";
 import { Endpoints, FluxDispatcher, HTTP } from "@webpack/common";
 import * as styler from "./index.css?managed";
 import {Flex, Tooltip} from "../../components";
-import {context} from "esbuild";
 
 const SystemDesign = getProxy(x=>x.MusicIcon)
 
@@ -47,13 +45,13 @@ interface SaveStatus {
 }
 
 const LoadingSpinner = () => (
-    <div className="vx-loading-spinner"></div>
+    <div className="vx-ec-loading-spinner"></div>
 );
 
 const StatusIndicator: React.FC<{ status: SaveStatus['status']; error?: string }> = ({ status, error }) => {
     if (status === 'pending') return <LoadingSpinner />;
-    if (status === 'success') return <div className="vx-status-dot success" />;
-    if (status === 'error') return <div className="vx-status-dot error" title={error} />;
+    if (status === 'success') return <div className="vx-ec-status-dot success" />;
+    if (status === 'error') return <div className="vx-ec-status-dot error" title={error} />;
     return null;
 };
  
@@ -64,7 +62,7 @@ function getValidGuilds(data: Data) {
 
     return Object.values(GuildStore.getGuilds())
         .filter((guild) => (PermissionStore.getGuildPermissions({ id: guild.id }) & PermissionsBits.CREATE_GUILD_EXPRESSIONS) === PermissionsBits.CREATE_GUILD_EXPRESSIONS || guild.ownerId === id)
-        .filter((guild) => isSticker || (guild.getMaxEmojiSlots() > EmojiStore.getGuilds()[g.id].emojis.filter((emoji: { animated: boolean; managed: any; }) => emoji.animated === isAnimated && !emoji.managed).length))
+        .filter((guild) => isSticker || (guild.getMaxEmojiSlots() > EmojiStore.getGuilds()[guild.id].emojis.filter((emoji: { animated: boolean; managed: any; }) => emoji.animated === isAnimated && !emoji.managed).length))
         .sort((alpha, sigma) => alpha.name.localeCompare(sigma.name));
 }
 
@@ -78,10 +76,10 @@ const GuildIcon: React.FC<{
 }> = ({ guild, onClick, disabled, isSelected, status, emojiExists }) => {
     const iconUrl = guild.getIconSource(1280, true)?.uri;
 
-    const className = `vx-guild-icon ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''} ${emojiExists ? 'exists' : ''}`;
+    const className = `vx-ec-guild-icon ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''} ${emojiExists ? 'exists' : ''}`;
     console.log(emojiExists)
     return (
-        <div className="vx-guild-icon-wrapper">
+        <div className="vx-ec-guild-icon-wrapper">
             {emojiExists ? (
                 <Tooltip text="Emoji already exists in this server">
                     {(props) => (
@@ -114,7 +112,7 @@ const GuildIcon: React.FC<{
                 </div>
             )}
             {status && (
-                <div className="vx-status-indicator">
+                <div className="vx-ec-status-indicator">
                     <StatusIndicator status={status.status} error={status.error}/>
                 </div>
             )}
@@ -124,7 +122,7 @@ const GuildIcon: React.FC<{
 
 const GuildGrid = ({guilds, selectedGuilds, setSelectedGuilds, saveStatuses, selectedEmoji}) => {
     return (
-        <div className="vx-guild-grid">
+        <div className="vx-ec-guild-grid">
             {guilds.map(guild => (
                 <GuildIcon
                     key={guild.id}
@@ -151,7 +149,7 @@ const GuildGrid = ({guilds, selectedGuilds, setSelectedGuilds, saveStatuses, sel
 };
 
 async function fetchBlob(url: string): Promise<Blob> {
-    const response = await fetch(url);
+    const response = await request(url);
     return await response.blob();
 }
 
@@ -221,7 +219,7 @@ export default definePlugin({
             console.log(instance, fileExt)
             res.props.children.props.children.push(
                 <MenuComponents.Item
-                    id={"vx-emoji-cloner-button"}
+                    id={"vx-ec-emoji-cloner-button"}
                     label={"Save to Guild"}
                     action={() => {
                         openModal((props) => {
@@ -259,14 +257,14 @@ export default definePlugin({
                             return (
                                 <ModalComponents.Root {...props}>
                                     <ModalComponents.Header>
-                                        <h2 className="vx-modal-title">
+                                        <h2 className="vx-ec-modal-title">
                                             Save {data.type === "sticker" ? "Sticker" : "Emoji"} to Guilds
                                         </h2>
                                     </ModalComponents.Header>
                                     <ModalComponents.Content>
-                                        <div className="vx-modal-content">
-                                            <div className="vx-input-group">
-                                                <label className="vx-input-label">
+                                        <div className="vx-ec-modal-content">
+                                            <div className="vx-ec-input-group">
+                                                <label className="vx-ec-input-label">
                                                     Custom Name (Optional)
                                                 </label>
                                                 <SystemDesign.TextInput
@@ -276,8 +274,8 @@ export default definePlugin({
                                                 />
                                             </div>
 
-                                            <div className="vx-guild-section">
-                                                <label className="vx-input-label">
+                                            <div className="vx-ec-guild-section">
+                                                <label className="vx-ec-input-label">
                                                     Select Guilds
                                                 </label>
                                                 <GuildGrid
