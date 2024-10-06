@@ -1,6 +1,6 @@
 {
   "name": "vx",
-  "version": "1.0.48",
+  "version": "1.0.49",
   "author": "doggybootsy",
   "main": "index.js",
   "dependencies": {

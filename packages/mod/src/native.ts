@@ -28,15 +28,19 @@ export const app = {
 };
 
 export const updater = {
-  async getLatestRelease(): Promise<Git.Release | null> {
+  async getLatestRelease(): Promise<[ boolean, Git.Release, { message: string, documentation_url: string } ]> {
     if (!git.exists) throw new Error("No Git Details Exist");
 
-    const endpoint = `https://api.github.com/repos/${git.url.split("/").slice(-2).join("/")}/releases/latest`;
+    const headers = new Headers();
 
-    const { json, ok } = await request.json<Git.Release>(endpoint, { cache: "no-cache" });
+    headers.set("Content-Type", "application/vnd.github.raw+json");
 
-    if (!ok) return null;
-    return json;
+    const { json, ok } = await request.json<any>(`https://api.github.com/repos/${git.url.split("/").slice(-2).join("/")}/releases/latest`, {
+      cache: "no-cache", 
+      headers
+    });
+
+    return [ ok, json, json ];
   },
   update(release: Git.Release) {
     if (window.VXExtension) window.VXExtension.update(release);

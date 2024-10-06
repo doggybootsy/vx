@@ -4,7 +4,7 @@ import { updater } from "../../../native";
 import { compare, SemverCompareState } from "../../../semver";
 import { Button, Flex, Icons } from "../../../components";
 import { useInternalStore } from "../../../hooks";
-import { whenWebpackInit } from "@webpack";
+import { whenWebpackReady } from "@webpack";
 import { openNotification } from "../../../api/notifications";
 import { Messages } from "vx:i18n";
 import { openExternalWindowModal } from "../../../api/modals";
@@ -18,7 +18,7 @@ export const updaterStore = new class extends InternalStore {
   constructor() {
     super();
 
-    whenWebpackInit().then(() => {
+    whenWebpackReady().then(() => {
       if (!env.IS_DEV && git.exists) this.checkForUpdates();
     });
   };
@@ -48,15 +48,18 @@ export const updaterStore = new class extends InternalStore {
 
     this.emit();
 
-    const release = await updater.getLatestRelease();
+    const [ ok, release, err ] = await updater.getLatestRelease();
 
-    if (!release) {
+    if (!ok) {
       openNotification({
         title: "Updater Failed",
         id: "vx-updater-error",
         icon: Icons.Warn,
         type: "error",
-        description: "Failed to fetch latest version"
+        description: [
+          err.message.replace(/\d+\.\d+.\d+.\d+/, "your ip address (||$&||)"),
+          err.documentation_url
+        ].filter(Boolean)
       });
       
       setTimeout(() => {
