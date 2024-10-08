@@ -1,0 +1,15 @@
+/* Apply bright red text color to div elements with id containing 'message' */
+.ml-deleted-message:first-child:last-child(0) > div {
+    color: #ff0000; /* Bright red */
+}
+
+/* Apply default grayscale to images in deleted messages */
+.ml-deleted-message > div > div:first-child(0) {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease; /* Smooth transition */
+}
+
+/* On hover, remove grayscale */
+.ml-deleted-message > div > div:first-child(0) {
+    filter: grayscale(0%);
+}

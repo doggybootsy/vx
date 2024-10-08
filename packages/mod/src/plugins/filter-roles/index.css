@@ -1,0 +1,29 @@
+.-vx-fr-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.-vx-fr-circular-button {
+    background-color: var(--brand-experiment);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.-vx-fr-circular-button:hover {
+    transform: scale(1.1);
+}
+
+.-vx-fr-plus-icon {
+    width: 24px;
+    height: 24px;
+}
