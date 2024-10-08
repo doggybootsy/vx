@@ -4,13 +4,13 @@ export { default as ReactDOM } from "react-dom/client";
 
 import { FluxStore } from "discord-types/stores";
 import { FluxDispatcher as FluxDispatcherType } from "discord-types/other";
-import { byKeys, byStrings, getLazyByKeys, getProxyByKeys } from "./filters"
+import {byKeys, bySource, byStrings, getLazyByKeys, getProxyByKeys} from "./filters"
 import { GenericStore, getProxyStore } from "./stores";
-import { getMangledProxy, getModuleIdBySource, getProxy } from "./util";
+import {getMangledLazy, getMangledProxy, getModuleIdBySource, getProxy} from "./util";
 import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User, UserJSON } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
-import { getModule, webpackRequire } from "@webpack";
+import {getLazy, getModule, webpackRequire} from "@webpack";
 import { ErrorBoundary } from "../components";
 
 type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses";
@@ -384,6 +384,10 @@ export function instantBatchUpload(channelId: string, files: File[]) {
     isClip: false
   });
 };
+
+export const HTTP = getMangledProxy("rateLimitExpirationHandler", {
+  RestAPI: (v: any) => typeof v === "object"
+})
 
 export function sendMessage(message?: string, channelId: string = SelectedChannelStore.getChannelId()) {
   if (!arguments.length) {
