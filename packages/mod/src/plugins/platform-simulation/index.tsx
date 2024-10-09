@@ -29,4 +29,8 @@ export default definePlugin({
         UI();
     },
     settings: settings,
+    stop()
+    {
+        PluginInjector.unpatchAll()
+    }
 })

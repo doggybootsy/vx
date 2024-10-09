@@ -2,7 +2,7 @@ import { definePlugin } from "../index";
 import { Developers } from "../../constants";
 import { FluxDispatcher, MessageStore } from "@webpack/common";
 import { className, findInReactTree, proxyCache } from "../../util";
-import { bySource, getLazy, whenWebpackReady } from "@webpack";
+import {bySource, getLazy, whenWebpackInit, whenWebpackReady} from "@webpack";
 import { Injector } from "../../patcher";
 import { Markdown } from "../../components";
 import React from "../../fake_node_modules/react";
@@ -54,7 +54,7 @@ export default definePlugin({
     requiresRestart: false,
     styler,
     async start(signal: AbortSignal) {
-        await whenWebpackReady();
+        await whenWebpackInit()
         const node = FluxDispatcher._actionHandlers._dependencyGraph.nodes[MessageStore.getDispatchToken()];
 
 
@@ -99,8 +99,8 @@ export default definePlugin({
 
         const module = await MessageAndKey;
         inj.after(module, "Z", (that, args, res) => {
-            const { message } = findInReactTree(res, m => m?.message);
-
+            const data = findInReactTree(res, m => m?.message);
+            const message = data.message
             let edits = editedMessages[message.id] || [];
 
             const props = findInReactTree(res, m => m?.className);
