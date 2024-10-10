@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a7244377-6b60-4b9d-87b5-d3dffead2896" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/plugins/better-activities/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/plugins/better-activities/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/plugins/friend-notifications/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/plugins/friend-notifications/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="tsconfig.json" />
+        <option value="TypeScript File" />
+        <option value="CSS File" />
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/node_modules/.pnpm/deeplx@0.1.2/node_modules/deeplx/lib/api.d.ts" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/node_modules/.pnpm/discord-types@1.3.3/node_modules/discord-types/other/FluxDispatcher.d.ts" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/node_modules/@types/react/index.d.ts" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2lOaV5MuqmOYBxRuk4JYvj8D8qu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/GithubClones/BetterDiscord&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\GithubClones\\vx\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\GithubClones\vx\packages\mod\src\plugins\platform-simulation\settings" />
+      <recent name="E:\GithubClones\vx\packages\mod\src\plugins\platform-simulator\assets" />
+      <recent name="E:\GithubClones\vx\packages\mod\src\plugins\session-notify" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-WS-241.15989.105" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a7244377-6b60-4b9d-87b5-d3dffead2896" name="Changes" comment="" />
+      <created>1725053597461</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1725053597461</updated>
+      <workItem from="1725053599848" duration="1416000" />
+      <workItem from="1725059033061" duration="75000" />
+      <workItem from="1725059117067" duration="14129000" />
+      <workItem from="1725290176328" duration="11760000" />
+      <workItem from="1725305114472" duration="34097000" />
+      <workItem from="1725501120808" duration="13651000" />
+      <workItem from="1725575892626" duration="7431000" />
+      <workItem from="1725649958949" duration="35226000" />
+      <workItem from="1725744382721" duration="36855000" />
+      <workItem from="1725993252558" duration="624000" />
+      <workItem from="1726018381415" duration="3275000" />
+      <workItem from="1726088679348" duration="54643000" />
+      <workItem from="1726791575554" duration="21400000" />
+      <workItem from="1726946174825" duration="9947000" />
+      <workItem from="1726976404141" duration="7063000" />
+      <workItem from="1727023508657" duration="35424000" />
+      <workItem from="1727126595220" duration="17778000" />
+      <workItem from="1727228985881" duration="24775000" />
+      <workItem from="1727383598642" duration="2533000" />
+      <workItem from="1727396224453" duration="363000" />
+      <workItem from="1727396742598" duration="14107000" />
+      <workItem from="1727532133345" duration="54583000" />
+      <workItem from="1727784641783" duration="16083000" />
+      <workItem from="1727900552815" duration="92409000" />
+      <workItem from="1728174858955" duration="4261000" />
+      <workItem from="1728190030798" duration="6289000" />
+      <workItem from="1728227428710" duration="63567000" />
+      <workItem from="1728421630270" duration="508000" />
+      <workItem from="1728422153396" duration="4965000" />
+      <workItem from="1728427820231" duration="9070000" />
+      <workItem from="1728509658717" duration="1360000" />
+      <workItem from="1728513338894" duration="1460000" />
+      <workItem from="1728521337469" duration="505000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

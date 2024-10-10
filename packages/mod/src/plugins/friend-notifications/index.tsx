@@ -1,19 +1,21 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
 import { FluxDispatcher, RelationshipStore, UserStore } from "@webpack/common";
-import {getLazy, getModule, getProxy, getProxyStore} from "@webpack";
+import { getLazy, getModule, getProxy, getProxyStore } from "@webpack";
 import { openNotification as originalOpenNotification } from "../../api/notifications";
 import { User } from "discord-types/general";
 import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
-const openPrivateChannel: { openPrivateChannel: (userId: string) => void } =  getProxy(x=>x.openPrivateChannel)
+import { DataStore } from "../../api/storage";
+import {MenuComponents} from "../../api/menu";
+
+const openPrivateChannel: { openPrivateChannel: (userId: string) => void } = getProxy(x => x.openPrivateChannel);
 
 function openChannel(userId: string) {
-    openPrivateChannel.openPrivateChannel(userId)
+    openPrivateChannel.openPrivateChannel(userId);
 }
 
-interface GlobalUser extends User
-{
-    globalName?: string    
+interface GlobalUser extends User {
+    globalName?: string;
 }
 
 function format(template: string, ...args: any[]) {
@@ -33,27 +35,27 @@ function getColorFromStatus(status: string): string {
         case "offline":
             return "rgb(128, 132, 142)";
         case "dnd":
-            return "rgb(242, 63, 67)"
+            return "rgb(242, 63, 67)";
         case "idle":
-            return "rgb(240, 178, 50)"
+            return "rgb(240, 178, 50)";
         default:
             return "gray";
     }
 }
 
 function openNotification({
-      title,
-      description,
-      user,
-      status,
-  }: {
+          title,
+          description,
+          user,
+          status,
+      }: {
     title: string;
     description: string;
     user: GlobalUser;
     status: string;
 }) {
     const color = getColorFromStatus(status);
-    
+
     originalOpenNotification({
         title,
         description,
@@ -81,24 +83,66 @@ function openNotification({
                     width="10px"
                     height="10px"
                     fill="#FFFFFF"
-                    style={{cursor: "pointer"}}
+                    style={{ cursor: "pointer" }}
                 >
-                    <path d="M12 22a10 10 0 1 0-8.45-4.64c.13.19.11.44-.04.61l-2.06 2.37A1 1 0 0 0 2.2 22H12Z"/>
+                    <path d="M12 22a10 10 0 1 0-8.45-4.64c.13.19.11.44-.04.61l-2.06 2.37A1 1 0 0 0 2.2 22H12Z" />
                 </svg>
             </div>
         ),
     });
 }
 
+const blacklistStore = new DataStore<{ gameBlocked: string[], statusBlocked: string[] }>("blacklisted-users", { version: 1 });
+let blacklist = blacklistStore.get("blacklisted-users") || { gameBlocked: [], statusBlocked: [] };
+
+const saveBlacklist = () => {
+    blacklistStore.set("blacklist", blacklist);
+};
+
+function isGameBlacklisted(userId: string) {
+    return blacklist.gameBlocked.includes(userId);
+}
+
+function isStatusBlacklisted(userId: string) {
+    return blacklist.statusBlocked.includes(userId);
+}
+
+function addToGameBlacklist(userId: string) {
+    if (!blacklist.gameBlocked.includes(userId)) {
+        blacklist.gameBlocked.push(userId);
+        saveBlacklist();
+    }
+}
+
+function addToStatusBlacklist(userId: string) {
+    if (!blacklist.statusBlocked.includes(userId)) {
+        blacklist.statusBlocked.push(userId);
+        saveBlacklist();
+    }
+}
+
+function removeFromGameBlacklist(userId: string) {
+    blacklist.gameBlocked = blacklist.gameBlocked.filter(id => id !== userId);
+    saveBlacklist();
+}
+
+function removeFromStatusBlacklist(userId: string) {
+    blacklist.statusBlocked = blacklist.statusBlocked.filter(id => id !== userId);
+    saveBlacklist();
+}
+
 class GlobalUserStatusTracker {
     private userStatuses: Map<string, any> = new Map();
 
     updateGlobalUserStatus(update: any) {
-        if (!isFriend(update.user.id)) return;
+        const userId = update.user.id;
 
-        const user: any = UserStore.getUser(update.user.id);
-        const oldStatus = this.userStatuses.get(user.id);
-        this.userStatuses.set(user.id, update);
+        if (isStatusBlacklisted(userId)) return;
+        if (!isFriend(userId)) return;
+
+        const user: any = UserStore.getUser(userId);
+        const oldStatus = this.userStatuses.get(userId);
+        this.userStatuses.set(userId, update);
 
         if (oldStatus) {
             this.checkForChanges(oldStatus, update, user);
@@ -106,7 +150,7 @@ class GlobalUserStatusTracker {
     }
 
     private checkForChanges(oldStatus: any, newStatus: any, user: GlobalUser) {
-        if (oldStatus.status !== newStatus.status) {
+        if (oldStatus.status !== newStatus.status && !isStatusBlacklisted(user.id)) {
             openNotification({
                 title: "Status Change",
                 description: this.getStatusChangeMessage(user.globalName || user.username, oldStatus.status, newStatus.status),
@@ -136,23 +180,25 @@ class GlobalUserStatusTracker {
         const oldGames = oldActivities.filter((a) => a.type === 0).map((a) => a.name);
         const newGames = newActivities.filter((a) => a.type === 0).map((a) => a.name);
 
-        newGames.filter((game) => !oldGames.includes(game)).forEach((game) =>
-            openNotification({
-                title: "Game Change",
-                description: `${user.globalName || user.username} started playing ${game}`,
-                user,
-                status,
-            })
-        );
+        if (!isGameBlacklisted(user.id)) {
+            newGames.filter((game) => !oldGames.includes(game)).forEach((game) =>
+                openNotification({
+                    title: "Game Change",
+                    description: `${user.globalName || user.username} started playing ${game}`,
+                    user,
+                    status,
+                })
+            );
 
-        oldGames.filter((game) => !newGames.includes(game)).forEach((game) =>
-            openNotification({
-                title: "Game Change",
-                description: `${user.globalName || user.username} stopped playing ${game}`,
-                user,
-                status,
-            })
-        );
+            oldGames.filter((game) => !newGames.includes(game)).forEach((game) =>
+                openNotification({
+                    title: "Game Change",
+                    description: `${user.globalName || user.username} stopped playing ${game}`,
+                    user,
+                    status,
+                })
+            );
+        }
     }
 }
 
@@ -166,11 +212,63 @@ function watchUserStatus(event: any) {
     }
 }
 
+const showToast = getProxy(x=>x.showToast)
+const createToast = getProxy(x=>x.createToast)
+
+function makeToast({message, type})
+{
+    return showToast.showToast(createToast.createToast(message, type))
+}
+
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
-    fluxEvents: { PRESENCE_UPDATES(event)
-        {
-            watchUserStatus(event)
-        }},
+    fluxEvents: {
+        PRESENCE_UPDATES(event) {
+            watchUserStatus(event);
+        },
+    },
+    menus: {
+        "user-context"(args, res) {
+            const userId = args.user.id;
+
+            const handleBlacklistStatus = () => {
+                if (isStatusBlacklisted(userId)) {
+                    removeFromStatusBlacklist(userId);
+                } else {
+                    addToStatusBlacklist(userId);
+                }
+            };
+
+            const handleBlacklistGame = () => {
+                if (isGameBlacklisted(userId)) {
+                    removeFromGameBlacklist(userId);
+                } else {
+                    addToGameBlacklist(userId);
+                }
+            };
+
+            res.props.children.push(
+               <MenuComponents.Item label={"Friend Notifications"} id={"friend-notifications"}>
+                   <MenuComponents.Item
+                       label={isStatusBlacklisted(userId) ? "Unblock Status Changes" : "Block Status Changes"}
+                       id="blacklist-status"
+                       action={handleBlacklistStatus}
+                   />
+                   <MenuComponents.Item
+                       label={isGameBlacklisted(userId) ? "Unblock Game Changes" : "Block Game Changes"}
+                       id="blacklist-game"
+                       action={handleBlacklistGame}
+                   />
+               </MenuComponents.Item>
+            );
+        },
+    },
+
+    addToGameBlacklist,
+    addToStatusBlacklist,
+    removeFromGameBlacklist,
+    removeFromStatusBlacklist,
+    isGameBlacklisted,
+    isStatusBlacklisted,
 });
