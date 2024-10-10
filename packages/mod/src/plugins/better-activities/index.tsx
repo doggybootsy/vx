@@ -21,16 +21,16 @@ export default definePlugin({
             if (children.children) {
                 const patch: () => void = inj.after(children, "children", (_, args: any, yeah: any) => {
                     patch();
-                    const Activity: any = findInReactTree(yeah, m => m?.activity ?? m?.user);
+                    const Activity: any = findInReactTree(yeah, m => m?.activity);
                     const Yeah: any = findInReactTree(yeah, m => m?.image);
                     
                     console.log(args, yeah);
                     yeah.props.children[1].props.onContextMenu = (event: MouseEvent) => openMenu(event, (props: any) => (
                         <MenuComponents.Menu onClose={closeMenu} {...props}>
-                            {copierObjects(Activity.activity ?? Activity.user, "activity-navId", 10,0, Activity.activity)}
-                            {Yeah?.image && <MenuComponents.Item id={"vx-image-menu"} label={"Extra"}>
+                            {copierObjects(Activity.activity, "activity-navId", 10,0, Activity.activity)}
+                            <MenuComponents.Item id={"vx-image-menu"} label={"Extra"}>
                                 {copierObjects(Yeah.image, "activity-navId", 10,0, Yeah.image)}
-                            </MenuComponents.Item>}
+                            </MenuComponents.Item>
                         </MenuComponents.Menu>
                     ));
                 });
