@@ -385,6 +385,9 @@ export function instantBatchUpload(channelId: string, files: File[]) {
   });
 };
 
+// export const HTTP = getModule(m => typeof m === "object" && m.del && m.put,{searchExports:true})
+// easuer way ig
+
 export const HTTP = getMangledProxy("rateLimitExpirationHandler", {
   RestAPI: (v: any) => typeof v === "object"
 })

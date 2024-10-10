@@ -2,7 +2,18 @@ import { Message, User } from "discord-types/general";
 import { definePlugin } from "..";
 import { ErrorBoundary, UserPopout } from "../../components";
 import { Developers } from "../../constants";
-import { ChannelStore, Constants, MessageActions, MessageStore, NavigationUtils, PermissionStore, RelationshipStore, UserStore, useStateFromStores } from "@webpack/common";
+import {
+  ChannelStore,
+  Constants,
+  GuildMemberStore,
+  MessageActions,
+  MessageStore,
+  NavigationUtils,
+  PermissionStore,
+  RelationshipStore,
+  UserStore,
+  useStateFromStores
+} from "@webpack/common";
 import { useEffect, useMemo, useState } from "react";
 import { focusStore, getDefaultAvatar } from "../../util";
 import * as styler from "./index.css?managed";
@@ -35,7 +46,7 @@ function Avatar({ author }: { author: User }) {
   );
 }
 
-function Username({ author }: { author: User }) {
+function Username({ author, guildId }: { author: User, guildId: string }) {
   const [ shouldShow, setShouldShow ] = useState(false);
   const name = useMemo(() => {
     const friendNickName = RelationshipStore.isFriend(author.id) && RelationshipStore.getNickname(author.id);
@@ -45,9 +56,9 @@ function Username({ author }: { author: User }) {
   }, [ author ]);
 
   return (
-    <UserPopout shouldShow={shouldShow} user={author} onRequestClose={() => setShouldShow(false)}>
+    <UserPopout shouldShow={shouldShow} user={author} guildId={guildId} onRequestClose={() => setShouldShow(false)}>
       {(props) => (
-        <div 
+        <div style={{color: GuildMemberStore.getMember(guildId, author.id)?.colorString ?? void 0}}
           className="vx-bfm-username"
           {...props} 
           onClick={(event) => {
@@ -62,13 +73,13 @@ function Username({ author }: { author: User }) {
   );
 }
 
-function Author({ userId }: { userId: string }) {
+function Author({ userId, guildId }: { userId: string, guildId: string | undefined}) {
   const user = useStateFromStores([ UserStore ], () => UserStore.getUser(userId));
 
   return (
     <div className="vx-bfm-user">
       <Avatar author={user} />
-      <Username author={user} />
+      <Username author={user} guildId={guildId!} />
     </div>
   )
 }
@@ -92,7 +103,7 @@ function ForwardedMessage({ message, original }: ForwardedMessageProps) {
   const [ forwardedMessage, setForwardedMessage ] = useState(() => (
     MessageStore.getMessage(message.messageReference!.channel_id, message.messageReference!.message_id)
   ));
-
+  
   useEffect(() => {    
     if (forwardedMessage) return;
     if (!canViewChannel) return;
@@ -105,11 +116,11 @@ function ForwardedMessage({ message, original }: ForwardedMessageProps) {
     });
   }, [ canViewChannel ]);
 
-  if (!forwardedMessage) return original;  
-
+  if (!forwardedMessage) return original;
+  
   return (
     <div className="vx-bfm">
-      <Author userId={forwardedMessage.author.id} />
+      <Author userId={forwardedMessage.author.id} guildId={message.messageReference!.guild_id} />
       <div 
         className="vx-bfm-jump"
         role="button"
@@ -134,10 +145,17 @@ definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   styler,
-  patches: {
-    find: /\[(\(0,.{1,3}\.jsx\)\(.{1,3},{}\)),(\(0,.{1,3}\.jsx\)\(.{1,3}\.ZP,{message:(.{1,3}),)/,
-    replace: "[$enabled?$jsx($self.ForwardedMessage,{message:$3,original:$1}):$1,$2"
-  },
+  patches: [
+    {
+      match: "Z.Messages.MESSAGE_CHANNEL_ATTACHMENTS_DISABLED", 
+      find: /(?<=if\().*?is.*?(?=\))\)\)/,
+      replace: "false"
+    },
+    {
+      find: /\[(\(0,.{1,3}\.jsx\)\(.{1,3},{}\)),(\(0,.{1,3}\.jsx\)\(.{1,3}\.ZP,{message:(.{1,3}),)/,
+      replace: "[$enabled?$jsx($self.ForwardedMessage,{message:$3,original:$1}):$1,$2",
+    }
+  ],
   ForwardedMessage(props: ForwardedMessageProps) {
     return (
       <ErrorBoundary fallback={props.original}>

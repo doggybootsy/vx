@@ -1,0 +1,96 @@
+.vx-ud-urban-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.vx-ud-urban-card-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.vx-ud-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vx-ud-word-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.vx-ud-definition-count {
+    font-size: 14px;
+    color: #FFFFFF;
+}
+
+.vx-ud-urban-card-content {
+    padding: 16px;
+}
+
+.vx-ud-definition-section,
+.vx-ud-example-section {
+    margin-bottom: 16px;
+}
+
+.vx-ud-section-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.vx-ud-definition-text {
+    color: var(--text-normal);
+    line-height: 1.5;
+}
+
+.vx-ud-example-text {
+    color: var(--text-normal);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.vx-ud-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.vx-ud-metadata-item {
+    display: flex;
+    align-items: center;
+}
+
+.vx-ud-urban-card-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.vx-ud-nav-button {
+    padding: 8px 16px;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.vx-ud-nav-button:hover {
+    background-color: #e5e7eb;
+}
+
+.vx-ud-loading-text,
+.vx-ud-error-text {
+    text-align: center;
+    padding: 24px;
+    color: #ef4444;
+}
