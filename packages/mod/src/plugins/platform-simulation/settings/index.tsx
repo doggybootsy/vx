@@ -25,6 +25,7 @@ export const settings = createSettings("websocket-spoof", {
                 { label: "Web", value: "web" },
                 { label: "Android", value: "android" },
                 { label: "iOS", value: "ios" },
+                { label: "Web", value: "other" },
                 {
                     label: "Embedded (Generic Console)",
                     value: "embedded",
