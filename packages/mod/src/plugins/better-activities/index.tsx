@@ -33,6 +33,10 @@ export default definePlugin({
                 });
             }
         });
+    },
+    stop()
+    {
+        inj.unpatchAll()
     }
 });
 

@@ -28,9 +28,7 @@ interface ReactSpringType {
   a: this["animated"]
 }
 
-const createToast = getProxy(x=>x.createToast)
-
-export interface MessageTypes {
+export interface ToastTypes {
   BOOKMARK: 7
   CLIP: 4
   CLOCK: 8
@@ -42,9 +40,9 @@ export interface MessageTypes {
   SUCCESS: 1
 }
 
-export function showToast(message: string, kind: MessageTypes, options: any)
+export function showToast(message: string, kind: ToastTypes, options: any)
 {
-  return SystemDesign.showToast(createToast.createToast(message, kind, options))
+  return SystemDesign.showToast(SystemDesign.createToast(message, kind, options))
 }
 
 export const ReactSpring = getProxyByKeys<ReactSpringType>([ "config", "to", "a", "useSpring" ]);
