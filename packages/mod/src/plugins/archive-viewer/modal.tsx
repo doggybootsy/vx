@@ -290,8 +290,8 @@ function ZipModal(props: ZipModalProps) {
                       if (!file.dir) {
                         if (file.is.code) {
                           openCodeModal({
-                            filename: file.name,
-                            code: await file.getContent("text"),
+                            title: file.name,
+                            content: await file.getContent("text"),
                             language: file.name.split(".").at(-1)!
                           });
                         }

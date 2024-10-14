@@ -119,9 +119,9 @@ class GitHubService {
             }
 
             openCodeModal({
-                code: this.decodeContent(res.content),
+                content: this.decodeContent(res.content),
                 language: ext.slice(1),
-                filename: res.name
+                title: res.name
             });
         });
     }

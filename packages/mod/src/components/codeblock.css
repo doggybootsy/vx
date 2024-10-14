@@ -1,4 +1,4 @@
-.vx-bcb {
+.vx-codeblock {
   text-size-adjust: none;
   color: var(--text-normal);
   display: block;
@@ -18,27 +18,35 @@
   font-family: var(--font-code);
   font-size: .75rem;
   line-height: 1rem;
-  margin-top: 6px;
-  max-width: 90%;
   white-space: pre;
   background-clip: border-box;
+
+  display: flex;
+  flex-direction: column;
 }
 
-.vx-bcb-actions {
+.vx-codeblock-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.vx-bcb-header {
+.vx-codeblock-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: .5em;
   border-bottom: 1px solid var(--background-tertiary);
+  gap: 8px;
+}
+.vx-codeblock-lang {
+  width: 100%;
 }
 
-td.vx-cbc-index {
+.vx-codeblock-inlarge {
+  display: flex;
+}
+
+td.vx-codeblock-index {
   min-width: 1.5em;
   display: flex;
   justify-content: end;
@@ -47,29 +55,29 @@ td.vx-cbc-index {
   position: relative;
 }
 
-td.vx-cbc-line {
+td.vx-codeblock-line {
   padding: 0 .5em;
   width: 100%;
 }
 
-.vx-cbc-addition::before {
+.vx-codeblock-addition::before {
   color: #aff5b4;
   background-color: #033a16;
 }
-.vx-cbc-deletion::before {
+.vx-codeblock-deletion::before {
   color: #ffdcd7;
   background-color: #67060c;
 }
-.theme-light .vx-cbc-addition::before {
+.theme-light .vx-codeblock-addition::before {
   color: #22863a;
   background-color: #f0fff4;
 }
-.theme-light .vx-cbc-deletion::before {
+.theme-light .vx-codeblock-deletion::before {
   color: #b31d28;
   background-color: #ffeef0;
 }
 
-.vx-cbc-deletion::before, .vx-cbc-addition::before {
+.vx-codeblock-deletion::before, .vx-codeblock-addition::before {
   content: "";
   position: absolute;
   left: 0;
@@ -79,7 +87,17 @@ td.vx-cbc-line {
   z-index: -1;
 }
 
-.vx-cbc-row {
+.vx-codeblock-row {
   position: relative;
   isolation: isolate;
+}
+
+[class*=markup_] .vx-codeblock {
+  margin-top: 6px;
+  max-width: 90%;
+}
+
+.vx-codeblock-modal > .vx-codeblock {
+  margin: 0;
+  height: 100%;
 }
