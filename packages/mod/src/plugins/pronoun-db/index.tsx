@@ -167,7 +167,7 @@ const PronounDisplay = ({ res }: { res: any }) => {
     if (!pronouns) return null;
 
     return (
-        <div className={className([timestampModule.timestamp, timestampModule.timestampInline])}>
+        pronouns && <div className={className([timestampModule.timestamp, timestampModule.timestampInline])}>
             {`- ${pronouns}`}
         </div>
     );
