@@ -6,12 +6,13 @@ import {ChannelStore, GuildStore, NavigationUtils, UserStore} from "@webpack/com
 import {AuthorIcon} from "../../dashboard/pages/addons/plugins/card";
 import {Injector} from "../../patcher";
 import {isFriend} from "../friend-notifications";
+import {MessageAttachment} from "discord-types/general";
 
 type MessageType = {
     type: string;
     channelId: string;
     message: {
-        attachments: any[];
+        attachments: MessageAttachment[];
         author: {
             avatar: string;
             clan: string | null;
