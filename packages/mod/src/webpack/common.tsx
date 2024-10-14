@@ -11,7 +11,7 @@ import { DispatchEvent } from "discord-types/other/FluxDispatcher";
 import { Channel, User, UserJSON } from "discord-types/general";
 import { createNullObject, proxyCache } from "../util";
 import {getLazy, getModule, webpackRequire} from "@webpack";
-import { ErrorBoundary } from "../components";
+import {ErrorBoundary, SystemDesign} from "../components";
 
 type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses";
 
@@ -26,6 +26,23 @@ interface ReactSpringType {
     [key in keyof JSX.IntrinsicElements]: React.ComponentType<JSX.IntrinsicElements[key]>
   },
   a: this["animated"]
+}
+
+export interface ToastTypes {
+  BOOKMARK: 7
+  CLIP: 4
+  CLOCK: 8
+  CUSTOM: 3
+  FAILURE: 2
+  FORWARD: 6
+  LINK: 5
+  MESSAGE: 0
+  SUCCESS: 1
+}
+
+export function showToast(message: string, kind: ToastTypes, options: any)
+{
+  return SystemDesign.showToast(SystemDesign.createToast(message, kind, options))
 }
 
 export const ReactSpring = getProxyByKeys<ReactSpringType>([ "config", "to", "a", "useSpring" ]);
@@ -384,6 +401,9 @@ export function instantBatchUpload(channelId: string, files: File[]) {
     isClip: false
   });
 };
+
+// export const HTTP = getModule(m => typeof m === "object" && m.del && m.put,{searchExports:true})
+// easuer way ig
 
 export const HTTP = getMangledProxy("rateLimitExpirationHandler", {
   RestAPI: (v: any) => typeof v === "object"

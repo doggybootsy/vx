@@ -1,4 +1,4 @@
-import { forwardRef, isValidElement, useLayoutEffect, useState } from "react";
+import { Component, forwardRef, isValidElement, useLayoutEffect, useState } from "react";
 
 import { openDashboard } from ".";
 import { internalDataStore } from "../api/storage";
@@ -60,8 +60,41 @@ addPlainTextPatch(
     match: "app view user trigger debugging",
     find: /null!=.{1,3}?\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{selectedChannelId:.{1,3},guildId:.{1,3}},.{1,3}\):\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{}\)/,
     replace: "$vxi.isVXPath()?$jsx($vxi.NavigationPanel):$&"
+  },
+  {
+    match: "Could not find app-mount",
+    find: /=(.{1,3})=>(.{1,3}\.render)\((\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{children:\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{children:\(0,.{1,3}\.jsx\)\(.{1,3},{}\)}\)}\))\)/,
+    replace: "=$1=>$2($jsx($vxi.Root,null,$3))"
   }
 );
+
+__self__.Root = class VXRoot extends Component<React.PropsWithChildren> {
+  private static instance: VXRoot;
+  
+  constructor(props: React.PropsWithChildren) {
+    super(props);
+    VXRoot.instance = this;
+  }
+
+  public promise: Promise<void> | null = null;
+  public forceRerender() {
+    if (this.promise) return this.promise;
+
+    return this.promise = new Promise((resolve) => { 
+      this.render = () => null;
+  
+      this.forceUpdate(() => {
+        this.render = () => this.props.children;
+        this.forceUpdate(() => {
+          this.promise = null;
+          resolve();
+        });
+      });
+    })
+  }
+  
+  render = () => this.props.children;
+}
 
 __self__.TitlebarButton = function TitlebarButton(props: { windowKey?: string }) {
   const [ loading, setLoading ] = useState(() => typeof webpackRequire !== "function");

@@ -1041,3 +1041,7 @@ export function createPersistence<T>(key: string): Persistence<T> {
     }
   }, key);
 }
+
+export function forceUpdateApp(): Promise<void> {
+  return __self__.Root.instance.forceRerender();
+}
