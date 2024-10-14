@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { definePlugin, isPluginEnabled } from "..";
-import { Button, ErrorBoundary, Icons } from "../../components";
+import {Button, ErrorBoundary, Icons, Popout, SystemDesign} from "../../components";
 import { Developers } from "../../constants";
 import { base64, className, proxyCache } from "../../util";
 
@@ -15,6 +15,8 @@ import { getProxy, getProxyByStrings } from "@webpack";
 import { IS_DESKTOP } from "vx:self";
 import { DiscordIcon } from "../../components/icons";
 import exp from "node:constants";
+import {openModal} from "../../api/modals";
+import {closeMenu, MenuComponents, openMenu} from "../../api/menu";
 
 const storage = new DataStore<{
   volume: number,
@@ -116,38 +118,42 @@ export function openPip(name, download)
 
 function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src: string, windowKey: string }) {
   const video = useRef<HTMLVideoElement>(null);
-  const [ state, setVideoState ] = useState(VideoState.PAUSED);
-  const [ canplay, setCanPlay ] = useState(false);
-  const [ isLooping, setLooping ] = useState(() => settings.autoLoop.get());
+  const [state, setVideoState] = useState(VideoState.PAUSED);
+  const [canplay, setCanPlay] = useState(false);
+  const [isLooping, setLooping] = useState(() => settings.autoLoop.get());
   const { muted, volume } = useCurrentVolume();
-  const [ isMouseOver, setMouseOver ] = useState(false);
-  const [ buffers, setBuffers ] = useState<number[][]>([ ]);
+  const [show, shouldShow] = useState(false);
+  const [isMouseOver, setMouseOver ] = useState(false);
+  const [buffers, setBuffers] = useState<number[][]>([]);
 
-  const [ isPinned, setPinned ] = useState(false);
-
+  const [isPinned, setPinned] = useState(false);
   const isDragging = useRef(false);
-
   const durationBar = useRef<DurationBar["prototype"]>();
-  const [ duration, setDuration ] = useState(0);
-  
-  const [ durationFormatted, minutePadding ] = useMemo(() => {
+  const [duration, setDuration] = useState(0);
+
+  const [durationFormatted, minutePadding] = useMemo(() => {
     const formatted = calcTime(duration);
-    return [ formatted, formatted.split(":")[0].length ];
-  }, [ duration ]);
+    return [formatted, formatted.split(":")[0].length];
+  }, [duration]);
 
   const currentTimeRef = useRef<HTMLDivElement>(null);
+  const [playbackRate, setPlaybackRate] = useState(1);
+
+  const speedOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3, 4, 5];
 
   const updateCurrentTime = useCallback(() => {
+    if (!video.current) return;
     currentTimeRef.current!.innerText = calcTime(video.current!.currentTime, minutePadding);
     durationBar.current?.setGrabber(video.current!.currentTime / video.current!.duration);
-  }, [ currentTimeRef, minutePadding ]);
+  }, [currentTimeRef, minutePadding]);
 
   const wasPaused = useRef(false);
 
   useLayoutEffect(() => {
     if (!video.current) return;
     video.current.volume = muted.get() ? 0 : volume.get();
-  }, [ muted, volume ]);
+    video.current.playbackRate = playbackRate;
+  }, [muted, volume, playbackRate]);
 
   const action = useCallback(() => {
     if (!canplay) return;
@@ -158,140 +164,170 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
     }
 
     video.current?.play();
-  }, [ video.current, canplay, state ]);
+  }, [video.current, canplay, state]);
 
   return (
-    <div 
-      id="wrapper"
-      onMouseEnter={() => setMouseOver(true)}
-      onMouseLeave={() => setMouseOver(false)}
-    >
-      <video 
-        src={src} 
-        ref={video}
-        id="video"
-        loop={isLooping}
-        onPlay={() => setVideoState(VideoState.PLAYING)}
-        onPause={() => setVideoState(VideoState.PAUSED)}
-        onEnded={() => setVideoState(VideoState.ENDED)}
-        onProgress={() => setBuffers(getBuffers(video.current!))}
-        onCanPlay={() => {
-          if (canplay) return;
-          
-          setCanPlay(true);
-          video.current?.play();
-        }}
-        onClick={action}
-        onTimeUpdate={() => updateCurrentTime()}
-        onLoadedMetadata={() => {
-          setDuration(video.current!.duration);
-        }}
-      />
-      <div id="controls" data-should-show={canplay ? isMouseOver || state !== VideoState.PLAYING : false}>
-        <div 
-          id="action" 
-          className="button" 
-          aria-disabled={!canplay}
-          onClick={action}
+      <div
+          id="wrapper"
+          onMouseEnter={() => setMouseOver(true)}
+          onMouseLeave={() => setMouseOver(false)}
+      >
+        <video
+            src={src}
+            ref={video}
+            id="video"
+            loop={isLooping}
+            onPlay={() => setVideoState(VideoState.PLAYING)}
+            onPause={() => setVideoState(VideoState.PAUSED)}
+            onEnded={() => setVideoState(VideoState.ENDED)}
+            onProgress={() => setBuffers(getBuffers(video.current!))}
+            onCanPlay={() => {
+              if (canplay) return;
+              setCanPlay(true);
+              video.current?.play();
+            }}
+            onClick={action}
+            onTimeUpdate={updateCurrentTime}
+            onLoadedMetadata={() => {
+              setDuration(video.current!.duration);
+            }}
         >
-          {state === VideoState.PLAYING ? (
-            <Icons.Pause />
-          ) : state === VideoState.PAUSED ? (
-            <Icons.Play />
-          ) : (
-            <Icons.Replay />
-          )}
-        </div>
-        {isPluginEnabled("loop") && (
-          <div id="loop" className={className([ "button", isLooping && "active" ])} onClick={() => setLooping(v => !v)}>
-            <Icons.Loop />
-          </div>
-        )}
-        <div id="duration">
-          <span ref={currentTimeRef}>0:00</span>
-          <span>/</span>
-          <span>{durationFormatted}</span>
-        </div>
-        <div id="slider">
-          <DurationBar 
-            type={DurationBar.Types.DURATION}
-            currentWindow={window}
-            buffers={buffers}
-            value={duration}
-            onDrag={(percent) => {
-              video.current!.currentTime = percent * video.current!.duration;
-
-              updateCurrentTime();
-            }}
-            onDragEnd={() => {
-              isDragging.current = false;
-              if (!wasPaused.current && !video.current!.ended) video.current!.play();
-            }}
-            onDragStart={() => {
-              isDragging.current = true;
-              wasPaused.current = video.current!.paused;
-              video.current!.pause();
-            }}
-            ref={durationBar as any}
-          />
-        </div>
-        <div id="volume">
-          <VolumeSlider
-            minValue={0}
-            maxValue={1}
-            value={volume.get()}
-            muted={muted.get()}
-            currentWindow={window}
-            onValueChange={volume.set}
-            onToggleMute={() => muted.set(!muted.get())}
-            sliderClassName="volumeSlider"
-          />
-        </div>
-        {IS_DESKTOP && (
+        </video>
+        <div id="controls" data-should-show={canplay ? isMouseOver || state !== VideoState.PLAYING : false}>
           <div
-            id="pin" 
-            className="button"
-            onClick={() => {
-              setPinned((value) => {
-                // @ts-expect-error
-                DiscordNative.window.setAlwaysOnTop(windowKey, !value);
-                return !value;
-              });
-            }}
+              id="action"
+              className="button"
+              aria-disabled={!canplay}
+              onClick={action}
           >
-            {isPinned ? (
-              <DiscordIcon name="PinUprightSlashIcon" />
+            {state === VideoState.PLAYING ? (
+                <Icons.Pause />
+            ) : state === VideoState.PAUSED ? (
+                <Icons.Play />
             ) : (
-              <DiscordIcon name="PinUprightIcon" />
+                <Icons.Replay />
             )}
           </div>
-        )}
-        <a
-          id="download" 
-          className="button"
-          role="button"
-          href={src}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <Icons.Download />
-        </a>
+          {isPluginEnabled("loop") && (
+              <div id="loop" className={className(["button", isLooping && "active"])}
+                   onClick={() => setLooping(v => !v)}>
+                <Icons.Loop />
+              </div>
+          )}
+          <div id="duration">
+            <span ref={currentTimeRef}>0:00</span>
+            <span>/</span>
+            <span>{durationFormatted}</span>
+          </div>
+          <div id="slider">
+            <DurationBar
+                type={DurationBar.Types.DURATION}
+                currentWindow={window}
+                buffers={buffers}
+                value={duration}
+                onDrag={(percent) => {
+                  video.current!.currentTime = percent * video.current!.duration;
+                  updateCurrentTime();
+                }}
+                onDragEnd={() => {
+                  isDragging.current = false;
+                  if (!wasPaused.current && !video.current!.ended) video.current!.play();
+                }}
+                onDragStart={() => {
+                  isDragging.current = true;
+                  wasPaused.current = video.current!.paused;
+                  video.current!.pause();
+                }}
+                ref={durationBar as any}
+            />
+          </div>
+          <div id="volume">
+            <VolumeSlider
+                minValue={0}
+                maxValue={1}
+                value={volume.get()}
+                muted={muted.get()}
+                currentWindow={window}
+                onValueChange={volume.set}
+                onToggleMute={() => muted.set(!muted.get())}
+                sliderClassName="volumeSlider"
+            />
+          </div>
+          <div id={"gear"} className={"button"} onClick={() => shouldShow(!show)}>
+            <Popout onRequestClose={() => {}}
+                    position="right"
+                    shouldShow={show}
+                    renderPopout={(props) =>
+                        <MenuComponents.Menu
+                            {...props}
+                            onClose={() => props.onClose?.()}
+                            navId={"vx-pip-context-menu"}
+                        >
+                          <MenuComponents.Item id={"vx-pip-context-menu-speed"} label={"Set Playback Speed"}>
+                            {speedOptions.map((speed) => (
+                                <MenuComponents.MenuItem
+                                    key={speed}
+                                    id={`speed-${speed}`}
+                                    label={`${speed}x`}
+                                    action={() => {
+                                      setPlaybackRate(speed);
+                                      console.log(speed)
+                                    }}
+                                />
+                            ))}
+                          </MenuComponents.Item>
+                        </MenuComponents.Menu>
+                    }>
+              {(props, state) => (
+                  <Icons.Gear {...props} color={"var(--interactive-normal)"} />
+              )}
+            </Popout>
+          </div>
+          {IS_DESKTOP && (
+              <div
+                  id="pin"
+                  className="button"
+                  onClick={() => {
+                    setPinned((value) => {
+                      // @ts-expect-error
+                      DiscordNative.window.setAlwaysOnTop(windowKey, !value);
+                      return !value;
+                    });
+                  }}
+              >
+                {isPinned ? (
+                    <DiscordIcon name="PinUprightSlashIcon" />
+                ) : (
+                    <DiscordIcon name="PinUprightIcon" />
+                )}
+              </div>
+          )}
+          <a
+              id="download"
+              className="button"
+              role="button"
+              href={src}
+              target="_blank"
+              rel="noreferrer noopener"
+          >
+            <Icons.Download />
+          </a>
+        </div>
       </div>
-    </div>
-  )
+  );
 }
 
 function PIP() {
   const ref = useRef<HTMLDivElement>(null);
-  const [ video, setVideo ] = useState<null | HTMLVideoElement>(null);
-  const [ active, setActive ] = useState(false);
+  const [video, setVideo] = useState<null | HTMLVideoElement>(null);
+  const [active, setActive] = useState(false);
 
   useLayoutEffect(() => {
-    if (!ref.current) return;    
+    if (!ref.current) return;
     const video = ref.current.parentElement!.querySelector<HTMLVideoElement>("video")!;
 
     setVideo(video);
-  }, [ ]);
+  }, []);
 
   useEffect(() => {
     if (!video) return;
