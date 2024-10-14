@@ -14,8 +14,6 @@ export default definePlugin({
     requiresRestart: false,
     async start(): Promise<void> {
         await whenWebpackReady();
-        console.log("started");
-
         inj.after(ActivityCard, "Z", (_instance: any, _args: any, yeah: any) => {
             const children: any = yeah.props;
             if (children.children) {
@@ -24,7 +22,6 @@ export default definePlugin({
                     const Activity: any = findInReactTree(yeah, m => m?.activity);
                     const Yeah: any = findInReactTree(yeah, m => m?.image);
                     
-                    console.log(args, yeah);
                     yeah.props.children[1].props.onContextMenu = (event: MouseEvent) => openMenu(event, (props: any) => (
                         <MenuComponents.Menu onClose={closeMenu} {...props}>
                             {copierObjects(Activity.activity, "activity-navId", 10,0, Activity.activity)}
