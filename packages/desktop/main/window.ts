@@ -53,7 +53,7 @@ function attemptFixDevtools() {
 
   setTimeout(() => {
     electron.nativeTheme.themeSource = themeSource;
-  });
+  }, 25);
 }
 
 export class BrowserWindow extends electron.BrowserWindow {
