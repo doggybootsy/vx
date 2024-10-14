@@ -5,6 +5,7 @@ import {Icons, Markdown} from "../../components";
 import {ChannelStore, GuildStore, NavigationUtils, UserStore} from "@webpack/common";
 import {AuthorIcon} from "../../dashboard/pages/addons/plugins/card";
 import {Injector} from "../../patcher";
+import {isFriend} from "../friend-notifications";
 
 type MessageType = {
     type: string;
@@ -47,6 +48,7 @@ function displayNotification(Message: MessageType) {
     const LocalUser = UserStore.getCurrentUser();
 
     if (LocalUser.id == Message.message.author.id) return;
+    if (!isFriend(Message.message.author.id)) return;
 
     const isDM = Channel.isDM();
     const recipientIcons = isDM

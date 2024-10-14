@@ -24,7 +24,7 @@ function format(template: string, ...args: any[]) {
     });
 }
 
-function isFriend(userId: string) {
+export function isFriend(userId: string) {
     return RelationshipStore.isFriend(userId);
 }
 
