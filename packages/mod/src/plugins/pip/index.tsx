@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { definePlugin, isPluginEnabled } from "..";
-import { Button, ErrorBoundary, Icons, SystemDesign } from "../../components";
+import {Button, ErrorBoundary, Icons, Popout, SystemDesign} from "../../components";
 import { Developers } from "../../constants";
 import { base64, className, proxyCache } from "../../util";
 
@@ -122,7 +122,8 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
   const [canplay, setCanPlay] = useState(false);
   const [isLooping, setLooping] = useState(() => settings.autoLoop.get());
   const { muted, volume } = useCurrentVolume();
-  const [isMouseOver, setMouseOver] = useState(false);
+  const [show, shouldShow] = useState(false);
+  const [isMouseOver, setMouseOver ] = useState(false);
   const [buffers, setBuffers] = useState<number[][]>([]);
 
   const [isPinned, setPinned] = useState(false);
@@ -138,7 +139,7 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
   const currentTimeRef = useRef<HTMLDivElement>(null);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  const speedOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+  const speedOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3, 4, 5];
 
   const updateCurrentTime = useCallback(() => {
     if (!video.current) return;
@@ -252,32 +253,35 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
                 sliderClassName="volumeSlider"
             />
           </div>
-          <div
-              onClick={(event) => {
-                openMenu(event, (props) => (
-                    <MenuComponents.Menu
-                        {...props}
-                        onClose={() => props.onClose?.()}
-                        navId={"vx-pip-context-menu"}
-                    >
-                      <MenuComponents.Item id={"vx-pip-context-menu-speed"} label={"Set Playback Speed"}>
-                        {speedOptions.map((speed) => (
-                            <MenuComponents.MenuItem
-                                key={speed}
-                                id={`speed-${speed}`}
-                                label={`${speed}x`}
-                                action={() => {
-                                  setPlaybackRate(speed);
-                                  console.log(speed)
-                                }}
-                            />
-                        ))}
-                      </MenuComponents.Item>
-                    </MenuComponents.Menu>
-                ));
-              }}
-          >
-            <Icons.Gear color={"var(--interactive-normal)"} />
+          <div id={"gear"} className={"button"} onClick={() => shouldShow(!show)}>
+            <Popout onRequestClose={() => {}}
+                    position="right"
+                    shouldShow={show}
+                    renderPopout={(props) =>
+                        <MenuComponents.Menu
+                            {...props}
+                            onClose={() => props.onClose?.()}
+                            navId={"vx-pip-context-menu"}
+                        >
+                          <MenuComponents.Item id={"vx-pip-context-menu-speed"} label={"Set Playback Speed"}>
+                            {speedOptions.map((speed) => (
+                                <MenuComponents.MenuItem
+                                    key={speed}
+                                    id={`speed-${speed}`}
+                                    label={`${speed}x`}
+                                    action={() => {
+                                      setPlaybackRate(speed);
+                                      console.log(speed)
+                                    }}
+                                />
+                            ))}
+                          </MenuComponents.Item>
+                        </MenuComponents.Menu>
+                    }>
+              {(props, state) => (
+                  <Icons.Gear {...props} color={"var(--interactive-normal)"} />
+              )}
+            </Popout>
           </div>
           {IS_DESKTOP && (
               <div
