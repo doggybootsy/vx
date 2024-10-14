@@ -149,7 +149,7 @@ const PronounDisplay = ({ res }: { res: any }) => {
         const fetchData = async () => {
             const userData = await fetchPronounData(userId);
             if (userData) {
-                setPronouns(userData.sets['en'].join("/"));
+                setPronouns(cachedPronouns?.sets['en']?.join("/") ?? [void 0]);
             } else {
                 setPronouns(null);
             }
@@ -158,7 +158,7 @@ const PronounDisplay = ({ res }: { res: any }) => {
         if (cachedPronouns?.loading) {
             setPronouns(null); 
         } else if (cachedPronouns) {
-            setPronouns(cachedPronouns.sets['en'].join("/"));
+            setPronouns(cachedPronouns?.sets['en']?.join("/") ?? [void 0]);
         } else {
             fetchData();
         }
@@ -183,8 +183,8 @@ export default definePlugin({
     },
     addShit({ res }: { res: ReactNode }) {
         return (
-            <ErrorBoundary>
-                <PronounDisplay res={res} />
+            <ErrorBoundary fallback={res}>
+                <PronounDisplay res={res}  />
             </ErrorBoundary>
         )
     },
