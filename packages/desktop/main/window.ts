@@ -42,6 +42,20 @@ const script = `(async function() {
   header.insertBefore(icon, header.firstChild);
 })();`
 
+function attemptFixDevtools() {
+  // 32.x.xdoesnt save devtools pref properly
+  if (!/^32\.\d+.\d+$/.test(process.versions.electron)) return;
+  if (electron.nativeTheme.themeSource === "light") return;
+
+  const { themeSource } = electron.nativeTheme;
+
+  electron.nativeTheme.themeSource = "light";
+
+  setTimeout(() => {
+    electron.nativeTheme.themeSource = themeSource;
+  });
+}
+
 export class BrowserWindow extends electron.BrowserWindow {
   static __getPreloadFromWindow(window: BrowserWindow) {
     return window[preloadSymbol];
@@ -91,11 +105,13 @@ export class BrowserWindow extends electron.BrowserWindow {
     window.webContents.on("devtools-open-url", (event, url) => {
       event.preventDefault();
 
-      electron.shell.openExternal(url, { });
+      electron.shell.openExternal(url, { })
     });
 
     window.webContents.on("devtools-opened", () => {
       window.webContents.devToolsWebContents?.executeJavaScript(script);
+      
+      attemptFixDevtools();
     });
     
     // Open devtools in devtools
