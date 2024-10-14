@@ -2,9 +2,7 @@ import { getLazyByKeys } from "@webpack";
 import { definePlugin } from "..";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
-import { ErrorBoundary } from "../../components";
-import { CodeBlock } from "./codeblock";
-import * as styler from "./index.css?managed";
+import { ErrorBoundary, CodeBlock } from "../../components";
 
 const injector = new Injector();
 
@@ -27,7 +25,6 @@ interface MarkdownOptions {
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
-  styler,
   injector,
   async start(signal) {
     const SimpleMarkdownWrapper = await getLazyByKeys<SimpleMarkdown>([ "defaultRules", "parse" ], { signal });
@@ -35,7 +32,7 @@ export default definePlugin({
     injector.after(SimpleMarkdownWrapper.defaultRules.codeBlock, "react", (that, [ node,, opts ], res) => {
       return injector.return(
         <ErrorBoundary fallback={res} key={opts.key}>
-          <CodeBlock lang={node.lang} content={node.content} />
+          <CodeBlock language={node.lang} content={node.content} canOpenInModal />
         </ErrorBoundary>
       )
     });

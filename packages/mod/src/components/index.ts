@@ -28,3 +28,4 @@ export * from "./textOverflowScroller";
 export * from "./html";
 export * from "./userPopout";
 export * from "./scroller";
+export * from "./codeblock";
