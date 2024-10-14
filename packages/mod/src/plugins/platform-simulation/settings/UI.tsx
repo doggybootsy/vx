@@ -2,6 +2,7 @@ import {PluginInjector} from "../index";
 import {Utils} from "./utils";
 import {getByKeys, getProxyByKeys} from "@webpack";
 import {settings} from "./index";
+import { forceUpdateApp } from "../../../util";
 
 const PlatformCheckUtils = getProxyByKeys(["PlatformTypes", "getNativePlatform"])
 export default (): void => {
@@ -45,5 +46,5 @@ export default (): void => {
     PluginInjector.instead(PlatformCheckUtils, "isIOS", () => false);
     PluginInjector.instead(PlatformCheckUtils, "isDesktop", () => true);
 
-    void Utils.forceRerenderElement('#app-mount > [class*="titleBar_"]');
+    void forceUpdateApp();
 };

@@ -82,7 +82,8 @@ export interface CodeBlockProps {
   content: string,
   title?: string,
   canOpenInModal?: boolean,
-  buttons?: React.ReactNode
+  buttons?: React.ReactNode,
+  className?: string
 }
 
 interface CodeBlockButton {
@@ -91,7 +92,7 @@ interface CodeBlockButton {
   action(event: React.MouseEvent<HTMLDivElement>): void
 }
 
-export function CodeBlock({ language: lang, content, title, canOpenInModal, buttons }: CodeBlockProps) {
+export function CodeBlock({ className: cn, language: lang, content, title, canOpenInModal, buttons }: CodeBlockProps) {
   const isDiffAnd = useMemo(() => DIFF_CODE_TYPE.test(lang), [ lang ]);
   
   const [ language, languageDefinition, pContent ] = useMemo<[ string, Language, string ]>(() => {
@@ -151,7 +152,7 @@ export function CodeBlock({ language: lang, content, title, canOpenInModal, butt
   const hasDiff = useMemo(() => isDiffAnd || (languageDefinition.name === "Diff"), [ isDiffAnd, languageDefinition ]);
 
   return (
-    <div className="vx-codeblock" data-lang-name={languageDefinition.name} data-raw-lang={lang}>
+    <div className={className([ "vx-codeblock", cn ])} data-lang-name={languageDefinition.name} data-raw-lang={lang}>
       <div className="vx-codeblock-header">
         {canOpenInModal && (
           <Tooltip text="Open in modal">

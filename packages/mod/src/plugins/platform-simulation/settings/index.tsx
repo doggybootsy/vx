@@ -1,3 +1,4 @@
+import { forceUpdateApp } from "../../../util";
 import {createSettings, SettingType} from "../../settings";
 
 export const settings = createSettings("websocket-spoof", {
@@ -10,6 +11,9 @@ export const settings = createSettings("websocket-spoof", {
                 { label: "OSX", value: "darwin" },
                 { label: "Linux", value: "linux" },
             ],
+            onChange() {
+                forceUpdateApp();
+            },
             title: "Change the UI",
             description: "Change the UI for Windows",
         },
