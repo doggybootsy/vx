@@ -1,10 +1,10 @@
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import {Developers} from "../../constants";
 import {Injector} from "../../patcher";
 import { getLazyByKeys, getProxyStore } from "@webpack";
 import { forceUpdateApp } from "../../util";
 import { IS_DESKTOP } from "vx:self";
-import {createSettings, SettingType} from "../settings";
+import {createSettings, SettingType} from "vx:plugins/settings";
 
 const GatewayConnectionStore = getProxyStore("GatewayConnectionStore");
 
@@ -62,7 +62,7 @@ const settings = createSettings("websocket-spoof", {
             const socket = GatewayConnectionStore.getSocket();
 
             delete socket.sessionId;
-            socket.webSocket.close();
+            socket.close();
         }
     }
 });

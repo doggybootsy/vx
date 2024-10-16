@@ -1,4 +1,4 @@
-import { definePlugin } from "../";
+import { definePlugin } from "vx:plugins";;
 import { Developers } from "../../constants";
 import { MessageStore, UserStore, dirtyDispatch } from "@webpack/common";
 

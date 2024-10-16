@@ -9,7 +9,7 @@ import { pluginStore } from "../../../../addons/plugins";
 import { internalDataStore } from "../../../../api/storage";
 import { Messages } from "vx:i18n";
 import { addons } from "../../../../native";
-import { markPluginAsSeen } from "../../../../plugins";
+import { markPluginAsSeen } from "vx:plugins";
 
 export function AuthorIcon({ dev, isLast }: { dev: { discord?: string, username: string, github?: string }, isLast: boolean }) {
   const user = useUser(dev.discord);

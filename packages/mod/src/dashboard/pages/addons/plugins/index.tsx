@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { Header, Page } from "../../..";
 import { Button, ErrorBoundary, Flex, FlexChild, Icons, SearchBar, Tooltip } from "../../../../components";
-import { newPlugins, Plugin, plugins } from "../../../../plugins";
+import { newPlugins, Plugin, plugins } from "vx:plugins";
 import { PluginCard } from "./card";
 import { NO_RESULTS, NO_RESULTS_ALT, NoAddons, queryStore } from "../shared";
 import { pluginStore } from "../../../../addons/plugins";

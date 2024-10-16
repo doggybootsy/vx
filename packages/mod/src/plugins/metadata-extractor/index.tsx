@@ -2,7 +2,7 @@ import {SystemDesign, Tooltip} from "../../components";
 import {ModalComponents, openImageModal, openModal} from "../../api/modals";
 import { ZIP } from "../../components/icons";
 import {Developers} from "../../constants";
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import * as styler from "./index.css?managed";
 import {memo, useCallback, useState} from "../../fake_node_modules/react";
 import {openNotification} from "../../api/notifications";

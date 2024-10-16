@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { openImageModal, openExternalWindowModal } from "../../api/modals";
 import { ErrorBoundary, Icons, Spinner } from "../../components";
 import { Developers } from "../../constants";

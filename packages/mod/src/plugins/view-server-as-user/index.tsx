@@ -1,4 +1,4 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Developers } from "../../constants";
 import { byRegex, byStrings, combine, getMangledProxy, getProxyByKeys } from "@webpack";

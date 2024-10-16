@@ -1,5 +1,5 @@
 import { getProxyStore } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { openImageModal } from "../../api/modals";
 import { Developers } from "../../constants";
 import { useStateFromStores } from "@webpack/common";

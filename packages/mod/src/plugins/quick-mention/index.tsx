@@ -1,5 +1,5 @@
 import { Messages } from "vx:i18n";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import * as minipopover from "../../api/minipopover";
 import { Icons, MiniPopover } from "../../components";
 import { Developers } from "../../constants";

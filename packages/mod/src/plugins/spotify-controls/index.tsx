@@ -1,10 +1,10 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 
 import * as styler from "./index.css?managed";
 
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 import { spotifyStore } from "./store";
 import { SpotifyPanel } from "./panel";
 import { forwardRef } from "react";

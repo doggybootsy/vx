@@ -1,11 +1,11 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import { bySource, getLazy } from "@webpack";
 import { MenuComponents } from "../../api/menu";
 import * as styler from "./index.css?managed";
 import { DataStore } from "../../api/storage";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 import { ChannelStore } from "@webpack/common";
 
 const injector = new Injector();

@@ -7,12 +7,11 @@ import { className } from "../util";
 import { byStrings, getByKeys, webpackRequire, whenWebpackInit } from "@webpack";
 import { addPlainTextPatch } from "@webpack";
 import { env } from "vx:self";
-import { GuildClock } from "../plugins/guild-clock";
 import { HomeButton, HomeMenu } from "./button";
 import { openMenu } from "../api/menu";
-import { GuildDmTypingIndicator } from "../plugins/better-typing-indicators";
 import { nativeFrame } from "../native";
 import "./navigational";
+import { requirePlugin } from "vx:plugins/require";
 
 addPlainTextPatch(
   {
@@ -134,6 +133,9 @@ __self__.TitlebarButton = function TitlebarButton(props: { windowKey?: string })
 __self__._addHomeButton = cache(() => {
   const dmsFilter = byStrings(".getPrivateChannelsVersion()");
   const Components = getByKeys<any>([ "AdvancedScrollerNone" ]);
+
+  const { GuildDmTypingIndicator } = requirePlugin<typeof import("../plugins/better-typing-indicators")>("better-typing-indicators");
+  const { GuildClock } = requirePlugin<typeof import("../plugins/guild-clock")>("guild-clock");
 
   return forwardRef((props: { children: React.ReactNode[] }, ref) => {
     const children = props.children.concat();    

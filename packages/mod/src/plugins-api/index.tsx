@@ -34,9 +34,19 @@ export type AnyPluginType = PluginType & Omit<Record<string, any>, keyof PluginT
 const dispatcher = getLazyByKeys([ "subscribe", "dispatch" ]);
 
 export class Plugin<T extends AnyPluginType = AnyPluginType> {
-  constructor(public readonly exports: T) {    
-    const match = new Error().stack!.match(/plugins\/(.+?)\//)!;
-    this.id = match[1];
+  private static __isUserPlugin?: boolean;
+  private static __lastPluginId?: string;
+
+  constructor(public readonly exports: T) {
+    if (typeof Plugin.__isUserPlugin !== "boolean" || typeof Plugin.__lastPluginId !== "string" || Plugin.__lastPluginId in plugins) {
+      throw new Error("Plugin was not initialized correctly, aborting!");
+    }
+
+    this.id = Plugin.__lastPluginId;
+
+    plugins[this.id] = this;
+
+    this.isUserPlugin = Plugin.__isUserPlugin;
 
     this.requiresRestart = exports.requiresRestart ?? true;
     this.originalEnabledState = this.isEnabled();
@@ -88,9 +98,51 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
       );
     }
     if (typeof exports.settings === "function") this.Settings = exports.settings;
+
+    const isEnabled = this.isEnabled();
+  
+    if (exports.patches) {
+      if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
+      
+      for (const patch of exports.patches) {
+        const self = `$vxi.getPlugin(${JSON.stringify(this.id)})`;
+  
+        patch._self = Object.assign({}, patch._self, {
+          plugin: self,
+          self: `${self}.exports`,
+          enabled: `${self}.getActiveState()`
+        });
+  
+        if (typeof patch.identifier !== "string") patch.identifier = this.id;
+        else patch.identifier = `${this.id}(${patch.identifier})`;
+      }
+      // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
+      if (isEnabled || !this.requiresRestart) addPlainTextPatch(...exports.patches);
+    }
+    if (exports.commands) {
+      if (!Array.isArray(exports.commands)) exports.commands = [ exports.commands ];
+  
+      for (const command of exports.commands) {
+        const predicate = command.predicate ?? (() => true);
+  
+        command.predicate = () => {
+          if (this.getActiveState() && predicate()) return true;
+          return false;
+        }
+  
+        command.id = `${this.id}(${command.id})`;
+  
+        addCommand(command);
+      }
+    }
+  
+    if (isEnabled) {
+      if (typeof exports.start === "function") callSafely(() => exports.start!(this.controller.signal), console.error);
+      if (exports.styler) exports.styler.addStyle();
+    }
   }
 
-  public controller = new AbortController();
+  private controller = new AbortController();
 
   public readonly Settings: null | React.ComponentType<{}> = null;
 
@@ -99,6 +151,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
   public readonly type = "internal";
 
   public readonly id: string;
+  public readonly isUserPlugin: boolean;
 
   public readonly originalEnabledState: boolean;
   public readonly requiresRestart: boolean;
@@ -125,7 +178,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     internalDataStore.set("enabled-plugins", enabled);
 
     if (!this.requiresRestart) {
-      if (typeof this.exports.start === "function") callSafely(() => this.exports.start!(this.controller.signal));
+      if (typeof this.exports.start === "function") callSafely(() => this.exports.start!(this.controller.signal), console.error);
       if (this.exports.styler) this.exports.styler.addStyle();
     }
 
@@ -141,7 +194,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     internalDataStore.set("enabled-plugins", enabled);
 
     if (!this.requiresRestart) {
-      if (typeof this.exports.stop === "function") callSafely(() => this.exports.stop!());
+      if (typeof this.exports.stop === "function") callSafely(() => this.exports.stop!(), console.error);
       if (this.exports.styler) this.exports.styler.removeStyle();
       if (this.exports.injector) this.exports.injector.unpatchAll();
       
@@ -174,54 +227,8 @@ export function getPlugin(id: string) {
 
 __self__.getPlugin = getPlugin;
 
-export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {  
-  const plugin = new Plugin(exports);
-
-  const isEnabled = plugin.isEnabled();
-
-  plugins[plugin.id] = plugin;
-
-  if (exports.patches) {
-    if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
-    
-    for (const patch of exports.patches) {
-      const self = `$vxi.getPlugin(${JSON.stringify(plugin.id)})`;
-
-      patch._self = Object.assign({}, patch._self, {
-        plugin: self,
-        self: `${self}.exports`,
-        enabled: `${self}.getActiveState()`
-      });
-
-      if (typeof patch.identifier !== "string") patch.identifier = plugin.id;
-      else patch.identifier = `${plugin.id}(${patch.identifier})`;
-    }
-    // if 'requiresRestart' is false then we can add them, because the plugin will have something incase
-    if (isEnabled || !plugin.requiresRestart) addPlainTextPatch(...exports.patches);
-  }
-  if (exports.commands) {
-    if (!Array.isArray(exports.commands)) exports.commands = [ exports.commands ];
-
-    for (const command of exports.commands) {
-      const predicate = command.predicate ?? (() => true);
-
-      command.predicate = () => {
-        if (plugin.getActiveState() && predicate()) return true;
-        return false;
-      }
-
-      command.id = `${plugin.id}(${command.id})`;
-
-      addCommand(command);
-    }
-  }
-
-  if (isEnabled) {
-    if (typeof exports.start === "function") callSafely(() => exports.start!(plugin.controller.signal));
-    if (exports.styler) exports.styler.addStyle();
-  }
-
-  return plugin;
+export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {
+  return new Plugin(exports);
 }
 
 // For use inside of plugins
@@ -243,7 +250,7 @@ export function markPluginAsSeen(plugin: string) {
 }
 
 (function() {
-  require("@plugins");
+  require("vx:plugins/require");
   
   if (env.IS_DEV) console.log(plugins);
   

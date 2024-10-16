@@ -1,12 +1,12 @@
 import { getLocale } from "vx:i18n";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { createState } from "../../util";
 import { useEffect } from "react";
 import { useForceUpdate } from "../../hooks";
 
 import * as styler from "./index.css?managed";
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 
 const settings = createSettings("guild-clock", {
   hour12: {

@@ -1,12 +1,12 @@
 import { MessageStore, RelationshipStore, UserStore, useStateFromStores } from "@webpack/common";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import * as styler from "./index.css?managed";
 import { Messages } from "vx:i18n";
 import { useLayoutEffect, useMemo } from "react";
 import { getProxyByKeys, getProxyStore } from "@webpack";
 import {ErrorBoundary, Icons, Tooltip} from "../../components";
-import {createSettings, SettingType} from "../settings";
+import {createSettings, SettingType} from "vx:plugins/settings";
 
 const CallStore = getProxyStore("CallStore");
 const chanelActions = getProxyByKeys([ "preload", "ensurePrivateChannel" ]);

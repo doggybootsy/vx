@@ -1,12 +1,11 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { openNotification } from "../../api/notifications";
 import { Icons, Markdown } from "../../components";
-import { ChannelStore, GuildStore, NavigationUtils, UserStore } from "@webpack/common";
+import { ChannelStore, GuildStore, NavigationUtils, RelationshipStore, UserStore } from "@webpack/common";
 import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
 import { MessageAttachment, MessageJSON } from "discord-types/general";
-import { createSettings, SettingType } from "../settings";
-import {isFriend} from "../friend-notifications";
+import { createSettings, SettingType } from "vx:plugins/settings";
 
 const IconURI = (id: string, hash: string) => `https://cdn.discordapp.com/avatars/${id}/${hash}.webp?size=1280`
 
@@ -87,7 +86,7 @@ function displayNotification(event: MessageEventType) {
 
     const isUserIdInContent = event.message.content.includes(LocalUser.id)  
 
-    const isFriendMessage = isFriend(event.message.author.id);
+    const isFriendMessage = RelationshipStore.isFriend(event.message.author.id);
 
     const shouldNotifyDM = isDM && settings.enableDM.get();
 

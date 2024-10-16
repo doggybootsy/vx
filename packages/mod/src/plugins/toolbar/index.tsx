@@ -1,4 +1,4 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import {bySource, byStrings, getLazy, getMangledLazy, getModuleIdBySource, getProxy, webpackRequire} from "@webpack";
 import { createElement } from "react";

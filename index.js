@@ -69,6 +69,8 @@ const git = cache(() => {
 
 const IS_PROD = argvIncludesArg("p(roduction)?");
 console.log("is production:", IS_PROD);
+const IGNORE_USER_PLUGINS = argvIncludesArg("(ignore-user-plugins|iup)");
+console.log("is ignore user plugins:", IGNORE_USER_PLUGINS);
 console.log("version:", version);
 console.log("git:", git().exists);
 
@@ -156,7 +158,7 @@ const ManagedCSSPlugin = {
         contents: `
         import { Styler } from "vx:styler";
         
-        export const id = ${JSON.stringify(args.path.replace("./packages/mod/src/plugins", "@plugins"))};
+        export const id = ${JSON.stringify(args.path.replace("./packages/mod/src/plugins", "vx:plugins"))};
         export const css = ${JSON.stringify(css)};
         
         const styler = new Styler(css, id);
@@ -221,27 +223,65 @@ const RequireAllPluginsPlugin = (desktop) => ({
   name: "require-all-plugins-plugin",
   setup(build) {
     build.onResolve({
-      filter: /^@plugins$/
+      filter: /^vx:plugins\/require$/
     }, () => ({
-      path: "@plugins",
+      path: "vx:plugins/require",
       namespace: "require-all-plugins-plugin"
     }));
 
     build.onLoad({
       filter: /.*/, namespace: "require-all-plugins-plugin"
-    }, async (args) => {
-      const pluginDirs = (await readdir("./packages/mod/src/plugins", {
-        encoding: "binary"
-      }))
+    }, async () => {
+      const pluginDirs = (await readdir("./packages/mod/src/plugins"))
         .filter(dir => statSync(path.join("./packages/mod/src/plugins", dir)).isDirectory())
         .filter(dir => !dir.endsWith(".ignore"))
         .filter(dir => !(dir.endsWith(desktop ? ".web" : ".app") || dir.endsWith(desktop ? ".web.dev" : ".app.dev")))
         .filter(dir => IS_PROD ? !dir.includes(".dev") : true)
         .filter(dir => dir !== "shared");
-        
+      
+      const userPluginDirs = (await readdir("./packages/mod/src/user-plugins"))
+        .filter(dir => statSync(path.join("./packages/mod/src/user-plugins", dir)).isDirectory())
+        .filter(dir => !dir.endsWith(".ignore"))
+        .filter(dir => !(dir.endsWith(desktop ? ".web" : ".app") || dir.endsWith(desktop ? ".web.dev" : ".app.dev")))
+        .filter(dir => IS_PROD ? !dir.includes(".dev") : true)
+        .filter(dir => dir !== "shared");
+
+      if (IGNORE_USER_PLUGINS) userPluginDirs.length = 0;
+
+      function makeValue(dir, isUserPlugin) {
+        return `plugins["${dir}"] = () => {
+  Plugin.__isUserPlugin = ${isUserPlugin};
+  Plugin.__lastPluginId = "${dir}";
+  
+  const plugin = require("./${isUserPlugin ? "user-plugins" : "plugins"}/${dir}");
+
+  delete Plugin.__isUserPlugin;
+  delete Plugin.__lastPluginId;
+  
+  return plugin;
+};`;
+      }
+
+      const code = `
+import { Plugin } from "vx:plugins";
+
+const plugins = {};
+
+${pluginDirs.map(dir => makeValue(dir, false)).join("")}
+${userPluginDirs.map(dir => makeValue(dir, true)).join("")}
+
+export function requirePlugin(id) {
+  return plugins[id]();
+}
+
+for (const id in plugins) {
+  if (Object.prototype.hasOwnProperty.call(plugins, id)) requirePlugin(id);
+}
+`;
+
       return {
         resolveDir: "./packages/mod/src",
-        contents: pluginDirs.map(dir => `require("./plugins/${dir}")`).join(";")
+        contents: code
       }
     });
   }

@@ -1,8 +1,8 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import { getLazyByKeys } from "@webpack";
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 
 import { KeyboardButton, KeyboardSlash } from "./button";
 import * as styler from "./index.css?managed"

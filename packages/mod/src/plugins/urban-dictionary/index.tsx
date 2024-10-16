@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as styler from './index.css?managed';
 import {ModalComponents, ModalProps, openModal} from "../../api/modals";
 import {Developers} from "../../constants";
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import {MenuComponents} from '../../api/menu';
 import {Button, Flex} from "../../components";
 

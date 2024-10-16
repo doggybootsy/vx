@@ -1,6 +1,6 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys } from "@webpack";

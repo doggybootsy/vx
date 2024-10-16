@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { definePlugin } from "../";
+import { definePlugin } from "vx:plugins";;
 import { Developers } from "../../constants";
 import { ZipButton } from "./button";
 

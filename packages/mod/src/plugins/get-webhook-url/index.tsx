@@ -1,4 +1,4 @@
-import { definePlugin } from "../";
+import { definePlugin } from "vx:plugins";;
 import { addItem, unpatchAll } from "../../api/minipopover";
 import { Icons } from "../../components";
 import { Button } from "../../components/minipopover";

@@ -19,6 +19,8 @@
       "typings": [ "./types/typings.ts" ],
       "@webpack": [ "./packages/mod/src/webpack" ],
       "@webpack/*": [ "./packages/mod/src/webpack/*" ],
+      "vx:plugins": [ "./packages/mod/src/plugins-api" ],
+      "vx:plugins/*": [ "./packages/mod/src/plugins-api/*" ],
       "vx:*": [ "./packages/modules/*" ]
     },
     "resolveJsonModule": true,

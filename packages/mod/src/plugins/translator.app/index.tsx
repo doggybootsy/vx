@@ -1,4 +1,4 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { MenuComponents, patch, unpatch } from "../../api/menu";
 import { Injector } from "../../patcher";
@@ -16,7 +16,7 @@ import { ModalComponents, ModalProps } from "../../api/modals";
 
 const injector = new Injector();
 
-export const LANGUAGE_CODES: readonly string[] = [
+const LANGUAGE_CODES: readonly string[] = [
     "BG",
     "ZH",
     "CS",

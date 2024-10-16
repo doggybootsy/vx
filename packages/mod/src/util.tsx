@@ -253,9 +253,9 @@ let id = 0;
 const idSymbol = Symbol("vx.internal-store");
 export class InternalStore {
   public static stores = new Set<InternalStore>();
-  public static getStore(name: string) {
+  public static getStore<T extends InternalStore = InternalStore>(name: string) {
     for (const store of InternalStore.stores) {
-      if (InternalStore.prototype.getName.call(store) === name) return store;
+      if (InternalStore.prototype.getName.call(store) === name) return store as T;
     }
   }
   static getStoreId(store: InternalStore) {

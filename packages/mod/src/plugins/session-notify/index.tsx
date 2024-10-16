@@ -1,4 +1,4 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { openNotification } from "../../api/notifications";
 import { bySource, getModule, whenWebpackReady } from "@webpack";

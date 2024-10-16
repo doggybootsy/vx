@@ -1,10 +1,10 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { className } from "../../util";
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 
 import * as styler from "./index.css?managed";
 

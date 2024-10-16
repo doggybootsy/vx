@@ -1,7 +1,7 @@
 // Does web support this? Discords code doesnt seem to say it does
 // If it does i'll make it so this plugin exists on both
 
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { MenuComponents } from "../../api/menu";
 import { useState } from "react";

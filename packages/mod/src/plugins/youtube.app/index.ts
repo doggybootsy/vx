@@ -1,7 +1,7 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Icons } from "../../components";
 import { Developers } from "../../constants";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 
 const settings = createSettings("youtube", {
   adblock: {

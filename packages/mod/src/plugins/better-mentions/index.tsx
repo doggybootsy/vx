@@ -1,5 +1,5 @@
 import { bySource, byStrings, getLazy, getMangledProxy, getProxy } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import { className, createAbort, focusStore } from "../../util";
@@ -8,7 +8,7 @@ import { cloneElement, isValidElement, useMemo, useState } from "react";
 import { ChannelStore, GuildMemberStore, UserStore, useStateFromStores } from "@webpack/common";
 import { useInternalStore } from "../../hooks";
 import * as styler from "./index.css?managed";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 
 const settings = createSettings("better-mentions", {
   clickableMentions: {

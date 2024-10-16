@@ -1,4 +1,4 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { FluxDispatcher, RelationshipStore, UserStore } from "@webpack/common";
 import { getLazy, getModule, getProxy, getProxyStore } from "@webpack";
@@ -24,7 +24,7 @@ function format(template: string, ...args: any[]) {
     });
 }
 
-export function isFriend(userId: string) {
+function isFriend(userId: string) {
     return RelationshipStore.isFriend(userId);
 }
 

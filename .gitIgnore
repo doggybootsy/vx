@@ -8,3 +8,6 @@ extension
 bun.lockb
 .package-lock.json
 pnpm-lock.yaml
+# User plugins
+packages/mod/src/user-plugins/*
+!packages/mod/src/user-plugins/.exists

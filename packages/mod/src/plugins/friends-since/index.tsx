@@ -1,5 +1,5 @@
 import { Messages } from "vx:i18n";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys, getProxyStore } from "@webpack";
