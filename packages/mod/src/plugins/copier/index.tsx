@@ -5,6 +5,7 @@ import { openImageModal } from "../../api/modals";
 import { createAbort } from "../../util";
 import {getModule, getProxy, getProxyStore, getStore} from "@webpack";
 import {useStateFromStores} from "@webpack/common";
+import { Icons } from "../../components";
 
 const avatarURL = "https://cdn.discordapp.com/avatars/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
 const bannerURL = "https://cdn.discordapp.com/banners/{0}/{1}.png?size=1024&format=webp&quality=lossless&width=0&height=256";
@@ -31,15 +32,11 @@ function isEitherDisabled(...args: any[]): boolean[] {
     return args.map(arg => showBeDisabled(arg));
 }
 
-const [abort, getSignal] = createAbort();
-
 export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
+    icon: Icons.Copy,
     start() {
-        const signal = getSignal();
-        if (signal.aborted) return;
-
         patch("copierGuild", "guild-context", (props, res) => {
             const guild = props.guild;
             if (!guild) return;  // to fix right clicking folder stupidness cause right clicking a folder is for some reason a guild context menu

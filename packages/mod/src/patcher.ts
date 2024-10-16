@@ -11,7 +11,7 @@ type AfterCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: 
 type InsteadCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>, original: F) => ReturnType<F>;
 type BeforeCallback<F extends FunctionType> = (that: ThisParameterType<F>, args: Parameters<F>) => void;
 // 'component' argument only exist's if the element type is a React.Component
-type ReactElementCallback<P extends {}> = (props: P, result: React.ReactNode, component?: React.Component<P>) => InjectorReturn<React.ReactNode>;
+type ReactElementCallback<P extends {}> = (props: P, result: React.ReactNode, component?: React.Component<P>) => void | InjectorReturn<React.ReactNode>;
 
 type UndoFunction = () => void;
 
@@ -82,6 +82,53 @@ function hookFunction<M extends Record<PropertyKey, any>, K extends KeysMatching
 
 const patches = new WeakMap<Injector, Set<UndoFunction>>();
 
+const map = new WeakMap<any, Set<ReactElementCallback<any>>>();
+
+function hookElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>) {
+  if (!isValidElement(node)) throw new TypeError(`Argument 'node' must be type a react element!`);
+  if (map.has(node.type)) return map.get(node.type)!;
+  
+  const callbacks = new Set<ReactElementCallback<P>>();
+
+  const { type } = node as { type: any };
+
+  node.type = new Proxy(type, {
+    construct(target, argArray, newTarget) {
+      const self = Reflect.construct(target, argArray, newTarget);
+      const { render } = self;
+
+      self.render = function() {
+        let result = render();
+
+        for (const callback of callbacks) {
+          const res = callback(this.props, result, this);
+          if (res instanceof InjectorReturn) result = res.value;
+        }
+
+        return result;
+      }
+
+      return self;
+    },
+    apply(target, thisArg, argArray) {
+      let result = Reflect.apply(target, thisArg, argArray);
+
+      for (const callback of callbacks) {
+        // @ts-expect-error
+        const res = callback(argArray[0], result);
+        if (res instanceof InjectorReturn) result = res.value;
+      }
+
+      return result;
+    }
+  });
+
+  map.set(type, callbacks);
+  map.set(node.type, callbacks);
+
+  return callbacks;
+}
+
 export class Injector {
   public static return<T extends any>(value: T) {
     return new InjectorReturn(value);
@@ -91,41 +138,14 @@ export class Injector {
     return hooked;
   }
 
-  public static patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>) {
-    if (!isValidElement(node)) throw new TypeError(`Argument 'node' must be type a react element!`);
+  public static patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>, once: boolean = true) {
+    const hooked = hookElement(node);
 
-    const { type } = node;
-
-    if (type.prototype instanceof Component) {
-      const $type = type as React.ComponentClass<P> & { prototype: React.Component<P> };
-
-      node.type = class extends $type {
-        static [HOOK_SYMBOL] = type;
-        render() {
-          const result = super.render();
-
-          const res = callback(this.props, result, this);
-          if (res instanceof InjectorReturn) return res.value;
-          
-          return result;
-        }
-      }
-
-      return;
-    }
-
-    function newType(props: P) {
-      const result = (type as Function).apply(null, arguments);
-
-      const res = callback(props, result);
-      if (res instanceof InjectorReturn) return res.value;
-
+    hooked.add(function newCallback(props, res, component) {
+      const result =  callback(props, res, component);
+      if (once) hooked.delete(newCallback);
       return result;
-    }
-    newType.displayName = (node.type as any).displayName;
-    newType[HOOK_SYMBOL] = type;
-
-    node.type = newType;
+    });
   }
 
   // Copy the 3 static methods to the prototype
@@ -135,8 +155,8 @@ export class Injector {
   public getOriginal<T extends FunctionType>(hooked: T): T {
     return Injector.getOriginal(hooked);
   }
-  public patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>) {
-    Injector.patchElement(node, callback);
+  public patchElement<P extends {} = {}>(node: React.ReactElement<P, React.JSXElementConstructor<P>>, callback: ReactElementCallback<P>, once: boolean = true) {
+    Injector.patchElement(node, callback, once);
   }
 
   // Runs callback after the original function was called

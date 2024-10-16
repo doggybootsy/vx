@@ -1,15 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModal} from '../../api/modals';
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
 import {FileIcon, imageFileTypes, videoFileTypes} from "./icons";
-import {openPip} from "../pip";
-import {openWindow} from "../../api/window";
+import {openPIP} from "../pip";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
 import JSZip from "jszip";
 import {clipboard, download} from "../../util";
-import React from 'react';
 
 interface GitHubUrlInfo {
     user: string;
@@ -91,7 +89,7 @@ class GitHubService {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
             if (res.download_url) {
                 if (videoFileTypes.includes(ext) && event?.shiftKey) {
-                    openPip(res.name, res.download_url)
+                    openPIP(res.name, res.download_url)
                     return;
                 } else if (videoFileTypes.includes(ext)) {
                     openVideoModal(res.download_url);

@@ -69,7 +69,7 @@ function createAddonAPI(type: "themes" | "plugins") {
 const storageCache = new Map<string, string>();
 
 const native = {
-  release: electron.ipcRenderer.sendSync("DISCORD_APP_GET_RELEASE_CHANNEL_SYNC") as string,
+  release: electron.ipcRenderer.sendSync("DISCORD_APP_GET_RELEASE_CHANNEL_SYNC") as DiscordReleases,
   themes: createAddonAPI("themes"),
   plugins: createAddonAPI("plugins"),
   translate: async function (text: string, to: string, from?: string): Promise<string> {

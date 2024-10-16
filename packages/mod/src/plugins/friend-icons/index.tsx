@@ -67,6 +67,7 @@ function FriendIcon({ user }: { user: User }) {
 definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
+  icon: Icons.DiscordIcon.from("FriendsIcon"),
   patches: {
     match: ".communicationDisabledOpacity]:",
     find: /(,.{1,3}&&.{1,3}),(\(0,.{1,3}\.jsx\)\("span",{id:.{1,3},className:.{1,3},children:.{1,3}}\))/,

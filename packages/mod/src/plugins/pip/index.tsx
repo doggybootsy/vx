@@ -103,15 +103,14 @@ function getBuffers(node: HTMLVideoElement) {
   return buffers;
 };
 
-export function openPip(name, download)
-{
+export function openPIP(name: string, download: string) {
   const key = `DISCORD_VX_${window.crypto.randomUUID()}`;
   openWindow({
     id: key,
-    title: res.name,
+    title: name,
     css: popout.css,
     render({window}) {
-      return <PIPWindow window={window} src={res.download_url} windowKey={key}/>;
+      return <PIPWindow window={window} src={download} windowKey={key}/>;
     }
   });
 }
@@ -253,36 +252,33 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
                 sliderClassName="volumeSlider"
             />
           </div>
-          <div id={"gear"} className={"button"} onClick={() => shouldShow(!show)}>
-            <Popout onRequestClose={() => {}}
-                    position="right"
-                    shouldShow={show}
-                    renderPopout={(props) =>
+          <Popout onRequestClose={() => shouldShow(false)}
+                  position="right"
+                  shouldShow={show}
+                  renderPopout={(props) =>
                         <MenuComponents.Menu
-                            {...props}
-                            onClose={() => props.onClose?.()}
+                            onClose={() => props.closePopout()}
                             navId={"vx-pip-context-menu"}
                         >
                           <MenuComponents.Item id={"vx-pip-context-menu-speed"} label={"Set Playback Speed"}>
                             {speedOptions.map((speed) => (
-                                <MenuComponents.MenuItem
+                              <MenuComponents.Item
                                     key={speed}
                                     id={`speed-${speed}`}
                                     label={`${speed}x`}
-                                    action={() => {
-                                      setPlaybackRate(speed);
-                                      console.log(speed)
-                                    }}
+                                    action={() => setPlaybackRate(speed)}
                                 />
                             ))}
                           </MenuComponents.Item>
                         </MenuComponents.Menu>
                     }>
+              
               {(props, state) => (
+                <div id={"gear"} className={"button"} onClick={() => shouldShow(!show)}>
                   <Icons.Gear {...props} color={"var(--interactive-normal)"} />
+                </div>  
               )}
-            </Popout>
-          </div>
+          </Popout>
           {IS_DESKTOP && (
               <div
                   id="pin"

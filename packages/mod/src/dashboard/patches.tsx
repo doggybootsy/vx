@@ -73,6 +73,7 @@ __self__.Root = class VXRoot extends Component<React.PropsWithChildren> {
   
   constructor(props: React.PropsWithChildren) {
     super(props);
+    
     VXRoot.instance = this;
   }
 

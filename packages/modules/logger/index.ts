@@ -51,8 +51,8 @@ export class Logger {
 
   public useWebLogger() {
     if (this.options.forceNode) return false;
-    if ("ServiceWorkerGlobalScope" in globalThis) return true;
-    return typeof document === "object" && typeof document.createElement === "function" && typeof HTMLElement === "function" && document.createElement("div") instanceof HTMLElement;
+    // @ts-expect-error
+    return typeof VXNative === "object";
   }
 
   public log(...data: any[]) {

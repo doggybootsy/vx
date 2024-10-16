@@ -1,173 +1,138 @@
 import { definePlugin } from "../index";
 import { Developers } from "../../constants";
-import { bySource, getProxy, whenWebpackInit } from "@webpack";
-import React, { ReactNode, useEffect, useState } from 'react';
+import { getProxy } from "@webpack";
+import React, { useRef } from 'react';
 import { ErrorBoundary } from "../../components";
-import { className, findInReactTree } from "../../util";
+import { className, InternalStore } from "../../util";
+import { Message } from "discord-types/general";
+import { useInternalStore } from "../../hooks";
 
 const timestampModule = getProxy(X => X.timestampInline);
 
-const CACHE_TTL = 60 * 1000;
-const CACHE_ERROR_TTL = 10 * 1000;
+const CACHE_TTL = 60_000;
+const CACHE_ERROR_TTL = 10_000;
 
-/* Stern PronounDB Plugin */
-const API_URL = "https://pronoundb.org";
-
-const Endpoints = {
-    LOOKUP: (userId: string) => `${API_URL}/api/v2/lookup?platform=discord&ids=${userId}`,
-};
-
-export class DataStore {
-    private store: {
-        [key: string]: { value: any, expiry: number, isError?: boolean, ongoingRequest?: Promise<any> }
-    } = {};
-    private name: string;
-
-    constructor(name: string) {
-        this.name = name;
-    }
-
-    set(key: string, value: any, isError: boolean = false, ttl: number = CACHE_TTL) {
-        this.store[key] = { value, expiry: Date.now() + ttl, isError };
-    }
-
-    get(key: string) {
-        const item = this.store[key];
-        if (item) {
-            if (item.expiry > Date.now()) {
-                return item.value;
-            } else {
-                delete this.store[key];
-            }
+type PronounDBResponse = {
+    [userId: string]: {
+        sets: {
+            en: string[]
         }
+    }
+}
+
+class PronounDBStore extends InternalStore {
+    static displayName = "PronounDBStore";
+
+    private cache: Record<string, {
+        state: "resolving" | "resolved" | "rejected",
+        request: Promise<string | null>,
+        timestamp: number,
+        result: string | null
+    }> = {}
+
+    private async fetchPronouns(userId: string) {
+        const res = await request(`https://pronoundb.org/api/v2/lookup?platform=discord&ids=${userId}`);
+
+        if (!res.ok) return null;
+
+        const { [userId]: data } = await res.json() as PronounDBResponse;
+
+        if (typeof data === "undefined") return null;
+
+        const pronouns = data.sets.en;
+
+        if (pronouns.length > 1) return pronouns.join("/");
+
+        switch (pronouns[0]) {
+            case "he": return "he/him";
+            case "it": return "it/its";
+            case "she": return "she/her";
+            case "they": return "they/them";
+            default: return pronouns[0];
+        }
+    }
+    private getPronouns(userId: string) {
+        if (this.cache[userId]?.state === "resolved") {
+            return this.cache[userId].result;
+        }
+
         return null;
     }
 
-    has(key: string) {
-        const item = this.store[key];
-        return item !== undefined && item.expiry > Date.now();
-    }
+    private requestPronouns(userId: string) {
+        let cache = this.cache[userId];        
 
-    isError(key: string) {
-        const item = this.store[key];
-        return item && item.isError && item.expiry > Date.now();
-    }
+        const shouldRefetch = typeof cache === "undefined" ? (
+            true
+        ) : cache.state === "rejected" ? (
+            (Date.now() - cache.timestamp) > CACHE_ERROR_TTL
+        ) : (Date.now() - cache.timestamp) > CACHE_TTL;
 
-    setOngoingRequest(key: string, request: Promise<any>) {
-        this.store[key] = { ...this.store[key], ongoingRequest: request };
-    }
+        if (shouldRefetch) {
+            const request = this.fetchPronouns(userId).then(
+                (res) => {                    
+                    cache.result = res;
+                    cache.state = "resolved";
 
-    getOngoingRequest(key: string) {
-        return this.store[key]?.ongoingRequest;
-    }
+                    this.emit();
 
-    use(key: string) {
-        const [value, setValue] = useState(this.get(key));
-
-        useEffect(() => {
-            const checkForUpdates = () => {
-                const newValue = this.get(key);
-                if (newValue !== value) {
-                    setValue(newValue);
+                    return res;
+                }, 
+                () => {
+                    this.cache[userId].state = "rejected";
+                    return null;
                 }
+            );
+
+            this.cache[userId] = cache = {
+                state: "resolving",
+                result: null,
+                timestamp: Date.now(),
+                request
             };
 
-            const interval = setInterval(checkForUpdates, 1000);
-            return () => clearInterval(interval);
-        }, [key, value]);
-
-        return value;
-    }
-}
-
-let dataStore: DataStore = new DataStore("PronounDB");
-
-async function makeApiRequest(url: string): Promise<Response> {
-    return await fetch(url, {
-        headers: {
-            // "User-Agent": USER_AGENT
+            this.emit();
         }
-    });
-}
 
-async function fetchPronounData(userId: string): Promise<any> {
-    const cacheKey = `user_${userId}`;
-
-    // Check for cached error
-    if (dataStore.isError(cacheKey)) {
-        console.log(`Cached error for user ${userId}, skipping API call.`);
-        return null;
-    }
-
-    const cachedResponse = dataStore.get(cacheKey);
-    if (cachedResponse) {
-        return cachedResponse;
+        return cache;
     }
     
-    dataStore.set(cacheKey, { loading: true });
+    public usePronouns(userId: string) {
+        const pronouns = useInternalStore(this, () => this.getPronouns(userId));
+        const ref = useRef(true);
+        
+        if (!pronouns && ref.current) {
+            this.requestPronouns(userId);
+            ref.current = false;
+        }
 
-    const ongoingRequest = dataStore.getOngoingRequest(cacheKey);
-    if (ongoingRequest) {
-        return ongoingRequest;
+        return pronouns;
     }
 
-    const url = Endpoints.LOOKUP(userId);
-    const apiRequest = (async () => {
-        try {
-            const response = await makeApiRequest(url);
-            if (!response.ok) throw new Error(`Error fetching pronoun data: ${response.status}`);
+    // public usePronouns(userId: string) {
+    //     const [ pronouns, setState ] = useState(() => this.getPronouns(userId));
+    //     const ref = useRef(true);
+        
+    //     if (!pronouns && ref.current) {
+    //         this.requestPronouns(userId).request.then((pronouns) => {
+    //             setState(pronouns);
+    //         });
+    //         ref.current = false;
+    //     }
 
-            const data = await response.json();
-            const firstEntry = Object.values(data)[0];
-
-            dataStore.set(cacheKey, firstEntry);
-
-            return firstEntry;
-        } catch (error) {
-            console.error(`Failed to fetch pronoun data for user ${userId}:`, error);
-            dataStore.set(cacheKey, null, true, CACHE_ERROR_TTL);
-            return null;
-        }
-    })();
-
-    dataStore.setOngoingRequest(cacheKey, apiRequest);
-
-    apiRequest.finally(() => {
-        dataStore.setOngoingRequest(cacheKey, null);
-    });
-
-    return apiRequest;
+    //     return pronouns;
+    // }
 }
 
-const PronounDisplay = ({ res }: { res: any }) => {
-    const authorReal = findInReactTree(res, x => x?.message).message.author;
-    const userId = authorReal.id;
-    const cachedPronouns = dataStore.use(`user_${userId}`);
-    const [pronouns, setPronouns] = useState<string | null>(null);
+const pronounDBStore = new PronounDBStore();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const userData = await fetchPronounData(userId);
-            if (userData) {
-                setPronouns(cachedPronouns?.sets['en']?.join("/") ?? [void 0]);
-            } else {
-                setPronouns(null);
-            }
-        };
-
-        if (cachedPronouns?.loading) {
-            setPronouns(null); 
-        } else if (cachedPronouns) {
-            setPronouns(cachedPronouns?.sets['en']?.join("/") ?? [void 0]);
-        } else {
-            fetchData();
-        }
-    }, [userId, cachedPronouns]);
+const PronounDisplay = ({ message }: { message: Message }) => {
+    const pronouns = pronounDBStore.usePronouns(message.author.id);
 
     if (!pronouns) return null;
 
     return (
-        pronouns && <div className={className([timestampModule.timestamp, timestampModule.timestampInline])}>
+        <div className={className([timestampModule.timestamp, timestampModule.timestampInline])}>
             {`- ${pronouns}`}
         </div>
     );
@@ -178,13 +143,13 @@ export default definePlugin({
     requiresRestart: false,
     patches: {
         match: ".communicationDisabledOpacity]:",
-        find: /(\(0,\s*r\.jsx\)\(w\.Z,\s*\{\s*id:\s*\(0,\s*U\.Dv\)\(t\),\s*timestamp:\s*t\.timestamp,\s*className:\s*h\s*}\))(,?)/,
-        replace: "$1,$enabled&&$self.addShit({res:i}),"
+        find: /,.{1,3}&&!.{1,3}&&\(0,.{1,3}\.jsx\)\(.{1,3}\.Z,{id:\(0,.{1,3}\..{1,3}\)\((.{1,3})\),timestamp:\1\.timestamp,className:.{1,3},application:.{1,3}}\),/,
+        replace: "$&$enabled&&$self.addShit($1),"
     },
-    addShit({ res }: { res: ReactNode }) {
+    addShit(message: Message) {
         return (
-            <ErrorBoundary fallback={res}>
-                <PronounDisplay res={res}  />
+            <ErrorBoundary>
+                <PronounDisplay message={message} />
             </ErrorBoundary>
         )
     },

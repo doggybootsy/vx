@@ -65,6 +65,7 @@ export default definePlugin({
     requiresRestart: false,
     styler,
     settings,
+    icon: Icons.Github,
     menus: {
         "message"(a, ctx) {
             const messageContent = a.target.tagName === "A" ? (a.target as HTMLAnchorElement).href : getParents(a.target).querySelector<HTMLAnchorElement>("a")?.href ?? a.message.content;

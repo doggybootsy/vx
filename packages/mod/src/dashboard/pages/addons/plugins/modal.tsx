@@ -18,6 +18,7 @@ export function openPluginSettingsModal(name: string, Content: React.ComponentTy
           <ErrorBoundary>
             <Content />
           </ErrorBoundary>
+          <div style={{ margin: 12 }} />
         </ModalComponents.ModalContent>
       </ModalComponents.ModalRoot>
     );

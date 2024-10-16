@@ -7,8 +7,11 @@ const contextBridge: ContextBridge = {
     if (apiKey === "DiscordNative") {
       const DiscordNative: NonNullable<typeof window.DiscordNative> = api;
 
-      // Make it where osx has old titlebar
-      DiscordNative.window.USE_OSX_NATIVE_TRAFFIC_LIGHTS = true;
+      // On macOS check if native frame is enabled
+      // every other os say false
+      DiscordNative.window.USE_OSX_NATIVE_TRAFFIC_LIGHTS = (
+        process.platform === "darwin" && window.VXNative!.nativeFrame.get()
+      );
     }
 
     electron.contextBridge.exposeInMainWorld(apiKey, api);

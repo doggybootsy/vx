@@ -7,44 +7,14 @@ import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
 import { MessageAttachment, MessageJSON } from "discord-types/general";
 import { createSettings, SettingType } from "../settings";
 import {isFriend} from "../friend-notifications";
-import {DataStore} from "../../api/storage";
 
 const IconURI = (id: string, hash: string) => `https://cdn.discordapp.com/avatars/${id}/${hash}.webp?size=1280`
 
-const userIdsStore = new DataStore<Record<string, string>>("notifySpecificUserIds", { version: 1 });
-
-type MessageType = {
+type MessageEventType = {
     type: string;
     channelId: string;
-    message: {
-        attachments: MessageAttachment[];
-        author: {
-            avatar: string;
-            id: string;
-            username: string;
-            globalName: string | null;
-        };
-        content: string;
-        mentions: any[];
-        referenced_message: MessageJSON;
-    };
+    message: MessageJSON
 };
-
-/*
-    notifySpecificUserIds: {
-        type: SettingType.INPUT,
-        default: "",
-        title: "Notify for Specific User IDs",
-        description: "Comma-separated list of user IDs to receive notifications for, if mentioned.",
-        placeholder: "Enter user IDs separated by commas",
-        onChange(newValue) {
-            const userIdsArray = newValue.split(",").map(id => id.trim()).filter(id => id.length > 0);
-            const uniqueUserIds = [...new Set(userIdsArray)];
-            userIdsStore.set("ids", uniqueUserIds.join(","));
-        }
-    },
-    TODO: // DOGGY. FIX THIS NOW.
- */
 
 const settings = createSettings("notification-manager", {
     notifyOnFriendMessages: {
@@ -89,28 +59,35 @@ const settings = createSettings("notification-manager", {
         default: true,
         title: "Show Footer",
         description: "Show footer with navigation options in the notifications."
-    }
+    },
+    notifySpecificUserIds: {
+        type: SettingType.INPUT,
+        default: "",
+        title: "Notify for Specific User IDs",
+        description: "Comma-separated list of user IDs to receive notifications for, if mentioned.",
+        placeholder: "Enter user IDs separated by commas"
+    },
 });
 
-function displayNotification(Message: MessageType) {
-    const Channel = ChannelStore.getChannel(Message.channelId);
+function displayNotification(event: MessageEventType) {
+    const Channel = ChannelStore.getChannel(event.channelId);
     if (!Channel) return;
 
     const Guild = Channel?.guild_id ? GuildStore.getGuild(Channel.guild_id) : null;
     const LocalUser = UserStore.getCurrentUser();
 
-    if (LocalUser.id === Message.message.author.id) return;
+    if (LocalUser.id === event.message.author.id) return;
 
     const isDM = Channel.isDM();
-    const isUserMentioned = Message.message.mentions.some((mention: { id: string }) => mention.id === LocalUser.id);
-    const isReply = Message.message.referenced_message?.author?.id === LocalUser.id;
+    const isUserMentioned = event.message.mentions.some((mention: { id: string }) => mention.id === LocalUser.id);
+    const isReply = event.message.referenced_message?.author?.id === LocalUser.id;
 
-    const storedUserIds = userIdsStore.get("ids")?.split(",") || [];
-    const isSpecificUserMentioned = Message.message.mentions.some(mention => storedUserIds.includes(mention.id));
+    const storedUserIds = settings.notifySpecificUserIds.get().split(",").map((m) => m.trim());
+    const isSpecificUserMentioned = event.message.mentions.some(mention => storedUserIds.includes(mention.id));
 
-    const isUserIdInContent = Message.message.content.includes(LocalUser.id)  
+    const isUserIdInContent = event.message.content.includes(LocalUser.id)  
 
-    const isFriendMessage = isFriend(Message.message.author.id);
+    const isFriendMessage = isFriend(event.message.author.id);
 
     const shouldNotifyDM = isDM && settings.enableDM.get();
 
@@ -138,28 +115,30 @@ function displayNotification(Message: MessageType) {
         : null;
 
     const titleSuffix = isDM ? "(DM)" : Guild ? "(SERVER)" : "";
-    const title = `${Message.message.author.globalName ?? Message.message.author.username} ${titleSuffix}`;
+    // @ts-expect-error
+    const title = `${event.message.author.globalName ?? event.message.author.username} ${titleSuffix}`;
 
     openNotification({
         duration: parseInt(settings.notificationDuration.get()) * 1000,  // Convert to milliseconds
         title: title.trim(),
-        description: <Markdown text={Message.message.content} />,
+        description: <Markdown text={event.message.content} />,
+        // @ts-expect-error
         icon: settings.showIcons.get() ? (props: { width: number; height: number; className: string }): React.ReactNode => {
             return isDM ? (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
                     {recipientIcons ?? (
-                        <AuthorIcon dev={{ username: Message.message.author.username, discord: Message.message.author.id }} isLast={true} />
+                        <AuthorIcon dev={{ username: event.message.author.username, discord: event.message.author.id }} isLast={true} />
                     )}
                 </div>
             ) : Guild ? (
                 <img style={{ width: "25px", height: "25px" }} src={Guild?.getIconSource?.(1280, true)?.uri || ''} />
             ) : (
-                <AuthorIcon dev={{ username: Message.message.author.username, discord: Message.message.author.id }} isLast={true} />
+                <AuthorIcon dev={{ username: event.message.author.username, discord: event.message.author.id }} isLast={true} />
             );
         } : null,
         footer: settings.showFooter.get() ? (
             <div
-                onClick={() => NavigationUtils.transitionToGuild(Guild?.id ?? null, Message.channelId, Message.message.id)}
+                onClick={() => NavigationUtils.transitionToGuild(Guild?.id ?? null, event.channelId, event.message.id)}
                 style={{ alignContent: "center", justifyContent: "center", alignItems: "center", display: "flex" }}
             >
                 <Icons.Forward />
@@ -167,6 +146,7 @@ function displayNotification(Message: MessageType) {
         ) : null
     });
 }
+
 export default definePlugin(
     {
         authors: [Developers.kaan],
@@ -174,7 +154,7 @@ export default definePlugin(
         settings,
         fluxEvents: {
             MESSAGE_CREATE(event) {
-                displayNotification(event as MessageType);
+                displayNotification(event as MessageEventType);
             }
         }
     }

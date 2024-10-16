@@ -8,7 +8,7 @@ import { app, nativeFrame, transparency } from "../../../native";
 import { Updater } from "./updater";
 import { Messages } from "vx:i18n";
 import { openConfirmModal } from "../../../api/modals";
-import { getRandomItem, lazy, makeLazy } from "../../../util";
+import { getRandomItem, getReleaseChannel, lazy, makeLazy } from "../../../util";
 import { getLazy } from "@webpack";
 import { closeNotification, openNotification } from "../../../api/notifications";
 import { IconFullProps, IconProps } from "../../../components/icons";
@@ -156,6 +156,31 @@ function Category(props: CategoryProps) {
   )
 }
 
+function VersionWarning() {
+    return;
+    
+    const ack = internalDataStore.use("ack-out-of-release");
+    const isStable = useMemo(() => getReleaseChannel() === "stable", [ ]);
+    
+    if (ack || isStable) return;
+
+    return (
+        <Flex className="vx-home-warning" direction={Flex.Direction.HORIZONTAL} grow={0}>
+            <Icons.Warn />
+            <Flex.Child grow={1} shrink={0}>
+                <Flex align={Flex.Align.CENTER}>
+                    VX is primarly developed for stable not {getReleaseChannel()}
+                </Flex>
+            </Flex.Child>
+            <Flex.Child grow={0} shrink={0}>
+                <div className="vx-home-close" onClick={() => internalDataStore.set("ack-out-of-release", true)}>
+                    <Icons.SmallX />
+                </div>
+            </Flex.Child>
+        </Flex>
+    )
+}
+
 export function Home() {
   const [ contentProtection, setContentProtection ] = useState(() => internalDataStore.get("content-protection") ?? false);
   const [ userSettingShortcut, setUserSettingShortcut ] = useState(() => internalDataStore.get("user-setting-shortcut") ?? true);
@@ -209,8 +234,10 @@ export function Home() {
                     </Flex>
                 </Flex>
             </div>
-
+            
             <Updater/>
+
+            <VersionWarning />
 
             <Category
                 title="Notifications"

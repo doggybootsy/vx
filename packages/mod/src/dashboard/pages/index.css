@@ -563,3 +563,26 @@ button.vx-community-card-button {
   flex-direction: column;
   gap: 12px;
 }
+.vx-home-warning {
+  background: var(--info-warning-background);
+  border: 1px solid var(--info-warning-foreground);
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--info-warning-text);
+  display: flex;
+  align-items: center;
+}
+.vx-home-close {
+  display: flex;
+  color: var(--interactive-normal);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.vx-home-close:hover {
+  background: var(--background-modifier-hover);
+  color: var(--interactive-hover);
+}
+.vx-home-close:active {
+  background: var(--background-modifier-active);
+  color: var(--interactive-active);
+}

@@ -76,9 +76,9 @@ export class BrowserWindow extends electron.BrowserWindow {
       opts.webPreferences.preload = path.join(__dirname, "main.js");
 
       // Only apply if it is the main window
-      if (Storage.window.get<boolean>("native-frame", false)) {
-        opts.frame = true;
-      }
+      opts.frame = Boolean(
+        Storage.window.get<boolean>("native-frame", process.platform === "darwin")
+      );
     }
 
     const transparent = Storage.window.get<boolean>("transparent", false);

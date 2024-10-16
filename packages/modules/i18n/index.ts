@@ -11,7 +11,7 @@ export { FormattedMessage };
 export let i18nModuleLoaded = false;
 
 const onI18nListeners = new Set<() => void>();
-getLazy<typeof I18n>(m => m.Messages && Array.isArray(m._events.locale)).then(() => {
+getLazy<typeof I18n>(m => m.Messages && m._getMessages.toString().includes("{default:")).then(() => {
   i18nModuleLoaded = true;
 
   for (const listener of onI18nListeners) listener();

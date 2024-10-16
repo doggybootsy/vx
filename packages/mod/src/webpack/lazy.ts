@@ -28,6 +28,7 @@ export function getLazy<T extends Record<PropertyKey, any>>(filter: Webpack.Filt
         const exported = module.exports[key];
         
         if (!(exported instanceof Object)) continue;
+        if (exported instanceof Window) continue;
         if (!Reflect.has(module.exports, key)) continue;
 
         if (filter.call(module, exported, module, module.id)) {

@@ -685,3 +685,5 @@ declare module 'highlight.js/lib/languages/*' {
 	const defineLanguage: LanguageFn;
 	export default defineLanguage;
 }
+
+type DiscordReleases = "stable" | "ptb" | "canary";

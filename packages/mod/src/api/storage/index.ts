@@ -234,7 +234,8 @@ interface InternalData {
   "last-loaded-locale": LocaleCodes,
   "trusted-domains": string[],
   "known-plugins": string[],
-  "notification-position": "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | "disabled"
+  "notification-position": "topLeft" | "topRight" | "bottomLeft" | "bottomRight" | "disabled",
+  "ack-out-of-release": boolean
 };
 
 const internalDataStore = new DataStore<InternalData>("Internal", {

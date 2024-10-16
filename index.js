@@ -241,8 +241,7 @@ const RequireAllPluginsPlugin = (desktop) => ({
         
       return {
         resolveDir: "./packages/mod/src",
-        contents: `
-${pluginDirs.map(dir => `module.exports[${JSON.stringify(dir)}] = require("./plugins/${dir}");`).join("\n")}`
+        contents: pluginDirs.map(dir => `require("./plugins/${dir}")`).join(";")
       }
     });
   }

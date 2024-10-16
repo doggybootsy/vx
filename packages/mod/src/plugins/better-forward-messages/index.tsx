@@ -1,6 +1,6 @@
 import { Message, User } from "discord-types/general";
 import { definePlugin } from "..";
-import { ErrorBoundary, UserPopout } from "../../components";
+import { ErrorBoundary, Icons, UserPopout } from "../../components";
 import { Developers } from "../../constants";
 import {
   ChannelStore,
@@ -145,12 +145,8 @@ definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   styler,
+  icon: Icons.Forward,
   patches: [
-    {
-      match: "Z.Messages.MESSAGE_CHANNEL_ATTACHMENTS_DISABLED", 
-      find: /(?<=if\().*?is.*?(?=\))\)\)/,
-      replace: "false"
-    },
     {
       find: /\[(\(0,.{1,3}\.jsx\)\(.{1,3},{}\)),(\(0,.{1,3}\.jsx\)\(.{1,3}\.ZP,{message:(.{1,3}),)/,
       replace: "[$enabled?$jsx($self.ForwardedMessage,{message:$3,original:$1}):$1,$2",

@@ -138,7 +138,7 @@ export function InfoSection({ isMenu }: { isMenu: boolean }) {
 
     return (
       <div className="vx-section-version">
-        <span>{`Extension ${window.VXExtension.version}`}</span>
+        <span>{`VX Extension ${window.VXExtension.version}`}</span>
       </div>
     )
   }, [ ]);

@@ -147,7 +147,7 @@ interface i18n {
   off(event: string, callback: Function): void,
   loadPromise: Promise<void>
 };
-export const I18n = getProxy<i18n>(m => m.Messages && Array.isArray(m._events.locale));
+export const I18n = getProxy<i18n>(m => m.Messages && m._getMessages.toString().includes("{default:"));
 
 export const ComponentDispatch = proxyCache(() => {
   const id = getModuleIdBySource("ComponentDispatchUtils")!;

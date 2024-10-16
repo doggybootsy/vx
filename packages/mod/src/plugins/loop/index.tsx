@@ -53,12 +53,10 @@ export default definePlugin({
   settings,
   requiresRestart: false,
   icon: Icons.Loop,
-  patches: [
-    {
-      find: "this.renderPlayIcon()",
-      replace: "$&,$enabled&&$jsx($self.Loop)"
-    }
-  ],
+  patches: {
+    find: "this.renderPlayIcon()",
+    replace: "$&,$enabled&&$jsx($self.Loop)"
+  },
   Loop: ErrorBoundary.wrap(Loop),
   styler
 });

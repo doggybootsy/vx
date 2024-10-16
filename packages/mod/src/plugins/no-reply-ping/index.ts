@@ -7,6 +7,6 @@ export default definePlugin({
   patches: {
     match: 'type:"CREATE_PENDING_REPLY"',
     find: /(dispatch\({type:"CREATE_PENDING_REPLY",.+?,shouldMention:)(.+?)(,.+?}\))/,
-    replace: "$1$enabled?false:$2$3"
+    replace: "$1$enabled?!$2:$2$3"
   }
 });

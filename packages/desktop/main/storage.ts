@@ -17,25 +17,25 @@ export class Storage {
   }
   #fullpath: string;
   
-  get<T>(key: string, defaultValue: T): T
-  get<T>(key: string, defaultValue: typeof UndefinedSymbol): T | undefined
-  get<T>(key: string, defaultValue: T): T {
+  public get<T>(key: string, defaultValue: T): T
+  public get<T>(key: string, defaultValue: typeof UndefinedSymbol): T | undefined
+  public get<T>(key: string, defaultValue: T): T {
     const data = require(this.#fullpath);
 
     if (typeof data[key] !== "undefined") return data[key];
     if (defaultValue === UndefinedSymbol) return undefined as any;
     return defaultValue as any;
   }
-  set(key: string, value: any) {
+  public set(key: string, value: any) {
     const data = require(this.#fullpath);
 
     data[key] = value;
 
     writeFileSync(this.#fullpath, JSON.stringify(data, null, "\t"));
   }
-  path() { return this.#fullpath; }
+  public path() { return this.#fullpath; }
 
-  static get window() {
+  public static get window() {
     const storage = new this("window");
 
     Object.defineProperty(this, "window", {

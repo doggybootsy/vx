@@ -148,7 +148,7 @@ electron.ipcMain.handle("@vx/transparency/set-state", (event, enabled: boolean) 
 });
 
 electron.ipcMain.on("@vx/native-frame/get-state", (event) => {
-  event.returnValue = Storage.window.get("native-frame", false);
+  event.returnValue = Storage.window.get("native-frame", process.platform === "darwin");
 });
 electron.ipcMain.handle("@vx/native-frame/set-state", (event, enabled: boolean) => {
   Storage.window.set("native-frame", enabled);

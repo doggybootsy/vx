@@ -245,7 +245,7 @@ export function findInTree<T extends Object>(tree: any, searchFilter: (item: any
   return tempReturn;
 }
 
-export function findInReactTree<T extends Object>(tree: any, searchFilter: (item: any) => any): T | void {
+export function findInReactTree<T extends object>(tree: any, searchFilter: (item: any) => any): T | void {
   return findInTree(tree, searchFilter, { walkable: [ "children", "props" ] });
 }
 
@@ -1043,5 +1043,12 @@ export function createPersistence<T>(key: string): Persistence<T> {
 }
 
 export function forceUpdateApp(): Promise<void> {
+  if (!__self__.Root.instance) return Promise.resolve();
   return __self__.Root.instance.forceRerender();
+}
+
+export function getReleaseChannel(): DiscordReleases {
+  if (location.hostname.startsWith("ptb.")) return "ptb";
+  if (location.hostname.startsWith("canary.")) return "canary";
+  return "stable";
 }

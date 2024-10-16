@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { DataStore } from "../api/storage";
 import { ColorPicker, FormBody, FormSwitch, FormSwitchProps, SystemDesign } from "../components";
 
@@ -147,21 +148,21 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
       return (
           <FormBody title={element.title} description={element.description}>
             <SystemDesign.Select
-                options={options}
-                placeholder={$setting.placeholder}
-                select={set}
-                serialize={(m: any) => String(m)}
-                isSelected={(item: string) => item === value}
-                value={value}
-                isDisabled={isDisabled}
-                closeOnSelect
+              options={options}
+              placeholder={$setting.placeholder}
+              select={set}
+              serialize={(m: any) => String(m)}
+              isSelected={(item: string) => item === value}
+              value={value}
+              isDisabled={isDisabled}
+              closeOnSelect
             />
           </FormBody>
       )
     };
   }
 
-  if (false && element.type === SettingType.INPUT) {
+  if (element.type === SettingType.INPUT) {
     const $setting = element as InputSettingType;
 
     return () => {
@@ -177,7 +178,30 @@ function getRender(element: SettingTypes, setting: CreatedSetting<SettingTypes>,
             onChange={set}
           />
         </FormBody>
-      )
+      );
+
+      const id = useId();
+
+      return (
+        <SystemDesign.FormSection
+          tag="label"
+          htmlFor={id}
+          title={$setting.title}
+        >
+          {$setting.description && (
+            <SystemDesign.FormText type={SystemDesign.FormText.Types.DESCRIPTION}>
+              {$setting.description}
+            </SystemDesign.FormText>
+          )}
+          <SystemDesign.TextInput 
+            placeholder={$setting.placeholder}
+            value={value}
+            isDisabled={isDisabled}
+            onChange={set}
+            id={id}
+          />
+        </SystemDesign.FormSection>
+      );
     };
   }
 

@@ -17,7 +17,7 @@ export function getModule<T extends Object>(filter: Webpack.Filter, opts: Webpac
       if (searchExports) keys.push(...Object.keys(module.exports));
       else if (searchDefault && shouldSearchDefault(module)) keys.push("default");
       
-      if (filter.call(module, module.exports, module, module.id)) {
+      if (filter.call(module, module.exports, module, module.id)) {        
         return module.exports as T;
       }
 
@@ -26,6 +26,7 @@ export function getModule<T extends Object>(filter: Webpack.Filter, opts: Webpac
         const exported = module.exports[key];
 
         if (!(exported instanceof Object)) continue;
+        if (exported instanceof Window) continue;
 
         if (filter.call(module, exported, module, module.id)) {
           return exported as T;
@@ -62,6 +63,7 @@ export function getAllModules(filter: Webpack.Filter, opts: Webpack.FilterOption
         const exported = module.exports[key];
 
         if (!(exported instanceof Object)) continue;
+        if (exported instanceof Window) continue;
 
         if (filter.call(module, exported, module, module.id)) {
           modules.push(exported);
@@ -109,6 +111,7 @@ export function getBulk(...filters: Array<Webpack.BulkFilter>) {
           const exported = module.exports[key];
   
           if (!(exported instanceof Object)) continue;
+          if (exported instanceof Window) continue;
 
           if (filter.call(module, exported, module, module.id)) {
             chunk.value = exported;

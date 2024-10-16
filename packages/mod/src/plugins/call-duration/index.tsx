@@ -1,7 +1,7 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { definePlugin } from "..";
-import { ErrorBoundary } from "../../components";
+import { ErrorBoundary, Icons } from "../../components";
 import { Developers } from "../../constants";
 import { getProxyByKeys } from "@webpack";
 import { ChannelStore, FluxDispatcher, NavigationUtils, SelectedChannelStore, subscribeToDispatch } from "@webpack/common";
@@ -71,7 +71,7 @@ function CallDuration() {
         NavigationUtils.transitionTo(`/channels/${channel.guild_id || "@me"}/${channel.id}`);
       }}
     >
-      {Messages.CALL_DURATION.format({ time: simpleFormatTime(elapsed) })}
+      {Messages.CALL_DURATION.format({ time: simpleFormatTime(elapsed, { includeHours: true }) })}
     </Components.Text>
   )
 }
@@ -79,6 +79,7 @@ function CallDuration() {
 export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
+  icon: Icons.DiscordIcon.from("PhoneCallIcon"),
   patches: {
     find: "this.renderConnectionStatus()",
     replace: "[$&,$enabled&&$jsx($self.CallDuration)]"
