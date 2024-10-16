@@ -1,4 +1,4 @@
-import { definePlugin } from "../index";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { bySource, getModule, getProxy, whenWebpackInit, whenWebpackReady } from "@webpack";
 import { Injector } from "../../patcher";

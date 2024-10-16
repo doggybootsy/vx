@@ -1,11 +1,11 @@
 import { isValidElement, useEffect, useMemo, useState } from "react";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { GuildMemberStore, RelationshipStore, SelectedChannelStore, UserStore, fetchUser, openUserContextMenu, useStateFromStores } from "@webpack/common";
 
 import * as styler from "./index.css?managed";
 import { ErrorBoundary, Mask, Popout, Spinner, Tooltip, UserPopout } from "../../components";
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 import { getProxy, getProxyByKeys, getProxyStore } from "@webpack";
 import { useInternalStore } from "../../hooks";
 import { className, createState, focusStore } from "../../util";

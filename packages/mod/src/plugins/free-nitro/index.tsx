@@ -1,8 +1,8 @@
 import { byStrings, getLazyByKeys } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { createAbort } from "../../util";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 import { Icons } from "../../components";
 
 const [ abort, getSignal ] = createAbort();

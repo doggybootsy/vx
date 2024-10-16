@@ -1,8 +1,8 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import {getLazyStore} from "@webpack";
-import {createSettings, SettingType} from "../settings";
+import {createSettings, SettingType} from "vx:plugins/settings";
 import { Icons } from "../../components";
 
 const inj = new Injector();

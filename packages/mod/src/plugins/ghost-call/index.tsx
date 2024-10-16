@@ -1,7 +1,7 @@
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import {Developers} from "../../constants";
 import {bySource, getProxy} from "@webpack";
-import {createSettings, SettingType} from "../settings";
+import {createSettings, SettingType} from "vx:plugins/settings";
 
 const ButtonModule: any = getProxy(bySource(".lineHeightReset"));
 const MutedStore: any = getProxy(x=>x.isChannelMuted)

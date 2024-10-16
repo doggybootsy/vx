@@ -1,4 +1,4 @@
-import { definePlugin } from "../";
+import { definePlugin } from "vx:plugins";;
 import { Guild, GuildMember, User } from "discord-types/general";
 import { Developers } from "../../constants";
 import { Constants, PermissionStore } from "@webpack/common";

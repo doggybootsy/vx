@@ -1,11 +1,11 @@
 import { bySource, getLazy, getLazyByKeys, getLazyByProtoKeys, getProxyByStrings } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { createAbort } from "../../util";
 import { Injector } from "../../patcher";
 import { isValidElement } from "react";
 import { MenuComponents, closeMenu, openMenu } from "../../api/menu";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 import { Styler } from "vx:styler";
 import { Icons } from "../../components";
 

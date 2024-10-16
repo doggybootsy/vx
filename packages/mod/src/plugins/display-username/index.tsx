@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Message, User } from "discord-types/general";
 import { ErrorBoundary } from "../../components";

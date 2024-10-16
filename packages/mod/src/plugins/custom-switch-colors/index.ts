@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { definePlugin } from "../";
+import { definePlugin } from "vx:plugins";;
 import { Developers } from "../../constants";
-import { SettingType, createSettings } from "../settings";
+import { SettingType, createSettings } from "vx:plugins/settings";
 
 const settings = createSettings("custom-switch-colors", {
   on: {

@@ -2,7 +2,7 @@ import { Messages } from "vx:i18n";
 import { addCommand } from ".";
 import { pluginStore } from "../../addons/plugins";
 import { themeStore } from "../../addons/themes";
-import { plugins } from "../../plugins";
+import { plugins } from "vx:plugins";
 import { openConfirmModal } from "../modals";
 import { OptionType } from "./types";
 import { instantBatchUpload } from "@webpack/common";

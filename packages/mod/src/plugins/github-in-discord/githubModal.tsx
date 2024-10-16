@@ -3,11 +3,11 @@ import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModa
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
 import {FileIcon, imageFileTypes, videoFileTypes} from "./icons";
-import {openPIP} from "../pip";
 import MarkdownRenderer from "./markdownModule";
 import {MenuComponents, openMenu} from "../../api/menu";
 import JSZip from "jszip";
 import {clipboard, download} from "../../util";
+import { requirePlugin } from 'vx:plugins/require';
 
 interface GitHubUrlInfo {
     user: string;
@@ -89,7 +89,7 @@ class GitHubService {
             const ext = res.name.slice(res.name.lastIndexOf('.')).toLowerCase();
             if (res.download_url) {
                 if (videoFileTypes.includes(ext) && event?.shiftKey) {
-                    openPIP(res.name, res.download_url)
+                    requirePlugin("pip").openPIP(res.name, res.download_url)
                     return;
                 } else if (videoFileTypes.includes(ext)) {
                     openVideoModal(res.download_url);

@@ -1,4 +1,4 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
 

@@ -1,5 +1,5 @@
 import { getLazyByKeys } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import { ErrorBoundary, CodeBlock } from "../../components";

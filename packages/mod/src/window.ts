@@ -148,6 +148,9 @@ export function vxRequire(path: string) {
   
     // vxi === vx internal
     case "vxi:native": return require("./native");
+    case "vxi:plugins": return require("vx:plugins");
+    case "vxi:plugins/require": return require("vx:plugins/require");
+    case "vxi:plugins/settings": return require("vx:plugins/settings");
 
     default: {
       // if (webpack.webpackRequire) {

@@ -1,12 +1,12 @@
 import { byStrings, getLazy } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { Injector } from "../../patcher";
 import { Button, ErrorBoundary } from "../../components";
 import { reviewDBStore } from "./store";
 import { useInternalStore } from "../../hooks";
 import * as styler from "./index.css?managed";
-import { createSettings, CustomSettingType, SettingType } from "../settings";
+import { createSettings, CustomSettingType, SettingType } from "vx:plugins/settings";
 import { ReviewDBPage } from "./review";
 import { clipboard, createAbort } from "../../util";
 

@@ -1,4 +1,4 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { MenuComponents } from "../../api/menu";
 import { ModalComponents, openModal, openUserModal } from "../../api/modals";
 import { Developers } from "../../constants";

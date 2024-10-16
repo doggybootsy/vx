@@ -1,4 +1,4 @@
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Icons } from "../../components";
 import { Developers } from "../../constants";
 import * as styler from "./index.css?managed"

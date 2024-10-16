@@ -1,5 +1,5 @@
 import { Message, User } from "discord-types/general";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary, Icons, UserPopout } from "../../components";
 import { Developers } from "../../constants";
 import {

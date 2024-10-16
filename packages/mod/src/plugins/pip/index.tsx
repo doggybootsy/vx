@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { definePlugin, isPluginEnabled } from "..";
+import { definePlugin, isPluginEnabled } from "vx:plugins";
 import {Button, ErrorBoundary, Icons, Popout, SystemDesign} from "../../components";
 import { Developers } from "../../constants";
 import { base64, className, proxyCache } from "../../util";
@@ -17,6 +17,7 @@ import { DiscordIcon } from "../../components/icons";
 import exp from "node:constants";
 import {openModal} from "../../api/modals";
 import {closeMenu, MenuComponents, openMenu} from "../../api/menu";
+import { requirePlugin } from "vx:plugins/require";
 
 const storage = new DataStore<{
   volume: number,
@@ -119,7 +120,7 @@ function PIPWindow({ window, src, windowKey }: { window: typeof globalThis, src:
   const video = useRef<HTMLVideoElement>(null);
   const [state, setVideoState] = useState(VideoState.PAUSED);
   const [canplay, setCanPlay] = useState(false);
-  const [isLooping, setLooping] = useState(() => settings.autoLoop.get());
+  const [isLooping, setLooping] = useState<boolean>(() => isPluginEnabled("loop") && requirePlugin("loop").settings.autoLoop.get());
   const { muted, volume } = useCurrentVolume();
   const [show, shouldShow] = useState(false);
   const [isMouseOver, setMouseOver ] = useState(false);

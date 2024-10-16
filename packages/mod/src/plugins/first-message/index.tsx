@@ -1,4 +1,4 @@
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import {Developers} from "../../constants";
 import {NavigationUtils} from "@webpack/common";
 import {SelectedChannelStore} from "@webpack/common"

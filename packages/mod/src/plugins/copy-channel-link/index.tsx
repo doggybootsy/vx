@@ -1,5 +1,5 @@
 import { Channel, Guild } from "discord-types/general";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { ErrorBoundary, Icons, Tooltip } from "../../components";
 import { getProxyByKeys } from "@webpack";
 import { className, clipboard } from "../../util";

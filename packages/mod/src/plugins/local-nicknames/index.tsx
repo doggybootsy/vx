@@ -1,4 +1,4 @@
-import { definePlugin, isPluginEnabled } from "../";
+import { definePlugin, isPluginEnabled } from "vx:plugins";
 import { User } from "discord-types/general";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";

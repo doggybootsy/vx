@@ -1,5 +1,5 @@
 import { Message, User } from "discord-types/general";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { RelationshipStore, useStateFromStores } from "@webpack/common";
 import { Icons, Tooltip } from "../../components";

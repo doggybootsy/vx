@@ -201,8 +201,8 @@ declare module "*.html" {
   const type: Document;
   export default type;
 }
-declare module "@plugins" {
-  
+declare module "vx:plugins/require" {
+  export function requirePlugin<T = any>(id: string): T;
 }
 
 declare module "vx:self" {

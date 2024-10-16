@@ -1,14 +1,13 @@
-import {definePlugin} from "../index";
+import { definePlugin } from "vx:plugins";
 import {Developers} from "../../constants";
 import {byStrings, getProxy} from "@webpack";
 import * as styler from "./index.css?managed"
 import React from 'react';
-import {Toolbar} from "../toolbar/ToolbarService";
 import {MenuComponents} from "../../api/menu";
 import {openModal} from "../../api/modals";
 import GitHubModal, {themes} from "./githubModal";
 import {getParents} from "../../util";
-import {createSettings, SettingType} from "../settings";
+import {createSettings, SettingType} from "vx:plugins/settings";
 import {Button, Flex, Icons, SystemDesign} from "../../components";
 
 interface GitHubUrlInfo {

@@ -1,9 +1,9 @@
 import { getLazyByKeys } from "@webpack";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import { createAbort, getRandomItem } from "../../util";
 import { Injector } from "../../patcher";
-import { createSettings, SettingType } from "../settings";
+import { createSettings, SettingType } from "vx:plugins/settings";
 import { Button, Flex, Icons, SystemDesign } from "../../components";
 import { UserStore } from "@webpack/common";
 

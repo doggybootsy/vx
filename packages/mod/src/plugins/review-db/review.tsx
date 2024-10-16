@@ -1,5 +1,5 @@
 import { getProxyByKeys, getProxyByStrings } from "@webpack";
-import { isPluginEnabled } from "..";
+import { isPluginEnabled } from "vx:plugins";
 import { className, getDefaultAvatar } from "../../util";
 import { Button, Icons, Markdown, Spinner, SystemDesign, Tooltip } from "../../components";
 import { User } from "discord-types/general";

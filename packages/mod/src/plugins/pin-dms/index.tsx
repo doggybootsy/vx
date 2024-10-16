@@ -1,5 +1,5 @@
 import { UserStore } from "@webpack/common";
-import { definePlugin } from "..";
+import { definePlugin } from "vx:plugins";
 import { DataStore } from "../../api/storage";
 import { Developers } from "../../constants";
 import { getProxyStore } from "@webpack";
