@@ -310,10 +310,10 @@ function GuildProfile({ guildId, transitionState, onClose }: { guildId: string, 
                 <span />
                 <span>{memberCount}</span>
               </div>
-              <div>
+              {onlineCount > 0 && <div>
                 <span />
-                {onlineCount > 0 && <span>{onlineCount}</span>}
-              </div>
+                <span>{onlineCount}</span>
+              </div>}
             </div>
           </div>
           <div className="vx-gp-content" data-tab-id={tab.toString()}>

@@ -49,9 +49,9 @@ function getVideoDetails(src: string){
 const mediaModals = getMangledProxy<{
   VideoModal: React.FunctionComponent<any>,
   ImageModal: React.FunctionComponent<any>
-}>(/\.videoWrapper\),.+isObscured/, {
-  VideoModal: byStrings(".videoWrapper),"),
-  ImageModal: not(byStrings(".videoWrapper),"))
+}>(/.zo9.LOADING/, {
+  VideoModal: byStrings("mediaLayoutType"),
+  ImageModal: byStrings("mediaLayoutType")
 });
 
 addPlainTextPatch({
@@ -80,7 +80,7 @@ export async function openImageModal(src: string | URL, options?: ImageModalOpti
         {...props}
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-image-modal"
-      >
+      > 
         <mediaModals.ImageModal
           animated={true}
           height={height * scale}
