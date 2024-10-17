@@ -5,9 +5,7 @@ import { className, clipboard, convertSvgToURL, download } from "../util";
 import { Messages } from "vx:i18n";
 import { IconFullProps } from "./icons";
 import { useDestructor, useForceUpdate } from "../hooks";
-import { ModalComponents, openCodeModal, openImageModal, openModal } from "../api/modals";
-
-import "./codeblock.css";
+import { openCodeModal, openImageModal, openModal } from "../api/modals";
 
 function HeaderButton({ icon: Icon, text, action: onClick }: CodeBlockButton) {
   return (

@@ -203,3 +203,16 @@
 .vx-gp-content[data-tab-id="0"] .vx-gp-user {
   margin-left: 0;
 }
+
+.vx-gp-about-tab-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, auto);
+  grid-gap: 16px;
+}
+
+.vx-gp-stats {
+  display: flex;
+  gap: 10px;
+  color: var(--text-normal);
+}
