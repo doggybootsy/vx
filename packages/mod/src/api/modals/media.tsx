@@ -1,5 +1,5 @@
 import { ModalComponents } from ".";
-import { addPlainTextPatch, byStrings, getMangledProxy, getProxyByKeys, not } from "@webpack";
+import {addPlainTextPatch, byStrings, getMangledProxy, getProxy, getProxyByKeys, not} from "@webpack";
 import { openModal } from "./actions";
 import { SystemDesign } from "../../components";
 
@@ -46,13 +46,7 @@ function getVideoDetails(src: string){
   });
 }
 
-const mediaModals = getMangledProxy<{
-  VideoModal: React.FunctionComponent<any>,
-  ImageModal: React.FunctionComponent<any>
-}>(/.zo9.LOADING/, {
-  VideoModal: byStrings("mediaLayoutType"),
-  ImageModal: byStrings("mediaLayoutType")
-});
+const MediaModule = getProxy(x=>x.visibilityObserver)
 
 addPlainTextPatch({
   identifier: "VX(image-blob-support)",
@@ -81,7 +75,7 @@ export async function openImageModal(src: string | URL, options?: ImageModalOpti
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-image-modal"
       > 
-        <mediaModals.ImageModal
+        <MediaModule
           animated={true}
           height={height * scale}
           width={width * scale}
@@ -121,7 +115,7 @@ export async function openVideoModal(src: string | URL, options?: VideoModalOpti
         size={ModalComponents.ModalSize.DYNAMIC}
         className="vx-video-modal"
       >
-        <mediaModals.VideoModal
+        <MediaModule
           animated={true}
           height={height * scale}
           width={width * scale}
