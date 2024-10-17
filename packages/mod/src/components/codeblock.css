@@ -46,7 +46,7 @@
   display: flex;
 }
 
-td.vx-codeblock-index {
+.vx-codeblock-index {
   min-width: 1.5em;
   display: flex;
   justify-content: end;
@@ -55,7 +55,7 @@ td.vx-codeblock-index {
   position: relative;
 }
 
-td.vx-codeblock-line {
+.vx-codeblock-line {
   padding: 0 .5em;
   width: 100%;
 }

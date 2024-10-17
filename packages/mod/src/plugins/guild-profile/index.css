@@ -203,3 +203,9 @@
 .vx-gp-content[data-tab-id="0"] .vx-gp-user {
   margin-left: 0;
 }
+
+.vx-gp-stats {
+  display: flex;
+  gap: 10px;
+  color: var(--text-normal);
+}

@@ -1,18 +1,26 @@
 import { definePlugin } from "vx:plugins";
-import { MenuComponents } from "../../api/menu";
-import { ModalComponents, openModal, openUserModal } from "../../api/modals";
-import { Developers } from "../../constants";
-import { fetchUser, GuildMemberStore, GuildStore, RelationshipStore, UserStore, useStateFromStores } from "@webpack/common";
 import * as styler from "./index.css?managed";
-import { useDeferredValue, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { byStrings, getMangledProxy, getModule, getProxy, getProxyByKeys, getProxyByStrings, getProxyStore } from "@webpack";
-import { Messages } from "vx:i18n";
-import { Guild } from "discord-types/general";
-import { focusStore, getDefaultAvatar, InternalStore, proxyCache } from "../../util";
-import { useInternalStore } from "../../hooks";
-import { Markdown } from "../../components";
+import {useId, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {byStrings, getMangledProxy, getProxyByKeys, getProxyByStrings, getProxyStore} from "@webpack";
+import {Messages} from "vx:i18n";
+import {Guild} from "discord-types/general";
+import {focusStore, getDefaultAvatar, InternalStore} from "../../util";
+import {useInternalStore} from "../../hooks";
+import {Markdown} from "../../components";
+import {
+  fetchUser,
+  GuildMemberStore,
+  GuildStore,
+  RelationshipStore,
+  SelectedChannelStore, UserStore,
+  useStateFromStores
+} from "@webpack/common";
+import {ModalComponents, openModal, openUserModal} from "../../api/modals";
+import {Developers} from "../../constants";
+import {MenuComponents} from "../../api/menu";
 
 const GuildMemberCountStore = getProxyStore("GuildMemberCountStore");
+const ChannelMemberStore = getProxyStore("ChannelMemberStore");
 
 const quantize = getMangledProxy<{
   quantize(img: HTMLImageElement, sampleSize: number, pixelSkip: number): [ r: number, g: number, b: number ][]
@@ -66,7 +74,7 @@ const snowflakeUtils = getProxyByKeys([ "extractTimestamp" ]);
 
 function AboutTab({ guild }: { guild: Guild }) {
   return (
-    <>
+    <div className={"vx-gp-about-tab-grid"}>
       <Section heading="Server Owner">
         <UserItem guildId={guild.id} userId={guild.ownerId} />
       </Section>
@@ -99,7 +107,10 @@ function AboutTab({ guild }: { guild: Guild }) {
       <Section heading="NSFW Level">
         <span className="vx-gp-section">{guild.nsfwLevel}</span>
       </Section>
-    </>
+      <Section heading="NSFW Level">
+        <span className="vx-gp-section">{guild.nsfwLevel}</span>
+      </Section>
+    </div>
   );
 }
 
@@ -242,7 +253,17 @@ function GuildProfile({ guildId, transitionState, onClose }: { guildId: string, 
     return () => controller.abort();
   }, [ icon ]);
 
+  const onlineCount = useStateFromStores([ ChannelMemberStore ], () => {
+    const { groups } = ChannelMemberStore.getProps(guildId, SelectedChannelStore.getChannelId());
+    return groups
+        .filter((group: { id: string; }) => group.id && group.id !== 'offline')
+        .map((group: { count: any; }) => group.count)
+        .reduce((total: any, count: any) => total + count, 0);
+  })
+  
   const bannerHeight = useMemo(() => banner ? 338 : 210, [ banner ]);
+  
+  const memberCount = GuildMemberCountStore.getMemberCount(guildId);
   
   const bannerStyles = useMemo(() => {
     const bannerStyles: React.CSSProperties = {
@@ -284,16 +305,16 @@ function GuildProfile({ guildId, transitionState, onClose }: { guildId: string, 
             <div className="vx-gp-name">
               {guild.name}
             </div>
-            {/* <div className="vx-gp-stats">
+            <div className="vx-gp-stats">
               <div>
                 <span />
                 <span>{memberCount}</span>
               </div>
-              <div>
+              {onlineCount > 0 && <div>
                 <span />
                 <span>{onlineCount}</span>
-              </div>
-            </div> */}
+              </div>}
+            </div>
           </div>
           <div className="vx-gp-content" data-tab-id={tab.toString()}>
             <div className="vx-gp-tabs">
@@ -374,3 +395,4 @@ export default definePlugin({
     }
   }
 });
+

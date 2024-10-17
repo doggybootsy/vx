@@ -4,8 +4,8 @@ import {byStrings, getProxy} from "@webpack";
 import * as styler from "./index.css?managed"
 import React from 'react';
 import {MenuComponents} from "../../api/menu";
-import {openModal} from "../../api/modals";
-import GitHubModal, {themes} from "./githubModal";
+import {openCodeModal, openModal} from "../../api/modals";
+import GitHubModal, {GitHubService, themes} from "./githubModal";
 import {getParents} from "../../util";
 import {createSettings, SettingType} from "vx:plugins/settings";
 import {Button, Flex, Icons, SystemDesign} from "../../components";
@@ -69,6 +69,7 @@ export default definePlugin({
         "message"(a, ctx) {
             const messageContent = a.target.tagName === "A" ? (a.target as HTMLAnchorElement).href : getParents(a.target).querySelector<HTMLAnchorElement>("a")?.href ?? a.message.content;
             const githubUrlRegex = /https:\/\/github.com\/.+?\/\w+(\/tree)?/;
+            const rawUrl = /^https:\/\/raw.githubusercontent.com\/[^\/]+\/[^\/]+\/refs\/heads\/[^\/]+\/\w+\/(.+)/
 
             if (messageContent && githubUrlRegex.test(messageContent)) {
                 const [ url ] = messageContent.match(githubUrlRegex)!;
@@ -78,6 +79,16 @@ export default definePlugin({
                         id="github-in-discord"
                         label="Open Repo in GitHub"
                         action={() => openGithubModal(url)}
+                    />
+                );
+            } else if (messageContent && rawUrl.test(messageContent)) {
+                const foundMatch = rawUrl.exec(messageContent)?.[1]
+                if (!foundMatch) return;
+                ctx.props.children?.push(
+                    <MenuComponents.MenuItem
+                        id="github-in-discord"
+                        label="Open Raw Link in GitHub"
+                        action={async () => openCodeModal({language: foundMatch, content: await GitHubService.fetchTextFromUrl(messageContent)})}
                     />
                 );
             }

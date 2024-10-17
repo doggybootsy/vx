@@ -16,7 +16,7 @@ interface GitHubUrlInfo {
     path?: string;
 }
 
-class GitHubService {
+export class GitHubService {
     private readonly baseURL: string;
 
     constructor() {
@@ -27,6 +27,16 @@ class GitHubService {
         return atob(content);
     }
 
+    static async fetchTextFromUrl(url: string) {
+        try {
+            const response = await fetch(url);
+            return await response.text();
+        } catch (error) {
+            console.error('Error fetching the text:', error);
+            return null;
+        }
+    }
+    
     async getForks(user: string, repo: string) {
         const endpoint = `/repos/${user}/${repo}/forks`;
         const forks = await this.fetchFromGitHub(endpoint);
