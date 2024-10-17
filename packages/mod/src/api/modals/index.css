@@ -46,3 +46,12 @@
   line-height: 20px;
   font-weight: 600;
 }
+
+.vx-carousel-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}

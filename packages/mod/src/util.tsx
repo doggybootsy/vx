@@ -484,7 +484,7 @@ export function showFilePicker(callback: (file: File | null) => void, accepts: s
 };
 
 export function download(filename: string, ...parts: BlobPart[]) {
-  const blob = new Blob(parts, { type: "application/octet-binary" });
+  const blob = new Blob(parts, { type: "application/octet-stream" });
   const blobURL = URL.createObjectURL(blob);
 
   const anchor = document.createElement("a");
@@ -497,6 +497,10 @@ export function download(filename: string, ...parts: BlobPart[]) {
   anchor.remove();
   URL.revokeObjectURL(blobURL);
 };
+
+export function downloadFile(file: File) {
+  download(file.name, file.slice(0, file.size, file.type));
+}
 
 export function createNullObject<T extends Record<PropertyKey, any> = Record<PropertyKey, any>>(properties?: T, name?: string): T {
   let descriptors: { [key: PropertyKey]: PropertyDescriptor } = {};

@@ -1,11 +1,10 @@
 import { expose, getAndEnsureVXPath } from "common/preloads";
-import electron, { ipcRenderer, IpcRendererEvent, webFrame } from "electron";
+import electron, { ipcRenderer, IpcRendererEvent } from "electron";
 import JSZip from "jszip";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { env } from "vx:self";
 import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
-import { alwaysPlay } from "../main/youtube";
 
 type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
 

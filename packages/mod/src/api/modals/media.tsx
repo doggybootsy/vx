@@ -1,7 +1,7 @@
-import { ModalComponents } from ".";
-import {addPlainTextPatch, byStrings, getMangledProxy, getProxy, getProxyByKeys, not} from "@webpack";
-import { openModal } from "./actions";
-import { SystemDesign } from "../../components";
+import { addPlainTextPatch, getProxyByStrings } from "@webpack";
+import { ModalProps, openModal } from "./actions";
+
+type ArrayOr<T> = T[] | T;
 
 function getImageSize(src: string) {  
   return new Promise<{ height: number, width: number }>((resolve, reject) => {
@@ -34,7 +34,7 @@ function getVideoDetails(src: string){
       canvas.width = width;
 
       const ctx = canvas.getContext("2d")!;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);      
 
       resolve({ height, width, poster: canvas.toDataURL("image/png") });
     });
@@ -46,8 +46,6 @@ function getVideoDetails(src: string){
   });
 }
 
-const MediaModule = getProxy(x=>x.visibilityObserver)
-
 addPlainTextPatch({
   identifier: "VX(image-blob-support)",
   match: "this.unobserveVisibility",
@@ -55,80 +53,152 @@ addPlainTextPatch({
   replace: "$vxi.getSrc.call(this,$&)"
 });
 
-interface ImageModalOptions {
+interface ItemOptions {
   scale?: number
 }
 
-export async function openImageModal(src: string | URL, options?: ImageModalOptions) {
+interface BaseItem {
+  url: string;
+  width: number;
+  height: number;
+}
+
+interface VideoItem extends BaseItem {
+  contentScanMetaData?: undefined;
+  contentType: string;
+  type: "VIDEO";
+}
+
+interface ImageItem extends BaseItem {
+  animated: boolean,
+  type: "IMAGE"
+}
+
+type Item = ImageItem | VideoItem;
+
+const CarouselModal = getProxyByStrings<React.ComponentType<ModalProps & {
+  className: string,
+  items: Item[],
+  shouldHideMediaOptions?: boolean,
+  startingIndex?: number,
+  onIndexChange?(index: number): void,
+}>>([ ".Messages.MEDIA_VIEWER_MODAL_ALT_TEXT" ]);
+
+interface MediaModalOptions {
+  shouldHideMediaOptions?: boolean,
+  startingIndex?: number,
+  onIndexChange?(index: number): void
+}
+
+async function makeItem(src: string | URL, options?: ItemOptions): Promise<Item> {
+  if (src instanceof URL) src = src.href;
+
+  src = new URL(src, location.href);
   const { scale = 1 } = Object.assign({}, options);
 
-  if (src instanceof URL) src = src.href;
+  const isImage = /\.(png|jpe?g|webp|gif|heic|heif|dng)$/i.test(src.pathname);
+  const videoFileType = /\.(mp4|webm|mov)$/i.exec(src.pathname)?.[1];
+  const isAnimated =  !!videoFileType || /\.(webp|gif)$/i.test(src.pathname);
+
+  if (isImage) {
+    const { height, width } = await getImageSize(src.href);
+
+    return {
+      width: width * scale,
+      height: height * scale,
+      url: src.href,
+      animated: isAnimated,
+      type: "IMAGE"
+    };
+  }
+
+  const { height, width } = await getVideoDetails(src.href);
   
-  if (typeof src !== "string") throw new TypeError(`Argument 'src' must be type 'string' not type '${typeof src}' or be a instance of URL!`);
+  let contentType: string;
 
-  const { width, height } = await getImageSize(src);
+  if (videoFileType === "mp4") contentType = "video/mp4";
+  if (videoFileType === "webm") contentType = "video/webm";
+  if (videoFileType === "mov") contentType = "video/quicktime";
 
-  return openModal((props) => {
-    return (
-      <ModalComponents.ModalRoot
-        {...props}
-        size={ModalComponents.ModalSize.DYNAMIC}
-        className="vx-image-modal"
-      > 
-        <MediaModule
-          animated={true}
-          height={height * scale}
-          width={width * scale}
-          original={src}
-          placeholder={src}
-          shouldAnimate={true}
-          shouldHideMediaOptions={false}
-          src={src}
-          renderLinkComponent={SystemDesign.Anchor}
-          renderForwardComponent={() => null}
-        />
-      </ModalComponents.ModalRoot>
-    )
-  });
+  return {
+    type: "VIDEO",
+    url: src.href,
+    width: width * scale,
+    height: height * scale,
+    contentType: contentType!
+  }
 }
 
-interface VideoModalOptions {
-  scale?: number,
-  poster?: string
+function openMediaModal(items: ArrayOr<Item>, options?: MediaModalOptions) {
+  if (!Array.isArray(items)) items = [ items ];
+
+  items = items.map((item) => ({
+    ...item,
+    original: item.url,
+    proxyUrl: item.url.replace("https://cdn.discordapp.com/attachments/", "https://media.discordapp.net/attachments/"),
+    srcIsAnimated: false,
+    contentScanMetadata: undefined
+  }));  
+  
+
+  return openModal((props) => (
+    <CarouselModal 
+      {...props}
+      className="vx-carousel-modal"
+      items={items}
+      shouldHideMediaOptions={options?.shouldHideMediaOptions}
+      onIndexChange={options?.onIndexChange}
+      startingIndex={options?.startingIndex}
+    />
+  ))
 }
 
-export async function openVideoModal(src: string | URL, options?: VideoModalOptions) {
-  const { scale = 1, poster: posterOption } = Object.assign({}, options);
+function isItem(item: any): item is Item {
+  if (item?.type === "IMAGE" || item?.type === "VIDEO") return true; 
+  return false;
+}
 
-  if (src instanceof URL) src = src.href;
-  
-  if (typeof src !== "string") throw new TypeError(`Argument 'src' must be type 'string' not type '${typeof src}' or be a instance of URL!`);
+openMediaModal.makeItem = makeItem;
+openMediaModal.auto = async (media: ArrayOr<string | URL | Item>, options?: ItemOptions) => {
+  if (!Array.isArray(media)) media = [ media ];
 
-  const { width, height, poster: videoPoster } = await getVideoDetails(src);
+  const items = await Promise.all(
+    media.map((media) => isItem(media) ? media : makeItem(media, options))
+  );
 
-  const poster = posterOption || videoPoster;
+  openMediaModal(items, { shouldHideMediaOptions: true });
+}
 
-  return openModal((props) => {
-    return (
-      <ModalComponents.ModalRoot
-        {...props}
-        size={ModalComponents.ModalSize.DYNAMIC}
-        className="vx-video-modal"
-      >
-        <MediaModule
-          animated={true}
-          height={height * scale}
-          width={width * scale}
-          naturalHeight={height * scale}
-          naturalWidth={width * scale}
-          fileSize={0}
-          fileName={"No File Name"}
-          src={src}
-          poster={poster}
-          renderLinkComponent={SystemDesign.Anchor}
-          renderForwardComponent={() => null}
-        />
-      </ModalComponents.ModalRoot>
-    )
-  });
-};
+// Wrappers for openMediaModal
+async function openImageModal(images: ArrayOr<string | URL>, options?: ItemOptions) {
+  if (!Array.isArray(images)) images = [ images ];
+
+  const items = await Promise.all(
+    images.map((image) => makeItem(image, options))
+  );
+
+  for (const item of items) {
+    if (item.type === "IMAGE") continue;
+    throw new Error("src is not a image!");
+  }
+
+  return openMediaModal(items, { shouldHideMediaOptions: true });
+}
+async function openVideoModal(videos: ArrayOr<string | URL>, options?: ItemOptions) {
+  if (!Array.isArray(videos)) videos = [ videos ];
+
+  const items = await Promise.all(
+    videos.map((video) => makeItem(video, options))
+  );
+
+  for (const item of items) {
+    if (item.type === "VIDEO") continue;
+    throw new Error("src is not a video!");
+  }
+
+
+  return openMediaModal(items, { shouldHideMediaOptions: true });
+}
+
+
+export { openMediaModal, openImageModal, openVideoModal };
