@@ -54,7 +54,7 @@ const WebhookSender = ({ closeModal, webhook, props }) => {
                 color: parseInt(embed.color.replace('#', ''), 16),
                 fields: embed.fields.filter(field => field.name || field.value)
             })).filter(embed => embed.title || embed.description),
-            attachments: files.map(file => file.name)
+            attachments: files.map(file => file)
         };
 
         const jsonString = JSON.stringify(params);
@@ -67,6 +67,25 @@ const WebhookSender = ({ closeModal, webhook, props }) => {
             setIsLoading(false);
         }
     };
+    
+    /*
+     <div className="vx-gm-file-upload">
+        <h3 className="vx-gm-section-title">Attachments</h3>
+        <input
+            type="file"
+            onChange={handleFileChange}
+            multiple
+            className="vx-gm-file-input"
+        />
+        {files.length > 0 && (
+            <ul className="vx-gm-file-list">
+                {files.map((file, index) => (
+                    <li key={index} className="vx-gm-file-item">{file.name}</li>
+                ))}
+            </ul>
+        )}
+    </div>
+     */
 
     return (
         <ModalComponents.Root {...props}>
@@ -141,22 +160,6 @@ const WebhookSender = ({ closeModal, webhook, props }) => {
                         <Button onClick={handleAddEmbed} color={Button.Colors.GREEN} size={Button.Sizes.SMALL}>
                             Add Embed
                         </Button>
-                    </div>
-                    <div className="vx-gm-file-upload">
-                        <h3 className="vx-gm-section-title">Attachments</h3>
-                        <input
-                            type="file"
-                            onChange={handleFileChange}
-                            multiple
-                            className="vx-gm-file-input"
-                        />
-                        {files.length > 0 && (
-                            <ul className="vx-gm-file-list">
-                                {files.map((file, index) => (
-                                    <li key={index} className="vx-gm-file-item">{file.name}</li>
-                                ))}
-                            </ul>
-                        )}
                     </div>
                     {error && <div className="vx-gm-error-message">{error}</div>}
                 </div>
