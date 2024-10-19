@@ -1,51 +1,56 @@
 import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import HBCM from "../../api/quick-actions/hmba";
-import { MenuComponents, } from "../../api/menu";
-import {getProxyStore, whenWebpackInit} from "@webpack";
+import { MenuComponents } from "../../api/menu";
+import { getProxyStore, whenWebpackInit } from "@webpack";
 import { Icons } from "../../components";
-import {DataStore} from "../../api/storage";
-import {ModalComponents, openModal} from "../../api/modals";
-import {AuthorIcon} from "../../dashboard/pages/addons/plugins/card";
+import { DataStore } from "../../api/storage";
+import { ModalComponents, openModal } from "../../api/modals";
+import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
 import * as styler from "./index.css?managed";
-import {useEffect, useState} from "react";
-import {Guild} from "discord-types/general";
+import { useEffect, useState } from "react";
+import { Guild } from "discord-types/general";
 
-const pluginName = "FriendServerTracker";
-const UserStored = new DataStore(pluginName);
+const pluginName: string = "FriendServerTracker";
+const UserStored: DataStore = new DataStore(pluginName);
 
 const RelationshipStore = getProxyStore("RelationshipStore");
 const UserStore = getProxyStore("UserStore");
 const GuildStore = getProxyStore("GuildStore");
 
-const uri = (guild: Guild) => `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`
+const uri = (guild: Guild): string => `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`;
 
-function compareAndUpdateData(currentData, type) {
-    const storedData = UserStored.get(`stored${type}`) || [];
-    const currentIds = new Set(currentData.map(item => item.id));
-    const storedIds = new Set(storedData.map(item => item.id));
+interface ChangeData {
+    lost: any[];
+    gained: any[];
+    hasChanges: boolean;
+}
 
-    let lostItems = UserStored.get(`lost${type}`) || [];
-    let gainedItems = UserStored.get(`gained${type}`) || [];
+function compareAndUpdateData(currentData: any[], type: string): ChangeData {
+    const storedData: any[] = UserStored.get(`stored${type}`) || [];
+    const currentIds: Set<string> = new Set(currentData.map(item => item.id));
+    const storedIds: Set<string> = new Set(storedData.map(item => item.id));
 
-    const newLost = storedData.filter(item => !currentIds.has(item.id));
-    const newGained = currentData.filter(item => !storedIds.has(item.id));
+    let lostItems: any[] = UserStored.get(`lost${type}`) || [];
+    let gainedItems: any[] = UserStored.get(`gained${type}`) || [];
 
-    // Update lost items
+    const newLost: any[] = storedData.filter(item => !currentIds.has(item.id));
+    const newGained: any[] = currentData.filter(item => !storedIds.has(item.id));
+
     lostItems = [
         ...lostItems.filter(item => !currentIds.has(item.id)),
         ...newLost
     ];
-    
+
     gainedItems = [
         ...gainedItems.filter(item => currentIds.has(item.id)),
         ...newGained
     ];
-    
+
     lostItems = lostItems.filter(item => !gainedItems.some(gained => gained.id === item.id));
     gainedItems = gainedItems.filter(item => !lostItems.some(lost => lost.id === item.id));
 
-    const hasChanges = newLost.length > 0 || newGained.length > 0;
+    const hasChanges: boolean = newLost.length > 0 || newGained.length > 0;
 
     if (hasChanges) {
         UserStored.set(`lost${type}`, lostItems);
@@ -56,7 +61,12 @@ function compareAndUpdateData(currentData, type) {
     return { lost: lostItems, gained: gainedItems, hasChanges };
 }
 
-function ChangeItem({ item, type }) {
+interface ChangeItemProps {
+    item: any;
+    type: string;
+}
+
+function ChangeItem({ item, type }: ChangeItemProps): JSX.Element {
     return (
         <div className="vx-fr-item">
             {type === 'friend' ? (
@@ -69,7 +79,13 @@ function ChangeItem({ item, type }) {
     );
 }
 
-function ChangeSection({ title, items, type }) {
+interface ChangeSectionProps {
+    title: string;
+    items: any[];
+    type: string;
+}
+
+function ChangeSection({ title, items, type }: ChangeSectionProps): JSX.Element | null {
     if (items.length === 0) return null;
     return (
         <div className="vx-fr-section">
@@ -81,15 +97,19 @@ function ChangeSection({ title, items, type }) {
     );
 }
 
-function LostItemsModal({ props }) {
-    const [friendChanges, setFriendChanges] = useState({ lost: [], gained: [], hasChanges: false });
-    const [guildChanges, setGuildChanges] = useState({ lost: [], gained: [], hasChanges: false });
+interface LostItemsModalProps {
+    props: any;
+}
+
+function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
+    const [friendChanges, setFriendChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
+    const [guildChanges, setGuildChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
 
     useEffect(() => {
-        const currentFriends = Object.entries(RelationshipStore.getRelationships())
+        const currentFriends: any[] = Object.entries(RelationshipStore.getRelationships())
             .filter(([, type]) => type === 1)
             .map(([id]) => ({ id, ...UserStore.getUser(id) }));
-        const currentGuilds = Object.values(GuildStore.getGuilds()).map(guild => {
+        const currentGuilds: any[] = Object.values(GuildStore.getGuilds()).map(guild => {
             const detailedGuild = GuildStore.getGuild(guild.id);
             return {
                 id: detailedGuild.id,
@@ -98,14 +118,14 @@ function LostItemsModal({ props }) {
             };
         });
 
-        const friendResults = compareAndUpdateData(currentFriends, "Friends");
-        const guildResults = compareAndUpdateData(currentGuilds, "Guilds");
+        const friendResults: ChangeData = compareAndUpdateData(currentFriends, "Friends");
+        const guildResults: ChangeData = compareAndUpdateData(currentGuilds, "Guilds");
 
         setFriendChanges(friendResults);
         setGuildChanges(guildResults);
     }, []);
 
-    const handleClearLogs = () => {
+    const handleClearLogs = (): void => {
         UserStored.set('lostFriends', []);
         UserStored.set('gainedFriends', []);
         UserStored.set('lostGuilds', []);
@@ -140,7 +160,7 @@ export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
     styler,
-    async start(signal: AbortSignal) {
+    async start(signal: AbortSignal): Promise<void> {
         await whenWebpackInit();
         HBCM.getAPI().addItem("friendServerTracker", () => (
             <MenuComponents.Item
