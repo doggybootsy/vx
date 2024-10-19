@@ -8,8 +8,9 @@ import { DataStore } from "../../api/storage";
 import { ModalComponents, openModal } from "../../api/modals";
 import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
 import * as styler from "./index.css?managed";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect , useState } from "react";
 import { Guild } from "discord-types/general";
+import HomeButtonContextMenuApi from "../../api/quick-actions/hmba";
 
 const pluginName: string = "FriendServerTracker";
 const UserStored: DataStore = new DataStore(pluginName);
@@ -17,6 +18,8 @@ const UserStored: DataStore = new DataStore(pluginName);
 const RelationshipStore = getProxyStore("RelationshipStore");
 const UserStore = getProxyStore("UserStore");
 const GuildStore = getProxyStore("GuildStore");
+
+__self__.HMBA ??= new HomeButtonContextMenuApi();
 
 const uri = (guild: Guild): string => `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`;
 
@@ -68,13 +71,13 @@ interface ChangeItemProps {
 
 function ChangeItem({ item, type }: ChangeItemProps): JSX.Element {
     return (
-        <div className="vx-fr-item">
+        <div className="vx-fa-item">
             {type === 'friend' ? (
                 <AuthorIcon dev={{ username: item.username, discord: item.id }} isLast={true} />
             ) : (
-                <img src={uri(item)} alt={item.name} className="vx-fr-item-icon" />
+                item.icon ? <img src={uri(item)} alt={item.name} className="vx-fa-item-icon"/> : <span>{item.acronym}</span>
             )}
-            <span className="vx-fr-item-name">{type === 'friend' ? (item.globalName || item.username) : item.name}</span>
+            <span className="vx-fa-item-name">{type === 'friend' ? (item.globalName || item.username) : item.name}</span>
         </div>
     );
 }
@@ -88,8 +91,8 @@ interface ChangeSectionProps {
 function ChangeSection({ title, items, type }: ChangeSectionProps): JSX.Element | null {
     if (items.length === 0) return null;
     return (
-        <div className="vx-fr-section">
-            <h3 className="vx-fr-section-title">{title} - {items.length}</h3>
+        <div className="vx-fa-section">
+            <h3 className="vx-fa-section-title">{title} - {items.length}</h3>
             {items.map(item => (
                 <ChangeItem key={item.id} item={item} type={type} />
             ))}
@@ -105,7 +108,7 @@ function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
     const [friendChanges, setFriendChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
     const [guildChanges, setGuildChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const currentFriends: any[] = Object.entries(RelationshipStore.getRelationships())
             .filter(([, type]) => type === 1)
             .map(([id]) => ({ id, ...UserStore.getUser(id) }));
@@ -114,7 +117,7 @@ function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
             return {
                 id: detailedGuild.id,
                 name: detailedGuild.name,
-                getIconURL: () => detailedGuild.getIconURL(),
+                getIconURL: () => detailedGuild.getIconURL() ?? void 0,
             };
         });
 
@@ -136,19 +139,19 @@ function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
 
     return (
         <ModalComponents.Root {...props}>
-            <div className="vx-fr-modal">
-                <div className="vx-fr-header">
-                    <h2 className="vx-fr-title">Removal Alerts</h2>
-                    <button className="vx-fr-clear-logs" onClick={handleClearLogs}>Clear Logs</button>
+            <div className="vx-fa-modal">
+                <div className="vx-fa-header">
+                    <h2 className="vx-fa-title">Removal Alerts</h2>
+                    <button className="vx-fa-clear-logs" onClick={handleClearLogs}>Clear Logs</button>
                 </div>
-                <div className="vx-fr-content">
+                <div className="vx-fa-content">
                     {(guildChanges.lost.length > 0 || friendChanges.lost.length > 0) ? (
                         <>
                             <ChangeSection title="Guilds" items={guildChanges.lost} type="guild" />
                             <ChangeSection title="Friends" items={friendChanges.lost} type="friend" />
                         </>
                     ) : (
-                        <p className="vx-fr-no-changes">No changes detected since last check.</p>
+                        <p className="vx-fa-no-changes">No changes detected since last check.</p>
                     )}
                 </div>
             </div>
@@ -162,7 +165,7 @@ export default definePlugin({
     styler,
     async start(signal: AbortSignal): Promise<void> {
         await whenWebpackInit();
-        HBCM.getAPI().addItem("friendServerTracker", () => (
+        __self__.HMBA.addItem("friendServerTracker", () => (
             <MenuComponents.Item
                 label="Friend & Server Changes"
                 id="vx-friend-server-tracker"

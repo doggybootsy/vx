@@ -5,7 +5,7 @@ import {addPlainTextPatch} from "@webpack";
 addPlainTextPatch({
     match: "Messages.DISCODO_DISABLED",
     find: /.tutorialContainer,/,
-    replace: '$&onContextMenu:window[Symbol.for("HomeButtonContextMenuApi")]?.openContextMenu,'
+    replace: '$&onContextMenu:$vxi.HMBA?.openContextMenu,'
 })
 
 export default class HomeButtonContextMenuApi {
@@ -37,9 +37,5 @@ export default class HomeButtonContextMenuApi {
         openMenu(event, (props) => (
             <HomeButtonContextMenu {...props} onClose={() => closeAllModals} />
         ));
-    }
-    static getAPI(): HomeButtonContextMenuApi {
-        window[Symbol.for("HomeButtonContextMenuApi")] ??= new HomeButtonContextMenuApi();
-        return window[Symbol.for("HomeButtonContextMenuApi")]
     }
 }

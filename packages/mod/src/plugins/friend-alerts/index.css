@@ -1,4 +1,4 @@
-.vx-fr-modal {
+.vx-fa-modal {
     background-color: #2f3136;
     color: #dcddde;
     border-radius: 5px;
@@ -6,20 +6,20 @@
     font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.vx-fr-header {
+.vx-fa-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.vx-fr-title {
+.vx-fa-title {
     font-size: 16px;
     font-weight: bold;
     color: #ffffff;
 }
 
-.vx-fr-clear-logs {
+.vx-fa-clear-logs {
     background-color: #36393f;
     color: #dcddde;
     border: none;
@@ -30,22 +30,22 @@
     transition: background-color 0.2s;
 }
 
-.vx-fr-clear-logs:hover {
+.vx-fa-clear-logs:hover {
     background-color: #40444b;
 }
 
-.vx-fr-section {
+.vx-fa-section {
     margin-bottom: 16px;
 }
 
-.vx-fr-section-title {
+.vx-fa-section-title {
     font-size: 14px;
     font-weight: bold;
     color: #ffffff;
     margin-bottom: 8px;
 }
 
-.vx-fr-item {
+.vx-fa-item {
     display: flex;
     align-items: center;
     padding: 8px;
@@ -54,7 +54,7 @@
     margin-bottom: 8px;
 }
 
-.vx-fr-item-icon {
+.vx-fa-item-icon {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -62,12 +62,12 @@
     background-color: #5865f2;
 }
 
-.vx-fr-item-name {
+.vx-fa-item-name {
     font-size: 14px;
     color: #ffffff;
 }
 
-.vx-fr-no-changes {
+.vx-fa-no-changes {
     text-align: center;
     font-style: italic;
     color: #72767d;
