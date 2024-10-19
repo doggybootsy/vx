@@ -112,7 +112,6 @@ const post = (url: string, data: Record<string, unknown>): Promise<unknown> => {
 
 ipcMain.handle("@vx/webhook/send", async (event, url, jsonString) => {
   try {
-    console.log(jsonString)
     const data = JSON.parse(jsonString); // Parse the JSON string into an object
 
     // Now you can use the data object as needed
