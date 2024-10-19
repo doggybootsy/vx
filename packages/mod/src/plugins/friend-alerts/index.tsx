@@ -1,6 +1,5 @@
 import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
-import HBCM from "../../api/quick-actions/hmba";
 import { MenuComponents } from "../../api/menu";
 import { getProxyStore, whenWebpackInit } from "@webpack";
 import { Icons } from "../../components";
@@ -10,7 +9,7 @@ import { AuthorIcon } from "../../dashboard/pages/addons/plugins/card";
 import * as styler from "./index.css?managed";
 import { useEffect, useLayoutEffect , useState } from "react";
 import { Guild } from "discord-types/general";
-import HomeButtonContextMenuApi from "../../api/quick-actions/hmba";
+import HomeButtonContextMenuApi, {coolApi} from "../../api/quick-actions/hmba";
 
 const pluginName: string = "FriendServerTracker";
 const UserStored: DataStore = new DataStore(pluginName);
@@ -163,7 +162,7 @@ export default definePlugin({
     styler,
     async start(signal: AbortSignal): Promise<void> {
         await whenWebpackInit();
-        __self__.HMBA.addItem("friendServerTracker", () => (
+        coolApi.addItem("friendServerTracker", () => (
             <MenuComponents.Item
                 label="Friend & Server Changes"
                 id="vx-friend-server-tracker"
