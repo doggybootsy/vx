@@ -1,0 +1,75 @@
+.vx-fr-modal {
+    background-color: #2f3136;
+    color: #dcddde;
+    border-radius: 5px;
+    padding: 16px;
+    font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.vx-fr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.vx-fr-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.vx-fr-clear-logs {
+    background-color: #36393f;
+    color: #dcddde;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.vx-fr-clear-logs:hover {
+    background-color: #40444b;
+}
+
+.vx-fr-section {
+    margin-bottom: 16px;
+}
+
+.vx-fr-section-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.vx-fr-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: #36393f;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+.vx-fr-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    background-color: #5865f2;
+}
+
+.vx-fr-item-name {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.vx-fr-no-changes {
+    text-align: center;
+    font-style: italic;
+    color: #72767d;
+    padding: 16px;
+}

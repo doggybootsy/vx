@@ -1,10 +1,10 @@
-import { expose, getAndEnsureVXPath } from "common/preloads";
-import electron, { ipcRenderer, IpcRendererEvent } from "electron";
+import {expose, getAndEnsureVXPath} from "common/preloads";
+import electron, {ipcRenderer, IpcRendererEvent} from "electron";
 import JSZip from "jszip";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
-import { basename, extname, join } from "node:path";
-import { env } from "vx:self";
-import { OpenDevToolsOptions, KnownDevToolsPages } from "typings";
+import {existsSync, mkdirSync, readdirSync, readFileSync, rmSync, unlinkSync, writeFileSync} from "node:fs";
+import {basename, extname, join} from "node:path";
+import {env} from "vx:self";
+import {KnownDevToolsPages, OpenDevToolsOptions} from "typings";
 
 type AddonListener = (eventName: ChokidarFileEvent, filename: string) => void;
 
@@ -68,6 +68,16 @@ function createAddonAPI(type: "themes" | "plugins") {
 const storageCache = new Map<string, string>();
 
 const native = {
+  http: {
+    sendWebhook: async (url, jsonString) => {
+      try {
+        return await electron.ipcRenderer.invoke("@vx/webhook/send", url, jsonString);
+      } catch (error) {
+        console.error("Failed to send webhook:", error);
+        throw error;
+      }
+    },
+  },
   release: electron.ipcRenderer.sendSync("DISCORD_APP_GET_RELEASE_CHANNEL_SYNC") as DiscordReleases,
   themes: createAddonAPI("themes"),
   plugins: createAddonAPI("plugins"),

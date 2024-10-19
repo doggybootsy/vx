@@ -8,6 +8,7 @@ import { MessageAttachment, MessageJSON } from "discord-types/general";
 import { createSettings, SettingType } from "vx:plugins/settings";
 
 const IconURI = (id: string, hash: string) => `https://cdn.discordapp.com/avatars/${id}/${hash}.webp?size=1280`
+const UrlRegex = /^(https?:\/\/[^\s]+\.(png|jpe?g|webp|gif|heic|heif|dng).+)/ig;
 
 type MessageEventType = {
     type: string;
@@ -83,27 +84,31 @@ function displayNotification(event: MessageEventType) {
 
     const storedUserIds = settings.notifySpecificUserIds.get().split(",").map((m) => m.trim());
     const isSpecificUserMentioned = event.message.mentions.some(mention => storedUserIds.includes(mention.id));
-
-    const isUserIdInContent = event.message.content.includes(LocalUser.id)  
-
+    const isUserIdInContent = event.message.content.includes(LocalUser.id);
     const isFriendMessage = RelationshipStore.isFriend(event.message.author.id);
 
     const shouldNotifyDM = isDM && settings.enableDM.get();
-
     const shouldNotifyServer = !isDM && settings.enableServerNotifications.get() && (
         (isUserMentioned && settings.enableMentions.get()) ||
         (isReply && settings.enableMentions.get()) ||
         isSpecificUserMentioned ||
         (isUserIdInContent && settings.enableMentions.get())
     );
-
     const shouldNotifyFriend = settings.notifyOnFriendMessages.get() && isFriendMessage;
-
     const shouldNotify = shouldNotifyDM || shouldNotifyServer || shouldNotifyFriend;
 
     if (!shouldNotify) return;
-    
-    
+
+    // Extract image URLs from the message content
+    const imageUrlsFromContent = Array.from(event.message.content.matchAll(UrlRegex)).map(match => match[0]);
+
+    // Extract image URLs from attachments
+    const imageUrlsFromAttachments = event.message.attachments
+        .map(attachment => attachment.url);
+
+    // Combine both sources of image URLs
+    const imageUrls = [...imageUrlsFromContent, ...imageUrlsFromAttachments];
+
     const recipientIcons = isDM && Array.isArray(Channel.recipients) && Channel.recipients.length > 1
         ? Channel.recipients.map((recipientId: string) => {
             const recipient = UserStore.getUser(recipientId);
@@ -114,14 +119,23 @@ function displayNotification(event: MessageEventType) {
         : null;
 
     const titleSuffix = isDM ? "(DM)" : Guild ? "(SERVER)" : "";
-    // @ts-expect-error
     const title = `${event.message.author.globalName ?? event.message.author.username} ${titleSuffix}`;
 
     openNotification({
         duration: parseInt(settings.notificationDuration.get()) * 1000,  // Convert to milliseconds
         title: title.trim(),
-        description: <Markdown text={event.message.content} />,
-        // @ts-expect-error
+        description: (
+            <>
+                <Markdown text={event.message.content} />
+                {imageUrls.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '10px' }}>
+                        {imageUrls.map((url, index) => (
+                            <img key={index} src={url} alt={`Image ${index + 1}`} style={{ maxWidth: '25%', height: 'auto', margin: '5px' }} />
+                        ))}
+                    </div>
+                )}
+            </>
+        ),
         icon: settings.showIcons.get() ? (props: { width: number; height: number; className: string }): React.ReactNode => {
             return isDM ? (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -145,6 +159,7 @@ function displayNotification(event: MessageEventType) {
         ) : null
     });
 }
+
 
 export default definePlugin(
     {
