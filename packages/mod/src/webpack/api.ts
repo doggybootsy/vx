@@ -1,4 +1,16 @@
-import { getProxyStore, getStore, getLazyStore, webpackReady, whenWebpackReady, whenWebpackInit, getModuleIdBySource, getMangled, getMangledProxy, getMangledLazy } from ".";
+import {
+  getProxyStore,
+  getStore,
+  getLazyStore,
+  webpackReady,
+  whenWebpackReady,
+  whenWebpackInit,
+  getModuleIdBySource,
+  getMangled,
+  getMangledProxy,
+  getMangledLazy,
+  getBySource, getProxyBySource, getLazyBySource
+} from ".";
 import { byKeys, byProtoKeys, byRegex, bySource, byStrings, combine, getByKeys, getByProtoKeys, getByRegex, getByStrings, getLazyByKeys, getLazyByProtoKeys, getLazyByRegex, getLazyByStrings, getProxyByKeys, getProxyByProtoKeys, getProxyByRegex, getProxyByStrings, not } from "./filters";
 import { getLazy } from "./lazy";
 import { getBulk, getModule, getAllModules } from "./searching";
@@ -13,18 +25,21 @@ export const api = {
   getByStrings,
   getByRegex,
   getByKeys,
+  getBySource,
   getByProtoKeys,
   
   getProxy,
   getProxyByStrings,
   getProxyByRegex,
   getProxyByKeys,
+  getProxyBySource,
   getProxyByProtoKeys,
 
   getLazy,
   getLazyByStrings,
   getLazyByRegex,
   getLazyByKeys,
+  getLazyBySource,
   getLazyByProtoKeys,
 
   getStore,

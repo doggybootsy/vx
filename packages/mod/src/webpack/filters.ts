@@ -53,11 +53,22 @@ export function byStrings(...strings: string[]): Webpack.ExportedOnlyFilter {
 export function getByStrings<T extends Record<PropertyKey, any>>(strings: string[], opts?: Webpack.FilterOptions) {
   return getModule<T>(byStrings(...strings), opts);
 }
+export function getBySource<T extends Record<PropertyKey, any>>(strings: string[], opts?: Webpack.FilterOptions) {
+  return getModule<T>(bySource(...strings), opts);
+}
+
 export function getProxyByStrings<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.FilterOptions) {
   return getProxy<T>(byStrings(...keys), opts);
 }
 export function getLazyByStrings<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.LazyFilterOptions) {
   return getLazy<T>(byStrings(...keys), opts);
+}
+
+export function getProxyBySource<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.FilterOptions) {
+  return getProxy<T>(bySource(...keys), opts);
+}
+export function getLazyBySource<T extends Record<PropertyKey, any>>(keys: string[], opts?: Webpack.LazyFilterOptions) {
+  return getLazy<T>(bySource(...keys), opts);
 }
 
 export function byRegex(...regexes: RegExp[]): Webpack.ExportedOnlyFilter {
