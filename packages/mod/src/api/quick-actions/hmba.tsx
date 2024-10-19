@@ -39,3 +39,5 @@ export default class HomeButtonContextMenuApi {
         ));
     }
 }
+
+__self__.HMBA ??= new HomeButtonContextMenuApi();

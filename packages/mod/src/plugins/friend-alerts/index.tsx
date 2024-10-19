@@ -19,8 +19,6 @@ const RelationshipStore = getProxyStore("RelationshipStore");
 const UserStore = getProxyStore("UserStore");
 const GuildStore = getProxyStore("GuildStore");
 
-__self__.HMBA ??= new HomeButtonContextMenuApi();
-
 const uri = (guild: Guild): string => `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`;
 
 interface ChangeData {
