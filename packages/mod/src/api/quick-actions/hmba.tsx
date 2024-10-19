@@ -40,4 +40,4 @@ export default class HomeButtonContextMenuApi {
     }
 }
 
-export const coolApi = __self__.HMBA = new HomeButtonContextMenuApi();
+export const HMBA = __self__.HMBA = new HomeButtonContextMenuApi();
