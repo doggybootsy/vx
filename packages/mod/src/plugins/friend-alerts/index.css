@@ -2,7 +2,6 @@
     background-color: #36393f;
     border-radius: 5px;
     color: #dcddde;
-    font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     padding: 16px;
     width: 440px;
 }
@@ -11,7 +10,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 }
 
 .vx-fa-title {
