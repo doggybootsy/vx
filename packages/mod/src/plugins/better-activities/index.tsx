@@ -22,9 +22,11 @@ export default definePlugin({
                     const Activity: any = findInReactTree(yeah, m => m?.activity);
                     const Yeah: any = findInReactTree(yeah, m => m?.image);
                     
+                    if (!yeah.props.children?.[1] || Activity?.activity) return
+                    
                     yeah.props.children[1].props.onContextMenu = (event: MouseEvent) => openMenu(event, (props: any) => (
                         <MenuComponents.Menu onClose={closeMenu} {...props}>
-                            {copierObjects(Activity.activity, "activity-navId", 10,0, Activity.activity)}
+                            {copierObjects(Activity?.activity, "activity-navId", 10,0, Activity?.activity)}
                             <MenuComponents.Item id={"vx-image-menu"} label={"Extra"}>
                                 {copierObjects(Yeah.image, "activity-navId", 10,0, Yeah.image)}
                             </MenuComponents.Item>
