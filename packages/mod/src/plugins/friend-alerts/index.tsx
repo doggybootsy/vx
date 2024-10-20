@@ -26,6 +26,15 @@ interface ChangeData {
     hasChanges: boolean;
 }
 
+function removeDuplicatesById(arr: any[]) {
+    const seen = new Set();
+    return arr.filter(item => {
+        const duplicate = seen.has(item.id);
+        seen.add(item.id);
+        return !duplicate;
+    });
+}
+
 function compareAndUpdateData(currentData: any[], type: string): ChangeData {
     const storedData: any[] = UserStored.get(`stored${type}`) || [];
     const currentIds: Set<string> = new Set(currentData.map(item => item.id));
@@ -37,15 +46,15 @@ function compareAndUpdateData(currentData: any[], type: string): ChangeData {
     const newLost: any[] = storedData.filter(item => !currentIds.has(item.id));
     const newGained: any[] = currentData.filter(item => !storedIds.has(item.id));
 
-    lostItems = [
+    lostItems = removeDuplicatesById([
         ...lostItems.filter(item => !currentIds.has(item.id)),
-        ...newLost
-    ];
+        ...newLost.map(item => ({ ...item, date: new Date().toISOString() }))
+    ]);
 
-    gainedItems = [
+    gainedItems = removeDuplicatesById([
         ...gainedItems.filter(item => currentIds.has(item.id)),
-        ...newGained
-    ];
+        ...newGained.map(item => ({ ...item, date: new Date().toISOString() }))
+    ]);
 
     lostItems = lostItems.filter(item => !gainedItems.some(gained => gained.id === item.id));
     gainedItems = gainedItems.filter(item => !lostItems.some(lost => lost.id === item.id));
@@ -67,6 +76,7 @@ interface ChangeItemProps {
 }
 
 function ChangeItem({ item, type }: ChangeItemProps): JSX.Element {
+    const formattedDate = item.date ? new Date(item.date).toLocaleString() : 'Unknown';
     return (
         <div className="vx-fa-item">
             {type === 'friend' ? (
@@ -74,7 +84,10 @@ function ChangeItem({ item, type }: ChangeItemProps): JSX.Element {
             ) : (
                 item.icon ? <img src={uri(item)} alt={item.name} className="vx-fa-item-icon"/> : <span>{item.acronym}</span>
             )}
-            <span className="vx-fa-item-name">{type === 'friend' ? (item.globalName || item.username) : item.name}</span>
+            <span className="vx-fa-item-name">
+                {type === 'friend' ? (item.globalName || item.username) : item.name}
+                <span className="vx-fa-item-date"> - {formattedDate}</span>
+            </span>
         </div>
     );
 }
@@ -102,6 +115,7 @@ interface LostItemsModalProps {
 }
 
 function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
+    const [activeTab, setActiveTab] = useState('friends');
     const [friendChanges, setFriendChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
     const [guildChanges, setGuildChanges] = useState<ChangeData>({ lost: [], gained: [], hasChanges: false });
 
@@ -134,27 +148,51 @@ function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
         setGuildChanges({ lost: [], gained: [], hasChanges: false });
     };
 
+    /*
+        <h3 className="vx-fa-section-title">Gained Friends - {friendChanges.gained.length}</h3>
+        <ChangeSection title={"Friends Gained"} items={friendChanges.gained} type="friend" />
+        
+        <h3 className="vx-fa-section-title">Joined Servers - {guildChanges.gained.length}</h3>
+        <ChangeSection title={"Guilds Gained"} items={guildChanges.gained} type="guild" />
+     */
     return (
         <ModalComponents.Root {...props}>
             <div className="vx-fa-modal">
                 <div className="vx-fa-header">
-                    <h2 className="vx-fa-title">Removal Alerts</h2>
+                    <h2 className="vx-fa-title">Friend & Server Changes</h2>
                     <button className="vx-fa-clear-logs" onClick={handleClearLogs}>Clear Logs</button>
                 </div>
+                <div className="vx-fa-tabs">
+                    <button
+                        className={`vx-fa-tab ${activeTab === 'friends' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('friends')}
+                    >
+                        Friends
+                    </button>
+                    <button
+                        className={`vx-fa-tab ${activeTab === 'servers' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('servers')}
+                    >
+                        Servers
+                    </button>
+                </div>
                 <div className="vx-fa-content">
-                    {(guildChanges.lost.length > 0 || friendChanges.lost.length > 0) ? (
-                        <>
-                            <ChangeSection title="Guilds" items={guildChanges.lost} type="guild" />
-                            <ChangeSection title="Friends" items={friendChanges.lost} type="friend" />
-                        </>
-                    ) : (
-                        <p className="vx-fa-no-changes">No changes detected since last check.</p>
+                    {activeTab === 'friends' && (
+                        <div className="vx-fa-tab-content">
+                            <ChangeSection title={"Friends Lost"} items={friendChanges.lost} type="friend" />
+                        </div>
+                    )}
+                    {activeTab === 'servers' && (
+                        <div className="vx-fa-tab-content">
+                            <ChangeSection title={"Guilds Lost"} items={guildChanges.lost} type="guild" />
+                        </div>
                     )}
                 </div>
             </div>
         </ModalComponents.Root>
     );
 }
+
 
 export default definePlugin({
     authors: [Developers.kaan],
@@ -170,5 +208,53 @@ export default definePlugin({
                 action={() => openModal((props) => <LostItemsModal props={props} />)}
             />
         ));
+    },
+    fluxEvents: {
+        "RELATIONSHIP_REMOVE": data => {
+            const relationshipData = data.relationship;
+            if (relationshipData.type !== 1) return;
+            const user = UserStore.getUser(relationshipData.id);
+            if (user) {
+                const lostFriends = UserStored.get('lostFriends') || [];
+
+                const alreadyLost = lostFriends.some(friend => friend.id === user.id);
+                if (!alreadyLost) {
+                    const updatedLostFriends = [{ ...user, date: new Date().toISOString() }, ...lostFriends];
+                    UserStored.set('lostFriends', updatedLostFriends);
+                }
+            }
+        },
+        "RELATIONSHIP_ADD": data => {
+            const relationshipData = data.relationship;
+            if (relationshipData.type !== 1) return;
+            const user = UserStore.getUser(relationshipData.id);
+            if (user) {
+                const gainedFriends = UserStored.get('gainedFriends') || [];
+
+                const alreadyGained = gainedFriends.some(friend => friend.id === user.id);
+                if (!alreadyGained) {
+                    const updatedGainedFriends = [{ ...user, date: new Date().toISOString() }, ...gainedFriends];
+                    UserStored.set('gainedFriends', updatedGainedFriends);
+                }
+            }
+        },
+        "GUILD_CREATE": guild => {
+            const gainedGuilds = UserStored.get('gainedGuilds') || [];
+
+            const alreadyGained = gainedGuilds.some(existingGuild => existingGuild.id === guild.id);
+            if (!alreadyGained) {
+                const updatedGainedGuilds = [{ ...guild, date: new Date().toISOString() }, ...gainedGuilds];
+                UserStored.set('gainedGuilds', updatedGainedGuilds);
+            }
+        },
+        "GUILD_DELETE": guild => {
+            const lostGuilds = UserStored.get('lostGuilds') || [];
+
+            const alreadyLost = lostGuilds.some(existingGuild => existingGuild.id === guild.id);
+            if (!alreadyLost) {
+                const updatedLostGuilds = [{ ...guild, date: new Date().toISOString() }, ...lostGuilds];
+                UserStored.set('lostGuilds', updatedLostGuilds);
+            }
+        }
     }
 });

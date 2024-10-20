@@ -1,9 +1,10 @@
 .vx-fa-modal {
-    background-color: #2f3136;
-    color: #dcddde;
+    background-color: #36393f;
     border-radius: 5px;
-    padding: 16px;
+    color: #dcddde;
     font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding: 16px;
+    width: 440px;
 }
 
 .vx-fa-header {
@@ -14,44 +15,74 @@
 }
 
 .vx-fa-title {
-    font-size: 16px;
-    font-weight: bold;
     color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
 }
 
 .vx-fa-clear-logs {
-    background-color: #36393f;
-    color: #dcddde;
+    background-color: #4f545c;
     border: none;
-    padding: 8px 16px;
     border-radius: 3px;
-    font-size: 14px;
+    color: #ffffff;
     cursor: pointer;
+    font-size: 14px;
+    padding: 8px 16px;
     transition: background-color 0.2s;
 }
 
 .vx-fa-clear-logs:hover {
-    background-color: #40444b;
+    background-color: #5d6269;
 }
 
-.vx-fa-section {
-    margin-bottom: 16px;
+.vx-fa-tabs {
+    display: flex;
+    border-bottom: 1px solid #202225;
+    margin-bottom: 20px;
+}
+
+.vx-fa-tab {
+    background: none;
+    border: none;
+    color: #b9bbbe;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.vx-fa-tab:hover {
+    color: #dcddde;
+}
+
+.vx-fa-tab.active {
+    color: #ffffff;
+    border-bottom: 2px solid #7289da;
+}
+
+.vx-fa-content {
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .vx-fa-section-title {
-    font-size: 14px;
-    font-weight: bold;
     color: #ffffff;
-    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
 }
 
 .vx-fa-item {
     display: flex;
     align-items: center;
-    padding: 8px;
-    background-color: #36393f;
-    border-radius: 3px;
-    margin-bottom: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #40444b;
+}
+
+.vx-fa-item:last-child {
+    border-bottom: none;
 }
 
 .vx-fa-item-icon {
@@ -59,17 +90,39 @@
     height: 32px;
     border-radius: 50%;
     margin-right: 12px;
-    background-color: #5865f2;
 }
 
 .vx-fa-item-name {
     font-size: 14px;
-    color: #ffffff;
+}
+
+.vx-fa-item-date {
+    font-size: 12px;
+    color: #72767d;
+    margin-left: 8px;
 }
 
 .vx-fa-no-changes {
-    text-align: center;
-    font-style: italic;
     color: #72767d;
-    padding: 16px;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.vx-fa-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vx-fa-content::-webkit-scrollbar-track {
+    background-color: #2f3136;
+    border-radius: 4px;
+}
+
+.vx-fa-content::-webkit-scrollbar-thumb {
+    background-color: #202225;
+    border-radius: 4px;
+}
+
+.vx-fa-content::-webkit-scrollbar-thumb:hover {
+    background-color: #18191c;
 }
