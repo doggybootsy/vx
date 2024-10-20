@@ -180,11 +180,13 @@ function LostItemsModal({ props }: LostItemsModalProps): JSX.Element {
                     {activeTab === 'friends' && (
                         <div className="vx-fa-tab-content">
                             <ChangeSection title={"Friends Lost"} items={friendChanges.lost} type="friend" />
+                            <ChangeSection title={"Friends Gained"} items={friendChanges.gained} type="friend" />
                         </div>
                     )}
                     {activeTab === 'servers' && (
                         <div className="vx-fa-tab-content">
                             <ChangeSection title={"Guilds Lost"} items={guildChanges.lost} type="guild" />
+                            <ChangeSection title={"Guilds Gained"} items={guildChanges.gained} type="guild" />
                         </div>
                     )}
                 </div>
