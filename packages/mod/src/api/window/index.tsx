@@ -2,7 +2,7 @@ import { useInsertionEffect, useMemo } from "react";
 
 import { getComponentType, cacheComponent } from "../../util";
 import { byStrings, getModule, getProxyStore } from "@webpack";
-import { dirtyDispatch } from "@webpack/common";
+import { dirtyDispatch, subscribeToDispatch } from "@webpack/common";
 import { waitForNode } from "common/dom";
 
 const PopoutWindow = cacheComponent(() => {
@@ -12,6 +12,13 @@ const PopoutWindow = cacheComponent(() => {
 });
 
 const PopoutWindowStore = getProxyStore("PopoutWindowStore");
+
+subscribeToDispatch("POPOUT_WINDOW_OPEN", ({ key }) => {
+  const global = PopoutWindowStore.getWindow(key);
+  if (!global) return;
+
+  global.VX = window.VX;
+});
 
 interface PopoutWindowProps {
   windowKey: string,

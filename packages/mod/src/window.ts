@@ -86,18 +86,15 @@ class AddonApi {
 
 const encryption = {
   encrypt(string: string) {
-    if (encryption.isUsingSafeStorage()) return window.VXNative!.safestorage.encrypt(string);
+    if (encryption.isSecure()) return window.VXNative!.safestorage.encrypt(string);
     return util.base64.encode(string);
   },
   decrypt(string: string) {
-    if (encryption.isUsingSafeStorage()) return window.VXNative!.safestorage.decrypt(string);
+    if (encryption.isSecure()) return window.VXNative!.safestorage.decrypt(string);
     return util.base64.decode(string);
   },
-  isUsingSafeStorage() {
+  isSecure() {
     return self.IS_DESKTOP && window.VXNative!.safestorage.isAvailable();
-  },
-  isUsingBase64() {
-    return !encryption.isUsingSafeStorage();
   }
 }
 

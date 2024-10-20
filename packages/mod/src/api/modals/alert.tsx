@@ -86,8 +86,7 @@ export function openAlertModal(title: React.ReactNode, body: React.ReactNode, op
       if (!closedFromButton) onCloseCallback();
     },
     onCloseRequest() {
-      if (onCloseRequest(false))
-        modal.close();
+      if (onCloseRequest(false)) modal.close();
     }
   });
 

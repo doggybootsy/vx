@@ -11,17 +11,20 @@ function linkIsTrusted(url: string | URL) {
 function trustLink(url: string | URL) {
   url = new URL(url);
   
-  const links = internalDataStore.get("trusted-domains")!.splice(0);
-  links.push(url.host);
+  const domains = internalDataStore.get("trusted-domains")!.splice(0);
+  domains.push(url.host);
+  internalDataStore.set("trusted-domains", domains);
 }
+
+const open = (url: string | URL) => window.open(url, "_blank", "noopener,noreferrer");
 
 export function openExternalWindowModal(url: string | URL) {
   url = new URL(url);
 
   if (linkIsTrusted(url)) {
-    window.open(url, "_blank");
+    open(url);
     return;
-  };
+  }
 
   openAlertModal(Messages.MASKED_LINK_ALERT_V2_HEADER, [
     Messages.MASKED_LINK_ALERT_V2_WARNING_WEBSITE,
@@ -33,7 +36,7 @@ export function openExternalWindowModal(url: string | URL) {
   ], {
     confirmText: Messages.MASKED_LINK_ALERT_V2_CONFIRM_WEBSITE,
     onConfirm() {
-      window.open(url, "_blank");
+      window.open(url);
     },
     secondaryConfirmText: (
       Messages.TRUST_AND_VISIT_SITE.format({
@@ -42,7 +45,7 @@ export function openExternalWindowModal(url: string | URL) {
     ),
     onConfirmSecondary() {
       trustLink(url);
-      window.open(url, "_blank");
+      open(url);
     }
   })
 };

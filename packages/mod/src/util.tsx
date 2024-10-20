@@ -6,8 +6,13 @@ import { Fiber } from "react-reconciler";
 import { FunctionType } from "typings";
 import { Injector } from "./patcher";
 
+export function isNullish(item: any): item is (null | undefined) {
+  return item === null || item === undefined;
+}
+
 export function isObject(item: any): item is Object {
-  if (typeof item === "object" && item !== null) return true;
+  if (isNullish(item)) return false;
+  if (typeof item === "object") return true;
   if (typeof item === "function") return true;
   return false;
 }

@@ -1,5 +1,6 @@
 import { addPlainTextPatch, getProxyByStrings } from "@webpack";
 import { ModalProps, openModal } from "./actions";
+import { isObject } from "../../util";
 
 type ArrayOr<T> = T[] | T;
 
@@ -90,43 +91,53 @@ interface MediaModalOptions {
   onIndexChange?(index: number): void
 }
 
+const video = document.createElement("video");
+
 async function makeItem(src: string | URL, options?: ItemOptions): Promise<Item> {
   if (src instanceof URL) src = src.href;
-
   src = new URL(src, location.href);
-  const { scale = 1 } = Object.assign({}, options);
 
-  const isImage = /\.(png|jpe?g|webp|gif|heic|heif|dng)$/i.test(src.pathname);
-  const videoFileType = /\.(mp4|webm|mov)$/i.exec(src.pathname)?.[1];
-  const isAnimated =  !!videoFileType || /\.(webp|gif)$/i.test(src.pathname);
+  const { scale = 1 } = Object.assign({}, options);  
 
-  if (isImage) {
-    const { height, width } = await getImageSize(src.href);
+  let method = "HEAD";
+  if (src.protocol === "blob:" || src.protocol === "data:") method = "GET";
 
-    return {
-      width: width * scale,
-      height: height * scale,
-      url: src.href,
-      animated: isAnimated,
-      type: "IMAGE"
-    };
-  }
+  const headers = (await request(src, { method })).headers;
 
-  const { height, width } = await getVideoDetails(src.href);
+  const contentType = headers.get("Content-Type") || "";
+
+  if (contentType.startsWith("image/")) {
+    try {
+      const { height, width } = await getImageSize(src.href);
   
-  let contentType: string;
-
-  if (videoFileType === "mp4") contentType = "video/mp4";
-  if (videoFileType === "webm") contentType = "video/webm";
-  if (videoFileType === "mov") contentType = "video/quicktime";
-
-  return {
-    type: "VIDEO",
-    url: src.href,
-    width: width * scale,
-    height: height * scale,
-    contentType: contentType!
+      return {
+        width: width * scale,
+        height: height * scale,
+        url: src.href,
+        animated: contentType === "image/gif" || contentType === "image/webp",
+        type: "IMAGE"
+      };
+    } catch (error) {
+      
+    }
   }
+  if (contentType.startsWith("video/") && video.canPlayType(contentType)) {
+    try {
+      const { height, width } = await getVideoDetails(src.href);
+      
+      return {
+        type: "VIDEO",
+        url: src.href,
+        width: width * scale,
+        height: height * scale,
+        contentType
+      }
+    } catch (error) {
+      
+    }
+  }
+
+  throw new Error(`Content-Type '${contentType}' is unknown or cannot view item`);
 }
 
 function openMediaModal(items: ArrayOr<Item>, options?: MediaModalOptions) {
@@ -154,7 +165,7 @@ function openMediaModal(items: ArrayOr<Item>, options?: MediaModalOptions) {
 }
 
 function isItem(item: any): item is Item {
-  if (item?.type === "IMAGE" || item?.type === "VIDEO") return true; 
+  if (isObject(item) && (item.type === "IMAGE" || item.type === "VIDEO")) return true; 
   return false;
 }
 
@@ -196,9 +207,7 @@ async function openVideoModal(videos: ArrayOr<string | URL>, options?: ItemOptio
     throw new Error("src is not a video!");
   }
 
-
   return openMediaModal(items, { shouldHideMediaOptions: true });
 }
-
 
 export { openMediaModal, openImageModal, openVideoModal };
