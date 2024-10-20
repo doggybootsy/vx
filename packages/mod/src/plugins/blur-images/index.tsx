@@ -95,7 +95,11 @@ const blurChannels = new BlurChannels();
 
 const addBlurMenuItem = (props: any, res: any) => {
     const { channel } = props;
-    const isMuted = blurChannels.isChannelMuted(channel.id);
+    const otterChannel = ChannelStore.getDMChannelFromUserId(props.user.id) // if channel doesnt exist. get the user channel...
+    // this fails if dont have a dm open with them
+    if (!otterChannel || !channel?.id) return // weird edge case
+    
+    const isMuted = channel?.id ? blurChannels.isChannelMuted(channel.id) : blurChannels.isChannelMuted(otterChannel.id)
 
     let label = isMuted ? "Unblur Images" : "Blur Images";
     

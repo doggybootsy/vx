@@ -10,6 +10,8 @@ import {getVolume, setVolume} from "./spotify";
 import {adblock, alwaysPlay} from "./youtube";
 // @ts-ignore
 import {translate} from "deeplx";
+import https from "https";
+import {json} from "node:stream/consumers";
 
 electron.ipcMain.on("@vx/preload", (event) => {
   const window = BrowserWindow.fromWebContents(event.sender);
@@ -72,6 +74,53 @@ electron.ipcMain.handle("@vx/update", (event, release: Git.Release) => {
       });
     }).end();
   }).end();
+});
+
+const post = (url: string, data: Record<string, unknown>): Promise<unknown> => {
+  const dataString = JSON.stringify(data);
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": dataString.length,
+    },
+    timeout: 1000, // in ms
+  };
+  return new Promise((resolve, reject) => {
+    const req = https.request(url, options, (res) => {
+      if (res.statusCode < 200 || res.statusCode > 299) {
+        return reject(new Error(`HTTP status code ${res.statusCode}`));
+      }
+      const body = [];
+      res.on("data", (chunk) => body.push(chunk));
+      res.on("end", () => {
+        const resString = Buffer.concat(body).toString();
+        resolve(resString);
+      });
+    });
+    req.on("error", (err) => {
+      reject(err);
+    });
+    req.on("timeout", () => {
+      req.destroy();
+      reject(new Error("Request time out"));
+    });
+    req.write(dataString);
+    req.end();
+  });
+};
+
+ipcMain.handle("@vx/webhook/send", async (event, url, jsonString) => {
+  try {
+    const data = JSON.parse(jsonString); // Parse the JSON string into an object
+
+    // Now you can use the data object as needed
+    const response = await post(url, data); // Use your post function here
+    return response; // Return the response back to the renderer process
+  } catch (error) {
+    console.error("Error in webhook handler:", error);
+    throw new Error("Failed to process webhook request."); // Handle error appropriately
+  }
 });
 
 electron.ipcMain.handle("@vx/splash/no-close", (event) => {

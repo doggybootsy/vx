@@ -1,0 +1,86 @@
+.vx-gm-webhook-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #dcddde;
+    font-family: 'Whitney', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.vx-gm-webhook-form input[type="text"],
+.vx-gm-webhook-form textarea {
+    background-color: #40444b;
+    border: none;
+    border-radius: 3px;
+    color: #dcddde;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.vx-gm-embeds-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vx-gm-embed-item {
+    background-color: #2f3136;
+    border: 1px solid #202225;
+    border-radius: 3px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vx-gm-color-input {
+    width: 100%;
+    height: 32px;
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.vx-gm-file-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vx-gm-file-input {
+    color: #dcddde;
+}
+
+.vx-gm-file-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.vx-gm-file-item {
+    background-color: #40444b;
+    color: #dcddde;
+    padding: 8px 12px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.vx-gm-section-title {
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.vx-gm-modal-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.vx-gm-webhook-form > * {
+    width: 100%;
+}
