@@ -10,7 +10,7 @@ addPlainTextPatch(
     {
         match: /\w+.\w+.edges\(\w+.selection\)/,
         find: /(onClick:\s*\(\)\s*=>\s*\{)(\s*)(null\s*!=\s*(\w+)\s*&&\s*\w+\.\w+\.withSingleEntry\([^)]+\))/,
-        replace: "$1if(arguments[0]?.onClick){arguments[0].onClick?.()} else if (null!= $4) $3"
+        replace: "$1if(arguments[0]?.onClick){arguments[0].onClick?.()}else if(null!= $4)$3"
     }
 )
 
