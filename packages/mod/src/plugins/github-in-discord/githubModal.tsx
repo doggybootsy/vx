@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {Component, useEffect, useState} from 'react';
 import {ModalComponents, openCodeModal, openImageModal, openModal, openVideoModal} from '../../api/modals';
 import {Button, Flex, Icons, Markdown, SystemDesign} from "../../components";
 import {settings} from "./index";
@@ -437,6 +437,16 @@ function format(size: number) {
         size /= 1024;
     }
     return `${size.toPrecision(3)} ${[ "", "K", "M", "G", "T", "P" ][count]}B`;
+}
+
+class ArchivedBanner extends Component<{created_at: string}> {
+    render() {
+        return <div className="vx-gm-archived-banner">
+            <span>
+                This repo has been archived since {this.props.created_at}
+            </span>
+        </div>;
+    }
 }
 
 const ControlBar: React.FC<{
