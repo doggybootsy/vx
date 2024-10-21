@@ -16,7 +16,7 @@ addPlainTextPatch(
 
 interface ButtonConfig {
     label: string;
-    icon: React.ReactNode;
+    icon: React.Component;
     onClick: () => void;
     tooltip?: string;
 }
