@@ -58,4 +58,4 @@ class DynamicButtonAPI {
     }
 }
 
-export const dynamicButtonAPI = __self__.STAPI = new DynamicButtonAPI();
+export const SlateToolbarAPI = __self__.STAPI = new DynamicButtonAPI();

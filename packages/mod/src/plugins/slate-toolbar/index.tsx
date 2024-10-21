@@ -3,7 +3,7 @@ import { Developers } from "../../constants";
 import { Icons } from "../../components";
 
 import { TextAreaInput } from "@webpack/common";
-import {dynamicButtonAPI} from "../../api/quick-actions/slate-toolbar";
+import {SlateToolbarAPI} from "../../api/quick-actions/slate-toolbar";
 
 const insertMaskedLink = (selectedText: string | null) => {
     if (selectedText) {
@@ -15,7 +15,7 @@ export default definePlugin({
     authors: [Developers.kaan],
     requiresRestart: false,
     start(signal: AbortSignal) {
-        dynamicButtonAPI.addButton(
+        SlateToolbarAPI.addButton(
             {
                 label: "Mask List",
                 icon: <Icons.Plus />,
