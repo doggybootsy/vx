@@ -443,7 +443,7 @@ class ArchivedBanner extends Component<{created_at: string}> {
     render() {
         return <div className="vx-gm-archived-banner">
             <span>
-                This repo has been archived since {this.props.created_at}
+                This repo has been archived since {new Date(this.props.created_at).toLocaleString()}
             </span>
         </div>;
     }
