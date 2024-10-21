@@ -420,10 +420,10 @@
     padding: 8px 12px;
     cursor: pointer;
     border-radius: 6px;
-    color: var(--vx-background-default, #1F2328);
+    color: var(--vx-text-default);
+    background-color: var(--vx-background-default, #1F2328);
     text-decoration: none;
     font-size: 14px;
-    background: transparent;
     border: none;
 }
 

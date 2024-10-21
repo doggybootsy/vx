@@ -556,7 +556,6 @@ const PullRequestList: React.FC<{
 
     const handleCommitClick = async (commit: any) => {
         const commitDetails = await githubService.getCommitDetails(commit.pr.base.repo.owner.login, commit.pr.base.repo.name, commit.sha);
-
         openCodeModal({
             content: commitDetails.commit.message,
             language: 'markdown',
@@ -565,7 +564,6 @@ const PullRequestList: React.FC<{
     };
 
     const handleFileClick = (file: any) => {
-        console.log(file)
         openCodeModal({
             content: file.patch,
             language: 'diff',
