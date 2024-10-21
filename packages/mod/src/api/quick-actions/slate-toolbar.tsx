@@ -1,5 +1,6 @@
 import {Tooltip} from "../../components";
 import {addPlainTextPatch} from "@webpack";
+import {React} from "../../../../../types";
 
 addPlainTextPatch(
     {

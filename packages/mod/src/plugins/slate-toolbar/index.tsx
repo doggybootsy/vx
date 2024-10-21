@@ -18,7 +18,7 @@ export default definePlugin({
         SlateToolbarAPI.addButton(
             {
                 label: "Mask List",
-                icon: <Icons.Plus />,
+                icon: Icons.Plus,
                 onClick: () => {
                     const selectedText = getSelection()?.toString();
                     if (!selectedText) return
