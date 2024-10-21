@@ -256,6 +256,16 @@ export class GitHubService {
             return await this.fetchFromGitHub(`${endpoint}?ref=${repoDetails.default_branch}`);
         }
     }
+
+    async getCommitsForPullRequest(user: string, repo: string, pullNumber: number) {
+        const endpoint = `/repos/${user}/${repo}/pulls/${pullNumber}/commits`;
+        return this.fetchFromGitHub(endpoint);
+    }
+
+    async getCommitDetails(user: string, repo: string, commitSha: string) {
+        const endpoint = `/repos/${user}/${repo}/commits/${commitSha}`;
+        return this.fetchFromGitHub(endpoint);
+    }
 }
 
 interface GitHubModalProps {
@@ -523,7 +533,46 @@ const IssueList: React.FC<{ issues: any[]; setCurrentPage: (page: 'files' | 'rel
     );
 };
 
-const PullRequestList: React.FC<{ pullRequests: any[]; setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void }> = ({ pullRequests, setCurrentPage }) => {
+const PullRequestList: React.FC<{
+    pullRequests: any[];
+    setCurrentPage: (page: 'files' | 'releases' | 'pullRequests' | 'issues') => void
+}> = ({ pullRequests, setCurrentPage }) => {
+    const [commits, setCommits] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchCommits = async () => {
+            const allCommits = await Promise.all(pullRequests.map(async (pr) => {
+                const commits = await githubService.getCommitsForPullRequest(pr.base.repo.owner.login, pr.base.repo.name, pr.number);
+                const commitDetails = await Promise.all(commits.map(async (commit) => {
+                    const details = await githubService.getCommitDetails(pr.base.repo.owner.login, pr.base.repo.name, commit.sha);
+                    return { ...commit, files: details.files, pr };
+                }));
+                return commitDetails;
+            }));
+            setCommits(allCommits.flat());
+        };
+        fetchCommits();
+    }, [pullRequests]);
+
+    const handleCommitClick = async (commit: any) => {
+        const commitDetails = await githubService.getCommitDetails(commit.pr.base.repo.owner.login, commit.pr.base.repo.name, commit.sha);
+
+        openCodeModal({
+            content: commitDetails.commit.message,
+            language: 'markdown',
+            title: commit.commit.message
+        });
+    };
+
+    const handleFileClick = (file: any) => {
+        console.log(file)
+        openCodeModal({
+            content: file.patch,
+            language: 'diff',
+            title: file.filename
+        });
+    };
+
     return (
         <div className="vx-gm-pull-requests-container">
             {pullRequests.map((pr: any) => (
@@ -537,6 +586,26 @@ const PullRequestList: React.FC<{ pullRequests: any[]; setCurrentPage: (page: 'f
                         rel="noopener noreferrer">
                         View on GitHub
                     </a>
+                    <div className="vx-gm-commits-container">
+                        {commits.filter((commit) => commit.pr.id === pr.id).map((commit) => (
+                            <div key={commit.sha} className="vx-gm-commit-item">
+                                <div onClick={() => handleCommitClick(commit)}>
+                                    <span>{commit.commit.message}</span>
+                                </div>
+                                <Flex direction={Flex.Direction.HORIZONTAL} className="vx-gm-commit-files">
+                                    {commit.files && commit.files.map((file: any) => (
+                                        <Button
+                                            key={file.filename}
+                                            onClick={() => handleFileClick(file)}
+                                            className="vx-gm-file-button"
+                                        >
+                                            {file.filename}
+                                        </Button>
+                                    ))}
+                                </Flex>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             ))}
             <Button
@@ -867,7 +936,7 @@ const GitHubModal: React.FC<GitHubModalProps> = ({ url, onClose, props }) => {
             setRepoInfo(fullRepoInfo);
 
             setRepoArchived(repoArchiveDetails)
-            
+
             const [forks, branchesData, contributorsData, releasesData, pullRequestsData, issuesData] = await Promise.all([
                 githubService.getForks(fullRepoInfo.user, fullRepoInfo.repo),
                 githubService.getBranches(fullRepoInfo.user, fullRepoInfo.repo),

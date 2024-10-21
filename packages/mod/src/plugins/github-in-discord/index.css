@@ -420,7 +420,7 @@
     padding: 8px 12px;
     cursor: pointer;
     border-radius: 6px;
-    color: var(--vx-text-default, #1F2328);
+    color: var(--vx-background-default, #1F2328);
     text-decoration: none;
     font-size: 14px;
     background: transparent;
@@ -569,18 +569,18 @@
 .vx-gm-pull-requests-container {
     margin-top: 20px;
     padding: 16px;
-    border-top: 1px solid #e1e4e8;
+    border-top: 1px solid var(--vx-border-default);
 }
 
 .vx-gm-pull-requests-container h3 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 16px;
     color: var(--vx-text-default);
 }
 
 .vx-gm-pr-item {
-    border: 1px solid #e1e4e8;
+    border: 1px solid var(--vx-border-default);
     border-radius: 6px;
     padding: 16px;
     margin-bottom: 16px;
@@ -594,7 +594,7 @@
     color: var(--vx-text-default);
 }
 
-.vx-gm-pr-item p {
+.vx-gm-pr-item .vx-gm-markdown {
     font-size: 14px;
     margin: 0 0 16px;
     color: var(--vx-text-default);
@@ -604,7 +604,7 @@
 .vx-gm-pr-item .vx-gm-pr-link {
     display: inline-block;
     margin-right: 16px;
-    color: #0366d6;
+    color: var(--vx-accent-primary);
     text-decoration: none;
     font-size: 14px;
 }
@@ -789,4 +789,69 @@
 
 .vx-gm-json-viewer span {
     cursor: pointer;
+}
+
+
+.vx-gm-pr-item {
+    border: 1px solid var(--vx-border-default);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: var(--vx-background-secondary);
+}
+
+.vx-gm-pr-item .vx-gm-pr-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--vx-text-default);
+}
+
+.vx-gm-pr-item .vx-gm-markdown {
+    font-size: 14px;
+    margin: 0 0 16px;
+    color: var(--vx-text-default);
+    line-height: 1.5;
+}
+
+.vx-gm-pr-item .vx-gm-pr-link {
+    display: inline-block;
+    margin-right: 16px;
+    color: var(--vx-accent-primary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.vx-gm-pr-item .vx-gm-pr-link:hover {
+    text-decoration: underline;
+}
+
+.vx-gm-commits-container {
+    margin-top: 16px;
+    border-top: 1px solid var(--vx-border-default);
+    padding-top: 16px;
+}
+
+.vx-gm-commit-item {
+    margin-bottom: 16px;
+    padding: 8px;
+    background-color: var(--vx-background-default);
+    border: 1px solid var(--vx-border-default);
+    border-radius: 6px;
+}
+
+.vx-gm-commit-message {
+    font-size: 14px;
+    color: var(--vx-text-default);
+    cursor: pointer;
+    padding: 8px;
+    border-bottom: 1px solid var(--vx-border-default);
+}
+
+.vx-gm-commit-message:hover {
+    background-color: var(--vx-background-tertiary);
+}
+
+.vx-gm-commit-files {
+    margin-top: 8px;
 }
