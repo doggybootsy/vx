@@ -1,6 +1,6 @@
 import {MenuComponents, openMenu} from "../menu";
 import {closeAllModals} from "../modals";
-import {addPlainTextPatch} from "@webpack";
+import {addPlainTextPatch, getProxy} from "@webpack";
 
 addPlainTextPatch({
     match: "Messages.DISCODO_DISABLED",
@@ -8,7 +8,7 @@ addPlainTextPatch({
     replace: '$&onContextMenu:$vxi.HMBA?.openContextMenu,'
 })
 
-export default class HomeButtonContextMenuApi {
+export class HomeButtonContextMenuApi {
     items: Map<string, React.ReactElement | (() => React.ReactElement)>;
     constructor() {
         this.items = new Map();

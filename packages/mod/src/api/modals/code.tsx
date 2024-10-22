@@ -6,7 +6,7 @@ export function openCodeModal(options: Omit<CodeBlockProps, "canOpenInModal">) {
   return openModal((props) => (
     <ModalComponents.Root 
       transitionState={props.transitionState} 
-      size={ModalComponents.Size.MEDIUM}
+      size={ModalComponents.Size.DYNAMIC}
       className="vx-codeblock-modal"
     >
       <CodeBlock
