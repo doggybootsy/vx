@@ -28,39 +28,39 @@ const CONFIG = {
     },
     CSS_CLASSES: {
         LAYOUT: {
-            CONTAINER: 'sia-container',
-            CONTROLS: 'sia-controls',
-            MEDIA_CONTAINER: 'sia-media-container',
-            CONTAINER_COLLAPSED: 'sia-container-collapsed'
+            CONTAINER: 'vx-sia-container',
+            CONTROLS: 'vx-sia-controls',
+            MEDIA_CONTAINER: 'vx-sia-media-container',
+            CONTAINER_COLLAPSED: 'vx-sia-container-collapsed'
         },
         MEDIA: {
-            IMAGE: 'sia-image',
-            IMAGE_SHOWN: 'sia-image-shown',
-            IMAGE_HIDDEN: 'sia-image-hidden',
-            CUSTOM_IMAGE: 'bd-sia-image'
+            IMAGE: 'vx-sia-image',
+            IMAGE_SHOWN: 'vx-sia-image-shown',
+            IMAGE_HIDDEN: 'vx-sia-image-hidden',
+            CUSTOM_IMAGE: 'vx-bd-sia-image'
         },
         OVERLAY: {
-            BASE: 'sia-overlay',
-            HIDDEN: 'sia-overlay-hidden',
-            TEXT: 'sia-overlay-text',
+            BASE: 'vx-sia-overlay',
+            HIDDEN: 'vx-sia-overlay-hidden',
+            TEXT: 'vx-sia-overlay-text',
             URL: {
-                CONTAINER: 'sia-url-overlay',
-                VISIBLE: 'sia-url-overlay-visible',
-                LINK: 'sia-url-link'
+                CONTAINER: 'vx-sia-url-overlay',
+                VISIBLE: 'vx-sia-url-overlay-visible',
+                LINK: 'vx-sia-url-link'
             }
         },
         SOURCE: {
-            TEXT: 'sia-source-text',
-            DISCORD: 'sia-discord-source',
-            EXTERNAL: 'sia-external-source'
+            TEXT: 'vx-sia-source-text',
+            DISCORD: 'vx-sia-discord-source',
+            EXTERNAL: 'vx-sia-external-source'
         },
         BUTTONS: {
-            MAIN: 'sia-toggle-button',
-            SHOW: 'sia-button-show',
-            HIDE: 'sia-button-hide'
+            MAIN: 'vx-sia-toggle-button',
+            SHOW: 'vx-sia-button-show',
+            HIDE: 'vx-sia-button-hide'
         },
         MODAL: {
-            CAROUSEL: 'bd-sia-carousel-modal'
+            CAROUSEL: 'vx-sia-carousel-modal'
         }
     }
 };
@@ -160,7 +160,7 @@ const Image: FC<ImageProps> = React.memo(({ url, shown, onClick, onLoad, onError
 
 interface MediaViewerProps {
     url: string;
-    args: { channelId: string; messageId: string; };
+    args: { channelId: string; messageId: string; key: string; };
 }
 
 const MediaViewer: FC<MediaViewerProps> = ({ url, args }) => {
@@ -234,7 +234,7 @@ const MediaViewer: FC<MediaViewerProps> = ({ url, args }) => {
         openModal(props => (
             <CarouselModal
                 {...props}
-                className="bd-sia-carousel-modal"
+                className="vx-sia-carousel-modal"
                 items={[item]}
                 shouldHideMediaOptions={true}
                 startingIndex={0}
