@@ -188,7 +188,6 @@ const MediaViewer: FC<MediaViewerProps> = ({ url, args }) => {
     }, []);
 
     const handleMediaLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-        console.log(e.currentTarget)
         setState(prev => ({
             ...prev,
             isLoading: false,
