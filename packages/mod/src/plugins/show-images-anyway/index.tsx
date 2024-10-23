@@ -6,7 +6,7 @@ import { Developers } from "../../constants";
 import { openModal } from "../../api/modals";
 
 const MessageStore = getProxyStore("MessageStore");
-const CarouselModal = getProxyByStrings([".Messages.MEDIA_VIEWER_MODAL_ALT_TEXT"]);
+const CarouselModal: any = getProxyByStrings([".Messages.MEDIA_VIEWER_MODAL_ALT_TEXT"]);
 
 const CONFIG = {
     MEDIA: {
@@ -319,7 +319,7 @@ export default definePlugin({
                 url: capture[0],
                 type: CONFIG.CONSTS.RULES
             }),
-            react: (node: { url: string; }, _: any, args: { key: string; }) => (
+            react: (node: { url: string; }, _: any, args: { channelId: string, messageId: string, key: string }) => (
                 <MediaViewer
                     url={node.url}
                     args={args}
