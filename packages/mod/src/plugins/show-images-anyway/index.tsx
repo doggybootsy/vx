@@ -319,11 +319,14 @@ export default definePlugin({
                 url: capture[0],
                 type: CONFIG.CONSTS.RULES
             }),
-            react: (node: { url: string; }, _: any, args: { key: string; }) => React.createElement(MediaViewer, {
-                url: node.url,
-                args: args,
-                key: args.key
-            })
+            react: (node: { url: string; }, _: any, args: { key: string; }) => (
+                <MediaViewer
+                    url={node.url}
+                    args={args}
+                    key={args.key}
+                />
+            )
+
         };
         MarkdownModule.parse = MarkdownModule.reactParserFor(MarkdownModule.defaultRules);
     },
