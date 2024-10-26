@@ -231,7 +231,8 @@ export default definePlugin({
     },
     menus: {
         "user-context"(args, res) {
-            const userId = args.user.id;
+            const userId = args?.user?.id;
+            if (!userId) return;
 
             const handleBlacklistStatus = () => {
                 if (BlacklistManager.isStatusBlacklisted(userId)) {

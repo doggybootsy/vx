@@ -183,7 +183,8 @@ export default definePlugin({
         });
         
         patch("copierUser", "user-context", (props, res) => {
-            const userProfile = useStateFromStores([UserProfileStore], () => UserProfileStore.getUserProfile(props.user.id))
+            const userProfile = useStateFromStores([UserProfileStore], () => UserProfileStore.getUserProfile(props?.user?.id))
+            if (!userProfile) return;
             const UserIcon = getAnimated(format(avatarURL, props.user.id, props.user.avatar));
             const UserBanner = getAnimated(format(bannerURL, props.user.id, userProfile?.banner || props.user.banner));
 
