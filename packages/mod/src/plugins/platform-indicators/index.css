@@ -1,0 +1,13 @@
+.vx-pi {
+  display: inline-block;
+  overflow: hidden;
+  -o-object-fit: contain;
+  object-fit: contain;
+  margin-left: .25rem;
+  vertical-align: top;
+  position: relative;
+  top: 1px;
+  height: calc(4px + 1rem);
+  width: calc(4px + 1rem);
+  text-indent: 0;
+}

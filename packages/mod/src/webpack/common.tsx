@@ -17,7 +17,7 @@ type ConfigKeys = "default" | "gentle" | "wobbly" | "stiff" | "slow" | "molasses
 
 interface ReactSpringType {
   useSpring: any,
-  useSprings: any[],
+  useSprings: any,
   config: Record<ConfigKeys, {
     friction: number,
     tension: number
