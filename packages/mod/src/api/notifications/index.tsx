@@ -29,11 +29,35 @@ interface QueuedNotification {
   timestamp: number;
 }
 
+function formatDuration(seconds: number): string {
+  const units = [
+    { label: 'second', value: 1 },
+    { label: 'minute', value: 60 },
+    { label: 'hour', value: 3600 },
+    { label: 'day', value: 86400 },
+    { label: 'week', value: 604800 },
+    { label: 'month', value: 2592000 },
+    { label: 'year', value: 31536000 }
+  ];
+
+  let unit = units[0];
+
+  for (let i = units.length - 1; i >= 0; i--) {
+    if (seconds >= units[i].value) {
+      unit = units[i];
+      break;
+    }
+  }
+
+  const count = Math.floor(seconds / unit.value);
+  return `${count} ${unit.label}${count !== 1 ? 's' : ''}`;
+}
+
 class NotificationQueue {
   static queue: QueuedNotification[] = [];
   private static isProcessing: boolean = false;
   private static processInterval: NodeJS.Timeout | null = null;
-  private static readonly PROCESS_DELAY = 3000;
+  private static readonly PROCESS_DELAY = 300;
 
   static enqueue(notification: Notification) {
     const timestamp = Date.now();
@@ -85,7 +109,7 @@ class NotificationQueue {
                     borderRadius: '50%',
                     marginRight: '2px'
                   }}/>
-                Delayed notification ({Math.round(queueDelay / 1000)})s
+                Delayed notification ({formatDuration(Math.round(queueDelay / 1000))})
               </div>
             </div>
         );
