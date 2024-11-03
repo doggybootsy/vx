@@ -82,8 +82,6 @@ class PlatformIndicators extends Component<PlatformIndicatorsProps> {
   }
 }
 
-const nameModule = getProxy(x=>x.nameAndDecorators)
-
 definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
