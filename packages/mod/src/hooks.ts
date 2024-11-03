@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { User } from "discord-types/general";
 import { InternalStore } from "./util";
-import { I18n, LocaleCodes, UserStore, fetchUser } from "@webpack/common";
+import { LocaleCodes, UserStore, fetchUser } from "@webpack/common";
 import { useState } from "react";
 import { debounce } from "common/util";
+import { getLocale, onLocaleChange } from "vx:i18n";
 
 export function useInternalStore<T>(store: InternalStore, factory: () => T): T {
   const [, forceUpdate] = useForceUpdate();
@@ -67,19 +68,13 @@ export function useUser(userId?: string): User | null {
   return user;
 }
 
-export function useDiscordLocale(awaitPromise: boolean = true): LocaleCodes {
-  const [ locale, setLocale ] = useState(() => I18n.getLocale());
+export function useDiscordLocale(): LocaleCodes {
+  const [ locale, setLocale ] = useState(() => getLocale());
 
   useEffect(() => {
-    setLocale(I18n.getLocale());
-
-    async function listener() {
-      if (awaitPromise) await I18n.loadPromise;
-      setLocale(I18n.getLocale());
-    }
-
-    I18n.on("locale", listener);
-    return () => I18n.off("locale", listener);
+    setLocale(() => getLocale());
+    
+    return onLocaleChange((local) => setLocale(local));
   }, [ ]);
 
   return locale;

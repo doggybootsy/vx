@@ -1,7 +1,7 @@
 import { Button, transformContent } from "../../components";
 import { getProxyByStrings } from "@webpack";
-import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
+import { Messages } from "vx:i18n";
 
 interface AlertModalProps {
   body: React.ReactNode,
@@ -42,7 +42,7 @@ export function openAlertModal(title: React.ReactNode, body: React.ReactNode, op
   const modal = openModal((props) => {
     const {
       danger = false,
-      confirmText = I18n.Messages.OKAY,
+      confirmText = Messages.OKAY,
       secondaryConfirmText,
       cancelText,
       onConfirm = () => {},
