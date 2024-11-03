@@ -1,7 +1,7 @@
 import { getProxyByStrings, getProxyStore } from "@webpack";
 import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
-import { Message } from "discord-types/general";
+import {Message, User} from "discord-types/general";
 import { Component } from "react";
 import { Icons, Tooltip } from "../../components";
 import * as styler from "./index.css?m";
@@ -11,6 +11,7 @@ const PresenceStore = getProxyStore("PresenceStore");
 
 interface PlatformIndicatorsProps {
   userId: string
+  size?: number;
 }
 type PlatformIndicatorsState = Record<
   "web" | "desktop" | "mobile" | "embedded", 
@@ -32,7 +33,7 @@ const useStatusColor = getProxyByStrings<(status: string) => string>([
   ".DND:return "
 ], { searchExports: true })
 
-function Item({ platform, status }: { platform: keyof PlatformIndicatorsState, status: string }) {
+function Item({ platform, status, size }: { platform: keyof PlatformIndicatorsState, status: string, size?: number }) {
   const Icon = icons[platform] || icons.unknown;
 
   const color = useStatusColor(status);
@@ -42,7 +43,7 @@ function Item({ platform, status }: { platform: keyof PlatformIndicatorsState, s
       {(props) => (
         <span role="button" tabIndex={0} data-platform={platform} data-status={status}>
           <div {...props} style={{ color }} className="vx-pi">
-            <Icon size={20} />
+            <Icon size={size ?? 20} />
           </div>
         </span>
       )}
@@ -76,7 +77,7 @@ class PlatformIndicators extends Component<PlatformIndicatorsProps> {
 
   render(): React.ReactNode {    
     return Object.entries(this.status).map(([ platform, status ]) => (
-      <Item platform={platform as keyof PlatformIndicatorsState} status={status} />
+      <Item size={this.props.size} platform={platform as keyof PlatformIndicatorsState} status={status} />
     ));
   }
 }
@@ -84,15 +85,26 @@ class PlatformIndicators extends Component<PlatformIndicatorsProps> {
 definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
-  patches: {
-    match: "suppress-notifications",
-    find: /,null!=.{1,3}&&\((.{1,3})\.push\(\(0,.{1,3}\.jsx\)\(.{1,3}\..{1,3},{guild:.{1,3},message:(.{1,3})},"new-member"\)\),/,
-    replace: ",$enabled&&$self.addIcon($1,$2)$&"
-  },
+  patches: [
+    {
+      match: "suppress-notifications",
+      find: /,null!=.{1,3}&&\((.{1,3})\.push\(\(0,.{1,3}\.jsx\)\(.{1,3}\..{1,3},{guild:.{1,3},message:(.{1,3})},"new-member"\)\),/,
+      replace: ",$enabled&&$self.addIcon($1,$2)$&"
+    },
+    {
+      match: '.nameAndDecorators,',
+      find: /(({className:.{1,3}.nameAndDecorators,children:\[))\(0,.{1,3}jsx\)\("div",{className:r\(\)\(.{1,3}.name,{\[.{1,3}.wrappedName]:o}\),children:u}\),(\w+)(\]})/, ///\(0,.{1,3}\.jsxs\)\("div",{className:.{1,3}\.nameAndDecorators,children:\[\(0,.{1,3}\.jsx\)\("div",{className:.{1,3}\(\)\(.{1,3}\.name,{\[.{1,3}\.wrappedName\]:.{1,3}}\),children:.{1,3}}\),.{1,3}\]}\)/,
+      replace: '$&, $2[$3, $enabled&&$self.addIconJsx(...arguments)]$4'
+    }
+  ],
   addIcon(array: React.ReactNode[], message: Message) {
     array.push(
       <PlatformIndicators userId={message.author.id} />
     );
+  },
+  addIconJsx(args) {
+    const subText = args?.subText
+    return subText && subText?.props?.props && <PlatformIndicators size={15} userId={subText?.props.props.user?.id} />
   },
   styler
 });

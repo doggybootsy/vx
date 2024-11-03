@@ -18,7 +18,10 @@ const RelationshipStore = getProxyStore("RelationshipStore");
 const UserStore = getProxyStore("UserStore");
 const GuildStore = getProxyStore("GuildStore");
 
-const uri = (guild: Guild): string => `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`;
+const getIconUrl = (guild: Guild): string | null => {
+    if (!guild.id || !guild.icon) return null;
+    return `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp?size=1280`;
+};
 
 interface ChangeData {
     lost: any[];
@@ -45,15 +48,21 @@ function compareAndUpdateData(currentData: any[], type: string): ChangeData {
 
     const newLost: any[] = storedData.filter(item => !currentIds.has(item.id));
     const newGained: any[] = currentData.filter(item => !storedIds.has(item.id));
+    
+    const processItem = (item: any) => ({
+        ...item,
+        iconUrl: item.icon ? getIconUrl(item) : null,
+        date: new Date().toISOString()
+    });
 
     lostItems = removeDuplicatesById([
         ...lostItems.filter(item => !currentIds.has(item.id)),
-        ...newLost.map(item => ({ ...item, date: new Date().toISOString() }))
+        ...newLost.map(processItem)
     ]);
 
     gainedItems = removeDuplicatesById([
         ...gainedItems.filter(item => currentIds.has(item.id)),
-        ...newGained.map(item => ({ ...item, date: new Date().toISOString() }))
+        ...newGained.map(processItem)
     ]);
 
     lostItems = lostItems.filter(item => !gainedItems.some(gained => gained.id === item.id));
@@ -64,11 +73,12 @@ function compareAndUpdateData(currentData: any[], type: string): ChangeData {
     if (hasChanges) {
         UserStored.set(`lost${type}`, lostItems);
         UserStored.set(`gained${type}`, gainedItems);
-        UserStored.set(`stored${type}`, currentData);
+        UserStored.set(`stored${type}`, currentData.map(processItem));
     }
 
     return { lost: lostItems, gained: gainedItems, hasChanges };
 }
+
 
 interface ChangeItemProps {
     item: any;
@@ -82,7 +92,9 @@ function ChangeItem({ item, type }: ChangeItemProps): JSX.Element {
             {type === 'friend' ? (
                 <AuthorIcon dev={{ username: item.username, discord: item.id }} isLast={true} />
             ) : (
-                item.icon ? <img src={uri(item)} alt={item.name} className="vx-fa-item-icon"/> : <span>{item.acronym}</span>
+                item.iconUrl ?
+                    <img src={item.iconUrl} alt={item.name} className="vx-fa-item-icon"/> :
+                    <span className="vx-fa-item-icon">{item.name?.slice(0, 2).toUpperCase()}</span>
             )}
             <span className="vx-fa-item-name">
                 {type === 'friend' ? (item.globalName || item.username) : item.name}

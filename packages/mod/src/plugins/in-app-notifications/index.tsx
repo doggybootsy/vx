@@ -270,7 +270,7 @@ function displayNotification(event: MessageEventType) {
         })
         : null;
 
-    const titleSuffix = isDM ? "(DM)" : Guild ? "(SERVER)" : "";
+    const titleSuffix = isDM ? "(DM)" : Guild ? "(SERVER)" : "(GROUP)";
     const title = `${event.message.author.globalName ?? event.message.author.username} ${titleSuffix}`;
 
     /*
