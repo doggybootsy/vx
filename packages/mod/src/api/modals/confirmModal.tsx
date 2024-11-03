@@ -1,5 +1,5 @@
+import { Messages } from "vx:i18n";
 import { Button, SystemDesign, transformContent } from "../../components";
-import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 
 export type ConfirmModalOptions = {
@@ -15,9 +15,9 @@ export type ConfirmModalOptions = {
 export function openConfirmModal(title: React.ReactNode, content: React.ReactNode | React.ReactNode[], options: ConfirmModalOptions = {}) {
   function dummy() { };
   const {
-    confirmText = I18n.Messages.OKAY,
+    confirmText = Messages.OKAY,
     onConfirm = dummy,
-    cancelText = I18n.Messages.CANCEL,
+    cancelText = Messages.CANCEL,
     onCancel = dummy,
     onCloseCallback = dummy,
     onCloseRequest = () => true,

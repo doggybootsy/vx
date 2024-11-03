@@ -2,7 +2,7 @@ import { Messages } from "vx:i18n";
 import { addCommand } from ".";
 import { pluginStore } from "../../addons/plugins";
 import { themeStore } from "../../addons/themes";
-import { plugins } from "vx:plugins";
+import { Plugin, plugins } from "vx:plugins";
 import { openConfirmModal } from "../modals";
 import { OptionType } from "./types";
 import { instantBatchUpload } from "@webpack/common";
@@ -86,13 +86,13 @@ addCommand({
       name: "plugin",
       required: true,
       get choices() {
-        const internalPluginIds: [ any, Uppercase<string> ][] = Object.values(plugins).map((plugin) => [ 
+        const internalPluginIds: [ Plugin, Uppercase<string> ][] = Object.values(plugins).map((plugin) => [ 
           plugin, 
           `${plugin.id.replace(".app", "").replace(".web", "").replace(/-/g, "_").toUpperCase()}_NAME` as Uppercase<string> 
         ]);
 
         return [
-          ...internalPluginIds.map(([ id, key ]) => ({ name: Messages[key], value: id })),
+          ...Object.values(plugins).map((plugin) => ({ name: plugin.getMetaInfo().name, value: plugin as any })),
           ...pluginStore.keys().map(m => ({ name: pluginStore.getAddonName(m), value: m }))
         ];
       }

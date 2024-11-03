@@ -4,6 +4,7 @@
   "author": "doggybootsy",
   "main": "index.js",
   "dependencies": {
+    "@intrnl/xxhash64": "^0.1.2",
     "@types/electron": "^1.6.10",
     "@types/moment": "^2.13.0",
     "@types/node": "^20.8.2",

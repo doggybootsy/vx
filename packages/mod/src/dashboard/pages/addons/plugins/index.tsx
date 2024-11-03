@@ -63,10 +63,7 @@ function getCustomPlugin(id: string): SafePlugin {
   }
 }
 function convertToSafePlugin(plugin: Plugin): SafePlugin {
-  const id = plugin.id.replace(".app", "").replace(".web", "").replace(/-/g, "_").toUpperCase() as Uppercase<string>;
-
-  let description = Messages[`${id}_DESCRIPTION`] as string | FormattedMessage;
-  if (description instanceof FormattedMessage) description = description.format({ }) as string;
+  const { name, description } = plugin.getMetaInfo();
 
   return {
     type: "internal",
@@ -76,10 +73,10 @@ function convertToSafePlugin(plugin: Plugin): SafePlugin {
     isEnabled: () => plugin.isEnabled(),
     getActiveState: () => plugin.getActiveState(),
     originalEnabledState: plugin.originalEnabledState,
-    name: Messages[`${id}_NAME`],
+    name,
     description,
     authors: plugin.authors,
-    settings: plugin.Settings ? (() => openPluginSettingsModal(Messages[`${id}_NAME`], plugin.Settings!)) : null,
+    settings: plugin.Settings ? (() => openPluginSettingsModal(name, plugin.Settings!)) : null,
     isNew: newPlugins.has(plugin.id),
     icon: plugin.exports.icon || Icons.Code
   }

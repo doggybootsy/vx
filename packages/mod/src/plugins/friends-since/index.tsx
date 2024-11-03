@@ -21,7 +21,7 @@ function getCreatedAt(value: Date | string | number, lang?: string) {
 }
 
 function FriendsSince({ userId, Section }: { userId: string, Section: React.ComponentType<React.PropsWithChildren<{ title: string }>> }) {  
-  const local = useDiscordLocale(false);
+  const local = useDiscordLocale();
 
   const since = useStateFromStores([ RelationshipStore ], () => {
     const since = RelationshipStore.getSince(userId);

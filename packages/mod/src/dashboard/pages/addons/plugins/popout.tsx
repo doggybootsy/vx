@@ -51,7 +51,7 @@ export function openWindow(id: string) {
       const [ hasChanges, setHasChanges ] = useState(false);
       const [ name, setName ] = useState(() => pluginStore.getAddonName(id));
       const [ version, setVersion ] = useState(() => pluginStore.getVersionName(id));
-      const locale = useDiscordLocale(false);
+      const locale = useDiscordLocale();
       const [ showCustomIcon, setShowCustomIcon ] = useState(true);
       const [ icon, setIcon ] = useState(() => pluginStore.getMeta(id).icon ?? null);
       const [ title, setTitle ] = useState(() => name);

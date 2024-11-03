@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
 
 import { Button, SystemDesign } from "../../components";
-import { getProxyByKeys } from "@webpack";
-import { I18n } from "@webpack/common";
 import { openModal } from "./actions";
 import { ConfirmModalOptions } from "./confirmModal";
+import { Messages } from "vx:i18n";
 
 type PromptOptions = {
   minLength?: number,
@@ -23,8 +22,8 @@ export function openPromptModal(title: React.ReactNode, options: PromptModalOpti
 
   function dummy() { };
   const {
-    confirmText = I18n.Messages.OKAY,
-    cancelText = I18n.Messages.CANCEL,
+    confirmText = Messages.OKAY,
+    cancelText = Messages.CANCEL,
     onCloseCallback = dummy,
     danger = false
   } = options;

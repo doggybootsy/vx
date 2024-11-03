@@ -13,6 +13,7 @@ import * as menu from "../api/menu";
 import type { MenuCallback } from "../api/menu";
 import { callSafely } from "../util";
 import { type Injector } from "../patcher";
+import { FormattedMessage, Messages } from "vx:i18n";
 
 export interface PluginType {
   authors: Developer[],
@@ -105,7 +106,7 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
       if (!Array.isArray(exports.patches)) exports.patches = [ exports.patches ];
       
       for (const patch of exports.patches) {
-        const self = `$vxi.getPlugin(${JSON.stringify(this.id)})`;
+        const self = `$vxi.plugins[${JSON.stringify(this.id)}]`;
   
         patch._self = Object.assign({}, patch._self, {
           plugin: self,
@@ -213,28 +214,52 @@ export class Plugin<T extends AnyPluginType = AnyPluginType> {
     this.enable();
     return true;
   }
+
+  public getMetaInfo(): PluginMetaData {
+    const id = this.id.replace(".app", "").replace(".web", "").replace(/-/g, "_").toUpperCase() as Uppercase<string>;
+  
+    let name = `${id}_NAME`;
+    try {
+      name = Messages[`${id}_NAME`].toString();
+    } 
+    catch (error) {}
+
+    let description = "";
+    try {
+      let $description = Messages[`${id}_DESCRIPTION`] as string | FormattedMessage;
+      if ($description instanceof FormattedMessage) description = $description.format({ }) as string;
+      else description = $description;
+    } 
+    catch (error) {}
+
+    name ||= `${id}_NAME`;
+    description ||= `${id}_DESCRIPTION`;
+
+    return {
+      name: name,
+      description: description
+    }
+  }
+
+  __setMetaInfo(meta: PluginMetaData | (() => PluginMetaData)) {
+    this.getMetaInfo = () => typeof meta === "function" ? meta() : meta;
+  }
+}
+
+interface PluginMetaData {
+  name: string;
+  description: string;
 }
 
 export const plugins: Record<string, Plugin> = __self__.plugins = {};
-
-export function getPlugin(id: string) {
-  for (const plugin of Object.values(plugins)) {
-    if (id === plugin.id) return plugin;
-  }
-
-  return null;
-}
-
-__self__.getPlugin = getPlugin;
 
 export function definePlugin<T extends AnyPluginType>(exports: T): Plugin<T> {
   return new Plugin(exports);
 }
 
 // For use inside of plugins
-export function isPluginEnabled(id: string) {
-  const plugin = getPlugin(id);  
-  if (plugin) return plugin.getActiveState();
+export function isPluginEnabled(id: string) {  
+  if (id in plugins) return plugins[id].getActiveState();
   return false;
 }
 

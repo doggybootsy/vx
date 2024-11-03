@@ -140,15 +140,6 @@ export function subscribeToDispatch<T extends DispatchEvent = DispatchEvent>(eve
 
 export type LocaleCodes = "en-US" | "en-GB" | "zh-CN" | "zh-TW" | "cs" | "da" | "nl" | "fr" | "de" | "el" | "hu" | "it" | "ja" | "ko" | "pl" | "pt-PT" | "pt-BR" | "ru" | "sk" | "es-ES" | "es-419" | "sv-SE" | "tr" | "bg" | "uk" | "fi" | "no" | "hr" | "ro" | "lt" | "th" | "vi" | "hi" | "he" | "ar" | "id";
 
-interface i18n {
-  Messages: Record<Uppercase<string>, string>,
-  getLocale(): LocaleCodes,
-  on(event: "locale", callback: (newLocale: LocaleCodes, oldLocale: LocaleCodes) => void): void,
-  off(event: string, callback: Function): void,
-  loadPromise: Promise<void>
-};
-export const I18n = getProxy<i18n>(m => m.Messages && m._getMessages.toString().includes("{default:"));
-
 export const ComponentDispatch = proxyCache(() => {
   const id = getModuleIdBySource("ComponentDispatchUtils")!;
   const module = webpackRequire!(id);

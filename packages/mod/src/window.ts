@@ -140,6 +140,7 @@ export function vxRequire(path: string) {
     case "vx:common/util": return require("common/util");
 
     case "commonmark": return require("commonmark");
+    case "@intrnl/xxhash64": return require("@intrnl/xxhash64");
 
     case "vx": return window.VX;
   
