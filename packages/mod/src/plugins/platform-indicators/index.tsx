@@ -1,4 +1,4 @@
-import { getProxyByStrings, getProxyStore } from "@webpack";
+import {getProxy, getProxyByStrings, getProxyStore} from "@webpack";
 import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import {Message, User} from "discord-types/general";
@@ -82,6 +82,8 @@ class PlatformIndicators extends Component<PlatformIndicatorsProps> {
   }
 }
 
+const nameModule = getProxy(x=>x.nameAndDecorators)
+
 definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
@@ -93,8 +95,8 @@ definePlugin({
     },
     {
       match: '.nameAndDecorators,',
-      find: /(({className:.{1,3}.nameAndDecorators,children:\[))\(0,.{1,3}jsx\)\("div",{className:r\(\)\(.{1,3}.name,{\[.{1,3}.wrappedName]:o}\),children:u}\),(\w+)(\]})/, ///\(0,.{1,3}\.jsxs\)\("div",{className:.{1,3}\.nameAndDecorators,children:\[\(0,.{1,3}\.jsx\)\("div",{className:.{1,3}\(\)\(.{1,3}\.name,{\[.{1,3}\.wrappedName\]:.{1,3}}\),children:.{1,3}}\),.{1,3}\]}\)/,
-      replace: '$&, $2[$3, $enabled&&$self.addIconJsx(...arguments)]$4'
+      find: /(({className:.{1,3}.nameAndDecorators,children:\[))\(0,.{1,3}jsx\)\("div",{className:r\(\)\(.{1,3}.name,{\[.{1,3}.wrappedName]:.{1,4}}\),children:(.{1,2})}\),(\w+)(\]})/,
+      replace: "$2$3,[$enabled&&$self.addIconJsx(...arguments), $4],$5"
     }
   ],
   addIcon(array: React.ReactNode[], message: Message) {
