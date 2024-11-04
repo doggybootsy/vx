@@ -13,7 +13,7 @@ import { openNotification } from "../../../../api/notifications";
 import { LayerManager, NavigationUtils } from "@webpack/common";
 import { BETTERDISCORD_API_THEMES } from "common/constants";
 
-const themeCommunityStore = new class ThemeCommunityStore extends InternalStore {
+export const themeCommunityStore = new class ThemeCommunityStore extends InternalStore {
   #ok = false;
   #loading = true;
   #initialized = false;
@@ -207,7 +207,7 @@ function CommunityAddonMenu({ addon, props }: { addon: Addon, props: MenuRenderP
   )
 }
 
-function CommunityAddonCard({ addon }: { addon: Addon }) {
+export function CommunityAddonCard({ addon }: { addon: Addon }) {
   const [tags, setTags] = useContext(tagsContext);
   const hasTheme = useInternalStore(themeStore, () => themeStore.keys().includes(addon.filename));
   const [downloadState, setDownloadState] = useState(0);
