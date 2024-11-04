@@ -184,3 +184,22 @@
 [class*=userProfileModalInner_] [class^=body_] > [class*=overlay_] > [class^=container_] {
   height: 100%;
 }
+
+.vx-community-chat-loader {
+  transition: background-color 50ms ease-out, color 50ms ease-out;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 500;
+  unicode-bidi: plaintext;
+  color: var(--mention-foreground);
+  background: var(--mention-background);
+}
+.vx-community-chat-loader:hover {
+  color: var(--white-500);
+  background-color: var(--brand-500);
+}
+
+.vx-community-chat-card {
+  max-width: 320px;
+}

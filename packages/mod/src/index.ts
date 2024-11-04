@@ -13,7 +13,7 @@ import { nativeFrame, transparency } from "./native";
 import { compileFunction } from "./util";
 
 import "./notrack";
-import { internalDataStore } from "./api/storage";
+import "./community";
 
 console.log(`Welcome to VX v${env.VERSION}`);
 
