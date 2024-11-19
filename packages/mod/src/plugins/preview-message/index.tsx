@@ -4,8 +4,7 @@ import {Channel} from "discord-types/general";
 import {useState} from "react";
 import {Button, Icons} from "../../components";
 import {getModule, getProxy, getProxyByKeys, getProxyStore} from "@webpack";
-import {MessageActions, SelectedChannelStore} from "@webpack/common";
-import {channel} from "node:diagnostics_channel";
+import {MessageActions, SelectedChannelStore, UserStore} from "@webpack/common";
 const buttonClasses = getProxyByKeys<Record<string, string>>([ "buttonWrapper", "pulseButton" ]);
 
 const DraftStore = getProxyStore("DraftStore")
@@ -13,10 +12,15 @@ const PreviewIcon = Icons.DiscordIcon.from("EyeIcon")
 
 function sendPreview(channelID: string) {
     const draft = DraftStore.getDraft(channelID, 0);
-
     if (draft) {
         MessageActions.sendBotMessage(channelID, draft);
     }
+}
+
+function draftExists(channelID: string) {
+    const draft = DraftStore.getDraft(channelID, 0);
+
+    return !!draft
 }
 
 export default definePlugin({
@@ -31,6 +35,7 @@ export default definePlugin({
         if (props.type.analyticsName !== "normal") return;
         if (props.disabled) return;
         if (!enabled) return;
+        if (!draftExists) return;
         
         buttons.push(
             <div className={"vx-textarea-button-container"}>

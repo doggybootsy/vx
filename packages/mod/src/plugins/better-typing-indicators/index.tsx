@@ -295,7 +295,7 @@ export default definePlugin({
   patches: [
     {
       identifier: "chatbar",
-      match: ".Messages.ONE_USER_TYPING.format",
+      match: "lJ9sZW",
       find: /class .{1,3} extends .{1,3}\.PureComponent{componentDidMount\(\){.{1,3}?\..+constructor\(\.{3}.{1,3}\){super\(\.{3}.{1,3}\)/,
       replace: "$&,$enabled&&$self.patch(this)"
     },

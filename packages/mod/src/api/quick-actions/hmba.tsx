@@ -3,7 +3,7 @@ import {closeAllModals} from "../modals";
 import {addPlainTextPatch, getProxy} from "@webpack";
 
 addPlainTextPatch({
-    match: "Messages.DISCODO_DISABLED",
+    match: "Be8Q5O",
     find: /.tutorialContainer,/,
     replace: '$&onContextMenu:$vxi.HMBA?.openContextMenu,'
 })

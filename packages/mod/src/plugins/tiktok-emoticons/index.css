@@ -1,0 +1,40 @@
+.emoji-vx-info-popout {
+    background: var(--background-floating);
+    border-radius: 4px;
+    padding: 16px;
+    width: 320px;
+    box-shadow: var(--elevation-high);
+}
+
+.emoji-vx-info-content {
+    display: flex;
+    gap: 16px;
+}
+
+.emoji-vx-info-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-vx-info-right {
+    flex: 1;
+}
+
+.emoji-vx-info-name {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-normal);
+    font-size: 16px;
+}
+
+.emoji-vx-info-text {
+    color: var(--text-normal);
+    line-height: 18px;
+    font-size: 14px;
+}
+
+.emoji-vx.large {
+    width: 48px;
+    height: 48px;
+}

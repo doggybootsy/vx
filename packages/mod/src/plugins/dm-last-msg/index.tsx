@@ -2,7 +2,7 @@ import { MessageStore, RelationshipStore, UserStore, useStateFromStores } from "
 import { definePlugin } from "vx:plugins";
 import { Developers } from "../../constants";
 import * as styler from "./index.css?managed";
-import { Messages } from "vx:i18n";
+import {Messages} from "vx:i18n";
 import { useLayoutEffect, useMemo } from "react";
 import { getProxyByKeys, getProxyStore } from "@webpack";
 import {ErrorBoundary, Icons, Tooltip} from "../../components";
@@ -98,7 +98,6 @@ function LastMessage({ props, original, enabled }: { props: any, original: JSX.E
       }
 
       if (images) return $(
-        Messages.NUM_IMAGES.format({ count: images }), 
         <Icons.Image size={16} />
       );
       if (videos) return $(

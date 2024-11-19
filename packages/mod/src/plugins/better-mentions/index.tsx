@@ -34,11 +34,11 @@ const settings = createSettings("better-mentions", {
 
 const TextareaMarkdownComponents = getMangledProxy<{
   Mention: (props: { id: string, guildId: string, channelId: string }) => React.ReactNode
-}>(".Messages.UNKNOWN_ROLE_PLACEHOLDER]", {
+}>("YV4F/v", {
   Mention: byStrings(".hidePersonalInformation", "#", "<@", ".discriminator")
 });
 
-const textareaMarkdownComponentsSearch = getLazy(bySource(".Messages.UNKNOWN_ROLE_PLACEHOLDER]"));
+const textareaMarkdownComponentsSearch = getLazy(bySource("YV4F/v"));
 const avatarModule = getProxy((m) => m.default?.getUserAvatarURL);
 
 const patcher = new Injector();

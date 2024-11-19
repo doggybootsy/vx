@@ -1,0 +1,303 @@
+/* Base modal styles */
+.vx-fn-modal {
+    background-color: #36393f;
+    border-radius: 5px;
+    color: #dcddde;
+    padding: 16px;
+    width: 600px;
+}
+
+.vx-fn-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.vx-fn-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vx-fn-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.vx-fn-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Filter and controls */
+.vx-fn-filter {
+    background-color: #202225;
+    border: none;
+    border-radius: 3px;
+    color: #dcddde;
+    font-size: 14px;
+    padding: 8px 12px;
+    flex-grow: 1;
+}
+
+.vx-fn-filter::placeholder {
+    color: #72767d;
+}
+
+.vx-fn-time-range {
+    background-color: #202225;
+    border: none;
+    border-radius: 3px;
+    color: #dcddde;
+    font-size: 14px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.vx-fn-sort {
+    background-color: #202225;
+    border: none;
+    border-radius: 3px;
+    color: #dcddde;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: background-color 0.2s;
+}
+
+.vx-fn-clear-logs {
+    background-color: #ed4245;
+    border: none;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 16px;
+    transition: background-color 0.2s;
+}
+
+.vx-fn-clear-logs:hover {
+    background-color: #c03537;
+}
+
+/* Tabs */
+.vx-fn-tabs {
+    display: flex;
+    border-bottom: 1px solid #202225;
+    margin-bottom: 20px;
+}
+
+.vx-fn-tab {
+    background: none;
+    border: none;
+    color: #b9bbbe;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    transition: color 0.2s, border-color 0.2s;
+    position: relative;
+}
+
+.vx-fn-tab:hover {
+    color: #dcddde;
+}
+
+.vx-fn-tab.active {
+    color: #ffffff;
+}
+
+.vx-fn-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #5865f2;
+}
+
+/* Content area */
+.vx-fn-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Items */
+.vx-fn-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background-color: #2f3136;
+    transition: background-color 0.2s;
+}
+
+.vx-fn-item:hover {
+    background-color: #32353b;
+}
+
+.vx-fn-item-name {
+    flex-grow: 1;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vx-fn-item-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.vx-fn-item-game {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #00b0f4;
+}
+
+.vx-fn-item-date {
+    font-size: 12px;
+    color: #72767d;
+}
+
+.vx-fn-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Dropdown */
+.vx-fn-history-dropdown {
+    position: relative;
+}
+
+.vx-fn-dropdown-header {
+    padding: 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.vx-fn-dropdown-header:hover {
+    background-color: #40444b;
+}
+
+.vx-fn-dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background-color: #18191c;
+    border-radius: 4px;
+    padding: 8px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+}
+
+.vx-fn-dropdown-content h4 {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    padding: 0 8px;
+}
+
+.vx-fn-history-item {
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.vx-fn-history-item:hover {
+    background-color: #2f3136;
+}
+
+.vx-fn-history-time {
+    font-size: 12px;
+    color: #72767d;
+    margin-bottom: 4px;
+}
+
+.vx-fn-game-change {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.vx-fn-game-duration {
+    color: #72767d;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+/* Empty state */
+.vx-fn-empty {
+    color: #72767d;
+    font-size: 14px;
+    text-align: center;
+    padding: 40px 0;
+}
+
+/* Scrollbar */
+.vx-fn-content::-webkit-scrollbar,
+.vx-fn-dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vx-fn-content::-webkit-scrollbar-track,
+.vx-fn-dropdown-content::-webkit-scrollbar-track {
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+.vx-fn-content::-webkit-scrollbar-thumb,
+.vx-fn-dropdown-content::-webkit-scrollbar-thumb {
+    background-color: #202225;
+    border-radius: 4px;
+}
+
+.vx-fn-content::-webkit-scrollbar-thumb:hover,
+.vx-fn-dropdown-content::-webkit-scrollbar-thumb:hover {
+    background-color: #18191c;
+}
+
+/* Hover effects */
+.vx-fn-item-dm:hover,
+.vx-fn-sort:hover,
+.vx-fn-time-range:hover {
+    background-color: #40444b;
+}
+
+/* Focus states */
+.vx-fn-filter:focus,
+.vx-fn-time-range:focus {
+    outline: none;
+    border: 1px solid #5865f2;
+}
+
+/* Animation */
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.vx-fn-dropdown-content {
+    animation: dropdownFade 0.2s ease;
+}

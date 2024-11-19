@@ -18,7 +18,7 @@ async function addBuiltinSection() {
   const module = await getMangledLazy<{
     BUILTIN_SECTIONS: Record<string, any>,
     getBuiltInCommands(types: number[], idk1: boolean, idk2: boolean): any[]
-  }>(".Messages.COMMAND_SECTION_BUILT_IN_NAME", {
+  }>("fI5MTU", {
     BUILTIN_SECTIONS: m => typeof m === "object",
     getBuiltInCommands: m => typeof m === "function"
   });    

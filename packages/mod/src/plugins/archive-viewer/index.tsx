@@ -25,7 +25,7 @@ export default definePlugin({
   authors: [ Developers.doggybootsy ],
   requiresRestart: false,
   patches: {
-    match: ".Messages.REMOVE_ATTACHMENT_TOOLTIP_TEXT",
+    match: "/XT3io",
     find: /(=(.{1,3})=>.+?hoverButtonGroup,.+?children:)\[(.+?)\]/,
     replace: "$1[$enabled&&$jsx($self.ZipButton,$2),$3]"
   },
