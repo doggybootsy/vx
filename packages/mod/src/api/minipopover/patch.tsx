@@ -4,7 +4,7 @@ import { GuildStore, useStateFromStores } from "@webpack/common";
 
 addPlainTextPatch({
   identifier: "VX(Minipopover)",
-  match: ".Messages.MESSAGE_UTILITIES_A11Y_LABEL",
+  match: "Lv7LxM",
   find: /(return .{1,3}\.state!==.{1,3}\..{1,3}\.SEND_FAILED\?)(\(0,.{1,3}\.jsx\)\(.{1,3}{\.{3}.{1,3}}\))(:null)/,
   replace: "$1$vx.minipopover._patchPopover($2)$3"
 });

@@ -1,0 +1,114 @@
+.vx-sia-container {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #2f3136;
+    border: 1px solid #202225;
+    transition: all 0.2s ease-in-out;
+}
+.vx-sia-container-collapsed {
+    max-width: 195px;
+    height: auto !important;
+    transition: max-width 0.2s ease-in-out;
+}
+.vx-sia-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #202225;
+    height: 20px;
+}
+.vx-sia-media-container {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.vx-sia-image {
+    max-width: 100%;
+    max-height: calc(100% - 40px);
+    object-fit: contain;
+    transition: opacity 0.2s ease-in-out;
+}
+.vx-sia-image-shown {
+    display: block;
+    opacity: 1;
+}
+.vx-sia-image-hidden {
+    display: none;
+    opacity: 0;
+}
+.vx-sia-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+.vx-sia-overlay-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.vx-sia-overlay-text {
+    color: #ffffff;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+.vx-sia-url-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(32, 34, 37, 0.9);
+    color: #dcddde;
+    padding: 8px;
+    font-size: 12px;
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+}
+.vx-sia-url-overlay-visible {
+    opacity: 1;
+}
+.vx-sia-source-text {
+    font-size: 14px;
+}
+.vx-sia-toggle-button {
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 14px;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    outline: none;
+}
+.vx-sia-button-show {
+    background-color: #5865f2;
+}
+.vx-sia-button-show:hover {
+    background-color: #4752c4;
+}
+.vx-sia-button-hide {
+    background-color: #4f545c;
+}
+.vx-sia-button-hide:hover {
+    background-color: #5d6269;
+}
+.vx-sia-carousel-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.vx-sia-discord-source {
+    color: #43b581;
+}
+.vx-sia-external-source {
+    color: #f04747;
+}

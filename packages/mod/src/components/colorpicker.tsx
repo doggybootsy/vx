@@ -50,7 +50,7 @@ function getColorPicker() {
 
         const moduleIdRegex = /\(0,.{1,3}\..{1,3}\)\({createPromise:\(\)=>(.{1,3})\.e\("(\d+)"\)\.then\(\1\.bind\(\1,(\d+)\)\),webpackId:\3}\)/;
 
-        const moduleId = getModuleIdBySource(".Messages.USER_SETTINGS_PROFILE_COLOR_CUSTOM_BUTTON.format")!;
+        const moduleId = getModuleIdBySource("3kiLZW")!;
         
         const module = String(webpackRequire!.m[moduleId]!);
         

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f0396cdc-1cb3-4cdb-b49a-942d40159293" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/api/quick-actions/slate-toolbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/api/quick-actions/slate-toolbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/components/boundary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/components/boundary.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/components/markdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/components/markdown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/dashboard/patches.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/dashboard/patches.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/mod/src/plugins/webhook-messenger/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/mod/src/plugins/webhook-messenger/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/node_modules/discord-types/general/Message.d.ts" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/node_modules/typescript/lib/lib.es5.d.ts" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2nH5kn1EcEOREQaLgY3QJJ7o57y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/GithubClones/vx/packages/mod/src/plugins/friend-notifications&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMProjectConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\GithubClones\\vx\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;TEXT&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\GithubClones\vx\packages\mod\src\plugins\friend-notifications" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\GithubClones\vx\packages\mod\src\plugins\slate-toolbar" />
+      <recent name="E:\GithubClones\vx\packages\mod\src\api\quick-actions" />
+      <recent name="E:\GithubClones\vx\packages\mod\src\api\menu" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="vx-gp-stats" />
+    </option>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-WS-241.15989.105" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f0396cdc-1cb3-4cdb-b49a-942d40159293" name="Changes" comment="" />
+      <created>1728617306351</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728617306351</updated>
+      <workItem from="1728617307556" duration="8302000" />
+      <workItem from="1728690396446" duration="2478000" />
+      <workItem from="1728831807605" duration="2629000" />
+      <workItem from="1728873401611" duration="38872000" />
+      <workItem from="1728962067166" duration="33220000" />
+      <workItem from="1729189010683" duration="3316000" />
+      <workItem from="1729203549094" duration="40216000" />
+      <workItem from="1729320410349" duration="107014000" />
+      <workItem from="1729972870834" duration="560000" />
+      <workItem from="1730002610880" duration="3421000" />
+      <workItem from="1730058193002" duration="5688000" />
+      <workItem from="1730103868966" duration="1000" />
+      <workItem from="1730426741486" duration="29243000" />
+      <workItem from="1730601003610" duration="3560000" />
+      <workItem from="1730618238538" duration="3712000" />
+      <workItem from="1730653730550" duration="4350000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

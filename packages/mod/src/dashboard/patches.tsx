@@ -16,13 +16,13 @@ import { requirePlugin } from "vx:plugins/require";
 addPlainTextPatch(
   {
     identifier: "VX(home-button)",
-    match: ".Messages.GUILDS_BAR_A11Y_LABEL",
+    match: "PjnF2t",
     find: /\((.{1,3}\.AdvancedScrollerNone)/,
     replace: "($vxi._addHomeButton()"
   },
   {
     identifier: "VX(settings-button)",
-    match: ".Messages.USER_SETTINGS_WITH_BUILD_OVERRIDE.format({webBuildOverride",
+    match: "Gzh6ZG,{",
     find: /USER_SETTINGS,onClick:(.{1,3}),onContextMenu:(.{1,3}),/,
     replace: "USER_SETTINGS,onClick:$vxi._settingButtonActionWrapper($1,false),onContextMenu:$vxi._settingButtonActionWrapper($2,true),"
   },
